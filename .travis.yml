@@ -6,6 +6,9 @@ env:
     - ANDROID_BUILD_TOOLS=25.0.0
 
 android:
+  lintOptions :
+    - abortOnError false
+
   components:
     # Uncomment the lines below if you want to
     # use the latest revision of Android SDK Tools
