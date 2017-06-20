@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hyperrail</string>
+    <string name="powered_by_irail_be">Powered by irail.be</string>
+
+    <string name="search">Zoeken</string>
+    <string name="title_disturbances">Storingen</string>
+    <string name="title_liveboard">Vertrekken</string>
+    <string name="title_train">Trein</string>
+    <string name="title_route">Route</string>
+
+    <string name="navigation_drawer_open">Open navigatie</string>
+    <string name="navigation_drawer_close">Sluit navigatie</string>
+
+    <string name="action_settings">Instellingen</string>
+    <string name="permission_description_location_description">Om nabije stations te tonen, hebben we je locatie nodig. Dit verbruikt geen energie, en je locatie wordt nooit over internet verstuurd. Je zal de keuze krijgen deze toestemming te verlenen. Wanneer je geen toestemming verleent, zullen geen nabije stations getoond worden.\n\n Deze functie kan op elk moment in of uitgeschakeld worden via instellingen > Toon stations rondom me</string>
+    <string name="permission_description_location_title">Locating nearby stations</string>
+    <string name="permission_continue">Verder</string>
+
+    <string name="action_share">Deel…</string>
+    <string name="action_time">Tijd wijzigen</string>
+    <string name="action_mark_as_favorite">Markeer favoriet</string>
+    <string name="action_unmark_as_favorite">Verwijder favoriet</string>
+    <string name="action_to">Kom hier aan</string>
+    <string name="action_from">Vertrek hier</string>
+
+    <string name="close">Sluiten</string>
+
+    <string name="status_cancelled">Afgeschaft</string>
+    <string name="contentdescription_timeline_icon">timeline_icon</string>
+
+
+    <string name="marked_route_favorite">Route toegevoegd aan favorieten</string>
+    <string name="unmarked_route_favorite">Route verwijderd uit favorieten</string>
+    <string name="marked_station_favorite">Station toegevoegd aan favorieten</string>
+    <string name="unmarked_station_favorite">Station verwijderd uit favorieten</string>
+    <string name="undo">Ongedaan maken</string>
+
+    <string name="title_activity_settings">Instellingen</string>
+    <string name="pref_title_cards">Card view gebruiken</string>
+    <string name="pref_description_cards">Toon material design kaarten in plaats van een normale lijst</string>
+
+    <string name="permission_request_title">Deze functie vereist je toestemming</string>
+
+    <string name="error_notfound_message">Je zoekopdracht leverde geen resultaten op.</string>
+    <string name="error_notfound_title">Geen resultaten</string>
+    <string name="error_servererror_title">Server fout</string>
+    <string name="error_servererror_message">Er trad een serverfout op. Probeer het later opnieuw.</string>
+    <string name="error_network_title">Netwerk onbeschikbaar</string>
+    <string name="error_network_message">Data kon niet geladen worden. Ben je verbonden met het internet?</string>
+    <string name="error_general_title">Het spijt ons</string>
+    <string name="error_general_message">Er trad een fout op. Probeer het later opnieuw.</string>
+    <string name="error_departure_not_found_message">Het vertrekstation kon niet gevonden worden</string>
+    <string name="error_destination_not_found_message">De bestemming kon niet gevonden worden</string>
+    <string name="error_departure_not_found_title">Ongeldig vertrekstation</string>
+    <string name="error_destination_not_found_title">Ongeldige bestemming</string>
+
+    <string name="search_station_name">Zoek een station</string>
+
+    <string name="from">Vertrek</string>
+    <string name="to">Bestemming</string>
+
+    <string name="warning_not_realtime">Je bekijkt resultaten voor</string>
+    <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy hh:mm</string>
+    <string name="number_recent_searches">Aantal recente zoekopdrachten</string>
+    <string name="title_departures">Vertrekken</string>
+    <string name="action_swap">Wissel richting</string>
+
+</resources>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/list_item"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/image_timeline"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/contentdescription_timeline_icon"
+        android:src="@drawable/timeline_transfer_filled"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/cardlist_content_margin"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/text_arrival_container"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/cardlist_textrow_height"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_arrival_time"
+                    android:layout_width="@dimen/card_time_width"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:gravity="center_vertical"
+                    android:text="00:00"
+                    android:textColor="@color/colorTextDark"
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+
+                <TextView
+                    android:id="@+id/text_arrival_delay"
+                    android:layout_width="@dimen/card_delay_width"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:layout_marginLeft="@dimen/activity_tiny_margin"
+                    android:gravity="center_vertical|right"
+                    android:text="51'"
+                    android:textColor="@color/colorDelay"
+                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/text_departure_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_departure_time"
+                    android:layout_width="@dimen/card_time_width"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:gravity="center_vertical"
+                    android:text="00:00"
+                    android:textColor="@color/colorTextDark"
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+
+                <TextView
+                    android:id="@+id/text_departure_delay"
+                    android:layout_width="@dimen/card_delay_width"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:layout_marginLeft="@dimen/activity_tiny_margin"
+                    android:gravity="center_vertical|right"
+                    android:text="6'"
+                    android:textColor="@color/colorDelay"
+                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="@dimen/cardlist_textrow_double_height"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_station"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/cardlist_textrow_height"
+                android:gravity="center_vertical"
+                android:text="Brussel-Zuid"
+                android:textColor="@color/colorTextDark"
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+
+            <LinearLayout
+                android:id="@+id/cardview_detail_1"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/cardlist_textrow_height"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/cardlist_textrow_height"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_transfer_within_a_station"
+                    android:tint="@color/colorMuted"/>
+
+                <TextView
+                    android:id="@+id/text_waiting_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="0:10"
+                    android:textColor="@color/colorMuted"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/cardlist_textrow_double_height"
+            android:layout_marginLeft="@dimen/cardlist_content_margin"
+            android:layout_marginRight="@dimen/cardlist_content_margin"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/layout_platform_arrival_container"
+                android:layout_width="@dimen/cardlist_textrow_height_reduced_2dp"
+                android:layout_height="@dimen/cardlist_textrow_height_reduced_2dp"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/platform_train"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_platform_arrival"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorTextLight"
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_platform_departure_container"
+                android:layout_width="@dimen/cardlist_textrow_height_reduced_2dp"
+                android:layout_height="@dimen/cardlist_textrow_height_reduced_2dp"
+                android:layout_marginTop="1dp"
+                android:background="@drawable/platform_train"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_platform_departure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorTextLight"
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item android:id="@+id/action_liveboard"
+        android:title="@string/title_liveboard"
+        android:icon="@drawable/ic_directions_railway"
+        app:showAsAction="ifRoom|collapseActionView"/>
+
+    <item android:id="@+id/action_route"
+        android:title="@string/title_route"
+        android:icon="@drawable/ic_swap_vert"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+
+    <item android:id="@+id/action_disturbances"
+        android:title="@string/title_disturbances"
+        android:icon="@android:drawable/stat_sys_warning"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/title_activity_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        app:showAsAction="ifRoom|collapseActionView" />
+</menu>

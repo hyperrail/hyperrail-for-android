@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/warning_not_realtime"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/colorWarningNotRealtime"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:visibility="visible">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/warning_not_realtime_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:text="test"
+        android:textColor="@color/colorTextLight"
+        android:textSize="@dimen/cardlist_textrow_secondary_textsizea" />
+
+        <Button
+            android:id="@+id/warning_not_realtime_close"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/inset_ic_close"
+            android:backgroundTint="@color/colorTextLight" />
+</LinearLayout>

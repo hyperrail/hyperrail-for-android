@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_time"
+        android:icon="@drawable/ic_query_builder"
+        android:title="@string/action_time"
+        app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/action_favorite"
+        android:icon="@drawable/ic_star_border"
+        android:title="@string/action_mark_as_favorite"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_swap"
+        android:icon="@drawable/ic_swap_horiz"
+        android:title="@string/action_swap"
+        app:showAsAction="ifRoom" />
+</menu>

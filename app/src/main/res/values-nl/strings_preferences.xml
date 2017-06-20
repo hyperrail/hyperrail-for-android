@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_header_general">Algemeen</string>
+    <string name="pref_header_stations">Stations</string>
+    <string name="pref_header_routes">Routes</string>
+    <string name="amount_of_recent_searches">Aantal recente opzoekingen</string>
+    <string name="order_of_routes">Volgorde van routes</string>
+    <string name="order_of_stations">Volgorde van stations</string>
+    <string name="number_nearby_stations">Aantal nabije stations</string>
+    <string name="show_nearby_stations">Toon stations rondom me</string>
+
+    <string-array name="pref_list_station_order_values">
+        <item>Recenten / Favorieten / Kortbij</item>
+        <item>Favorieten / Recenten / Kortbij</item>
+        <item>Kortbij / Recenten / Favorieten</item>
+        <item>Kortbij / Favorieten / Recenten</item>
+    </string-array>
+
+    <string-array name="pref_list_route_order_values">
+        <item>Recenten / Favorieten</item>
+        <item>Favorieten / Recenten</item>
+    </string-array>
+
+
+</resources>

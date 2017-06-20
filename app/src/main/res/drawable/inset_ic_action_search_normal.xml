@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_action_search_white"
+    android:insetBottom="@dimen/inset_normal"
+    android:insetLeft="@dimen/inset_normal"
+    android:insetRight="@dimen/inset_normal"
+    android:insetTop="@dimen/inset_normal" />
