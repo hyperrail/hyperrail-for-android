@@ -68,7 +68,7 @@ public class SwipeDetector implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN: {
                 downX = event.getX();
                 downY = event.getY();
-                return true;
+                return false;
             }
             case MotionEvent.ACTION_UP: {
                 upX = event.getX();
