@@ -1,4 +1,7 @@
 # Hyperrail for android
+[![Build Status](https://travis-ci.org/hyperrail/hyperrail-for-android.svg?branch=master)](https://travis-ci.org/hyperrail/hyperrail-for-android)
+
+
 Hyperrail for android is a native android app to provide realtime train information to Belgian travellers.
 
 Licensed under the [MPL-2](https://www.mozilla.org/en-US/MPL/2.0/) license, this project is Open Source compatible.
