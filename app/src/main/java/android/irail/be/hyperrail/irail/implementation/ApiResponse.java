@@ -15,9 +15,9 @@ import java.util.Date;
  */
 public class ApiResponse<T> implements IrailDataResponse<T> {
 
-    private T data;
-    private Exception exception;
-    private Date time;
+    private final T data;
+    private final Exception exception;
+    private final Date time;
 
     public ApiResponse(T data) {
         this(data, null);

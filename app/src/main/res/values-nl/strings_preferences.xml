@@ -6,13 +6,13 @@
     <string name="pref_header_general">Algemeen</string>
     <string name="pref_header_stations">Stations</string>
     <string name="pref_header_routes">Routes</string>
+    <string name="pref_startup_screen">Opstartscherm</string>
     <string name="amount_of_recent_searches">Aantal recente opzoekingen</string>
     <string name="order_of_routes">Volgorde van routes</string>
     <string name="order_of_stations">Volgorde van stations</string>
     <string name="number_nearby_stations">Aantal nabije stations</string>
     <string name="show_nearby_stations">Toon stations rondom me</string>
-    <string name="number_recent_searches">Amount of recent searches to show</string>
-    <string name="pref_startup_screen">Opstartscherm</string>
+
 
     <string-array name="pref_list_station_order_values">
         <item>Recenten / Favorieten / Kortbij</item>

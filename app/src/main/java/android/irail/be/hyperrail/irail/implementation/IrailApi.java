@@ -33,6 +33,7 @@ import java.util.Locale;
 
 /**
  * Synchronous API for api.irail.be
+ *
  * @inheritDoc
  */
 public class IrailApi implements IrailDataProvider {
@@ -44,8 +45,8 @@ public class IrailApi implements IrailDataProvider {
         this.stationProvider = stationProvider;
     }
 
-    private IrailParser parser;
-    private IrailStationProvider stationProvider;
+    private final IrailParser parser;
+    private final IrailStationProvider stationProvider;
 
     public IrailDataResponse<RouteResult> getRoute(String from, String to) {
         return getRoute(from, to, new Date());
