@@ -7,7 +7,7 @@ env:
 
 android:
   lintOptions :
-    - abortOnError false
+    abortOnError: false
 
   components:
     # Uncomment the lines below if you want to
