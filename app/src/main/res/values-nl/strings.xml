@@ -65,5 +65,12 @@
     <string name="number_recent_searches">Aantal recente zoekopdrachten</string>
     <string name="title_departures">Vertrekken</string>
     <string name="action_swap">Wissel richting</string>
+    <string name="error_route_from_missing">Het vertrekstation mag niet leeg zijn</string>
+    <string name="error_route_to_missing">Het aankomststation mag niet leeg zijn</string>
+    <string name="time_at">om</string>
+    <string name="pref_startup_screen">Opstartscherm</string>
+    <string name="now">onmiddelijk</string>
+    <string name="today">vandaag</string>
+    <string name="tomorrow">morgen</string>
 
 </resources>
