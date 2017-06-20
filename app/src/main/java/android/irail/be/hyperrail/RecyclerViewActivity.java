@@ -41,7 +41,7 @@ import java.util.Date;
  *
  * @param <T>
  */
-public abstract class RecyclerViewActivity<T extends Object> extends AppCompatActivity implements OnDateTimeSetListener, InfiniteScrollingDataSource {
+public abstract class RecyclerViewActivity<T> extends AppCompatActivity implements OnDateTimeSetListener, InfiniteScrollingDataSource {
 
     /**
      * Recyclerview

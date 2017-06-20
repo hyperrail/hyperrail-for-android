@@ -49,7 +49,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     // Logtag for logging purpose
     private static final String LOGTAG = "database";
 
-    private Context context;
+    private final Context context;
 
     public StationsDb(Context applicationContext) {
         super(applicationContext, DATABASE_NAME, null, DATABASE_VERSION);

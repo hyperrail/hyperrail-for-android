@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/cardlist_content_margin"
-    android:gravity="center"
-    android:orientation="horizontal">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_margin="@dimen/cardlist_content_margin"
+              android:baselineAligned="false"
+              android:gravity="center"
+              android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -26,7 +27,7 @@
                 android:gravity="center_vertical|left"
                 android:text="00:00"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea" />
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
 
             <TextView
                 android:id="@+id/text_departure_delay"
@@ -37,7 +38,7 @@
                 android:padding="0dp"
                 android:text="51'"
                 android:textColor="@color/colorDelay"
-                android:textSize="@dimen/cardlist_textrow_secondary_textsizea" />
+                android:textSize="@dimen/cardlist_textrow_secondary_textsizea"/>
         </LinearLayout>
 
         <LinearLayout
@@ -53,7 +54,7 @@
                 android:gravity="center_vertical|left"
                 android:text="00:51"
                 android:textColor="@color/colorDelay"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea" />
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -73,7 +74,7 @@
             android:text="Brussel-Zuid"
             android:textAlignment="center"
             android:textColor="@color/colorTextDark"
-            android:textSize="@dimen/cardlist_textrow_primary_textsizea" />
+            android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,9 +82,9 @@
             android:gravity="left"
             android:orientation="horizontal">
 
-            <include layout="@layout/include_text_train_type_number" />
+            <include layout="@layout/include_text_train_type_number"/>
 
-            <include layout="@layout/include_text_train_status" />
+            <include layout="@layout/include_text_train_status"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -103,7 +104,7 @@
             android:text="5"
             android:textAlignment="center"
             android:textColor="@color/colorTextLight"
-            android:textSize="@dimen/cardlist_textrow_primary_textsizea" />
+            android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
 
     </LinearLayout>
 </LinearLayout>

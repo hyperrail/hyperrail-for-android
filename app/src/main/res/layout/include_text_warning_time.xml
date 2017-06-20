@@ -15,7 +15,7 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:text="test"
+        android:text="@string/warning_not_realtime"
         android:textColor="@color/colorTextLight"
         android:textSize="@dimen/cardlist_textrow_secondary_textsizea" />
 
