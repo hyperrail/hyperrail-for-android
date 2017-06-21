@@ -8,10 +8,6 @@
     <string name="title_train">Train</string>
     <string name="title_route">Route</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
     <string name="permission_description_location_description">In order to show you which stations are nearby, we need to know where you are (approximately). We will ask you to make a choice to either allow or deny us access to your location. The app will work fine either way.\n\n You can enable or disable this feature at any time, by going to settings > show stations around me</string>
     <string name="permission_description_location_title">Locating nearby stations</string>
     <string name="permission_continue">Continue</string>

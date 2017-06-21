@@ -17,6 +17,7 @@ import android.irail.be.hyperrail.irail.implementation.Transfer;
 import android.irail.be.hyperrail.util.DurationFormatter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -169,15 +170,15 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 // if cancelled, show icon
                 if (transfer.isDepartureCanceled()) {
                     routeTransferViewHolder.vDeparturePlatform.setText("");
-                    routeTransferViewHolder.vDeparturePlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train_canceled));
+                    routeTransferViewHolder.vDeparturePlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
                 } else {
-                    routeTransferViewHolder.vDeparturePlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train));
+                    routeTransferViewHolder.vDeparturePlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
 
                     if (!transfer.isArrivalPlatformNormal()) {
                         // if platform changed, mark in red
                         Drawable drawable = routeTransferViewHolder.vDeparturePlatformContainer.getBackground();
                         drawable.mutate();
-                        drawable.setColorFilter(context.getResources().getColor(R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+                        drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
 
@@ -193,14 +194,14 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 // if cancelled, show icon
                 if (transfer.isArrivalCanceled()) {
                     routeTransferViewHolder.vArrivalPlatform.setText("");
-                    routeTransferViewHolder.vArrivalPlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train_canceled));
+                    routeTransferViewHolder.vArrivalPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
                 } else {
-                    routeTransferViewHolder.vArrivalPlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train));
+                    routeTransferViewHolder.vArrivalPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
                     if (!transfer.isArrivalPlatformNormal()) {
                         // if platform changed, mark in red
                         Drawable drawable = routeTransferViewHolder.vArrivalPlatformContainer.getBackground();
                         drawable.mutate();
-                        drawable.setColorFilter(context.getResources().getColor(R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+                        drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
 
@@ -211,11 +212,11 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
 
             if (position == 0) {
-                routeTransferViewHolder.vTimeline.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_departure_filled));
+                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
             } else if (position == this.getItemCount() - 1) {
-                routeTransferViewHolder.vTimeline.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_arrival_filled));
+                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
             } else {
-                routeTransferViewHolder.vTimeline.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_transfer_filled));
+                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {

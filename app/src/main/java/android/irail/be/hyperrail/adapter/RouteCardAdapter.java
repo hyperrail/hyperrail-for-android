@@ -24,6 +24,7 @@ import android.irail.be.hyperrail.irail.implementation.Transfer;
 import android.irail.be.hyperrail.util.DurationFormatter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -101,17 +102,17 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
         if (route.getOrigin().isDepartureCanceled()) {
             holder.vPlatform.setText("");
-            holder.vPlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train_canceled));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train_canceled));
             holder.vStatusText.setText(R.string.status_cancelled);
         } else {
             holder.vStatusContainer.setVisibility(View.GONE);
-            holder.vPlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train));
         }
 
         if (!route.isDeparturePlatformNormal()) {
             Drawable drawable = holder.vPlatformContainer.getBackground();
             drawable.mutate();
-            drawable.setColorFilter(context.getResources().getColor(R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(ContextCompat.getColor(context,R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
         }
 
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:id="@+id/list_item"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -38,7 +39,8 @@
                 android:gravity="center_vertical"
                 android:text="Brussel-Zuid"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                tools:ignore="HardcodedText"/>
 
 
             <LinearLayout
@@ -67,7 +69,8 @@
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:text="0:10"
-                        android:textColor="@color/colorMuted"/>
+                        android:textColor="@color/colorMuted"
+                        tools:ignore="HardcodedText"/>
                 </LinearLayout>
 
                 <include layout="@layout/include_text_train_status"/>

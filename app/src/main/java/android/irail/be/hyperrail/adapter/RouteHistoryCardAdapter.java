@@ -10,6 +10,7 @@ import android.content.Context;
 import android.irail.be.hyperrail.R;
 import android.irail.be.hyperrail.persistence.RouteQuery;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.TextView;
  * An adapter to show RouteQueries (recent/favorite routes) in a recyclerview
  */
 public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCardAdapter.RouteHistoryViewHolder> {
+
     private final Context context;
     private RouteQuery[] queries;
 
@@ -40,7 +42,7 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
     public RouteHistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
-        if (! PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_route_history, parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_route_history, parent, false);
@@ -57,10 +59,10 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
 
         switch (query.type) {
             case RECENT_ROUTE:
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_history));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_history));
                 break;
             case FAVORITE_ROUTE:
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_star));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star));
                 break;
         }
 
@@ -88,6 +90,7 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
     }
 
     class RouteHistoryViewHolder extends RecyclerView.ViewHolder {
+
         final TextView vFrom;
         final TextView vTo;
         final ImageView vIcon;

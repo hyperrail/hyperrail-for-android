@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:layout_margin="@dimen/cardlist_content_margin"
@@ -42,7 +43,8 @@
                     android:gravity="center_vertical"
                     android:text="00:00"
                     android:textColor="@color/colorTextDark"
-                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                    tools:ignore="HardcodedText"/>
 
                 <TextView
                     android:id="@+id/text_arrival_delay"
@@ -52,7 +54,8 @@
                     android:gravity="center_vertical|right"
                     android:text="51'"
                     android:textColor="@color/colorDelay"
-                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"/>
+                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+                    tools:ignore="HardcodedText"/>
             </LinearLayout>
 
             <LinearLayout
@@ -68,7 +71,8 @@
                     android:gravity="center_vertical"
                     android:text="00:00"
                     android:textColor="@color/colorTextDark"
-                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                    tools:ignore="HardcodedText"/>
 
                 <TextView
                     android:id="@+id/text_departure_delay"
@@ -78,7 +82,8 @@
                     android:gravity="center_vertical|right"
                     android:text="6'"
                     android:textColor="@color/colorDelay"
-                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"/>
+                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+                    tools:ignore="HardcodedText"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -97,7 +102,8 @@
                 android:gravity="center_vertical"
                 android:text="Brussel-Zuid"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                tools:ignore="HardcodedText"/>
 
             <include layout="@layout/include_text_train_status"/>
         </LinearLayout>
@@ -118,7 +124,8 @@
                 android:text="5"
                 android:textAlignment="center"
                 android:textColor="@color/colorTextLight"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                tools:ignore="HardcodedText"/>
 
         </LinearLayout>
     </LinearLayout>

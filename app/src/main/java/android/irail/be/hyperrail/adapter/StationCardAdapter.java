@@ -12,6 +12,7 @@ import android.irail.be.hyperrail.irail.db.Station;
 import android.irail.be.hyperrail.irail.factories.IrailFactory;
 import android.irail.be.hyperrail.persistence.RouteQuery;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,11 +91,11 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             switch (q.type) {
                 case FAVORITE_STATION:
                     holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_star));
+                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star));
                     break;
                 case RECENT_STATION:
                     holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_history));
+                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_history));
                     break;
             }
 
@@ -122,11 +123,11 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
                     break;
                 case NEARBY:
                     holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_location_on_white));
+                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_location_on_white));
                     break;
                 case SEARCHED:
                     holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_action_search_white));
+                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_search_white));
                     break;
             }
 

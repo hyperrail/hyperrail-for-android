@@ -19,6 +19,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -306,7 +307,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     private void tintDrawable(Drawable drawable, @ColorRes int color) {
         if (drawable != null) {
             drawable.mutate();
-            drawable.setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(ContextCompat.getColor(this.getApplicationContext(), color), PorterDuff.Mode.SRC_ATOP);
         }
     }
 

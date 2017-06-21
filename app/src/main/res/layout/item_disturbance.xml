@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="vertical"
@@ -16,7 +17,8 @@
         android:layout_marginBottom="@dimen/activity_small_margin"
         android:text="Works Brussels-Nord - Brussels-Midi 29/04 - 01/05"
         android:textColor="@color/colorTextDark"
-        android:textSize="@dimen/cardlist_textrow_primary_textsizea" />
+        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+        tools:ignore="HardcodedText"/>
 
     <TextView
         android:id="@+id/text_description"
@@ -25,7 +27,8 @@
         android:layout_gravity="center_vertical|right"
         android:layout_marginBottom="@dimen/activity_small_margin"
         android:text="From Saturday 29/04 to 1/05, trains will not stop at Brussels-Central station following works between Brussels-Nord and Brussels-Midi. There will be major changes to the train service. "
-        android:textSize="@dimen/cardlist_textrow_secondary_textsizea" />
+        android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+        tools:ignore="HardcodedText"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,6 +50,7 @@
             android:layout_height="@dimen/cardlist_textrow_height"
             android:gravity="center_vertical"
             android:text="19/04/2017 - 23:00"
-            android:tint="@color/colorMuted" />
+            android:tint="@color/colorMuted"
+            tools:ignore="HardcodedText"/>
     </LinearLayout>
 </LinearLayout>

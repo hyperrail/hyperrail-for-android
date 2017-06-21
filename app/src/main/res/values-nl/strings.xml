@@ -9,10 +9,7 @@
     <string name="title_train">Trein</string>
     <string name="title_route">Route</string>
 
-    <string name="navigation_drawer_open">Open navigatie</string>
-    <string name="navigation_drawer_close">Sluit navigatie</string>
 
-    <string name="action_settings">Instellingen</string>
     <string name="permission_description_location_description">Om nabije stations te tonen, hebben we je locatie nodig. Dit verbruikt geen energie, en je locatie wordt nooit over internet verstuurd. Je zal de keuze krijgen deze toestemming te verlenen. Wanneer je geen toestemming verleent, zullen geen nabije stations getoond worden.\n\n Deze functie kan op elk moment in of uitgeschakeld worden via instellingen > Toon stations rondom me</string>
     <string name="permission_description_location_title">Locating nearby stations</string>
     <string name="permission_continue">Verder</string>

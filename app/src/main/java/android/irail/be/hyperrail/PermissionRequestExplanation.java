@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -39,7 +40,7 @@ public class PermissionRequestExplanation extends AppCompatActivity {
 
         preference = getIntent().getStringExtra("preference");
         ((TextView) findViewById(R.id.text_subtitle)).setText(getIntent().getStringExtra("title"));
-        ((ImageView) findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(getIntent().getIntExtra("icon", R.drawable.ic_location_on_48)));
+        ((ImageView) findViewById(R.id.icon)).setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), getIntent().getIntExtra("icon", R.drawable.ic_location_on_48)));
         ((TextView) findViewById(R.id.text_description)).setText(getIntent().getStringExtra("description"));
         findViewById(R.id.button_continue).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -14,6 +14,7 @@ import android.irail.be.hyperrail.R;
 import android.irail.be.hyperrail.irail.implementation.Train;
 import android.irail.be.hyperrail.irail.implementation.TrainStop;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,17 +79,17 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
 
         if (s.isDepartureCanceled()) {
             holder.vPlatform.setText("");
-            holder.vPlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train_canceled));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train_canceled));
             holder.vStatusText.setText(R.string.status_cancelled);
         } else {
 
             holder.vStatusContainer.setVisibility(View.GONE);
-            holder.vPlatformContainer.setBackground(context.getResources().getDrawable(R.drawable.platform_train));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train));
 
             if (!s.isPlatformNormal()) {
                 Drawable drawable = holder.vPlatformContainer.getBackground();
                 drawable.mutate();
-                drawable.setColorFilter(context.getResources().getColor(R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+                drawable.setColorFilter(ContextCompat.getColor(context,R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
 
             }
         }
@@ -96,19 +97,19 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
         // TODO: fix this as soon as hasLeft is reliable
         if (s.hasLeft() || true) {
             if (position == 0) {
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_departure_filled));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_departure_filled));
             } else if (position == this.getItemCount() - 1) {
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_arrival_filled));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_arrival_filled));
             } else {
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_transfer_filled));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_transfer_filled));
             }
         } else {
             if (position == 0) {
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_departure_hollow));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_departure_hollow));
             } else if (position == this.getItemCount() - 1) {
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_arrival_hollow));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_arrival_hollow));
             } else {
-                holder.vIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.timeline_transfer_hollow));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_transfer_hollow));
             }
         }
 

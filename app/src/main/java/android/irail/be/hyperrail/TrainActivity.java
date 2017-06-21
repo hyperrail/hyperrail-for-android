@@ -60,6 +60,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements onRecy
         }
 
         super.onCreate(savedInstanceState);
+        setTitle(R.string.title_train);
     }
 
     @Override
@@ -156,7 +157,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements onRecy
     }
 
     protected void showData(Train train) {
-        setTitle(train.getName());
+        setSubTitle(train.getName());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setSubtitle(train.getDirection().getLocalizedName());
         }

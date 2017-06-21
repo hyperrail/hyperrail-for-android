@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/cardlist_content_margin"
     android:gravity="center_vertical|left"
@@ -30,7 +31,8 @@
                 android:layout_height="@dimen/cardlist_textrow_height"
                 android:text="Gent"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea" />
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                tools:ignore="HardcodedText"/>
         </LinearLayout>
 
         <LinearLayout
@@ -50,7 +52,8 @@
                 android:layout_height="@dimen/cardlist_textrow_height"
                 android:text="Brussel"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea" />
+                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                tools:ignore="HardcodedText"/>
         </LinearLayout>
     </LinearLayout>
 

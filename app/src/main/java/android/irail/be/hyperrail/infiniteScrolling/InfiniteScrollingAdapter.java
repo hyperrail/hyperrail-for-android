@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.irail.be.hyperrail.R;
 import android.irail.be.hyperrail.adapter.onRecyclerItemClickListener;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -119,7 +120,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);
             loadingViewHolder.progressBar.getIndeterminateDrawable().setColorFilter(
-                    context.getResources().getColor(R.color.colorPrimary),
+                    ContextCompat.getColor(context,R.color.colorPrimary),
                     PorterDuff.Mode.SRC_ATOP);
         } else {
             onBindItemViewHolder(holder, position);
