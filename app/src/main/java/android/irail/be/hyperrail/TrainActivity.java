@@ -157,10 +157,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements onRecy
     }
 
     protected void showData(Train train) {
-        setSubTitle(train.getName() + " " + train.getName());
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setSubtitle(train.getDirection().getLocalizedName());
-        }
+        setSubTitle(train.getName() + " " + train.getDirection().getLocalizedName());
 
         TrainCardAdapter adapter = new TrainCardAdapter(this, train);
         vRecyclerView.setAdapter(adapter);

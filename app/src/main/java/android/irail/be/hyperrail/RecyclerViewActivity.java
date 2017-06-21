@@ -128,7 +128,9 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         );
 
         // Enable the Up button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Set-up recyclerview
         vRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_primary);
@@ -317,7 +319,9 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      * @param subtitle The text to set
      */
     public void setSubTitle(String subtitle) {
-        getSupportActionBar().setSubtitle(subtitle);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setSubtitle(subtitle);
+        }
     }
 
     /**
@@ -325,8 +329,11 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      *
      * @param subtitle The text to set
      */
+    @SuppressWarnings("unused")
     public void setSubTitle(@StringRes int subtitle) {
-        getSupportActionBar().setSubtitle(subtitle);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setSubtitle(subtitle);
+        }
     }
 
 }
