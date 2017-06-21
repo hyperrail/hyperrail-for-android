@@ -68,6 +68,8 @@
     <string name="error_route_from_missing">Het vertrekstation mag niet leeg zijn</string>
     <string name="error_route_to_missing">Het aankomststation mag niet leeg zijn</string>
     <string name="time_at">om</string>
+    <string name="pref_startup_screen">Opstartscherm</string>
+
     <string name="now">onmiddelijk</string>
     <string name="today">vandaag</string>
     <string name="tomorrow">morgen</string>
