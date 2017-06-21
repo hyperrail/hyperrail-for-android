@@ -18,12 +18,12 @@ import java.util.Objects;
  */
 public class Train extends TrainStub implements Serializable {
 
-    private double longitude;
-    private double latitude;
-    private Station origin;
+    private final double longitude;
+    private final double latitude;
+    private final Station origin;
 
-    private TrainStop[] stops;
-    private TrainStop lastHaltedStop;
+    private final TrainStop[] stops;
+    private final TrainStop lastHaltedStop;
 
     Train(String id, Station destination, Station origin, double longitude, double latitude, TrainStop[] stops, TrainStop lastHaltedStop) {
         super(id, destination);
@@ -48,7 +48,7 @@ public class Train extends TrainStub implements Serializable {
 
     public IrailDataResponse<Train> getTrain() {
         // override stub method
-        return new ApiResponse<Train>(this);
+        return new ApiResponse<>(this);
     }
 
     public double getLongitude() {

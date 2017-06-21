@@ -21,16 +21,16 @@ import java.util.Locale;
  * https://github.com/iRail/stations/blob/master/stations.csv
  */
 public class Station implements Serializable {
-    private String id;
-    private String name;
-    private String alternative_nl;
-    private String alternative_fr;
-    private String alternative_de;
-    private String alternative_en;
-    private String country_code;
-    private double latitude;
-    private double longitude;
-    private float avgStopTimes;
+    private final String id;
+    private final String name;
+    private final String alternative_nl;
+    private final String alternative_fr;
+    private final String alternative_de;
+    private final String alternative_en;
+    private final String country_code;
+    private final double latitude;
+    private final double longitude;
+    private final float avgStopTimes;
 
     public Station(String id, String name, String nl, String fr, String de, String en, String country, double latitude, double longitude, float avgStopTimes) {
         this.id = id;
@@ -95,10 +95,10 @@ public class Station implements Serializable {
         return alternative_en;
     }
 
+    // @TODO device language should be set as a setting (one time), after which user can choose in settings
     /**
      * Get the NL, FR, DE or EN name based on the device language
      * @return The NL, FR, DE or EN name based on the device language
-     * @TODO device language should be set as a setting (one time), after which user can choose in settings
      */
     public String getLocalizedName() {
         switch (Locale.getDefault().getISO3Language()) {

@@ -14,10 +14,10 @@ import java.util.Date;
  */
 public class Disturbance implements Serializable {
     private final String link;
-    private Date timestamp;
-    private String title;
-    private String description;
-    private int id;
+    private final Date timestamp;
+    private final String title;
+    private final String description;
+    private final int id;
 
 
     public Disturbance(int id, Date timestamp, String title, String description, String link) {

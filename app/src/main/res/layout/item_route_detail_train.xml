@@ -21,21 +21,15 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:baselineAligned="false"
         android:orientation="horizontal">
-        <!-- An empty placeholder guarantees the exact same offset -->
-        <LinearLayout
-            android:layout_width="@dimen/offset_time_delay_tinymargin"
-            android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/cardlist_content_margin"
-            android:gravity="center"
-            android:orientation="vertical"/>
 
+        <!-- 76dp margin to the left side, to make up for missing linearlayout compared with transfers (no times are displayed) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="@dimen/cardlist_textrow_double_height"
+            android:layout_marginLeft="76dp"
             android:layout_weight="1"
             android:gravity="left"
             android:orientation="vertical">
-
 
             <TextView
                 android:id="@+id/text_direction"

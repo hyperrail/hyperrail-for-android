@@ -72,7 +72,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     /**
      * Fill the database with data from the embedded CSV file (raw resource).
      *
-     * @param db
+     * @param db The database to fill
      */
     private void fill(SQLiteDatabase db) {
 

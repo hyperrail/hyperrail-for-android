@@ -21,7 +21,7 @@ import java.util.GregorianCalendar;
  */
 public class DateTimePicker implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
-    private Context context;
+    private final Context context;
     private OnDateTimeSetListener listener;
     private int year, month, day;
 
@@ -30,9 +30,9 @@ public class DateTimePicker implements DatePickerDialog.OnDateSetListener, TimeP
     }
 
     /**
-     * Set the callback listener
+     * Set the callback listener. Replaces a previous listener, if any.
      *
-     * @param listener
+     * @param listener The callback listener to register.
      */
     public void setListener(OnDateTimeSetListener listener) {
         this.listener = listener;

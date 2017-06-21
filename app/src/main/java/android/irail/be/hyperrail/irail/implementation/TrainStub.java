@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
  */
 public class TrainStub implements Serializable {
 
-    protected String id;
-    private Station direction;
+    protected final String id;
+    private final Station direction;
 
     // Direction is required, since we need to display something
     TrainStub(String id, Station direction) {

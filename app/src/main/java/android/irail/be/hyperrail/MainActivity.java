@@ -34,8 +34,8 @@ import android.view.View;
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    DrawerLayout vDrawerLayout;
-    ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout vDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     private Fragment mCurrentFragment;
     private int mCurrentView;
@@ -132,17 +132,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int defaultView = Integer.parseInt(defaultPreferences.getString("pref_startup_screen", String.valueOf(VIEW_TYPE_LIVEBOARD)));
 
         // Decide which view to show
-        if (savedInstanceState != null) {
-            // Based on saved instance
-            // Frament will be retained automaticly
-
-        } else if (this.getIntent().hasExtra("view")){
+        if (savedInstanceState == null && this.getIntent().hasExtra("view")){
             // Based on intent
             Log.d("MainAct", "Setting view type to " + this.getIntent().getIntExtra("view",defaultView) + " from intent");
             setView(this.getIntent().getIntExtra("view",defaultView));
             //mCurrentFragment.onViewStateRestored(this.getIntent().getExtras());
 
-        } else {
+        } else if (savedInstanceState == null) {
             // Default
             Log.d("MainAct", "Setting view type to " + defaultView + " from default");
             setView(defaultView);
@@ -156,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    protected void setView(int i) {
+    private void setView(int i) {
         Fragment frg = null;
         switch (i) {
             case VIEW_TYPE_LIVEBOARD:
@@ -189,11 +185,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+        return mDrawerToggle.onOptionsItemSelected(item);
 
-        return false;
     }
 
     @Override

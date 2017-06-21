@@ -6,6 +6,7 @@
 
 package android.irail.be.hyperrail.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -42,7 +43,7 @@ import java.util.Date;
 public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private Route[] routes;
-    private Context context;
+    private final Context context;
     private onRecyclerItemClickListener<Route> listener;
 
     public RouteCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener, Route[] routes) {
@@ -75,18 +76,19 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         final RouteViewHolder holder = (RouteViewHolder) genericHolder;
         final Route route = routes[position];
 
+        @SuppressLint("SimpleDateFormat")
         DateFormat hhmm = new SimpleDateFormat("HH:mm");
 
         holder.vDepartureTime.setText(hhmm.format(route.getDepartureTime()));
         if (route.getDepartureDelay() > 0) {
-            holder.vDepartureDelay.setText((route.getDepartureDelay() / 60) + "'");
+            holder.vDepartureDelay.setText(context.getString(R.string.delay, route.getDepartureDelay() / 60));
         } else {
             holder.vDepartureDelay.setText("");
         }
 
         holder.vArrivalTime.setText(hhmm.format(route.getArrivalTime()));
         if (route.getArrivalDelay() > 0) {
-            holder.vArrivalDelay.setText((route.getArrivalDelay() / 60) + "'");
+            holder.vArrivalDelay.setText(context.getString(R.string.delay, route.getArrivalDelay() / 60));
         } else {
             holder.vArrivalDelay.setText("");
         }
@@ -177,20 +179,20 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private class RouteViewHolder extends RecyclerView.ViewHolder {
 
-        TextView vDepartureTime;
-        TextView vDepartureDelay;
-        TextView vArrivalTime;
-        TextView vArrivalDelay;
-        TextView vDirection;
-        TextView vDuration;
-        TextView vTrainCount;
-        TextView vPlatform;
-        LinearLayout vPlatformContainer;
-        RecyclerView vRecyclerView;
-        LinearLayout vHeaderContainer;
-        LinearLayout vDetailContainer;
-        TextView vStatusText;
-        LinearLayout vStatusContainer;
+        final TextView vDepartureTime;
+        final TextView vDepartureDelay;
+        final TextView vArrivalTime;
+        final TextView vArrivalDelay;
+        final TextView vDirection;
+        final TextView vDuration;
+        final TextView vTrainCount;
+        final TextView vPlatform;
+        final LinearLayout vPlatformContainer;
+        final RecyclerView vRecyclerView;
+        final LinearLayout vHeaderContainer;
+        final LinearLayout vDetailContainer;
+        final TextView vStatusText;
+        final LinearLayout vStatusContainer;
 
         RouteViewHolder(View view) {
             super(view);

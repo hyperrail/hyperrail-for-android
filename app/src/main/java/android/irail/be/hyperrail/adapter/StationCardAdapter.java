@@ -24,7 +24,7 @@ import android.widget.TextView;
  */
 public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.StationViewHolder> {
 
-    private Context context;
+    private final Context context;
     private RouteQuery[] suggestedStations;
     private Station[] stations;
     private boolean showSuggestions = true;
@@ -33,7 +33,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
     /**
      * Show nearby stations before suggestiosn
      *
-     * @param nearbyOnTop
+     * @param nearbyOnTop Whether or not to show nearby stations on top of favorite/recents (suggestions)
      */
     public void setNearbyOnTop(boolean nearbyOnTop) {
         this.nearbyOnTop = nearbyOnTop;
@@ -187,8 +187,8 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
      */
     class StationViewHolder extends RecyclerView.ViewHolder {
 
-        TextView vStation;
-        ImageView vIcon;
+        final TextView vStation;
+        final ImageView vIcon;
 
         StationViewHolder(View v) {
             super(v);

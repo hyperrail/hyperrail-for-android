@@ -21,10 +21,9 @@ import static android.irail.be.hyperrail.irail.db.StationsDataContract.StationsD
 import static android.irail.be.hyperrail.irail.db.StationsDataContract.StationsDataColumns._ID;
 
 /**
- * Created by Bert on 19-1-2017.
+ * Define the database structure for the stations database.
  */
-
-public class StationsDataContract {
+class StationsDataContract {
 
     private StationsDataContract() {
         // don't instantiate

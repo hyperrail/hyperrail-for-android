@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * Recyclerview adapter to show a list with disturbances on the net
@@ -25,7 +24,7 @@ import java.text.SimpleDateFormat;
 public class DisturbanceCardAdapter extends RecyclerView.Adapter<DisturbanceCardAdapter.DisturbanceViewHolder> {
 
     private Disturbance[] disturbances;
-    private Context context;
+    private final Context context;
 
     private onRecyclerItemClickListener<Disturbance> listener;
 
@@ -61,7 +60,7 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<DisturbanceCard
 
         holder.vDescription.setText(disturbance.getDescription());
 
-        DateFormat df = new SimpleDateFormat("d/M/y - HH:mm");
+        DateFormat df = DateFormat.getDateTimeInstance();
         holder.vDate.setText(df.format(disturbance.getTime()));
     }
 
@@ -82,9 +81,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<DisturbanceCard
     }
 
     class DisturbanceViewHolder extends RecyclerView.ViewHolder {
-        TextView vTitle;
-        TextView vDescription;
-        TextView vDate;
+        final TextView vTitle;
+        final TextView vDescription;
+        final TextView vDate;
 
 
         DisturbanceViewHolder(View view) {

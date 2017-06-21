@@ -18,7 +18,7 @@
         android:right="6dp"
         android:top="20dp">
         <bitmap
-            android:src="@drawable/ic_directions_railway"
+            android:src="@drawable/ic_directions_railway_white"
             android:tint="@color/colorPrimary" />
     </item>
     <item

@@ -11,29 +11,27 @@ import android.irail.be.hyperrail.irail.db.Station;
 import java.io.Serializable;
 import java.util.Date;
 
-
 /**
- * Created by Bert on 18-1-2017.
+ * A route between 2 stations, which might consist of multiple vehicles with transfers in between
  */
-
 public class Route implements Serializable {
 
 
-    private Station departureStation;
-    private Station arrivalStation;
-    private Date departureTime;
-    private Date arrivalTime;
+    private final Station departureStation;
+    private final Station arrivalStation;
+    private final Date departureTime;
+    private final Date arrivalTime;
 
-    private int departureDelay;
-    private int arrivalDelay;
+    private final int departureDelay;
+    private final int arrivalDelay;
 
-    private String departurePlatform;
-    private boolean isDeparturePlatformNormal;
-    private String arrivalPlatform;
-    private boolean isArrivalDeparturePlatformNormal;
+    private final String departurePlatform;
+    private final boolean isDeparturePlatformNormal;
+    private final String arrivalPlatform;
+    private final boolean isArrivalDeparturePlatformNormal;
 
-    private TrainStub[] trains;
-    private Transfer[] transfers;
+    private final TrainStub[] trains;
+    private final Transfer[] transfers;
 
     Route(Station departureStation, Station arrivalStation, Date departureTime, int departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, Date arrivalTime, int arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, TrainStub[] trains, Transfer[] transfers) {
         this.departureStation = departureStation;

@@ -30,12 +30,13 @@
             android:textSize="20sp" />
 
         <ImageView
+            android:contentDescription="@string/permission_request_title"
             android:id="@+id/icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foregroundGravity="center"
             android:paddingBottom="@dimen/activity_vertical_margin"
-            android:src="@drawable/ic_location_on_white" />
+            android:src="@drawable/ic_location_on_48" />
 
         <TextView
             android:id="@+id/text_subtitle"
@@ -59,10 +60,9 @@
             android:textColor="@color/colorTextLight" />
 
         <Button
-
+            android:id="@+id/button_continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="askPermission"
             android:text="@string/permission_continue" />
     </LinearLayout>
 </LinearLayout>

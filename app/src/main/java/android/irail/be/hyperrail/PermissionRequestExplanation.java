@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,18 +39,21 @@ public class PermissionRequestExplanation extends AppCompatActivity {
 
         preference = getIntent().getStringExtra("preference");
         ((TextView) findViewById(R.id.text_subtitle)).setText(getIntent().getStringExtra("title"));
-        ((ImageView) findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(getIntent().getIntExtra("icon", R.drawable.ic_location_on_white)));
+        ((ImageView) findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(getIntent().getIntExtra("icon", R.drawable.ic_location_on_48)));
         ((TextView) findViewById(R.id.text_description)).setText(getIntent().getStringExtra("description"));
-
+        findViewById(R.id.button_continue).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                askPermission();
+            }
+        });
         setContentView(R.layout.activity_permission_request_explanation);
     }
 
     /**
      * Ask for the permission
-     *
-     * @param view
      */
-    public void askPermission(View view) {
+    public void askPermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                 REQUEST_LOCATION);
@@ -58,9 +62,7 @@ public class PermissionRequestExplanation extends AppCompatActivity {
     /**
      * Either we get permission, or we disable the functionality using a setting, after which this activity is finished
      *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
+     * @inheritDoc
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -69,6 +71,7 @@ public class PermissionRequestExplanation extends AppCompatActivity {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Hurray, we're allowed to do this!
+                Log.d("PermissionRequest","Got permission!");
             } else {
                 // Disable by setting preference to false
                 PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(preference, false).apply();

@@ -27,12 +27,12 @@ import java.util.Date;
  */
 public class TrainActivity extends RecyclerViewActivity<Train> implements onRecyclerItemClickListener<TrainStop> {
 
-    Station mScrollToStation;
-    Train mTrain;
-    TrainStub mCurrentSearchQuery;
-    Date mTrainDate;
+    private Station mScrollToStation;
+    private Train mTrain;
+    private TrainStub mCurrentSearchQuery;
+    private Date mTrainDate;
 
-    AsyncTask runningTask;
+    private AsyncTask runningTask;
 
     public static Intent createIntent(Context context, TrainStub stub, Date day) {
         Intent i = new Intent(context, TrainActivity.class);
@@ -90,11 +90,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements onRecy
 
     protected void getData() {
         AsyncTask<TrainStub, Integer, IrailDataResponse<Train>> t = new AsyncTask<TrainStub, Integer, IrailDataResponse<Train>>() {
-
-            @Override
-            protected void onCancelled() {
-                super.onCancelled();
-            }
 
             @Override
             protected void onPostExecute(IrailDataResponse<Train> response) {

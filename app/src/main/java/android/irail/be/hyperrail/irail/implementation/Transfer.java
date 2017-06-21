@@ -16,20 +16,20 @@ import java.util.Date;
  */
 public class Transfer implements Serializable {
 
-    private TrainStub arrivingTrain;
-    private TrainStub departingTrain;
-    private Date arrivalTime;
-    private Date departureTime;
+    private final TrainStub arrivingTrain;
+    private final TrainStub departingTrain;
+    private final Date arrivalTime;
+    private final Date departureTime;
 
-    private Station station;
-    private String departurePlatform;
-    private boolean isDeparturePlatformNormal;
-    private String arrivalPlatform;
-    private boolean isArrivalPlatformNormal;
-    private int arrivalDelay;
-    private boolean arrivalCanceled;
-    private int departureDelay;
-    private boolean departureCanceled;
+    private final Station station;
+    private final String departurePlatform;
+    private final boolean isDeparturePlatformNormal;
+    private final String arrivalPlatform;
+    private final boolean isArrivalPlatformNormal;
+    private final int arrivalDelay;
+    private final boolean arrivalCanceled;
+    private final int departureDelay;
+    private final boolean departureCanceled;
 
     public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, String departurePlatform, boolean departureNormal, Date arrivalTime, Date departureTime, int arrivalDelay, boolean arrivalCanceled, int departureDelay, boolean departureCanceled) {
         this.station = station;

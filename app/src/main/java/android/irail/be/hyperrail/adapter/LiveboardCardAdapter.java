@@ -6,6 +6,7 @@
 
 package android.irail.be.hyperrail.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -31,7 +32,7 @@ import java.text.SimpleDateFormat;
 public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     private LiveBoard liveboard;
-    private Context context;
+    private final Context context;
 
     private onRecyclerItemClickListener<TrainStop> listener;
 
@@ -51,7 +52,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
     public RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
-        if (! PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_liveboard, parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_liveboard, parent, false);
@@ -71,10 +72,12 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.vTrainNumber.setText(stop.getTrain().getNumber());
         holder.vTrainType.setText(stop.getTrain().getType());
 
+        @SuppressLint("SimpleDateFormat")
         DateFormat df = new SimpleDateFormat("HH:mm");
+
         holder.vDeparture.setText(df.format(stop.getDepartureTime()));
         if (stop.getDepartureDelay() > 0) {
-            holder.vDepartureDelay.setText((stop.getDepartureDelay() / 60) + "'");
+            holder.vDepartureDelay.setText(context.getString(R.string.delay, stop.getDepartureDelay() / 60));
             holder.vDelayTime.setText(df.format(stop.getDelayedDepartureTime()));
         } else {
             holder.vDepartureDelay.setText("");
@@ -121,17 +124,17 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     private class LiveboardStopViewHolder extends RecyclerView.ViewHolder {
 
-        TextView vDestination;
-        TextView vTrainType;
-        TextView vTrainNumber;
-        TextView vDeparture;
-        TextView vDepartureDelay;
-        TextView vDelayTime;
-        TextView vPlatform;
-        LinearLayout vPlatformContainer;
+        final TextView vDestination;
+        final TextView vTrainType;
+        final TextView vTrainNumber;
+        final TextView vDeparture;
+        final TextView vDepartureDelay;
+        final TextView vDelayTime;
+        final TextView vPlatform;
+        final LinearLayout vPlatformContainer;
 
-        LinearLayout vStatusContainer;
-        TextView vStatusText;
+        final LinearLayout vStatusContainer;
+        final TextView vStatusText;
 
         LiveboardStopViewHolder(View view) {
             super(view);

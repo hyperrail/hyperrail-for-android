@@ -17,16 +17,16 @@ import java.util.Date;
  */
 public class TrainStop implements Serializable {
 
-    private TrainStub train;
-    private Station destination;
-    private Station station;
+    private final TrainStub train;
+    private final Station destination;
+    private final Station station;
 
-    private boolean isPlatformNormal;
-    private Date departureTime;
-    private String platform;
+    private final boolean isPlatformNormal;
+    private final Date departureTime;
+    private final String platform;
     private boolean hasLeft;
-    private int departureDelay;
-    private boolean departureCanceled;
+    private final int departureDelay;
+    private final boolean departureCanceled;
 
     private Date arrivalTime;
     private int arrivalDelay;

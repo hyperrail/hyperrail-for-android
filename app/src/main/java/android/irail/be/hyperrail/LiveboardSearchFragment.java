@@ -46,14 +46,14 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
 
     private static final String LOGTAG = "LiveboardSearch";
     private static final int COARSE_LOCATION_REQUEST = 1;
-    RecyclerView stationRecyclerView;
-    GoogleApiClient mGoogleApiClient;
+    private RecyclerView stationRecyclerView;
+    private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private EditText vStationSearchField;
 
     private int mNumberOfNearbyStations = 3;
 
-    PersistentQueryProvider persistentQueryProvider;
+    private PersistentQueryProvider persistentQueryProvider;
     private boolean mNearbyOnTop;
 
     public LiveboardSearchFragment() {
@@ -196,7 +196,7 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
      *
      * @param station The station which liveboard should be loaded
      */
-    void openLiveboard(Station station) {
+    private void openLiveboard(Station station) {
         persistentQueryProvider.addRecentStation(station.getLocalizedName());
         Intent i = LiveboardActivity.createIntent(getActivity(), station);
         startActivity(i);
@@ -205,9 +205,9 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
     /**
      * Set the list of stations
      *
-     * @param stations
+     * @param stations The new array of stations
      */
-    public void setStations(Station[] stations) {
+    private void setStations(Station[] stations) {
         Log.d(LOGTAG, "Setting liveboard search list to " + stations.length + " stations");
         StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
         adapter.setStations(stations);
@@ -216,7 +216,7 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
     /**
      * Set the type of stations (determines the icon). Does not apply to recents or favorites.
      *
-     * @param type
+     * @param type The type of the stations shown, determines the icon shown next to it.
      */
     private void setStationType(StationCardAdapter.stationType type) {
         StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
@@ -326,6 +326,7 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
 
     }
 
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
@@ -334,7 +335,7 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
     /**
      * On Google play location service connection
      *
-     * @param bundle
+     * @inheritDoc
      */
     @Override
     public void onConnected(@Nullable Bundle bundle) {

@@ -23,7 +23,7 @@ import java.util.Date;
  */
 public class IrailApiParser implements IrailParser {
 
-    final IrailStationProvider stationProvider;
+    private final IrailStationProvider stationProvider;
 
     public IrailApiParser(IrailStationProvider stationProvider) {
         this.stationProvider = stationProvider;

@@ -129,7 +129,7 @@
                         android:layout_width="@dimen/cardlist_textrow_height"
                         android:layout_height="@dimen/cardlist_textrow_height"
                         android:padding="2dp"
-                        android:src="@drawable/ic_directions_railway"
+                        android:src="@drawable/ic_directions_railway_white"
                         android:tint="@color/colorMuted"/>
 
                     <TextView

@@ -31,10 +31,10 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
-    private InfiniteScrollingDataSource mOnLoadMoreListener;
+    private final InfiniteScrollingDataSource mOnLoadMoreListener;
     private boolean isLoading;
-    private Context context;
-    private LinearLayoutManager linearLayoutManager;
+    private final Context context;
+    private final LinearLayoutManager linearLayoutManager;
     private boolean infiniteScrollingEnabled = true;
 
     /**
@@ -43,7 +43,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param recyclerView The recyclerview in which this adapter will be used
      * @param mInfiniteScrollingDataSource The listener which should be notified when the end of the list is reached
      */
-    public InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, final InfiniteScrollingDataSource mInfiniteScrollingDataSource) {
+    protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, final InfiniteScrollingDataSource mInfiniteScrollingDataSource) {
 
         this.context = context;
 
@@ -60,10 +60,10 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     }
 
     /**
-     * Check if the listener should be called
-     * @param recyclerView
-     * @param dx
-     * @param dy
+     * Check if the listener should be called, and call it if necessary
+     * @param recyclerView The recyclerview in which a scroll occurred
+     * @param dx The scroll distance along the x axis
+     * @param dy The scroll distance along the y axis
      */
     private void checkInfiniteScrolling(RecyclerView recyclerView, int dx, int dy) {
         if (infiniteScrollingEnabled && !isLoading && mOnLoadMoreListener != null && dy >= 0 && linearLayoutManager.findLastVisibleItemPosition() == InfiniteScrollingAdapter.this.getItemCount() - 1) {
@@ -89,9 +89,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     /**
      * Determine if the viewholder should be a spinner or a data item
-     * @param parent
-     * @param viewType
-     * @return
+     * @inheritDoc
      */
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -106,11 +104,9 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     /**
      * Determine the viewholder for data items
-     * @param parent
-     * @param viewType
-     * @return
+     * @inheritDoc
      */
-    public abstract RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType);
+    protected abstract RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType);
 
     /**
      * In case of a spinner, bind here, else call method in overriding class
@@ -135,7 +131,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param holder The viewholder to be bound
      * @param position The position to be bound
      */
-    public abstract void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position);
+    protected abstract void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position);
 
     /**
      * The number of data items + the progress bar
@@ -154,7 +150,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * The number of data items to be shown
      * @return The number of data items to be shown
      */
-    public abstract int getListItemCount();
+    protected abstract int getListItemCount();
 
     public abstract void setOnItemClickListener(onRecyclerItemClickListener<T> listener);
 
@@ -179,7 +175,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      */
     private static class LoadingViewHolder extends RecyclerView.ViewHolder {
 
-        ProgressBar progressBar;
+        final ProgressBar progressBar;
 
         LoadingViewHolder(View itemView) {
             super(itemView);

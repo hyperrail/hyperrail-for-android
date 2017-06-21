@@ -49,16 +49,16 @@ import java.util.Date;
  */
 public class RouteSearchFragment extends Fragment implements onRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable {
 
-    AutoCompleteTextView vFromText;
-    AutoCompleteTextView vToText;
-    TextView vDatetime;
-    Spinner vArriveDepart;
-    LinearLayout vArriveDepartContainer;
+    private AutoCompleteTextView vFromText;
+    private AutoCompleteTextView vToText;
+    private TextView vDatetime;
+    private Spinner vArriveDepart;
+    private LinearLayout vArriveDepartContainer;
 
-    Calendar searchDateTime = null;
-    Bundle parameters;
+    private Calendar searchDateTime = null;
+    private Bundle parameters;
 
-    PersistentQueryProvider persistentQueryProvider;
+    private PersistentQueryProvider persistentQueryProvider;
 
     private final int TAG_ACCENT_SEARCH = 1;
 
@@ -81,7 +81,7 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
         IrailStationProvider stationProvider = IrailFactory.getStationsProviderInstance();
         String[] names = stationProvider.getStationNames(stationProvider.getStationsOrderBySize());
 
-        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<String>(this.getActivity(),
+        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(this.getActivity(),
                 android.R.layout.simple_dropdown_item_1line, names);
         vFromText = (AutoCompleteTextView)
                 view.findViewById(R.id.input_from);
@@ -99,6 +99,7 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
                         vFromText.setText((String) vFromText.getAdapter().getItem(0));
                     }
 
+                    //noinspection StatementWithEmptyBody
                     if (vFromText.getText().length() == 0) {
                         // keep focus on From text
                     } else if (vToText.getText().length() == 0) {
@@ -121,6 +122,7 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
                         vToText.setText((String) vToText.getAdapter().getItem(0));
                     }
 
+                    //noinspection StatementWithEmptyBody
                     if (vToText.getText().length() == 0) {
                         // keep focus on To text
                     } else if (vFromText.getText().length() == 0) {
@@ -192,7 +194,7 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
         vArriveDepart.setOnTouchListener(accentSearchSwipeDetector);
         vDatetime.setOnTouchListener(accentSearchSwipeDetector);
 
-        if (!PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getBoolean("routes_always_datetime",true)){
+        if (!PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getBoolean("routes_always_datetime", true)) {
             hideDateTimeRow();
         }
 

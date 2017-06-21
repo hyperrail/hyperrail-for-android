@@ -102,7 +102,7 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
         outState.putLong("updated", lastUpdate.getTime());
     }
 
-    void loadDisturbances() {
+    private void loadDisturbances() {
         AsyncTask<Void, Void, IrailDataResponse<Disturbance[]>> t = new AsyncTask<Void, Void, IrailDataResponse<Disturbance[]>>() {
 
             @Override

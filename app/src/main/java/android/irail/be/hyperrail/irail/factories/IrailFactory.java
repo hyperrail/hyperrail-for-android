@@ -29,7 +29,7 @@ public class IrailFactory {
         stationProviderInstance = new StationsDb(applicationContext);
     }
 
-    static IrailParser getParserInstance(){
+    private static IrailParser getParserInstance(){
         if (IrailFactory.parserInstance == null){
             IrailFactory.parserInstance = new IrailApiParser(IrailFactory.stationProviderInstance);
         }

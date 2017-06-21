@@ -65,7 +65,7 @@ public class ErrorDialogFactory {
      * @param finish Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showNetworkErrorDialog(final Activity context, final boolean finish) {
+    private static AlertDialog showNetworkErrorDialog(final Activity context, final boolean finish) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_network_title)
                 .setMessage(R.string.error_network_message)
@@ -86,7 +86,7 @@ public class ErrorDialogFactory {
      * @param finish Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showServerErrorDialog(final Activity context, final boolean finish) {
+    private static AlertDialog showServerErrorDialog(final Activity context, final boolean finish) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_servererror_title)
                 .setMessage(R.string.error_servererror_message)
@@ -107,7 +107,7 @@ public class ErrorDialogFactory {
      * @param finish Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showNotFoundErrorDialog(final Activity context, final boolean finish) {
+    private static AlertDialog showNotFoundErrorDialog(final Activity context, final boolean finish) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_notfound_title)
                 .setMessage(R.string.error_notfound_message)
@@ -147,7 +147,7 @@ public class ErrorDialogFactory {
      * @param finish Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showCustomDialog(final Activity context, @StringRes int title, @StringRes int message, final boolean finish) {
+    private static AlertDialog showCustomDialog(final Activity context, @StringRes int title, @StringRes int message, final boolean finish) {
         return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)

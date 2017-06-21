@@ -165,7 +165,7 @@ public class IrailApi implements IrailDataProvider {
             return new ApiResponse<>(null, e);
         } catch (Exception e) {
             Log.e(LOGTAG, "Failed to get train: " + e.getMessage());
-            return new ApiResponse<Train>(null, e);
+            return new ApiResponse<>(null, e);
         }
     }
 

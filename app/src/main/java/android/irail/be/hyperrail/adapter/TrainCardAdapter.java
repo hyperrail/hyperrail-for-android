@@ -6,6 +6,7 @@
 
 package android.irail.be.hyperrail.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -29,8 +30,8 @@ import java.text.SimpleDateFormat;
  */
 public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.TrainStopViewHolder> {
 
-    private Train train;
-    private Context context;
+    private final Train train;
+    private final Context context;
     private onRecyclerItemClickListener<TrainStop> listener;
 
     public TrainCardAdapter(Context context, Train train) {
@@ -56,17 +57,19 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
 
         holder.vDestination.setText(s.getStation().getLocalizedName());
 
+        @SuppressLint("SimpleDateFormat")
         DateFormat df = new SimpleDateFormat("HH:mm");
+
         holder.vDepartureTime.setText(df.format(s.getDepartureTime()));
         if (s.getDepartureDelay() > 0) {
-            holder.vDepartureDelay.setText((s.getDepartureDelay() / 60) + "'");
+            holder.vDepartureDelay.setText(context.getString(R.string.delay, s.getDepartureDelay() / 60));
         } else {
             holder.vDepartureDelay.setText("");
         }
 
         holder.vArrivalTime.setText(df.format(s.getArrivalTime()));
         if (s.getArrivalDelay() > 0) {
-            holder.vArrivalDelay.setText((s.getArrivalDelay() / 60) + "'");
+            holder.vArrivalDelay.setText(context.getString(R.string.delay, s.getArrivalDelay() / 60));
         } else {
             holder.vArrivalDelay.setText("");
         }
@@ -145,17 +148,17 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
      */
     class TrainStopViewHolder extends RecyclerView.ViewHolder {
 
-        TextView vDestination;
-        TextView vDepartureTime;
-        TextView vDepartureDelay;
-        TextView vArrivalTime;
-        TextView vArrivalDelay;
-        TextView vPlatform;
-        LinearLayout vPlatformContainer;
-        ImageView vIcon;
+        final TextView vDestination;
+        final TextView vDepartureTime;
+        final TextView vDepartureDelay;
+        final TextView vArrivalTime;
+        final TextView vArrivalDelay;
+        final TextView vPlatform;
+        final LinearLayout vPlatformContainer;
+        final ImageView vIcon;
 
-        LinearLayout vStatusContainer;
-        TextView vStatusText;
+        final LinearLayout vStatusContainer;
+        final TextView vStatusText;
 
         TrainStopViewHolder(View v) {
             super(v);

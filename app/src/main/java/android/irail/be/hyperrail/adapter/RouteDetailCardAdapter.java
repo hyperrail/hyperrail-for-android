@@ -6,6 +6,7 @@
 
 package android.irail.be.hyperrail.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -41,9 +42,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     /**
      * The route to show
      */
-    private Route route;
+    private final Route route;
 
-    private Context context;
+    private final Context context;
     private onRecyclerItemClickListener<Object> listener;
 
     private final int VIEW_TYPE_TRANSFER = 0;
@@ -106,6 +107,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
+        @SuppressLint("SimpleDateFormat")
         DateFormat hhmm = new SimpleDateFormat("HH:mm");
 
         if (holder instanceof RouteTransferViewHolder) {
@@ -140,7 +142,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             // if we have a departure delay, set the departure delay
             if (transfer.getDepartureDelay() > 0) {
-                routeTransferViewHolder.vDepartureDelay.setText((transfer.getDepartureDelay() / 60) + "'");
+                routeTransferViewHolder.vDepartureDelay.setText(context.getString(R.string.delay, transfer.getDepartureDelay() / 60));
             } else {
                 routeTransferViewHolder.vDepartureDelay.setText("");
             }
@@ -155,7 +157,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             // if we have an arrival delay, set the arrival delay
             if (transfer.getArrivalDelay() > 0) {
-                routeTransferViewHolder.vArrivalDelay.setText((transfer.getArrivalDelay() / 60) + "'");
+                routeTransferViewHolder.vArrivalDelay.setText(context.getString(R.string.delay, transfer.getArrivalDelay() / 60));
             } else {
                 routeTransferViewHolder.vArrivalDelay.setText("");
             }
@@ -290,13 +292,13 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     private class RouteTrainViewHolder extends RecyclerView.ViewHolder {
 
-        TextView vDirection;
-        TextView vDuration;
-        TextView vTrainType;
-        TextView vTrainNumber;
+        final TextView vDirection;
+        final TextView vDuration;
+        final TextView vTrainType;
+        final TextView vTrainNumber;
 
-        LinearLayout vStatusContainer;
-        TextView vStatusText;
+        final LinearLayout vStatusContainer;
+        final TextView vStatusText;
 
         RouteTrainViewHolder(View view) {
             super(view);
@@ -319,24 +321,24 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     private class RouteTransferViewHolder extends RecyclerView.ViewHolder {
 
-        TextView vDepartureTime;
-        LinearLayout vDepartureContainer;
-        TextView vDepartureDelay;
+        final TextView vDepartureTime;
+        final LinearLayout vDepartureContainer;
+        final TextView vDepartureDelay;
 
-        TextView vArrivalTime;
-        LinearLayout vArrivalContainer;
-        TextView vArrivalDelay;
+        final TextView vArrivalTime;
+        final LinearLayout vArrivalContainer;
+        final TextView vArrivalDelay;
 
-        TextView vArrivalPlatform;
-        LinearLayout vArrivalPlatformContainer;
-        TextView vDeparturePlatform;
-        LinearLayout vDeparturePlatformContainer;
+        final TextView vArrivalPlatform;
+        final LinearLayout vArrivalPlatformContainer;
+        final TextView vDeparturePlatform;
+        final LinearLayout vDeparturePlatformContainer;
 
-        TextView vStation;
-        TextView vWaitingTime;
-        LinearLayout vWaitingTimeContainer;
+        final TextView vStation;
+        final TextView vWaitingTime;
+        final LinearLayout vWaitingTimeContainer;
 
-        ImageView vTimeline;
+        final ImageView vTimeline;
 
         RouteTransferViewHolder(View view) {
             super(view);

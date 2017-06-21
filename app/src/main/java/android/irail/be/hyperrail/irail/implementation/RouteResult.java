@@ -24,10 +24,10 @@ import java.util.Date;
  */
 public class RouteResult implements Serializable {
 
-    private Station origin;
-    private Station destination;
-    private RouteTimeDefinition timeDefinition;
-    private Date lastSearchTime;
+    private final Station origin;
+    private final Station destination;
+    private final RouteTimeDefinition timeDefinition;
+    private final Date lastSearchTime;
     private Route[] routes;
 
     public RouteResult(Station origin, Station destination, Date lastSearchTime, RouteTimeDefinition timeDefinition, Route[] routes) {

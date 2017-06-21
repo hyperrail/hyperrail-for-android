@@ -32,14 +32,14 @@ import java.util.Date;
 
 public class RouteActivity extends RecyclerViewActivity<Route[]> implements InfiniteScrollingDataSource, OnDateTimeSetListener {
 
-    RouteResult mRoutes;
+    private RouteResult mRoutes;
 
-    String mSearchFrom;
-    String mSearchTo;
-    RouteTimeDefinition mSearchTimeType = RouteTimeDefinition.DEPART;
-    Date mSearchDate;
+    private String mSearchFrom;
+    private String mSearchTo;
+    private RouteTimeDefinition mSearchTimeType = RouteTimeDefinition.DEPART;
+    private Date mSearchDate;
 
-    AsyncTask runningTask;
+    private AsyncTask runningTask;
 
     private boolean initialLoadCompleted = false;
 
@@ -118,11 +118,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
         AsyncTask<Void, Integer, IrailDataResponse<RouteResult>> t = new AsyncTask<Void, Integer, IrailDataResponse<RouteResult>>() {
 
             @Override
-            protected void onCancelled() {
-                super.onCancelled();
-            }
-
-            @Override
             protected void onPostExecute(IrailDataResponse<RouteResult> response) {
                 super.onPostExecute(response);
 
@@ -186,11 +181,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
         AsyncTask<Void, Integer, IrailDataResponse<Route[]>> t = new AsyncTask<Void, Integer, IrailDataResponse<Route[]>>() {
 
             @Override
-            protected void onCancelled() {
-                super.onCancelled();
-            }
-
-            @Override
             protected void onPostExecute(IrailDataResponse<Route[]> response) {
                 super.onPostExecute(response);
 
@@ -201,11 +191,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
                     ErrorDialogFactory.showErrorDialog(response.getException(), RouteActivity.this, false);
                     ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
                 }
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
             }
 
             @Override

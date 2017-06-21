@@ -35,10 +35,10 @@ import java.text.SimpleDateFormat;
  */
 public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements onRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource {
 
-    LiveBoard mCurrentLiveboard;
-    Station mCurrentStation;
+    private LiveBoard mCurrentLiveboard;
+    private Station mCurrentStation;
 
-    AsyncTask runningTask;
+    private AsyncTask runningTask;
 
     public static Intent createIntent(Context context, Station station) {
         Intent i = new Intent(context, LiveboardActivity.class);
@@ -118,11 +118,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         AsyncTask<Station, Integer, IrailDataResponse<LiveBoard>> t = new AsyncTask<Station, Integer, IrailDataResponse<LiveBoard>>() {
 
             @Override
-            protected void onCancelled() {
-                super.onCancelled();
-            }
-
-            @Override
             protected void onPostExecute(IrailDataResponse<LiveBoard> response) {
                 super.onPostExecute(response);
 
@@ -146,7 +141,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 } else {
                     // only finish if we're loading new data
                     ErrorDialogFactory.showErrorDialog(response.getException(), LiveboardActivity.this, mCurrentLiveboard == null);
-                    return;
                 }
 
             }
@@ -191,11 +185,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         AsyncTask<LiveBoard, Integer, ApiResponse<TrainStop[]>> t = new AsyncTask<LiveBoard, Integer, ApiResponse<TrainStop[]>>() {
 
             @Override
-            protected void onCancelled() {
-                super.onCancelled();
-            }
-
-            @Override
             protected void onPostExecute(ApiResponse<TrainStop[]> liveboard) {
                 super.onPostExecute(liveboard);
 
@@ -210,11 +199,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 }
 
                 showData(mCurrentLiveboard);
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
             }
 
             @Override

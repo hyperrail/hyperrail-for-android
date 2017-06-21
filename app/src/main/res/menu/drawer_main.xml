@@ -5,7 +5,7 @@
 
     <item android:id="@+id/action_liveboard"
         android:title="@string/title_liveboard"
-        android:icon="@drawable/ic_directions_railway"
+        android:icon="@drawable/ic_directions_railway_white"
         app:showAsAction="ifRoom|collapseActionView"/>
 
     <item android:id="@+id/action_route"

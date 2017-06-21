@@ -64,6 +64,7 @@
     <string name="now">now</string>
     <string name="tomorrow">tomorrow</string>
     <string name="time_at">at</string>
+    <string name="delay">%1$d\'</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

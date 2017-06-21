@@ -18,7 +18,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -29,7 +29,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
     /**
      * The route to show
      */
-    Route route;
+    private Route route;
 
     public static Intent createIntent(Context c, Route r) {
         Intent i = new Intent(c, RouteDetailActivity.class);
@@ -45,8 +45,10 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
         super.onCreate(savedInstanceState);
 
         setTitle(route.getDepartureStation().getLocalizedName() + " - " + route.getArrivalStation().getLocalizedName());
-        SimpleDateFormat sf = new SimpleDateFormat("EEE dd/MM/yyyy");
-        setSubTitle(sf.format(route.getDepartureTime().getTime()));
+
+        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
+
+        setSubTitle(df.format(route.getDepartureTime().getTime()));
 
         // disable pull-to-refresh
         // TODO: support refreshing

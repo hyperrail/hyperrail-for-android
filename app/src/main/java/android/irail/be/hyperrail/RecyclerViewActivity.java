@@ -171,7 +171,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * Get the activity layout
      *
-     * @return
+     * @return the id of the layout which should be used for this activity
      */
     abstract protected
     @LayoutRes
@@ -252,7 +252,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * Show data
      *
-     * @param data
+     * @param data the data to show
      */
     protected abstract void showData(T data);
 
@@ -274,7 +274,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * Set or unset the favorite display state
      *
-     * @param favorite
+     * @param favorite true to mark this item as favorite, false to unmark it
      */
     public void setFavoriteDisplayState(boolean favorite) {
         if (favorite) {
@@ -293,9 +293,9 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      *
      * @param favorite Whether or not to mark as favorite
      */
-    public abstract void markFavorite(boolean favorite);
+    protected abstract void markFavorite(boolean favorite);
 
-    public abstract boolean isFavorite();
+    protected abstract boolean isFavorite();
 
     /**
      * Tint a drawable
@@ -303,7 +303,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      * @param drawable The drawable to tint
      * @param color    The color to tint the drawable with
      */
-    public void tintDrawable(Drawable drawable, @ColorRes int color) {
+    private void tintDrawable(Drawable drawable, @ColorRes int color) {
         if (drawable != null) {
             drawable.mutate();
             drawable.setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);

@@ -56,7 +56,7 @@ public class PersistentQueryProvider {
      */
     private static final String TAG_FAV_STATIONS = "fav_stations";
 
-    private Context context;
+    private final Context context;
 
     /**
      * An instance of sharedPreferences
@@ -76,7 +76,7 @@ public class PersistentQueryProvider {
     /**
      * Get the favorite routes
      *
-     * @return
+     * @return The list of favorite routes
      */
     public List<RouteQuery> getFavoriteRoutes() {
         List<RouteQuery> results = load(TAG_FAV_ROUTES, RouteQuery.RouteQueryType.FAVORITE_ROUTE);
@@ -470,7 +470,7 @@ public class PersistentQueryProvider {
     /**
      * Clear a tag
      *
-     * @param tag
+     * @param tag The tag for which all queries should be cleared
      */
     private void clear(String tag) {
         SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
