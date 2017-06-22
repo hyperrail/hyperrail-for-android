@@ -67,4 +67,8 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="departarrive">
+        <item>Depart</item>
+        <item>Arrive</item>
+    </string-array>
 </resources>
