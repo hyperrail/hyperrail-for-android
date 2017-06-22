@@ -6,7 +6,7 @@
     <string name="pref_header_general">General</string>
     <string name="pref_header_stations">Stations</string>
     <string name="pref_header_routes">Routes</string>
-    <string name="amount_of_recent_searches">Amount of recent searches to show</string>
+    <string name="pref_number_recent_searches">Number of recent searches to show</string>
     <string name="order_of_routes">Order of routes</string>
     <string name="order_of_stations">Order of stations</string>
     <string name="number_nearby_stations">Number of nearby stations to show</string>
@@ -14,6 +14,10 @@
     <string name="number_recent_searches">Amount of recent searches to show</string>
     <string name="pref_title_cards">Use card views</string>
     <string name="pref_description_cards">Use card views instead of a normal list</string>
+    <string name="pref_always_show_time">Always show date/time picker</string>
+    <string name="pref_always_show_time_summary">Always show the date/time picker in the route search window</string>
+    <string name="pref_short_tap_route_detail">Short tap route for new window</string>
+    <string name="pref_short_tap_route_detail_summary">Short tap route to open in new window, long tap to expand result in current window</string>
 
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>
@@ -39,10 +43,10 @@
     </string-array>
 
     <string-array name="pref_list_station_order_values">
-        <item>Recents / Favorites / Nearby</item>
-        <item>Favorites / Recents / Nearby</item>
-        <item>Nearby / Recents / Favorites</item>
-        <item>Nearby / Favorites / Recents</item>
+        <item>Recent searches / Favorites / Nearby</item>
+        <item>Favorites / Recent searches / Nearby</item>
+        <item>Nearby / Recent searches / Favorites</item>
+        <item>Nearby / Favorites / Recent searches</item>
     </string-array>
 
     <string-array name="pref_list_station_order_keys" translatable="false">
@@ -53,8 +57,8 @@
     </string-array>
 
     <string-array name="pref_list_route_order_values">
-        <item>Recents / Favorites</item>
-        <item>Favorites / Recents</item>
+        <item>Recent searches / Favorites</item>
+        <item>Favorites / Recent searches</item>
     </string-array>
 
     <string-array name="pref_list_route_order_keys" translatable="false">

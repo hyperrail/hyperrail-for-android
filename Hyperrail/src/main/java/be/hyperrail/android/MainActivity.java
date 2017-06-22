@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -166,12 +167,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (i) {
             case VIEW_TYPE_LIVEBOARD:
                 frg = LiveboardSearchFragment.newInstance();
+                setSubTitle(R.string.title_liveboard);
                 break;
             case VIEW_TYPE_ROUTE:
                 frg = RouteSearchFragment.newInstance();
+                setSubTitle(R.string.title_route);
                 break;
             case VIEW_TYPE_DISTURBANCE:
                 frg = DisturbanceListFragment.newInstance();
+                setSubTitle(R.string.title_disturbances);
                 break;
         }
         mCurrentFragment = frg;
@@ -220,4 +224,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    private void setSubTitle(@StringRes int s){
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setSubtitle(s);
+        }
+    }
 }

@@ -4,17 +4,21 @@
     <!-- Strings related to Settings -->
 
     <string name="pref_header_general">General</string>
-    <string name="pref_header_stations">Stations</string>
+    <string name="pref_header_stations">Gares</string>
     <string name="pref_header_routes">Routes</string>
-    <string name="amount_of_recent_searches">Amount of recent searches to show</string>
-    <string name="order_of_routes">Order of routes</string>
-    <string name="order_of_stations">Order of stations</string>
-    <string name="number_nearby_stations">Number of nearby stations to show</string>
-    <string name="show_nearby_stations">Show stations around me</string>
-    <string name="number_recent_searches">Amount of recent searches to show</string>
+    <string name="pref_number_recent_searches">Nombre de recherches récentes à afficher</string>
+    <string name="order_of_routes">Ordre des routes</string>
+    <string name="order_of_stations">Ordre des gares</string>
+    <string name="number_nearby_stations">Nombre de stations à proximité pour montrer</string>
+    <string name="show_nearby_stations">Afficher les stations autour de moi</string>
+    <string name="number_recent_searches">Nombre de recherches récentes à afficher</string>
     <string name="pref_description_cards">Utiliser les vues de carte au lieu d\'une liste normale</string>
     <string name="pref_startup_screen">Écran par défaut lors du démarrage de l\'application</string>
     <string name="pref_title_cards">Utiliser les vues de la carte</string>
+    <string name="pref_always_show_time">Afficher toujours le sélectionneur de date / heure</string>
+    <string name="pref_always_show_time_summary">Indiquez toujours le sélecteur de date / heure dans la fenêtre de recherche d\'itinéraire</string>
+    <string name="pref_short_tap_route_detail">Route courte pour une nouvelle fenêtre</string>
+    <string name="pref_short_tap_route_detail_summary">Route rapide pour ouvrir dans une nouvelle fenêtre, touche longue pour étendre le résultat dans la fenêtre actuelle</string>
 
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>
@@ -40,10 +44,10 @@
     </string-array>
 
     <string-array name="pref_list_station_order_values">
-        <item>Recents / Favorites / Nearby</item>
-        <item>Favorites / Recents / Nearby</item>
-        <item>Nearby / Recents / Favorites</item>
-        <item>Nearby / Favorites / Recents</item>
+        <item>Recherches récentes / Favoris / Proche</item>
+        <item>Favoris / Recherches récentes / Proche</item>
+        <item>Proche / Recherches récentes / Favoris</item>
+        <item>Proche / Favoris / Recherches récentes</item>
     </string-array>
 
     <string-array name="pref_list_station_order_keys" translatable="false">
@@ -54,8 +58,8 @@
     </string-array>
 
     <string-array name="pref_list_route_order_values">
-        <item>Recents / Favorites</item>
-        <item>Favorites / Recents</item>
+        <item>Recherches récentes / Favoris</item>
+        <item>Favoris / Recherches récentes</item>
     </string-array>
 
     <string-array name="pref_list_route_order_keys" translatable="false">

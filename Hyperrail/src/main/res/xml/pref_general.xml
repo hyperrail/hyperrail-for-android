@@ -87,13 +87,13 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="routes_always_new_activity"
-            android:summary="Short tap route to open in new window, long tap to expand result in current window"
-            android:title="Short tap route for new window" />
+            android:summary="@string/pref_short_tap_route_detail_summary"
+            android:title="@string/pref_short_tap_route_detail" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="routes_always_datetime"
-            android:summary="Always show the date/time picker in the route search window"
-            android:title="Always show date/time picker" />
+            android:summary="@string/pref_always_show_time_summary"
+            android:title="@string/pref_always_show_time" />
     </PreferenceCategory>
 </PreferenceScreen>

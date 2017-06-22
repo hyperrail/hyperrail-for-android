@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,13 +51,15 @@ public class PermissionRequestExplanation extends AppCompatActivity {
         ((TextView) findViewById(R.id.text_subtitle)).setText(getIntent().getStringExtra("title"));
         ((ImageView) findViewById(R.id.icon)).setImageDrawable(ContextCompat.getDrawable(this, getIntent().getIntExtra("icon", R.drawable.ic_location_on_48)));
         ((TextView) findViewById(R.id.text_description)).setText(getIntent().getStringExtra("description"));
-        findViewById(R.id.button_continue).setOnClickListener(new View.OnClickListener() {
+
+        Button button_continue = (Button) findViewById(R.id.button_continue);
+        button_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 askPermission();
             }
         });
-        setContentView(R.layout.activity_permission_request_explanation);
+
     }
 
     /**
