@@ -27,6 +27,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("android.irail.be.hyperrail", appContext.getPackageName());
+        assertEquals("be.hyperrail.android", appContext.getPackageName());
     }
 }
