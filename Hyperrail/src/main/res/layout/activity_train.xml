@@ -5,7 +5,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context="android.irail.be.hyperrail.TrainActivity">
+              tools:context="be.hyperrail.android.TrainActivity">
 
     <include layout="@layout/toolbar_default" />
 
