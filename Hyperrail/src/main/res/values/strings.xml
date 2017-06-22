@@ -2,7 +2,7 @@
     <string name="app_name">HyperRail</string>
     <string name="powered_by_irail_be">Powered by irail.be</string>
 
-    <string name="search">Search</string>
+
     <string name="title_disturbances">Disturbances</string>
     <string name="title_liveboard">Liveboard</string>
     <string name="title_train">Train</string>
@@ -18,21 +18,19 @@
     <string name="action_unmark_as_favorite">Unmark as favorite</string>
     <string name="action_to">New route to here</string>
     <string name="action_from">New route from here</string>
-
-    <string name="close">Close</string>
+    <string name="action_search">Search</string>
+    <string name="action_close">Close</string>
 
     <string name="status_cancelled">Cancelled</string>
-    <string name="contentdescription_timeline_icon">timeline_icon</string>
-
+    <string name="contentdescription_timeline_icon" translatable="false">timeline_icon</string>
 
     <string name="marked_route_favorite">Marked route as favorite</string>
     <string name="unmarked_route_favorite">Unmarked route as favorite</string>
     <string name="marked_station_favorite">Marked station as favorite</string>
     <string name="unmarked_station_favorite">Unmarked station as favorite</string>
     <string name="undo">Undo</string>
+
     <string name="title_activity_settings">Settings</string>
-    <string name="pref_title_cards">Use card views</string>
-    <string name="pref_description_cards">Use card views instead of a normal list</string>
     <string name="permission_request_title">This function requires your permission</string>
     <string name="error_notfound_message">Your search returned no results.</string>
     <string name="error_notfound_title">No results</string>
@@ -56,9 +54,9 @@
     <string name="pref_startup_screen">Default screen when starting the app</string>
     <string name="error_route_from_missing">The departure station cannot be empty</string>
     <string name="error_route_to_missing">The arrival station cannot be empty</string>
-    <string name="today">today</string>
-    <string name="now">now</string>
-    <string name="tomorrow">tomorrow</string>
+    <string name="time_today">today</string>
+    <string name="time_now">now</string>
+    <string name="time_tomorrow">tomorrow</string>
     <string name="time_at">at</string>
     <string name="delay">%1$d\'</string>
 

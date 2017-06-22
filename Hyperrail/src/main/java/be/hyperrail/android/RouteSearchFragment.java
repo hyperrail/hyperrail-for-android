@@ -347,10 +347,10 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
 
         if (now.get(Calendar.YEAR) == searchDateTime.get(Calendar.YEAR)) {
             if (now.get(Calendar.DAY_OF_YEAR) == searchDateTime.get(Calendar.DAY_OF_YEAR)) {
-                day = getActivity().getResources().getString(R.string.today);
+                day = getActivity().getResources().getString(R.string.time_today);
             } else  //noinspection RedundantCast
                 if (now.get(Calendar.DAY_OF_YEAR) + 1 == (int) searchDateTime.get(Calendar.DAY_OF_YEAR)) {
-                    day = getActivity().getResources().getString(R.string.tomorrow);
+                    day = getActivity().getResources().getString(R.string.time_tomorrow);
                 }
         }
         vDatetime.setText(day + " " + at + " " + time);

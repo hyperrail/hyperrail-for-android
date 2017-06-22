@@ -12,6 +12,8 @@
     <string name="order_of_stations">Volgorde van stations</string>
     <string name="number_nearby_stations">Aantal nabije stations</string>
     <string name="show_nearby_stations">Toon stations rondom me</string>
+    <string name="pref_title_cards">Card view gebruiken</string>
+    <string name="pref_description_cards">Toon material design kaarten in plaats van een normale lijst</string>
 
 
     <string-array name="pref_list_station_order_values">
