@@ -15,6 +15,7 @@ package be.hyperrail.android.irail.implementation;
 import android.annotation.SuppressLint;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import org.json.JSONObject;
 
@@ -80,6 +81,7 @@ public class IrailApi implements IrailDataProvider {
         return getRoute(from, to, timeFilter, RouteTimeDefinition.DEPART);
     }
 
+    @AddTrace(name = "iRailGetroute")
     public IrailDataResponse<RouteResult> getRoute(Station from, Station to, Date timeFilter, RouteTimeDefinition timeFilterType) {
 
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
@@ -140,6 +142,7 @@ public class IrailApi implements IrailDataProvider {
         return getLiveboard(name, timeFilter, RouteTimeDefinition.DEPART);
     }
 
+    @AddTrace(name = "iRailGetLiveboard")
     public IrailDataResponse<LiveBoard> getLiveboard(String name, Date timeFilter, RouteTimeDefinition timeFilterType) {
         // https://api.irail.be/liveboard/?station=Halle&fast=true
 
@@ -253,6 +256,7 @@ public class IrailApi implements IrailDataProvider {
      * @param address The full address, including protocol definition
      * @return The returned data in string format
      */
+    @AddTrace(name = "iRailGetData")
     private static String getData(String address) throws IOException {
         return getData(address, 0);
     }

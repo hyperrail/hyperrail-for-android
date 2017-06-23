@@ -20,6 +20,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -85,6 +86,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      *
      * @param db The database to fill
      */
+    @AddTrace(name = "fillStationsDb")
     private void fill(SQLiteDatabase db) {
 
         try (Scanner lines = new Scanner(context.getResources().openRawResource(R.raw.stations))) {
@@ -331,6 +333,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name = "getStationById")
     public Station getStationById(String id) {
 
         SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
@@ -371,6 +374,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name = "getStationByName")
     public Station getStationByName(String name) {
         SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
         SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
