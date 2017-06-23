@@ -30,7 +30,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ import android.widget.EditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.crash.FirebaseCrash;
 
 import be.hyperrail.android.adapter.StationCardAdapter;
 import be.hyperrail.android.adapter.onRecyclerItemClickListener;
@@ -46,6 +46,8 @@ import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
+
+import static java.util.logging.Level.INFO;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
@@ -216,7 +218,7 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
      * @param stations The new array of stations
      */
     private void setStations(Station[] stations) {
-        Log.d(LogTag, "Setting liveboard search list to " + stations.length + " stations");
+        FirebaseCrash.logcat(INFO.intValue(),LogTag,"Setting liveboard search list to " + stations.length + " stations");
         StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
         adapter.setStations(stations);
     }

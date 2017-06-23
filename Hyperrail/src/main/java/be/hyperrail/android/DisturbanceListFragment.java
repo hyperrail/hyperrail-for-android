@@ -24,7 +24,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,7 +161,6 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Disturbance object) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(object.getLink()));
-        Log.d("disturbancelist","Opening url " + object.getLink());
         startActivity(browserIntent);
     }
 }
