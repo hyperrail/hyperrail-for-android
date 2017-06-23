@@ -333,7 +333,6 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "getStationById")
     public Station getStationById(String id) {
 
         SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
@@ -374,7 +373,6 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "getStationByName")
     public Station getStationByName(String name) {
         SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
         SQLiteDatabase db = StationsDbHelper.getReadableDatabase();

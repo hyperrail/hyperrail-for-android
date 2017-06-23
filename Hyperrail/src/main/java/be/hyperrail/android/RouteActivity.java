@@ -22,6 +22,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,6 +50,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
     private Date mSearchDate;
 
     private AsyncTask runningTask;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private boolean initialLoadCompleted = false;
 
@@ -79,8 +82,27 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
             this.mRoutes = (RouteResult) savedInstanceState.get("routes");
         }
 
-        super.onCreate(savedInstanceState);
+        Bundle mSearchArgs = getIntent().getExtras();
 
+        mSearchFrom = (Station) mSearchArgs.getSerializable("from");
+        mSearchTo = (Station) mSearchArgs.getSerializable("to");
+        mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
+
+        if (mSearchArgs.containsKey("date")) {
+            mSearchDate = (Date) mSearchArgs.getSerializable("date");
+        } else {
+            mSearchDate = null;
+        }
+
+        super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mSearchFrom.getId());
+        bundle.putString(FirebaseAnalytics.Param.ORIGIN, mSearchFrom.getName());
+        bundle.putString(FirebaseAnalytics.Param.DESTINATION, mSearchFrom.getName());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "route");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     @Override
@@ -105,18 +127,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
             // routes are already retrieved from instance state (e.g. on rotation)
             showData(mRoutes.getRoutes());
             return;
-        }
-
-        Bundle mSearchArgs = getIntent().getExtras();
-
-        mSearchFrom = (Station) mSearchArgs.getSerializable("from");
-        mSearchTo = (Station) mSearchArgs.getSerializable("to");
-        mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
-
-        if (mSearchArgs.containsKey("date")) {
-            mSearchDate = (Date) mSearchArgs.getSerializable("date");
-        } else {
-            mSearchDate = null;
         }
 
         getData();
