@@ -59,6 +59,8 @@
     <string name="time_tomorrow">tomorrow</string>
     <string name="time_at">at</string>
     <string name="delay">%1$d\'</string>
+    <string name="error_departure_equals_destination">Invalid query</string>
+    <string name="error_departure_equals_destination_message">The arrival station has to be different from the departure station</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

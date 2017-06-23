@@ -62,6 +62,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         }
 
         super.onCreate(savedInstanceState);
+        setTitle(getString(R.string.title_departures));
     }
 
     @Override
@@ -220,7 +221,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     protected void showData(LiveBoard liveBoard) {
         if (liveBoard != null) {
-            setTitle(getString(R.string.title_departures));
             setSubTitle(liveBoard.getLocalizedName());
         }
 
@@ -248,7 +248,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         }
 
         if (favorite) {
-            persistentQueryProvider.addFavoriteStation(mCurrentStation.getLocalizedName());
+            persistentQueryProvider.addFavoriteStation(mCurrentStation);
             Snackbar.make(vLayoutRoot, R.string.marked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -258,7 +258,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     })
                     .show();
         } else {
-            persistentQueryProvider.removeFavoriteStation(mCurrentStation.getLocalizedName());
+            persistentQueryProvider.removeFavoriteStation(mCurrentStation);
             Snackbar.make(vLayoutRoot, R.string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -274,7 +274,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public boolean isFavorite() {
         // If it's not loaded, it's not a favorite
-        return mCurrentStation != null && persistentQueryProvider.isFavoriteStation(mCurrentStation.getLocalizedName());
+        return mCurrentStation != null && persistentQueryProvider.isFavoriteStation(mCurrentStation);
 
     }
 
