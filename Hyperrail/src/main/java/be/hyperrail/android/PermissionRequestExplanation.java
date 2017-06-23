@@ -20,11 +20,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.crash.FirebaseCrash;
+
+import static java.util.logging.Level.INFO;
 
 /**
  * An activity to explain a user why we're asking for a permission.
@@ -83,7 +86,7 @@ public class PermissionRequestExplanation extends AppCompatActivity {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Hurray, we're allowed to do this!
-                Log.d("PermissionRequest", "Got permission!");
+                FirebaseCrash.logcat(INFO.intValue(),"PermissionRequest","Got permission for request " + requestCode);
             } else {
                 // Disable by setting preference to false
                 PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(preference, false).apply();

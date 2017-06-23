@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.persistence.RouteQuery;
 
 /**
@@ -93,7 +92,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
 
             final RouteQuery q = suggestedStations[position];
 
-            holder.vStation.setText(q.from);
+            holder.vStation.setText(q.fromName);
 
             switch (q.type) {
                 case FAVORITE_STATION:
@@ -110,7 +109,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
-                        listener.onRecyclerItemClick(StationCardAdapter.this, IrailFactory.getStationsProviderInstance().getStationByName(q.from));
+                        listener.onRecyclerItemClick(StationCardAdapter.this, q.from);
                     }
                 }
             });

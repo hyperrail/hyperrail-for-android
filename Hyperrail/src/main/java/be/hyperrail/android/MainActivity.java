@@ -146,13 +146,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (savedInstanceState == null && this.getIntent().hasExtra("view")) {
             // Based on intent
             Log.d("MainAct", "Setting view type to " + this.getIntent().getIntExtra("view", defaultView) + " from intent");
-            setView(this.getIntent().getIntExtra("view", defaultView));
-            //mCurrentFragment.onViewStateRestored(this.getIntent().getExtras());
+            setView(this.getIntent().getIntExtra("view", defaultView), this.getIntent().getExtras());
+           // mCurrentFragment.setParameters(this.getIntent().getExtras());
 
         } else if (savedInstanceState == null) {
             // Default
             Log.d("MainAct", "Setting view type to " + defaultView + " from default");
-            setView(defaultView);
+            setView(defaultView, null);
         }
     }
 
@@ -162,9 +162,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         outState.putInt("view", mCurrentView);
     }
 
-    private void setView(int i) {
+    private void setView(int i, Bundle args) {
         Fragment frg = null;
         switch (i) {
+            default:
             case VIEW_TYPE_LIVEBOARD:
                 frg = LiveboardSearchFragment.newInstance();
                 setSubTitle(R.string.title_liveboard);
@@ -177,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 frg = DisturbanceListFragment.newInstance();
                 setSubTitle(R.string.title_disturbances);
                 break;
+        }
+        if (args != null){
+            frg.setArguments(args);
         }
         mCurrentFragment = frg;
         mCurrentView = i;
@@ -205,13 +209,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_liveboard:
-                setView(VIEW_TYPE_LIVEBOARD);
+                setView(VIEW_TYPE_LIVEBOARD, null);
                 break;
             case R.id.action_route:
-                setView(VIEW_TYPE_ROUTE);
+                setView(VIEW_TYPE_ROUTE, null);
                 break;
             case R.id.action_disturbances:
-                setView(VIEW_TYPE_DISTURBANCE);
+                setView(VIEW_TYPE_DISTURBANCE, null);
                 break;
             case R.id.action_settings:
                 Intent i = new Intent(this, SettingsActivity.class);

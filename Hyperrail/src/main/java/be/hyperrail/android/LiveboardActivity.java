@@ -22,6 +22,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -46,6 +48,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     private Station mCurrentStation;
 
     private AsyncTask runningTask;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public static Intent createIntent(Context context, Station station) {
         Intent i = new Intent(context, LiveboardActivity.class);
@@ -62,6 +65,14 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         }
 
         super.onCreate(savedInstanceState);
+        setTitle(getString(R.string.title_departures));
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mCurrentStation.getId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, mCurrentStation.getName());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "liveboard");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     @Override
@@ -220,7 +231,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     protected void showData(LiveBoard liveBoard) {
         if (liveBoard != null) {
-            setTitle(getString(R.string.title_departures));
             setSubTitle(liveBoard.getLocalizedName());
         }
 
@@ -248,7 +258,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         }
 
         if (favorite) {
-            persistentQueryProvider.addFavoriteStation(mCurrentStation.getLocalizedName());
+            persistentQueryProvider.addFavoriteStation(mCurrentStation);
             Snackbar.make(vLayoutRoot, R.string.marked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -258,7 +268,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     })
                     .show();
         } else {
-            persistentQueryProvider.removeFavoriteStation(mCurrentStation.getLocalizedName());
+            persistentQueryProvider.removeFavoriteStation(mCurrentStation);
             Snackbar.make(vLayoutRoot, R.string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -274,7 +284,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public boolean isFavorite() {
         // If it's not loaded, it's not a favorite
-        return mCurrentStation != null && persistentQueryProvider.isFavoriteStation(mCurrentStation.getLocalizedName());
+        return mCurrentStation != null && persistentQueryProvider.isFavoriteStation(mCurrentStation);
 
     }
 

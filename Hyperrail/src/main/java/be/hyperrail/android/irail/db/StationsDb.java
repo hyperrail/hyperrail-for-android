@@ -18,7 +18,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
-import android.util.Log;
+
+import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -40,6 +42,9 @@ import static be.hyperrail.android.irail.db.StationsDataContract.StationsDataCol
 import static be.hyperrail.android.irail.db.StationsDataContract.StationsDataColumns.COLUMN_NAME_NAME;
 import static be.hyperrail.android.irail.db.StationsDataContract.StationsDataColumns.TABLE_NAME;
 import static be.hyperrail.android.irail.db.StationsDataContract.StationsDataColumns._ID;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 
 /**
  * Database for querying stations
@@ -69,11 +74,11 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @param db Handle in which the database should be created.
      */
     public void onCreate(SQLiteDatabase db) {
-        Log.d(LOGTAG, "Creating database ...");
+        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Creating stations database");
         db.execSQL(SQL_CREATE_TABLE);
-        Log.d(LOGTAG, "Filling database ...");
+        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Filling stations database");
         fill(db);
-        Log.d(LOGTAG, "Database ready");
+        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations database ready");
     }
 
     /**
@@ -81,6 +86,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      *
      * @param db The database to fill
      */
+    @AddTrace(name = "fillStationsDb")
     private void fill(SQLiteDatabase db) {
 
         try (Scanner lines = new Scanner(context.getResources().openRawResource(R.raw.stations))) {
@@ -263,6 +269,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         db.close();
         return stations;
     }
+
     /**
      * @inheritDoc
      */
@@ -294,7 +301,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
 
-        if (stations == null){
+        if (stations == null) {
             return null;
         }
 
@@ -399,14 +406,15 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/") - 1);
-                Log.w("SQLiteStationProvider", "Station not found: " + name + " replacement search " + newname);
+                FirebaseCrash.logcat(WARNING.intValue(), "SQLiteStationProvider", "Station not found: " + name + ", replacement search " + newname);
                 return getStationByName(newname);
             } else if (name.contains("(")) {
                 String newname = name.substring(0, name.indexOf("(") - 1);
-                Log.w("SQLiteStationProvider", "Station not found: " + name + " replacement search " + newname);
+                FirebaseCrash.logcat(WARNING.intValue(), "SQLiteStationProvider", "Station not found: " + name + ", replacement search " + newname);
                 return getStationByName(newname);
             } else {
-                Log.e("SQLiteStationProvider", "Station not found: " + name + " search " + name.replaceAll("[^A-Za-z]", "/"));
+                FirebaseCrash.logcat(SEVERE.intValue(), "SQLiteStationProvider", "Station not found: " + name + ", cleaned search " + wcName);
+                FirebaseCrash.report(new Exception("Station wasn't found in the database!"));
                 return null;
             }
         }
@@ -425,6 +433,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     /**
      * Load stations from a cursor. This method <strong>does not close the cursor afterwards</strong>.
+     *
      * @param c The cursor from which stations should be loaded.
      * @return The array of loaded stations
      */

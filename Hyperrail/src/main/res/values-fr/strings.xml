@@ -58,4 +58,6 @@
     <string name="action_search">Chercher</string>
     <string name="search_station_name">Nom de la station</string>
     <string name="status_cancelled">Annulé</string>
+    <string name="error_departure_equals_destination_message">La gare d\'arrivée doit être différente de la gare de départ</string>
+    <string name="error_departure_equals_destination">Recherche non valide</string>
 </resources>

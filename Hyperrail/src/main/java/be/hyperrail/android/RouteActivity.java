@@ -22,6 +22,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +33,7 @@ import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
@@ -41,16 +44,17 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
     private RouteResult mRoutes;
 
-    private String mSearchFrom;
-    private String mSearchTo;
+    private Station mSearchFrom;
+    private Station mSearchTo;
     private RouteTimeDefinition mSearchTimeType = RouteTimeDefinition.DEPART;
     private Date mSearchDate;
 
     private AsyncTask runningTask;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private boolean initialLoadCompleted = false;
 
-    public static Intent createIntent(Context context, String from, String to, Date date, RouteTimeDefinition datetype) {
+    public static Intent createIntent(Context context, Station from, Station to, Date date, RouteTimeDefinition datetype) {
         Intent i = new Intent(context, RouteActivity.class);
         i.putExtra("from", from);
         i.putExtra("to", to);
@@ -61,7 +65,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
         return i;
     }
 
-    public static Intent createIntent(Context context, String from, String to, Date date) {
+    public static Intent createIntent(Context context, Station from, Station to, Date date) {
         Intent i = new Intent(context, RouteActivity.class);
         i.putExtra("from", from);
         i.putExtra("to", to);
@@ -78,8 +82,27 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
             this.mRoutes = (RouteResult) savedInstanceState.get("routes");
         }
 
-        super.onCreate(savedInstanceState);
+        Bundle mSearchArgs = getIntent().getExtras();
 
+        mSearchFrom = (Station) mSearchArgs.getSerializable("from");
+        mSearchTo = (Station) mSearchArgs.getSerializable("to");
+        mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
+
+        if (mSearchArgs.containsKey("date")) {
+            mSearchDate = (Date) mSearchArgs.getSerializable("date");
+        } else {
+            mSearchDate = null;
+        }
+
+        super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mSearchFrom.getId());
+        bundle.putString(FirebaseAnalytics.Param.ORIGIN, mSearchFrom.getName());
+        bundle.putString(FirebaseAnalytics.Param.DESTINATION, mSearchFrom.getName());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "route");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     @Override
@@ -104,18 +127,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
             // routes are already retrieved from instance state (e.g. on rotation)
             showData(mRoutes.getRoutes());
             return;
-        }
-
-        Bundle mSearchArgs = getIntent().getExtras();
-
-        mSearchFrom = mSearchArgs.getString("from");
-        mSearchTo = mSearchArgs.getString("to");
-        mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
-
-        if (mSearchArgs.containsKey("date")) {
-            mSearchDate = (Date) mSearchArgs.getSerializable("date");
-        } else {
-            mSearchDate = null;
         }
 
         getData();
@@ -147,7 +158,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
                 showData(null);
 
                 setTitle(R.string.title_route);
-                setSubTitle(mSearchFrom + " - " + mSearchTo);
+                setSubTitle(mSearchFrom.getLocalizedName() + " - " + mSearchTo.getLocalizedName());
 
                 if (mSearchDate != null) {
                     vWarningNotRealtime.setVisibility(View.VISIBLE);
@@ -226,6 +237,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
         if (routeList != null) {
             setTitle(R.string.title_route);
+            // Ensure we show the correct from-to by showing it from the actual route result
             setSubTitle(routeList[0].getDepartureStation().getLocalizedName() + " - " + routeList[0].getArrivalStation().getLocalizedName());
         }
 
@@ -246,10 +258,10 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_swap:
-                String h = this.mSearchTo;
+                Station h = this.mSearchTo;
                 this.mSearchTo = this.mSearchFrom;
                 this.mSearchFrom = h;
-
+                this.setFavoriteDisplayState(this.isFavorite());
                 // Empty the screen
                 this.getData();
 

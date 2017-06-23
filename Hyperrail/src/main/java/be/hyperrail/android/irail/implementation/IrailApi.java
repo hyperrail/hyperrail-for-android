@@ -13,7 +13,9 @@
 package be.hyperrail.android.irail.implementation;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
+
+import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import org.json.JSONObject;
 
@@ -37,6 +39,10 @@ import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.exception.InvalidResponseException;
 import be.hyperrail.android.irail.exception.NetworkDisconnectedException;
 import be.hyperrail.android.irail.exception.NotFoundException;
+
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 
 /**
  * Synchronous API for api.irail.be
@@ -75,6 +81,7 @@ public class IrailApi implements IrailDataProvider {
         return getRoute(from, to, timeFilter, RouteTimeDefinition.DEPART);
     }
 
+    @AddTrace(name = "iRailGetroute")
     public IrailDataResponse<RouteResult> getRoute(Station from, Station to, Date timeFilter, RouteTimeDefinition timeFilterType) {
 
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
@@ -113,10 +120,16 @@ public class IrailApi implements IrailDataProvider {
         try {
             JSONObject data = getJsonData(url);
             return new ApiResponse<>(parser.parseRouteResult(data, from, to, timeFilter, timeFilterType));
-        } catch (NetworkDisconnectedException | InvalidResponseException e) {
+        } catch (NetworkDisconnectedException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get routes due to a network error", e.getMessage());
+            return new ApiResponse<>(null, e);
+        } catch (InvalidResponseException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get routes due to a server response error", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         } catch (Exception e) {
-            Log.e(LOGTAG, "Failed to get routes: " + e.getMessage());
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get routes", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         }
     }
@@ -129,6 +142,7 @@ public class IrailApi implements IrailDataProvider {
         return getLiveboard(name, timeFilter, RouteTimeDefinition.DEPART);
     }
 
+    @AddTrace(name = "iRailGetLiveboard")
     public IrailDataResponse<LiveBoard> getLiveboard(String name, Date timeFilter, RouteTimeDefinition timeFilterType) {
         // https://api.irail.be/liveboard/?station=Halle&fast=true
 
@@ -151,10 +165,16 @@ public class IrailApi implements IrailDataProvider {
 
         try {
             return new ApiResponse<>(parser.parseLiveboard(getJsonData(url), timeFilter));
-        } catch (NetworkDisconnectedException | InvalidResponseException e) {
+        } catch (NetworkDisconnectedException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get liveboard due to a network error", e.getMessage());
+            return new ApiResponse<>(null, e);
+        } catch (InvalidResponseException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get liveboard due to a server response error", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         } catch (Exception e) {
-            Log.e(LOGTAG, "Failed to get liveboard: " + e.getMessage());
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get liveboard", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         }
     }
@@ -168,10 +188,16 @@ public class IrailApi implements IrailDataProvider {
 
         try {
             return new ApiResponse<>(parser.parseTrain(getJsonData(url), new Date()));
-        } catch (NetworkDisconnectedException | InvalidResponseException e) {
+        } catch (NetworkDisconnectedException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get train due to a network error", e.getMessage());
+            return new ApiResponse<>(null, e);
+        } catch (InvalidResponseException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get train due to a server response error", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         } catch (Exception e) {
-            Log.e(LOGTAG, "Failed to get train: " + e.getMessage());
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get train", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         }
     }
@@ -185,10 +211,16 @@ public class IrailApi implements IrailDataProvider {
 
         try {
             return new ApiResponse<>(parser.parseDisturbances(getJsonData(url)));
-        } catch (NetworkDisconnectedException | InvalidResponseException e) {
+        } catch (NetworkDisconnectedException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get disturbances due to a network error", e.getMessage());
+            return new ApiResponse<>(null, e);
+        } catch (InvalidResponseException e) {
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get disturbances due to a server response error", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         } catch (Exception e) {
-            Log.e(LOGTAG, "Failed to get disturbances: " + e.getMessage());
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
+            FirebaseCrash.report(e);
             return new ApiResponse<>(null, e);
         }
     }
@@ -213,7 +245,7 @@ public class IrailApi implements IrailDataProvider {
         try {
             return new JSONObject(data);
         } catch (Exception e) {
-            Log.e(LOGTAG, "Failed to load json", e);
+            FirebaseCrash.logcat(WARNING.intValue(), "Failed to load JSON data", e.getMessage());
             throw new InvalidResponseException(address, data);
         }
     }
@@ -224,6 +256,7 @@ public class IrailApi implements IrailDataProvider {
      * @param address The full address, including protocol definition
      * @return The returned data in string format
      */
+    @AddTrace(name = "iRailGetData")
     private static String getData(String address) throws IOException {
         return getData(address, 0);
     }
@@ -238,7 +271,8 @@ public class IrailApi implements IrailDataProvider {
     private static String getData(String address, int attempt) throws IOException {
         try {
             URL url = new URL(address);
-            Log.d("IrailAPI", "Loading " + address);
+            FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt);
+
             // Read all the text returned by the server
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String line, text = "";
@@ -249,10 +283,11 @@ public class IrailApi implements IrailDataProvider {
             return text;
         } catch (Exception e) {
             if (attempt < 3) {
-                Log.w("IrailAPI", "Failed to load data, retrying... ", e);
+                FirebaseCrash.logcat(WARNING.intValue(), LOGTAG, "Failed to load data, retrying... ");
                 return getData(address, attempt + 1);
             } else {
-                Log.e(LOGTAG, "Failed to load data, exited after multiple attemts... ", e);
+                FirebaseCrash.logcat(SEVERE.intValue(), LOGTAG, "Failed to load data: " + e.getMessage());
+                FirebaseCrash.report(e);
                 throw e;
             }
         }
