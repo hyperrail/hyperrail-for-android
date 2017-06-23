@@ -88,7 +88,7 @@ public class PersistentQueryProvider {
 
         // Update from older (name based) versions
         // This migration is required for pre 22-06-2017 installs
-        if (sharedPreferences.getBoolean("pre0.9.1", true)) {
+        if (sharedPreferences.getBoolean("migrated1.9.1", false)) {
 
             for (String tag : new String[]{TAG_FAV_ROUTES, TAG_FAV_STATIONS, TAG_RECENT_ROUTES, TAG_RECENT_STATIONS}) {
                 Log.d("PersistentMigration","Tag " + tag );
@@ -125,7 +125,7 @@ public class PersistentQueryProvider {
                     store(tag,q);
                 }
             }
-            sharedPreferences.edit().putBoolean("pre0.9.1", false).apply();
+            sharedPreferences.edit().putBoolean("migrated1.9.1", true).apply();
         }
     }
 
@@ -649,7 +649,7 @@ public class PersistentQueryProvider {
         Set<RouteQuery> toBeRemoved = new HashSet<>();
         for (RouteQuery entry : collection) {
             for (RouteQuery removalEntry : remove) {
-                if (entry.from == removalEntry.from && entry.to == removalEntry.to) {
+                if (entry.from.getId().equals(removalEntry.from.getId()) && ((entry.to != null && removalEntry.to != null && entry.to.getId().equals(removalEntry.to.getId()))||(entry.to == null && removalEntry.to == null))) {
                     toBeRemoved.add(entry);
                 }
             }
