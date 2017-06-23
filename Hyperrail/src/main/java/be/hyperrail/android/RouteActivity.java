@@ -249,7 +249,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
                 String h = this.mSearchTo;
                 this.mSearchTo = this.mSearchFrom;
                 this.mSearchFrom = h;
-
+                this.setFavoriteDisplayState(this.isFavorite());
                 // Empty the screen
                 this.getData();
 
