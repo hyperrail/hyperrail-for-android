@@ -13,7 +13,8 @@
 package be.hyperrail.android.irail.factories;
 
 import android.content.Context;
-import android.util.Log;
+
+import com.google.firebase.crash.FirebaseCrash;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailParser;
@@ -21,6 +22,8 @@ import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.StationsDb;
 import be.hyperrail.android.irail.implementation.IrailApi;
 import be.hyperrail.android.irail.implementation.IrailApiParser;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Factory to provide singleton data providers (for stations and API calls) and a singleton parser.
@@ -32,27 +35,36 @@ public class IrailFactory {
     private static IrailDataProvider dataProviderInstance;
     private static IrailParser parserInstance;
 
-    public static void setup(Context applicationContext){
+    public static void setup(Context applicationContext) {
         stationProviderInstance = new StationsDb(applicationContext);
     }
 
-    private static IrailParser getParserInstance(){
-        if (IrailFactory.parserInstance == null){
+    private static IrailParser getParserInstance() {
+        if (IrailFactory.parserInstance == null) {
+            if (IrailFactory.stationProviderInstance == null) {
+                FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
+                FirebaseCrash.report(new Exception("IrailApiParser was requested before the factory was initialized"));
+            }
             IrailFactory.parserInstance = new IrailApiParser(IrailFactory.stationProviderInstance);
         }
         return parserInstance;
     }
 
-    public static IrailStationProvider getStationsProviderInstance(){
-        if (IrailFactory.stationProviderInstance == null){
-            Log.e("Irail16Factory","Failed to initialize station provider! Call setContext() before calling any factory method!");
+    public static IrailStationProvider getStationsProviderInstance() {
+        if (IrailFactory.stationProviderInstance == null) {
+            FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
+            FirebaseCrash.report(new Exception("IrailStationProvider was requested before the factory was initialized"));
         }
         return stationProviderInstance;
     }
 
-    public static IrailDataProvider getDataProviderInstance(){
-        if (IrailFactory.dataProviderInstance == null){
-            IrailFactory.dataProviderInstance = new IrailApi(getParserInstance(),getStationsProviderInstance());
+    public static IrailDataProvider getDataProviderInstance() {
+        if (IrailFactory.dataProviderInstance == null) {
+            if (IrailFactory.stationProviderInstance == null) {
+                FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
+                FirebaseCrash.report(new Exception("IrailDataProvider was requested before the factory was initialized"));
+            }
+            IrailFactory.dataProviderInstance = new IrailApi(getParserInstance(), getStationsProviderInstance());
         }
         return dataProviderInstance;
     }
