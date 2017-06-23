@@ -216,9 +216,15 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
         suggestions.setAdapter(suggestionAdapter);
         suggestionAdapter.notifyDataSetChanged();
 
-        if (parameters != null) {
-            vFromText.setText(parameters.getString("from", ""), false);
-            vToText.setText(parameters.getString("to", ""), false);
+        if (this.getArguments() != null && (this.getArguments().containsKey("from") || this.getArguments().containsKey("to"))) {
+            vFromText.setText(this.getArguments().getString("from", ""), false);
+            vToText.setText(this.getArguments().getString("to", ""), false);
+
+            if ( !this.getArguments().containsKey("to")){
+                vToText.requestFocus();
+            } else {
+                vFromText.requestFocus();
+            }
         } else if (savedInstanceState != null) {
             vFromText.setText(savedInstanceState.getString("from", ""), false);
             vToText.setText(savedInstanceState.getString("to", ""), false);
