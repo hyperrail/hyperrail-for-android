@@ -28,8 +28,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
+import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.db.Station;
+import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.util.ArrayUtils;
 
 /**
@@ -75,9 +79,54 @@ public class PersistentQueryProvider {
      */
     private static final int MAX_STORED = 64;
 
+    private final IrailStationProvider stationProvider;
+
     public PersistentQueryProvider(Context context) {
         this.context = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.stationProvider = IrailFactory.getStationsProviderInstance();
+
+        // Update from older (name based) versions
+        // This migration is required for pre 22-06-2017 installs
+        if (sharedPreferences.getBoolean("pre0.9.1", true)) {
+
+            for (String tag : new String[]{TAG_FAV_ROUTES, TAG_FAV_STATIONS, TAG_RECENT_ROUTES, TAG_RECENT_STATIONS}) {
+                Log.d("PersistentMigration","Tag " + tag );
+                Set<String> oldValue = context.getSharedPreferences(PREFERENCES_NAME, 0).getStringSet(tag, new HashSet<String>());
+
+                ArrayList<RouteQuery> newValue = new ArrayList<>();
+
+                for (String entry : oldValue) {
+                    try {
+                        JSONObject object = new JSONObject(entry);
+                        Station from = stationProvider.getStationByName(object.getString("from"));
+                        Station to;
+                        if (! object.getString("to").equals("")) {
+                            to = stationProvider.getStationByName(object.getString("to"));
+                        } else {
+                            to = null;
+                        }
+                        Log.d("PersistentMigration","FROM " + object.getString("from") + " - " + from.getId());
+                        if (to != null) {
+                            Log.d("PersistentMigration", "TO " + object.getString("to") + " - " + to.getId());
+                        } else {
+                            Log.d("PersistentMigration","TO " + object.getString("to") + " - NULL");
+                        }
+                        RouteQuery query = new RouteQuery(from, to);
+                        newValue.add(query);
+                    } catch (JSONException exception) {
+                        // ignored
+                    }
+                }
+
+                clear(tag);
+
+                for (RouteQuery q: newValue){
+                    store(tag,q);
+                }
+            }
+            sharedPreferences.edit().putBoolean("pre0.9.1", false).apply();
+        }
     }
 
     /**
@@ -97,19 +146,19 @@ public class PersistentQueryProvider {
      * @param from The origin station name
      * @param to   The destination station name
      */
-    public void addFavoriteRoute(String from, String to) {
+    public void addFavoriteRoute(Station from, Station to) {
         store(TAG_FAV_ROUTES, new RouteQuery(from, to));
     }
 
     /**
      * Check if a route is a favorite
      *
-     * @param from The origin station name
-     * @param to   The destination station name
+     * @param from The origin station
+     * @param to   The destination station
      */
-    public boolean isFavoriteRoute(String from, String to) {
+    public boolean isFavoriteRoute(Station from, Station to) {
         for (RouteQuery q : getFavoriteRoutes()) {
-            if (q.from.equals(from) && q.to.equals(to)) {
+            if (q.from.getId().equals(from.getId()) && q.to.getId().equals(to.getId())) {
                 return true;
             }
         }
@@ -122,7 +171,7 @@ public class PersistentQueryProvider {
      * @param from The origin station name
      * @param to   The destination station name
      */
-    public void removeFavoriteRoute(String from, String to) {
+    public void removeFavoriteRoute(Station from, Station to) {
         remove(TAG_FAV_ROUTES, new RouteQuery(from, to));
     }
 
@@ -158,7 +207,7 @@ public class PersistentQueryProvider {
      * @param from The origin station name
      * @param to   The destination station name
      */
-    public void addRecentRoute(String from, String to) {
+    public void addRecentRoute(Station from, Station to) {
         store(TAG_RECENT_ROUTES, new RouteQuery(from, to));
     }
 
@@ -168,7 +217,7 @@ public class PersistentQueryProvider {
      * @param from The origin station name
      * @param to   The destination station name
      */
-    public void removeRecentRoute(String from, String to) {
+    public void removeRecentRoute(Station from, Station to) {
         RouteQuery q = new RouteQuery(from, to);
         remove(TAG_RECENT_ROUTES, q);
     }
@@ -194,21 +243,21 @@ public class PersistentQueryProvider {
     /**
      * Add a station as favorite
      *
-     * @param name The name of the station
+     * @param station The station
      */
-    public void addFavoriteStation(String name) {
+    public void addFavoriteStation(Station station) {
         // Store as a routeQuery without a destination
-        store(TAG_FAV_STATIONS, new RouteQuery(name, ""));
+        store(TAG_FAV_STATIONS, new RouteQuery(station, null));
     }
 
     /**
      * Check if a station is a favorite
      *
-     * @param name The name of the station
+     * @param station The station
      */
-    public boolean isFavoriteStation(String name) {
+    public boolean isFavoriteStation(Station station) {
         for (RouteQuery q : getFavoriteStations()) {
-            if (q.from.equals(name)) {
+            if (q.from.getId().equals(station.getId())) {
                 return true;
             }
         }
@@ -218,10 +267,10 @@ public class PersistentQueryProvider {
     /**
      * Unmark a station as favorite
      *
-     * @param name The name of the station
+     * @param station The station
      */
-    public void removeFavoriteStation(String name) {
-        remove(TAG_FAV_STATIONS, new RouteQuery(name, ""));
+    public void removeFavoriteStation(Station station) {
+        remove(TAG_FAV_STATIONS, new RouteQuery(station, null));
     }
 
     /**
@@ -253,19 +302,19 @@ public class PersistentQueryProvider {
     /**
      * Add a station to recents
      *
-     * @param name The station name
+     * @param station The station
      */
-    public void addRecentStation(String name) {
-        store(TAG_RECENT_STATIONS, new RouteQuery(name, ""));
+    public void addRecentStation(Station station) {
+        store(TAG_RECENT_STATIONS, new RouteQuery(station, null));
     }
 
     /**
      * Remove a station from recents
      *
-     * @param name The station name
+     * @param station The station
      */
-    public void removeRecentStation(String name) {
-        RouteQuery q = new RouteQuery(name, "");
+    public void removeRecentStation(Station station) {
+        RouteQuery q = new RouteQuery(station, null);
         remove(TAG_RECENT_STATIONS, q);
     }
 
@@ -385,10 +434,16 @@ public class PersistentQueryProvider {
         // Store as JSON
         try {
             JSONObject object = new JSONObject();
-            object.put("from", query.from);
-            object.put("to", query.to);
+            object.put("from", query.from.getId());
+
+            if (query.to == null) {
+                object.put("to", "");
+            } else {
+                object.put("to", query.to.getId());
+            }
+
             object.put("created_at", new Date().getTime());
-            Log.d("Persistence", "created at " + (long) object.get("created_at"));
+
             items.add(object.toString());
 
             SharedPreferences.Editor editor = settings.edit();
@@ -496,10 +551,10 @@ public class PersistentQueryProvider {
         Collections.sort(items, new Comparator<RouteQuery>() {
             @Override
             public int compare(RouteQuery o1, RouteQuery o2) {
-                if (!o1.from.equals(o2.from)) {
-                    return o1.from.compareTo(o2.from);
+                if (!o1.from.getLocalizedName().equals(o2.from.getLocalizedName())) {
+                    return o1.from.getLocalizedName().compareTo(o2.from.getLocalizedName());
                 }
-                return o1.to.compareTo(o2.to);
+                return o1.to.getLocalizedName().compareTo(o2.to.getLocalizedName());
             }
         });
         return items;
@@ -536,7 +591,12 @@ public class PersistentQueryProvider {
         for (String entry : set) {
             try {
                 JSONObject object = new JSONObject(entry);
-                RouteQuery query = new RouteQuery(object.getString("from"), object.getString("to"));
+                Station from = stationProvider.getStationById(object.getString("from"));
+                Station to = null;
+                if (! object.getString("to").equals("")) {
+                    to = stationProvider.getStationById(object.getString("to"));
+                }
+                RouteQuery query = new RouteQuery(from, to);
                 query.created_at = new Date(object.getLong("created_at"));
                 query.type = type;
                 results.add(query);
@@ -560,7 +620,12 @@ public class PersistentQueryProvider {
         for (String entry : collection) {
             try {
                 JSONObject object = new JSONObject(entry);
-                if (object.getString("from").equals(remove.from) && object.getString("to").equals(remove.to)) {
+                if (object.getString("from").equals(remove.from.getId()) &&
+                        (
+                                (remove.to == null && Objects.equals(object.getString("to"), "")) ||
+                                        (remove.to != null && Objects.equals(object.getString("to"), remove.to.getId()))
+                        )
+                        ) {
                     toBeRemoved.add(entry);
                 }
             } catch (JSONException exception) {
@@ -584,7 +649,7 @@ public class PersistentQueryProvider {
         Set<RouteQuery> toBeRemoved = new HashSet<>();
         for (RouteQuery entry : collection) {
             for (RouteQuery removalEntry : remove) {
-                if (entry.from.equals(removalEntry.from) && entry.to.equals(removalEntry.to)) {
+                if (entry.from == removalEntry.from && entry.to == removalEntry.to) {
                     toBeRemoved.add(entry);
                 }
             }

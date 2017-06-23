@@ -14,10 +14,13 @@ package be.hyperrail.android.persistence;
 
 import java.util.Date;
 
-public class RouteQuery {
-    public String from, to;
-    public RouteQueryType type;
+import be.hyperrail.android.irail.db.Station;
 
+public class RouteQuery {
+
+    public Station from, to;
+    public RouteQueryType type;
+    public String fromName, toName;
     Date created_at;
 
     public enum RouteQueryType {
@@ -32,9 +35,15 @@ public class RouteQuery {
         created_at = new Date();
     }
 
-    public RouteQuery(String from, String to) {
+    public RouteQuery(Station from, Station to) {
         this.from = from;
         this.to = to;
         this.created_at = new Date();
+        this.fromName = from.getLocalizedName();
+        if (to == null) {
+            toName = "";
+        } else {
+            this.toName = to.getLocalizedName();
+        }
     }
 }

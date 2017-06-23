@@ -69,4 +69,6 @@
         <item>Vertrek</item>
         <item>Aankomst</item>
     </string-array>
+    <string name="error_departure_equals_destination">Ongeldige zoekopdracht</string>
+    <string name="error_departure_equals_destination_message">Het vertrekstation moet verschillend zijn van het aankomststation.</string>
 </resources>

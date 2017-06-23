@@ -60,8 +60,8 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
     public void onBindViewHolder(RouteHistoryViewHolder holder, int position) {
         final RouteQuery query = queries[position];
 
-        holder.vFrom.setText(query.from);
-        holder.vTo.setText(query.to);
+        holder.vFrom.setText(query.fromName);
+        holder.vTo.setText(query.toName);
 
         switch (query.type) {
             case RECENT_ROUTE:

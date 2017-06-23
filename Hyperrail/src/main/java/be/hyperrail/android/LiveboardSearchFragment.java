@@ -205,7 +205,7 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
      * @param station The station which liveboard should be loaded
      */
     private void openLiveboard(Station station) {
-        persistentQueryProvider.addRecentStation(station.getLocalizedName());
+        persistentQueryProvider.addRecentStation(station);
         Intent i = LiveboardActivity.createIntent(getActivity(), station);
         startActivity(i);
     }

@@ -299,14 +299,25 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
         IrailStationProvider p = IrailFactory.getStationsProviderInstance();
         Station station_from = p.getStationByName(from);
 
-        if (station_from == null) {
+
+        Station station_to = p.getStationByName(to);
+
+        doSearch(station_from, station_to);
+    }
+
+    private void doSearch(Station from, Station to) {
+        if (from == null) {
             ErrorDialogFactory.showInvalidDepartureStationError(this.getActivity(), false);
             return;
         }
 
-        Station station_to = p.getStationByName(to);
-        if (station_to == null) {
+        if (to == null) {
             ErrorDialogFactory.showInvalidDestinationStationError(this.getActivity(), false);
+            return;
+        }
+
+        if (from == to) {
+            ErrorDialogFactory.showDepartureEqualsArrivalStationError(this.getActivity(), false);
             return;
         }
 
