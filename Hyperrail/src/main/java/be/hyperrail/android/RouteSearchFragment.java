@@ -21,7 +21,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -241,7 +240,6 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
     }
 
     private void setSuggestions() {
-        Log.d("RouteSearch", "updating suggestions");
         RecyclerView suggestions = (RecyclerView) this.getActivity().findViewById(R.id.recyclerview_primary);
 
         RouteHistoryCardAdapter suggestionAdapter = (RouteHistoryCardAdapter) suggestions.getAdapter();

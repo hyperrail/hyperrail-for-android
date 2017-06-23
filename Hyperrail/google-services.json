@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "331875646174",
+    "firebase_url": "https://hyperrail-ac7ca.firebaseio.com",
+    "project_id": "hyperrail-ac7ca",
+    "storage_bucket": "hyperrail-ac7ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331875646174:android:37f8063de57af0a3",
+        "android_client_info": {
+          "package_name": "be.hyperrail.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "331875646174-gchc1aqrc00154vuqhqeoctvgb93cknv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "be.hyperrail.android",
+            "certificate_hash": "a1a30e79c2f80c4ab969a51bf091cb458e4c4031"
+          }
+        },
+        {
+          "client_id": "331875646174-03ne1h0a53583is2t1gnggjuff5ud2ua.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "be.hyperrail.android",
+            "certificate_hash": "8410780f4fa80b35e3d28c3a44aa17bb958bf732"
+          }
+        },
+        {
+          "client_id": "331875646174-211iio88tdu4vf0m3pbr7s08o89jq0ll.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHhYnVlsWB2OW4LHBTGMuNVQdHprbMyGE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331875646174-211iio88tdu4vf0m3pbr7s08o89jq0ll.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
