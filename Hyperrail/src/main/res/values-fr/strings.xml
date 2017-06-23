@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<resources>
+    <string name="app_name">HyperRail</string>
+    <string name="action_from">Nouvelle route d\'ici</string>
+    <string name="action_mark_as_favorite">Marquez comme favori</string>
+    <string name="action_share">Partager cette recherche</string>
+    <string name="action_swap">Inverser la direction</string>
+    <string name="action_time">Modifier l\'heure</string>
+    <string name="action_to">Nouvelle route vers ici</string>
+    <string name="action_unmark_as_favorite">Désélectionner comme favori</string>
+    <string name="action_close">Fermer</string>
+    <string name="delay">%1$d\'</string>
+    <string name="error_departure_not_found_message">La station de départ n\'a pas pu être trouvée</string>
+    <string name="error_departure_not_found_title">Station de départ invalide</string>
+    <string name="error_destination_not_found_message">La station de destination n\'a pas pu être trouvée</string>
+    <string name="error_destination_not_found_title">Station de destination invalide</string>
+    <string name="error_general_message">Quelque chose a mal tourné. Réessayez plus tard.</string>
+    <string name="error_general_title">Nous sommes désolés</string>
+    <string name="error_network_message">Aucune donnée ne peut être chargée. Êtes-vous connecté à Internet?</string>
+    <string name="error_network_title">Réseau indisponible</string>
+    <string name="error_notfound_message">Votre recherche n\'a donné aucun résultat.</string>
+    <string name="error_notfound_title">Aucun résultat</string>
+    <string name="error_route_from_missing">La station de départ ne peut pas être vide</string>
+    <string name="error_route_to_missing">La station d\'arrivée ne peut pas être vide</string>
+    <string name="error_servererror_message">Le serveur n\'a pas retourné une réponse valide. Réessayez plus tard.</string>
+    <string name="error_servererror_title">Erreur du serveur</string>
+    <string name="from">Gare de départ</string>
+    <string name="marked_route_favorite">Route marquée comme favori</string>
+    <string name="marked_station_favorite">Station marquée comme favori</string>
+    <string name="time_now">immédiatement</string>
+    <string name="permission_continue">Continuer</string>
+    <string name="permission_description_location_description">Afin de vous montrer quelles stations sont situées à proximité, nous devons savoir où vous êtes (approximativement). Nous vous demanderons de choisir de nous autoriser ou de nous refuser l\'accès à votre emplacement. L\'application fonctionnera bien d\'une manière ou d\'une autre. Vous pouvez activer ou désactiver cette fonction à tout moment, en allant dans les paramètres> Afficher les stations autour de moi.</string>
+    <string name="to">Destination</string>
+    <string name="time_today">aujourd\'hui</string>
+    <string name="time_tomorrow">demain</string>
+    <string name="time_at">a</string>
+    <string name="title_departures">départs</string>
+    <string name="title_activity_settings">Paramètres</string>
+    <string name="title_liveboard">Départs</string>
+    <string name="title_disturbances">Perturbations</string>
+    <string name="title_route">Route</string>
+    <string name="title_train">Train</string>
+    <string name="undo">Annuler</string>
+    <string name="unmarked_route_favorite">Voie non marquée comme favori</string>
+    <string name="unmarked_station_favorite">Station non marquée comme favori</string>
+    <string name="warning_not_realtime">Vous voyez les résultats pour</string>
+    <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy hh:mm</string>
+    <string name="permission_description_location_title">Localisation des stations à proximité</string>
+    <string name="permission_request_title">Cette fonction nécessite votre permission</string>
+    <string name="powered_by_irail_be">Propulsé par irail.be</string>
+
+    <string name="action_search">Chercher</string>
+    <string name="search_station_name">Nom de la station</string>
+    <string name="status_cancelled">Annulé</string>
+</resources>

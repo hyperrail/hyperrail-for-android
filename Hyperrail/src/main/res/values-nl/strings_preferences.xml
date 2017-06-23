@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_header_general">Algemeen</string>
+    <string name="pref_header_stations">Stations</string>
+    <string name="pref_header_routes">Routes</string>
+    <string name="pref_startup_screen">Opstartscherm</string>
+    <string name="pref_number_recent_searches">Aantal recente opzoekingen</string>
+    <string name="order_of_routes">Volgorde van routes</string>
+    <string name="order_of_stations">Volgorde van stations</string>
+    <string name="number_nearby_stations">Aantal nabije stations</string>
+    <string name="show_nearby_stations">Toon stations rondom me</string>
+    <string name="pref_title_cards">Card view gebruiken</string>
+    <string name="pref_description_cards">Toon material design kaarten in plaats van een normale lijst</string>
+    <string name="pref_always_show_time">Altijd datum/tijd keuze tonen bij route</string>
+    <string name="pref_always_show_time_summary">Indien niet getoond kan je deze open swipen</string>
+    <string name="pref_short_tap_route_detail">Kort op route tikken voor nieuw venster</string>
+    <string name="pref_short_tap_route_detail_summary">Kort op route tikken voor nieuw venster, lang tikken om uit te klappen</string>
+
+
+    <string-array name="pref_list_station_order_values">
+        <item>Recenten / Favorieten / Kortbij</item>
+        <item>Favorieten / Recenten / Kortbij</item>
+        <item>Kortbij / Recenten / Favorieten</item>
+        <item>Kortbij / Favorieten / Recenten</item>
+    </string-array>
+
+    <string-array name="pref_list_route_order_values">
+        <item>Recenten / Favorieten</item>
+        <item>Favorieten / Recenten</item>
+    </string-array>
+
+
+</resources>
