@@ -241,6 +241,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     @Override
     public Station[] getStationsByNameOrderByLocation(String name, Location location) {
         SQLiteDatabase db = this.getReadableDatabase();
+
+        double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
+        double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
+
         name = name.replaceAll("\\(\\w\\)", "");
         Cursor c = db.query(
                 TABLE_NAME,
@@ -255,7 +259,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                         COLUMN_NAME_LATITUDE,
                         COLUMN_NAME_LONGITUDE,
                         COLUMN_NAME_AVG_STOP_TIMES,
-                        "(" + COLUMN_NAME_LATITUDE + "-" + location.getLatitude() + ")*(" + COLUMN_NAME_LATITUDE + "-" + location.getLatitude() + ")+(" + COLUMN_NAME_LONGITUDE + "-" + location.getLongitude() + ")*(" + COLUMN_NAME_LONGITUDE + "-" + location.getLongitude() + ") AS distance"
+                        "(" + COLUMN_NAME_LATITUDE + " - " + latitude + ")*(" + COLUMN_NAME_LATITUDE + " - " + latitude + ")+("
+                                + COLUMN_NAME_LONGITUDE + " - " + longitude + ")*(" + COLUMN_NAME_LONGITUDE + " - " + longitude
+                                + ") AS distance"
                 },
                 COLUMN_NAME_NAME + " LIKE ?",
                 new String[]{"%" + name + "%"},
@@ -276,6 +282,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     @Override
     public Station[] getStationsOrderByLocationAndSize(Location location, int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
+        double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
+        double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
+
         Cursor c = db.query(
                 TABLE_NAME,
                 new String[]{
@@ -289,7 +298,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                         COLUMN_NAME_LATITUDE,
                         COLUMN_NAME_LONGITUDE,
                         COLUMN_NAME_AVG_STOP_TIMES,
-                        "(" + COLUMN_NAME_LATITUDE + "-" + location.getLatitude() + ")*(" + COLUMN_NAME_LATITUDE + "-" + location.getLatitude() + ")+(" + COLUMN_NAME_LONGITUDE + "-" + location.getLongitude() + ")*(" + COLUMN_NAME_LONGITUDE + "-" + location.getLongitude() + ") AS distance"
+                        "(" + COLUMN_NAME_LATITUDE + " - " + latitude + ")*(" + COLUMN_NAME_LATITUDE + " - " + latitude
+                                + ")+(" + COLUMN_NAME_LONGITUDE + " - " + longitude + ")*(" + COLUMN_NAME_LONGITUDE + " - " + longitude
+                                + ") AS distance"
                 },
                 null,
                 null,
