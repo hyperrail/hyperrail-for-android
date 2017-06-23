@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_header_general">General</string>
+    <string name="pref_header_stations">Gares</string>
+    <string name="pref_header_routes">Routes</string>
+    <string name="pref_number_recent_searches">Nombre de recherches récentes à afficher</string>
+    <string name="order_of_routes">Ordre des routes</string>
+    <string name="order_of_stations">Ordre des gares</string>
+    <string name="number_nearby_stations">Nombre de stations à proximité pour montrer</string>
+    <string name="show_nearby_stations">Afficher les stations autour de moi</string>
+    <string name="number_recent_searches">Nombre de recherches récentes à afficher</string>
+    <string name="pref_description_cards">Utiliser les vues de carte au lieu d\'une liste normale</string>
+    <string name="pref_startup_screen">Écran par défaut lors du démarrage de l\'application</string>
+    <string name="pref_title_cards">Utiliser les vues de la carte</string>
+    <string name="pref_always_show_time">Afficher toujours le sélectionneur de date / heure</string>
+    <string name="pref_always_show_time_summary">Indiquez toujours le sélecteur de date / heure dans la fenêtre de recherche d\'itinéraire</string>
+    <string name="pref_short_tap_route_detail">Route courte pour une nouvelle fenêtre</string>
+    <string name="pref_short_tap_route_detail_summary">Route rapide pour ouvrir dans une nouvelle fenêtre, touche longue pour étendre le résultat dans la fenêtre actuelle</string>
+
+    <string-array name="pref_list_screens">
+        <item>@string/title_liveboard</item>
+        <item>@string/title_route</item>
+        <item>@string/title_disturbances</item>
+    </string-array>
+
+    <string-array name="pref_list_screen_ids" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+
+    <string-array name="pref_list_numbers" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="pref_list_station_order_values">
+        <item>Recherches récentes / Favoris / Proche</item>
+        <item>Favoris / Recherches récentes / Proche</item>
+        <item>Proche / Recherches récentes / Favoris</item>
+        <item>Proche / Favoris / Recherches récentes</item>
+    </string-array>
+
+    <string-array name="pref_list_station_order_keys" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="pref_list_route_order_values">
+        <item>Recherches récentes / Favoris</item>
+        <item>Favoris / Recherches récentes</item>
+    </string-array>
+
+    <string-array name="pref_list_route_order_keys" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="departarrive">
+        <item>Depart</item>
+        <item>Arrive</item>
+    </string-array>
+</resources>

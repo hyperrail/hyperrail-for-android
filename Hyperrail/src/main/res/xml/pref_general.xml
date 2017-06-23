@@ -1,0 +1,99 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="pref_general"
+        android:title="@string/pref_header_general">
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pref_list_screens"
+            android:entryValues="@array/pref_list_screen_ids"
+            android:key="pref_startup_screen"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="%s"
+            android:title="@string/pref_startup_screen" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="use_card_layout"
+            android:summary="@string/pref_description_cards"
+            android:title="@string/pref_title_cards" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_stations"
+        android:title="@string/pref_header_stations">
+
+        <ListPreference
+            android:defaultValue="3"
+            android:entries="@array/pref_list_numbers"
+            android:entryValues="@array/pref_list_numbers"
+            android:key="stations_history_count"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="%s"
+            android:title="@string/number_recent_searches" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="stations_enable_nearby"
+            android:title="@string/show_nearby_stations" />
+
+        <ListPreference
+            android:defaultValue="3"
+            android:dependency="stations_enable_nearby"
+            android:entries="@array/pref_list_numbers"
+            android:entryValues="@array/pref_list_numbers"
+            android:key="stations_nearby_count"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="%s"
+            android:title="@string/number_nearby_stations" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pref_list_station_order_values"
+            android:entryValues="@array/pref_list_station_order_keys"
+            android:key="stations_order"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="%s"
+            android:title="@string/order_of_stations" />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_routes"
+        android:title="@string/pref_header_routes">
+
+        <ListPreference
+            android:defaultValue="3"
+            android:entries="@array/pref_list_numbers"
+            android:entryValues="@array/pref_list_numbers"
+            android:key="routes_history_count"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="%s"
+            android:title="@string/number_recent_searches" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pref_list_route_order_values"
+            android:entryValues="@array/pref_list_route_order_keys"
+            android:key="routes_order"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="%s"
+            android:title="@string/order_of_routes" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="routes_always_new_activity"
+            android:summary="@string/pref_short_tap_route_detail_summary"
+            android:title="@string/pref_short_tap_route_detail" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="routes_always_datetime"
+            android:summary="@string/pref_always_show_time_summary"
+            android:title="@string/pref_always_show_time" />
+    </PreferenceCategory>
+</PreferenceScreen>
