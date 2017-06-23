@@ -29,7 +29,7 @@
 
                 <TextView
                     android:id="@+id/text_departure_time"
-                    android:layout_width="@dimen/card_time_width"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/cardlist_textrow_height"
                     android:gravity="center_vertical"
                     android:text="00:00"
@@ -39,7 +39,8 @@
 
                 <TextView
                     android:id="@+id/text_departure_delay"
-                    android:layout_width="@dimen/card_delay_width"
+                    android:layout_width="wrap_content"
+                    android:minWidth="@dimen/card_delay_width"
                     android:layout_height="@dimen/cardlist_textrow_height"
                     android:layout_marginLeft="@dimen/activity_tiny_margin"
                     android:gravity="center_vertical|right"
@@ -57,7 +58,7 @@
 
                 <TextView
                     android:id="@+id/text_arrival_time"
-                    android:layout_width="@dimen/card_time_width"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/cardlist_textrow_height"
                     android:gravity="center_vertical"
                     android:text="00:00"
@@ -67,7 +68,8 @@
 
                 <TextView
                     android:id="@+id/text_arrival_delay"
-                    android:layout_width="@dimen/card_delay_width"
+                    android:layout_width="wrap_content"
+                    android:minWidth="@dimen/card_delay_width"
                     android:layout_height="@dimen/cardlist_textrow_height"
                     android:layout_marginLeft="@dimen/activity_tiny_margin"
                     android:gravity="center_vertical|right"
