@@ -17,6 +17,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
@@ -91,7 +94,7 @@ public class PersistentQueryProvider {
         if (sharedPreferences.getBoolean("migrated1.9.1", false)) {
 
             for (String tag : new String[]{TAG_FAV_ROUTES, TAG_FAV_STATIONS, TAG_RECENT_ROUTES, TAG_RECENT_STATIONS}) {
-                Log.d("PersistentMigration","Tag " + tag );
+                Log.d("PersistentMigration", "Tag " + tag);
                 Set<String> oldValue = context.getSharedPreferences(PREFERENCES_NAME, 0).getStringSet(tag, new HashSet<String>());
 
                 ArrayList<RouteQuery> newValue = new ArrayList<>();
@@ -101,16 +104,16 @@ public class PersistentQueryProvider {
                         JSONObject object = new JSONObject(entry);
                         Station from = stationProvider.getStationByName(object.getString("from"));
                         Station to;
-                        if (! object.getString("to").equals("")) {
+                        if (!object.getString("to").equals("")) {
                             to = stationProvider.getStationByName(object.getString("to"));
                         } else {
                             to = null;
                         }
-                        Log.d("PersistentMigration","FROM " + object.getString("from") + " - " + from.getId());
+                        Log.d("PersistentMigration", "FROM " + object.getString("from") + " - " + from.getId());
                         if (to != null) {
                             Log.d("PersistentMigration", "TO " + object.getString("to") + " - " + to.getId());
                         } else {
-                            Log.d("PersistentMigration","TO " + object.getString("to") + " - NULL");
+                            Log.d("PersistentMigration", "TO " + object.getString("to") + " - NULL");
                         }
                         RouteQuery query = new RouteQuery(from, to);
                         newValue.add(query);
@@ -121,8 +124,8 @@ public class PersistentQueryProvider {
 
                 clear(tag);
 
-                for (RouteQuery q: newValue){
-                    store(tag,q);
+                for (RouteQuery q : newValue) {
+                    store(tag, q);
                 }
             }
             sharedPreferences.edit().putBoolean("migrated1.9.1", true).apply();
@@ -489,6 +492,11 @@ public class PersistentQueryProvider {
      * @return List or routeQueries
      */
     private ArrayList<RouteQuery> load(String tag, int limit, boolean timeSensitive, RouteQuery.RouteQueryType type) {
+
+        if (limit <= 0) {
+            return new ArrayList<>(0);
+        }
+
         SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
         Set<String> items = settings.getStringSet(tag, null);
 
@@ -591,16 +599,25 @@ public class PersistentQueryProvider {
         for (String entry : set) {
             try {
                 JSONObject object = new JSONObject(entry);
+
                 Station from = stationProvider.getStationById(object.getString("from"));
                 Station to = null;
-                if (! object.getString("to").equals("")) {
+
+                if (!object.getString("to").equals("")) {
                     to = stationProvider.getStationById(object.getString("to"));
                 }
+
                 RouteQuery query = new RouteQuery(from, to);
                 query.created_at = new Date(object.getLong("created_at"));
                 query.type = type;
+
+                if (from == null) {
+                    FirebaseCrash.logcat(Level.SEVERE.intValue(), "PersistentQuery", "Loaded invalid routeQuery: " + object.getString("from") + " could not be decoded! Type is " + type.toString());
+                }
+
                 results.add(query);
             } catch (JSONException exception) {
+                FirebaseCrash.logcat(Level.WARNING.intValue(), "PersistentQuery", "Failed to load routequery for type " + type.toString() + ": " + exception.getMessage());
                 // ignored
             }
         }
@@ -649,7 +666,7 @@ public class PersistentQueryProvider {
         Set<RouteQuery> toBeRemoved = new HashSet<>();
         for (RouteQuery entry : collection) {
             for (RouteQuery removalEntry : remove) {
-                if (entry.from.getId().equals(removalEntry.from.getId()) && ((entry.to != null && removalEntry.to != null && entry.to.getId().equals(removalEntry.to.getId()))||(entry.to == null && removalEntry.to == null))) {
+                if (entry.from.getId().equals(removalEntry.from.getId()) && ((entry.to != null && removalEntry.to != null && entry.to.getId().equals(removalEntry.to.getId())) || (entry.to == null && removalEntry.to == null))) {
                     toBeRemoved.add(entry);
                 }
             }
