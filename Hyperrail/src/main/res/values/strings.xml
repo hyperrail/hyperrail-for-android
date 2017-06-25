@@ -7,6 +7,7 @@
     <string name="title_liveboard">Liveboard</string>
     <string name="title_train">Train</string>
     <string name="title_route">Route</string>
+    <string name="title_feedback">Feedback</string>
 
     <string name="permission_description_location_description">In order to show you which stations are nearby, we need to know where you are (approximately). We will ask you to make a choice to either allow or deny us access to your location. The app will work fine either way.\n\n You can enable or disable this feature at any time, by going to settings > show stations around me</string>
     <string name="permission_description_location_title">Locating nearby stations</string>
@@ -61,6 +62,10 @@
     <string name="delay">%1$d\'</string>
     <string name="error_departure_equals_destination">Invalid query</string>
     <string name="error_departure_equals_destination_message">The arrival station has to be different from the departure station</string>
+    <string name="feedback_explanation">If you have any suggestions, ideas, or problems with this application, please report them here. All feedback will be mailed to the developer.</string>
+    <string name="feedback_hint">Type your feedback here</string>
+    <string name="feedback_send">Send feedback</string>
+
 
     <string-array name="departarrive">
         <item>Leave</item>

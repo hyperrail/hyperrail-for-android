@@ -46,6 +46,7 @@
     <string name="title_disturbances">Perturbations</string>
     <string name="title_route">Route</string>
     <string name="title_train">Train</string>
+    <string name="title_feedback">Feedback</string>
     <string name="undo">Annuler</string>
     <string name="unmarked_route_favorite">Voie non marquée comme favori</string>
     <string name="unmarked_station_favorite">Station non marquée comme favori</string>
@@ -60,4 +61,7 @@
     <string name="status_cancelled">Annulé</string>
     <string name="error_departure_equals_destination_message">La gare d\'arrivée doit être différente de la gare de départ</string>
     <string name="error_departure_equals_destination">Recherche non valide</string>
+    <string name="feedback_explanation">Si vous avez des suggestions, des idées ou des problèmes avec cette application, veuillez les signaler ici. Tous les commentaires seront envoyés par la poste au développeur.</string>
+    <string name="feedback_send">Envoyer des commentaires</string>
+    <string name="feedback_hint">Tapez vos commentaires ici</string>
 </resources>
