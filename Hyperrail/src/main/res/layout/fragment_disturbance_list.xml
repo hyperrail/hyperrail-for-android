@@ -11,7 +11,7 @@
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="@string/placeholder_no_results_to_show"
+            android:text="@string/placeholder_no_disturbances"
             android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
 
     </RelativeLayout>

@@ -64,4 +64,6 @@
     <string name="feedback_explanation">Si vous avez des suggestions, des idées ou des problèmes avec cette application, veuillez les signaler ici. Tous les commentaires seront envoyés par la poste au développeur.</string>
     <string name="feedback_send">Envoyer des commentaires</string>
     <string name="feedback_hint">Tapez vos commentaires ici</string>
+    <string name="placeholder_no_disturbances">Il n\'y a pas de perturbations en ce moment</string>
+
 </resources>
