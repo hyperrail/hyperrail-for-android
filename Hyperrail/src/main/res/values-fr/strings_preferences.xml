@@ -19,6 +19,8 @@
     <string name="pref_always_show_time_summary">Indiquez toujours le sélecteur de date / heure dans la fenêtre de recherche d\'itinéraire</string>
     <string name="pref_short_tap_route_detail">Route courte pour une nouvelle fenêtre</string>
     <string name="pref_short_tap_route_detail_summary">Route rapide pour ouvrir dans une nouvelle fenêtre, touche longue pour étendre le résultat dans la fenêtre actuelle</string>
+    <string name="pref_github">Voir sur github</string>
+    <string name="pref_header_links">Liens</string>
 
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>

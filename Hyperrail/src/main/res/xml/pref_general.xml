@@ -11,14 +11,15 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/pref_startup_screen" />
+            android:title="@string/pref_startup_screen"/>
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="use_card_layout"
             android:summary="@string/pref_description_cards"
-            android:title="@string/pref_title_cards" />
+            android:title="@string/pref_title_cards"/>
     </PreferenceCategory>
+
     <PreferenceCategory
         android:key="pref_stations"
         android:title="@string/pref_header_stations">
@@ -31,12 +32,12 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/number_recent_searches" />
+            android:title="@string/number_recent_searches"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="stations_enable_nearby"
-            android:title="@string/show_nearby_stations" />
+            android:title="@string/show_nearby_stations"/>
 
         <ListPreference
             android:defaultValue="3"
@@ -47,7 +48,7 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/number_nearby_stations" />
+            android:title="@string/number_nearby_stations"/>
 
         <ListPreference
             android:defaultValue="0"
@@ -57,9 +58,10 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/order_of_stations" />
+            android:title="@string/order_of_stations"/>
 
     </PreferenceCategory>
+
     <PreferenceCategory
         android:key="pref_routes"
         android:title="@string/pref_header_routes">
@@ -72,7 +74,7 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/number_recent_searches" />
+            android:title="@string/number_recent_searches"/>
 
         <ListPreference
             android:defaultValue="0"
@@ -82,18 +84,29 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/order_of_routes" />
+            android:title="@string/order_of_routes"/>
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="routes_always_new_activity"
             android:summary="@string/pref_short_tap_route_detail_summary"
-            android:title="@string/pref_short_tap_route_detail" />
+            android:title="@string/pref_short_tap_route_detail"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="routes_always_datetime"
             android:summary="@string/pref_always_show_time_summary"
-            android:title="@string/pref_always_show_time" />
+            android:title="@string/pref_always_show_time"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_links"
+        android:title="@string/pref_header_links">
+
+        <Preference android:title="@string/pref_github">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.github.com/hyperrail/hyperrail-for-android/"/>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

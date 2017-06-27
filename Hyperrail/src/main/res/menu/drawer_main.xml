@@ -20,7 +20,12 @@
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item android:id="@+id/action_settings"
-        android:title="@string/title_activity_settings"
-        android:icon="@android:drawable/ic_menu_preferences"
-        app:showAsAction="ifRoom|collapseActionView" />
+          android:title="@string/title_activity_settings"
+          android:icon="@android:drawable/ic_menu_preferences"
+          app:showAsAction="ifRoom|collapseActionView" />
+
+    <item android:id="@+id/action_feedback"
+          android:title="@string/title_feedback"
+          android:icon="@drawable/ic_feedback"
+          app:showAsAction="ifRoom|collapseActionView" />
 </menu>
