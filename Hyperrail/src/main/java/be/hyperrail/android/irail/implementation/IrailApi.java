@@ -271,7 +271,7 @@ public class IrailApi implements IrailDataProvider {
     private static String getData(String address, int attempt) throws IOException {
         try {
             URL url = new URL(address);
-            FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt);
+            FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt + ")");
 
             // Read all the text returned by the server
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
