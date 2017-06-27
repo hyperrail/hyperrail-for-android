@@ -24,12 +24,13 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.Disturbance;
 
 /**
  * Recyclerview adapter to show a list with disturbances on the net
  */
-public class DisturbanceCardAdapter extends RecyclerView.Adapter<DisturbanceCardAdapter.DisturbanceViewHolder> {
+public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Disturbance[] disturbances;
     private final Context context;
@@ -47,10 +48,15 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<DisturbanceCard
     }
 
     @Override
-    public DisturbanceCardAdapter.DisturbanceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
-        if (! PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
+        if (this.disturbances == null || this.disturbances.length == 0) {
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_no_disturbances, parent, false);
+            return new NoResultsViewHolder(itemView);
+        }
+
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(be.hyperrail.android.R.layout.listview_disturbance, parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(be.hyperrail.android.R.layout.cardview_disturbance, parent, false);
@@ -60,21 +66,26 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<DisturbanceCard
     }
 
     @Override
-    public void onBindViewHolder(DisturbanceViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewholder, int position) {
 
-        final Disturbance disturbance = disturbances[position];
+        if (viewholder instanceof DisturbanceViewHolder) {
+            final DisturbanceViewHolder holder = (DisturbanceViewHolder) viewholder;
+            final Disturbance disturbance = disturbances[position];
 
-        holder.vTitle.setText(disturbance.getTitle());
+            holder.vTitle.setText(disturbance.getTitle());
 
-        holder.vDescription.setText(disturbance.getDescription());
+            holder.vDescription.setText(disturbance.getDescription());
 
-        @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat("EEE dd/MM/yy HH:mm");
-        holder.vDate.setText(df.format(disturbance.getTime()));
+            @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat("EEE dd/MM/yy HH:mm");
+            holder.vDate.setText(df.format(disturbance.getTime()));
+        }
+
+        // If placeholder: no binding required
     }
 
     @Override
     public int getItemCount() {
-        if (disturbances == null){
+        if (disturbances == null) {
             return 0;
         }
         return disturbances.length;
@@ -89,16 +100,23 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<DisturbanceCard
     }
 
     class DisturbanceViewHolder extends RecyclerView.ViewHolder {
+
         final TextView vTitle;
         final TextView vDescription;
         final TextView vDate;
-
 
         DisturbanceViewHolder(View view) {
             super(view);
             vTitle = (TextView) view.findViewById(be.hyperrail.android.R.id.text_title);
             vDescription = ((TextView) view.findViewById(be.hyperrail.android.R.id.text_description));
             vDate = ((TextView) view.findViewById(be.hyperrail.android.R.id.text_date));
+        }
+    }
+
+    class NoResultsViewHolder extends RecyclerView.ViewHolder {
+
+        NoResultsViewHolder(View view) {
+            super(view);
         }
     }
 }
