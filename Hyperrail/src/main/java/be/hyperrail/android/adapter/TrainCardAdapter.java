@@ -101,8 +101,7 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
             }
         }
 
-        // TODO: fix this as soon as hasLeft is reliable
-        if (s.hasLeft() || true) {
+        if (s.hasLeft()) {
             if (position == 0) {
                 holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_departure_filled));
             } else if (position == this.getItemCount() - 1) {

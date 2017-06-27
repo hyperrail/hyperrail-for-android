@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int VIEW_TYPE_ROUTE = 1;
     private static final int VIEW_TYPE_DISTURBANCE = 2;
     private static final int VIEW_TYPE_SETTINGS = 3;
+    private static final int VIEW_TYPE_FEEDBACK = 4;
 
     private boolean mDualPane = false;
 
@@ -178,6 +179,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 frg = DisturbanceListFragment.newInstance();
                 setSubTitle(R.string.title_disturbances);
                 break;
+            case VIEW_TYPE_FEEDBACK:
+                frg = FeedbackFragment.newInstance();
+                setSubTitle(R.string.title_feedback);
+                break;
         }
         if (args != null){
             frg.setArguments(args);
@@ -220,6 +225,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.action_settings:
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
+                break;
+            case R.id.action_feedback:
+                setView(VIEW_TYPE_FEEDBACK,null);
                 break;
         }
         if (!mDualPane) {
