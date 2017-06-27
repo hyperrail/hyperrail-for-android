@@ -47,7 +47,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         route = (Route) getIntent().getSerializableExtra("route");
-        this.show_dividers = false;
+        this.mShowDividers = false;
 
         super.onCreate(savedInstanceState);
 

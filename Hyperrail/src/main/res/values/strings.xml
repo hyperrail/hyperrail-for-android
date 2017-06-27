@@ -62,10 +62,12 @@
     <string name="delay">%1$d\'</string>
     <string name="error_departure_equals_destination">Invalid query</string>
     <string name="error_departure_equals_destination_message">The arrival station has to be different from the departure station</string>
+
+    <string name="placeholder_no_results_to_show">No results</string>
+
     <string name="feedback_explanation">If you have any suggestions, ideas, or problems with this application, please report them here. All feedback will be mailed to the developer.</string>
     <string name="feedback_hint">Type your feedback here</string>
     <string name="feedback_send">Send feedback</string>
-
 
     <string-array name="departarrive">
         <item>Leave</item>

@@ -295,7 +295,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            persistentQueryProvider.addFavoriteRoute(mSearchFrom, mSearchTo);
+            mPersistentQuaryProvider.addFavoriteRoute(mSearchFrom, mSearchTo);
             Snackbar.make(vLayoutRoot, R.string.marked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -305,7 +305,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
                     })
                     .show();
         } else {
-            persistentQueryProvider.removeFavoriteRoute(mSearchFrom, mSearchTo);
+            mPersistentQuaryProvider.removeFavoriteRoute(mSearchFrom, mSearchTo);
             Snackbar.make(vLayoutRoot, R.string.unmarked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -319,6 +319,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
     }
 
     public boolean isFavorite() {
-        return persistentQueryProvider.isFavoriteRoute(mSearchFrom, mSearchTo);
+        return mPersistentQuaryProvider.isFavoriteRoute(mSearchFrom, mSearchTo);
     }
 }

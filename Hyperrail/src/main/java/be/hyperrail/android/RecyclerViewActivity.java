@@ -76,7 +76,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * History & favorites provider
      */
-    PersistentQueryProvider persistentQueryProvider;
+    PersistentQueryProvider mPersistentQuaryProvider;
 
     /**
      * Favorite button in menu
@@ -98,9 +98,9 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     protected SharedPreferences mSharedPreferences;
 
     /**
-     * Wether or not to show dividers between list items
+     * Whether or not to show dividers between list items
      */
-    protected boolean show_dividers = true;
+    protected boolean mShowDividers = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +115,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         setSupportActionBar(toolbar);
 
         // Initialize history & favorites, preferences
-        persistentQueryProvider = new PersistentQueryProvider(this.getApplicationContext());
+        mPersistentQuaryProvider = new PersistentQueryProvider(this.getApplicationContext());
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
         // Initialize pull to refresh
@@ -145,7 +145,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         vRecyclerView.setLayoutManager(mLayoutManager);
 
         // Show dividers in case wanted & not using the card layout
-        if (show_dividers && !PreferenceManager.getDefaultSharedPreferences(this.getApplication()).getBoolean("use_card_layout", false)) {
+        if (mShowDividers && !PreferenceManager.getDefaultSharedPreferences(this.getApplication()).getBoolean("use_card_layout", false)) {
             // Cards have their own division by margin, others need a divider
             vRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         }
