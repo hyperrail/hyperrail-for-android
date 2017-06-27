@@ -254,7 +254,7 @@ public class IrailApiParser implements IrailParser {
                 item.getInt("arrivalDelay"),
                 item.getInt("departureCanceled") != 0,
                 item.getInt("arrivalCanceled") != 0,
-                false
+                item.getInt("left") == 1
         );
     }
 
@@ -275,19 +275,11 @@ public class IrailApiParser implements IrailParser {
         TrainStop[] stops = new TrainStop[jsonStops.length()];
         TrainStub t = new TrainStub(id, destination);
 
-        TrainStop lastHaltedStop = null;
-
         for (int i = 0; i < jsonStops.length(); i++) {
             stops[i] = parseTrainStop(destination, t, jsonStops.getJSONObject(i));
-            if (stops[i].getStation().getLatitude() == latitude && stops[i].getStation().getLongitude() == longitude) {
-                lastHaltedStop = stops[i];
-                for (int j = i; j >=0; j--){
-                    stops[j].setHasLeft(true);
-                }
-            }
         }
 
-        return new Train(id, destination, stops[0].getStation(), longitude, latitude, stops, lastHaltedStop);
+        return new Train(id, destination, stops[0].getStation(), longitude, latitude, stops);
     }
 
     private static Date timestamp2date(String time) {

@@ -29,15 +29,20 @@ public class Train extends TrainStub implements Serializable {
     private final Station origin;
 
     private final TrainStop[] stops;
-    private final TrainStop lastHaltedStop;
+    private TrainStop lastHaltedStop;
 
-    Train(String id, Station destination, Station origin, double longitude, double latitude, TrainStop[] stops, TrainStop lastHaltedStop) {
+    Train(String id, Station destination, Station origin, double longitude, double latitude, TrainStop[] stops) {
         super(id, destination);
         this.origin = origin;
         this.longitude = longitude;
         this.latitude = latitude;
         this.stops = stops;
-        this.lastHaltedStop = lastHaltedStop;
+
+        for (int i = 0; i < stops.length; i++){
+            if (stops[i].hasLeft()){
+                lastHaltedStop = stops[i];
+            }
+        }
     }
 
     public Station getOrigin() {

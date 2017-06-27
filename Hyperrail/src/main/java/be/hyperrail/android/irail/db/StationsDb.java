@@ -333,6 +333,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     @Override
     public String[] getStationNames(Station[] Stations) {
+
+        if (Stations == null ||Stations.length == 0){
+            FirebaseCrash.logcat(WARNING.intValue(),LOGTAG,"Tried to load station names on empty station list!");
+            return new String[0];
+        }
+
         String[] results = new String[Stations.length];
         for (int i = 0; i < Stations.length; i++) {
             results[i] = Stations[i].getLocalizedName();
@@ -450,6 +456,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     private Station[] loadStationCursor(Cursor c) {
         if (c.isClosed()) {
+            FirebaseCrash.logcat(SEVERE.intValue(),LOGTAG,"Tried to load closed cursor");
+            return null;
+        }
+
+        if (c.getCount() == 0){
+            FirebaseCrash.logcat(SEVERE.intValue(),LOGTAG,"Tried to load cursor with 0 results!");
             return null;
         }
 

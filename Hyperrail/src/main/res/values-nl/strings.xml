@@ -8,6 +8,7 @@
     <string name="title_train">Trein</string>
     <string name="title_route">Route</string>
     <string name="title_activity_settings">Instellingen</string>
+    <string name="title_feedback">Feedback</string>
 
     <string name="permission_request_title">Deze functie vereist je toestemming</string>
     <string name="permission_description_location_description">Om nabije stations te tonen, hebben we je locatie nodig. Dit verbruikt geen energie, en je locatie wordt nooit over internet verstuurd. Je zal de keuze krijgen deze toestemming te verlenen. Wanneer je geen toestemming verleent, zullen geen nabije stations getoond worden.\n\n Deze functie kan op elk moment in of uitgeschakeld worden via instellingen > Toon stations rondom me</string>
@@ -71,4 +72,8 @@
     </string-array>
     <string name="error_departure_equals_destination">Ongeldige zoekopdracht</string>
     <string name="error_departure_equals_destination_message">Het vertrekstation moet verschillend zijn van het aankomststation.</string>
+    <string name="feedback_hint">Typ je feedback hier</string>
+    <string name="feedback_send">Verstuur feedback</string>
+    <string name="feedback_explanation">Indien je suggiesties, ideeën, of problemen hebt met de applicatie, kan je deze hier melden. Feedback wordt rechtstreeks naar de ontwikkelaar verstuurd.</string>
+    <string name="placeholder_no_disturbances">Er zijn geen storingen op dit moment</string>
 </resources>
