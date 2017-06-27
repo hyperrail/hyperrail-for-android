@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,6 +40,7 @@ public class FeedbackFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final EditText vFeedbackText = ((EditText) view.findViewById(R.id.input_text));
 
         view.findViewById(R.id.button_send).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +60,7 @@ public class FeedbackFragment extends Fragment {
                 feedbackEmail.setType("text/email");
                 feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"feedback@hyperrail.be"});
                 feedbackEmail.putExtra(Intent.EXTRA_SUBJECT, "Feedback for hyperrail " + version);
+                feedbackEmail.putExtra(Intent.EXTRA_TEXT, vFeedbackText.getText());
                 startActivity(Intent.createChooser(feedbackEmail, "Send feedback mail:"));
             }
         });
