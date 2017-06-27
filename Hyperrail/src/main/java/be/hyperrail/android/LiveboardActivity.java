@@ -258,7 +258,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         }
 
         if (favorite) {
-            persistentQueryProvider.addFavoriteStation(mCurrentStation);
+            mPersistentQuaryProvider.addFavoriteStation(mCurrentStation);
             Snackbar.make(vLayoutRoot, R.string.marked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -268,7 +268,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     })
                     .show();
         } else {
-            persistentQueryProvider.removeFavoriteStation(mCurrentStation);
+            mPersistentQuaryProvider.removeFavoriteStation(mCurrentStation);
             Snackbar.make(vLayoutRoot, R.string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -284,7 +284,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public boolean isFavorite() {
         // If it's not loaded, it's not a favorite
-        return mCurrentStation != null && persistentQueryProvider.isFavoriteStation(mCurrentStation);
+        return mCurrentStation != null && mPersistentQuaryProvider.isFavoriteStation(mCurrentStation);
 
     }
 

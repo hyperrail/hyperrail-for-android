@@ -4,6 +4,18 @@
     android:layout_height="match_parent"
     tools:context="be.hyperrail.android.DisturbanceListFragment">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/placeholder_no_results_to_show"
+            android:textSize="@dimen/cardlist_textrow_primary_textsizea"/>
+
+    </RelativeLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
@@ -16,4 +28,6 @@
             android:clipToPadding="false"
             android:paddingBottom="@dimen/cardlist_vertical_spacing"/>
     </android.support.v4.widget.SwipeRefreshLayout>
+
+
 </FrameLayout>
