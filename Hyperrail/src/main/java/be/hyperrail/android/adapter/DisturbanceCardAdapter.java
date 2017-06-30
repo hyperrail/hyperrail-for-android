@@ -78,6 +78,15 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat("EEE dd/MM/yy HH:mm");
             holder.vDate.setText(df.format(disturbance.getTime()));
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null){
+                        listener.onRecyclerItemClick(DisturbanceCardAdapter.this, disturbance);
+                    }
+                }
+            });
         }
 
         // If placeholder: no binding required
@@ -85,8 +94,8 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public int getItemCount() {
-        if (disturbances == null) {
-            return 0;
+        if (disturbances == null || disturbances.length == 0) {
+            return 1;
         }
         return disturbances.length;
     }
