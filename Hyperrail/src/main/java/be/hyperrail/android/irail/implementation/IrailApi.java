@@ -13,6 +13,9 @@
 package be.hyperrail.android.irail.implementation;
 
 import android.util.Log;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.metrics.AddTrace;
@@ -54,11 +57,13 @@ public class IrailApi implements IrailDataProvider {
 
     private static final String LOGTAG = "iRailApi";
 
-    public IrailApi(IrailParser parser, IrailStationProvider stationProvider) {
+    public IrailApi(Context context, IrailParser parser, IrailStationProvider stationProvider) {
+        this.context = context;
         this.parser = parser;
         this.stationProvider = stationProvider;
     }
 
+    private Context context;
     private final IrailParser parser;
     private final IrailStationProvider stationProvider;
 
@@ -208,7 +213,14 @@ public class IrailApi implements IrailDataProvider {
     }
 
     public IrailDataResponse<Disturbance[]> getDisturbances() {
-        String url = "https://api.irail.be/disturbances/?format=json&lang=" + (Locale.getDefault().getISO3Language()).substring(0, 2);
+
+        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+        if (locale.isEmpty()) {
+            // Only get locale when needed
+            locale = Locale.getDefault().getISO3Language();
+        }
+
+        String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(0, 2);
 
         try {
             return new ApiResponse<>(parser.parseDisturbances(getJsonData(url)));

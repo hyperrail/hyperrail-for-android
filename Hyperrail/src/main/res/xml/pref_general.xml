@@ -13,6 +13,15 @@
             android:summary="%s"
             android:title="@string/pref_startup_screen"/>
 
+        <ListPreference
+            android:entries="@array/pref_list_languages"
+            android:entryValues="@array/pref_list_languages_iso3"
+            android:key="pref_stations_language"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="%s"
+            android:title="@string/pref_stations_language"/>
+
         <SwitchPreference
             android:defaultValue="false"
             android:key="use_card_layout"

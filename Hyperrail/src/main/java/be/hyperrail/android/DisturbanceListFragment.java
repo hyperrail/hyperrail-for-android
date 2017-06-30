@@ -159,8 +159,10 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Disturbance object) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(object.getLink()));
-        startActivity(browserIntent);
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Disturbance disturbance) {
+        if (disturbance.getLink() != null && !disturbance.getLink().isEmpty()) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(disturbance.getLink()));
+            startActivity(browserIntent);
+        }
     }
 }

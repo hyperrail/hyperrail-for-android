@@ -21,6 +21,7 @@
     <string name="pref_short_tap_route_detail_summary">Route rapide pour ouvrir dans une nouvelle fenêtre, touche longue pour étendre le résultat dans la fenêtre actuelle</string>
     <string name="pref_github">Voir sur github</string>
     <string name="pref_header_links">Liens</string>
+    <string name="pref_stations_language">Langue des noms des stations</string>
 
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>
@@ -45,4 +46,12 @@
         <item>Depart</item>
         <item>Arrive</item>
     </string-array>
+
+    <string-array name="pref_list_languages">
+        <item>Néerlandais</item>
+        <item>Anglais</item>
+        <item>Français</item>
+        <item>Allemand</item>
+    </string-array>
+
 </resources>
