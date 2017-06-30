@@ -12,8 +12,9 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
-import java.util.Date;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
@@ -32,10 +33,10 @@ public class RouteResult implements Serializable {
     private final Station origin;
     private final Station destination;
     private final RouteTimeDefinition timeDefinition;
-    private final Date lastSearchTime;
+    private final DateTime lastSearchTime;
     private Route[] routes;
 
-    public RouteResult(Station origin, Station destination, Date lastSearchTime, RouteTimeDefinition timeDefinition, Route[] routes) {
+    public RouteResult(Station origin, Station destination, DateTime lastSearchTime, RouteTimeDefinition timeDefinition, Route[] routes) {
         this.destination = destination;
         this.lastSearchTime = lastSearchTime;
         this.origin = origin;
@@ -55,7 +56,7 @@ public class RouteResult implements Serializable {
         return timeDefinition;
     }
 
-    public Date getLastSearchTime() {
+    public DateTime getLastSearchTime() {
         return lastSearchTime;
     }
 
@@ -67,15 +68,15 @@ public class RouteResult implements Serializable {
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
         // get last time
-        Date lastsearch;
+        DateTime lastsearch;
 
         if (this.routes != null) {
-            lastsearch = (Date) this.routes[this.routes.length - 1].getDepartureTime().clone();
+            lastsearch = new DateTime(this.routes[this.routes.length - 1].getDepartureTime());
         } else {
             lastsearch = lastSearchTime;
         }
         // move one minute further
-        lastsearch.setTime(lastsearch.getTime() + 1000 * 60);
+        lastsearch = lastsearch.plusMinutes(1);
         // load
         Route[] newSearch;
 
@@ -89,7 +90,7 @@ public class RouteResult implements Serializable {
 
         while (newSearch == null || newSearch.length == 0) {
             // add an hour
-            lastsearch.setTime(lastsearch.getTime() + 1000 * 60 * 60);
+            lastsearch = lastsearch.plusHours(1);
             // load
 
             apiResponse = api.getRoute(origin.getName(), destination.getName(), lastsearch);
@@ -99,7 +100,6 @@ public class RouteResult implements Serializable {
             }
 
             newSearch = apiResponse.getData().getRoutes();
-
         }
 
         // add new stops

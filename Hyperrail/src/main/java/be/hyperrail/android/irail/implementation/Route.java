@@ -12,8 +12,11 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+
 import java.io.Serializable;
-import java.util.Date;
 
 import be.hyperrail.android.irail.db.Station;
 
@@ -22,14 +25,13 @@ import be.hyperrail.android.irail.db.Station;
  */
 public class Route implements Serializable {
 
-
     private final Station departureStation;
     private final Station arrivalStation;
-    private final Date departureTime;
-    private final Date arrivalTime;
+    private final DateTime departureTime;
+    private final DateTime arrivalTime;
 
-    private final int departureDelay;
-    private final int arrivalDelay;
+    private final Duration departureDelay;
+    private final Duration arrivalDelay;
 
     private final String departurePlatform;
     private final boolean isDeparturePlatformNormal;
@@ -39,7 +41,7 @@ public class Route implements Serializable {
     private final TrainStub[] trains;
     private final Transfer[] transfers;
 
-    Route(Station departureStation, Station arrivalStation, Date departureTime, int departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, Date arrivalTime, int arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, TrainStub[] trains, Transfer[] transfers) {
+    Route(Station departureStation, Station arrivalStation, DateTime departureTime, Duration departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, DateTime arrivalTime, Duration arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, TrainStub[] trains, Transfer[] transfers) {
         this.departureStation = departureStation;
         this.arrivalStation = arrivalStation;
 
@@ -57,16 +59,19 @@ public class Route implements Serializable {
         this.transfers = transfers;
     }
 
-    public long getDuration() {
-        return getArrivalTime().getTime() - getDepartureTime().getTime();
+    public Duration getDuration() {
+        return new Period(getDepartureTime(), getArrivalTime()).toStandardDuration();
     }
 
+    public Duration getDurationIncludingDelays() {
+        return new Period(getDepartureTime().plus(departureDelay), getArrivalTime().plus(arrivalDelay)).toStandardDuration();
+    }
 
-    public Date getDepartureTime() {
+    public DateTime getDepartureTime() {
         return departureTime;
     }
 
-    public Date getArrivalTime() {
+    public DateTime getArrivalTime() {
         return arrivalTime;
     }
 
@@ -95,11 +100,11 @@ public class Route implements Serializable {
         return transfers;
     }
 
-    public int getArrivalDelay() {
+    public Duration getArrivalDelay() {
         return arrivalDelay;
     }
 
-    public int getDepartureDelay() {
+    public Duration getDepartureDelay() {
         return departureDelay;
     }
 

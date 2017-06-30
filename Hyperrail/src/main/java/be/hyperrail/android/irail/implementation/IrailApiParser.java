@@ -12,11 +12,11 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
 
 import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
@@ -25,6 +25,7 @@ import be.hyperrail.android.irail.db.Station;
 
 /**
  * A simple parser for api.irail.be.
+ *
  * @inheritDoc
  */
 public class IrailApiParser implements IrailParser {
@@ -35,7 +36,7 @@ public class IrailApiParser implements IrailParser {
         this.stationProvider = stationProvider;
     }
 
-    public RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, Date lastSearchTime, RouteTimeDefinition timeDefinition) throws JSONException {
+    public RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, DateTime lastSearchTime, RouteTimeDefinition timeDefinition) throws JSONException {
         JSONArray routesObject = json.getJSONArray("connection");
         Route[] routes = new Route[routesObject.length()];
         for (int i = 0; i < routesObject.length(); i++) {
@@ -66,9 +67,9 @@ public class IrailApiParser implements IrailParser {
                 departure.getJSONObject("platforminfo").getInt("normal") == 1,
                 null,
                 timestamp2date(departure.getString("time")),
-                0,
+                new Duration(0),
                 false,
-                departure.getInt("delay"),
+                new Duration(departure.getInt("delay") * 1000),
                 departure.getInt("canceled") != 0
         );
         Station departureStation = departureTransfer.getStation();
@@ -83,9 +84,9 @@ public class IrailApiParser implements IrailParser {
                 true,
                 timestamp2date(arrival.getString("time")),
                 null,
-                arrival.getInt("delay"),
+                new Duration(arrival.getInt("delay") * 1000),
                 arrival.getInt("canceled") != 0,
-                0, false
+                new Duration(0), false
         );
         Station arrivalStation = arrivalTransfer.getStation();
 
@@ -130,9 +131,9 @@ public class IrailApiParser implements IrailParser {
                         viaDeparture.getJSONObject("platforminfo").getInt("normal") == 1,
                         timestamp2date(viaArrival.getString("time")),
                         timestamp2date(viaDeparture.getString("time")),
-                        viaArrival.getInt("delay"),
+                        new Duration(viaArrival.getInt("delay") * 1000),
                         viaArrival.getInt("canceled") != 0,
-                        viaDeparture.getInt("delay"),
+                        new Duration(viaDeparture.getInt("delay") * 1000),
                         viaDeparture.getInt("canceled") != 0
                 );
                 transfers[i + 1] = s;
@@ -150,10 +151,11 @@ public class IrailApiParser implements IrailParser {
                 departureStation,
                 arrivalStation,
                 timestamp2date(departure.getString("time")),
-                departure.getInt("delay"), departure.getString("platform"),
+                new Duration(departure.getInt("delay") * 1000),
+                departure.getString("platform"),
                 departure.getJSONObject("platforminfo").getInt("normal") == 1,
                 timestamp2date(arrival.getString("time")),
-                arrival.getInt("delay"),
+                new Duration(arrival.getInt("delay") * 1000),
                 arrival.getString("platform"),
                 arrival.getJSONObject("platforminfo").getInt("normal") == 1,
                 trains,
@@ -186,7 +188,7 @@ public class IrailApiParser implements IrailParser {
         return result;
     }
 
-    public LiveBoard parseLiveboard(JSONObject jsonData, Date searchDate) throws JSONException {
+    public LiveBoard parseLiveboard(JSONObject jsonData, DateTime searchDate) throws JSONException {
 
         if (jsonData == null) {
             throw new IllegalArgumentException("JSONObject is null");
@@ -233,7 +235,7 @@ public class IrailApiParser implements IrailParser {
                 item.getString("platform"),
                 item.getJSONObject("platforminfo").getInt("normal") == 1,
                 timestamp2date(item.getString("time")),
-                item.getInt("delay"),
+                new Duration(item.getInt("delay") * 1000),
                 item.getInt("canceled") != 0,
                 (item.has("left")) && (item.getInt("left") == 1)
         );
@@ -250,15 +252,15 @@ public class IrailApiParser implements IrailParser {
                 item.getJSONObject("platforminfo").getInt("normal") == 1,
                 timestamp2date(item.getString("scheduledDepartureTime")),
                 timestamp2date(item.getString("scheduledArrivalTime")),
-                item.getInt("departureDelay"),
-                item.getInt("arrivalDelay"),
+                new Duration(item.getInt("departureDelay") * 1000),
+                new Duration(item.getInt("arrivalDelay") * 1000),
                 item.getInt("departureCanceled") != 0,
                 item.getInt("arrivalCanceled") != 0,
                 item.getInt("left") == 1
         );
     }
 
-    public Train parseTrain(JSONObject jsonData, Date searchdate) throws JSONException {
+    public Train parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException {
 
         String id = jsonData.getString("vehicle");
         double longitude = jsonData.getJSONObject("vehicleinfo").getDouble("locationX");
@@ -282,13 +284,11 @@ public class IrailApiParser implements IrailParser {
         return new Train(id, destination, stops[0].getStation(), longitude, latitude, stops);
     }
 
-    private static Date timestamp2date(String time) {
+    private static DateTime timestamp2date(String time) {
         return timestamp2date(Long.parseLong(time));
     }
 
-    private static Date timestamp2date(long time) {
-        Date date = new Date();
-        date.setTime(time * 1000);
-        return date;
+    private static DateTime timestamp2date(long time) {
+        return new DateTime(time * 1000);
     }
 }

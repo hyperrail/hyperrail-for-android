@@ -12,8 +12,9 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +46,7 @@ public class TrainStub implements Serializable {
         return direction;
     }
 
-    public IrailDataResponse<Train> getTrain(Date day) {
+    public IrailDataResponse<Train> getTrain(DateTime day) {
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         return api.getTrain(id, day);
     }

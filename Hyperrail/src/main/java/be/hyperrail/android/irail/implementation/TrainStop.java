@@ -12,8 +12,10 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+
 import java.io.Serializable;
-import java.util.Date;
 
 import be.hyperrail.android.irail.db.Station;
 
@@ -28,17 +30,17 @@ public class TrainStop implements Serializable {
     private final Station station;
 
     private final boolean isPlatformNormal;
-    private final Date departureTime;
+    private final DateTime departureTime;
     private final String platform;
     private boolean hasLeft;
-    private final int departureDelay;
+    private final Duration departureDelay;
     private final boolean departureCanceled;
 
-    private Date arrivalTime;
-    private int arrivalDelay;
+    private DateTime arrivalTime;
+    private Duration arrivalDelay;
     private boolean arrivalCanceled;
 
-    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, Date departureTime, Date arrivalTime, int departureDelay, int arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft) {
+    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft) {
         this(station, destination, train, platform, isPlatformNormal, departureTime, departureDelay, departureCanceled, hasLeft);
 
         this.arrivalTime = arrivalTime;
@@ -46,7 +48,7 @@ public class TrainStop implements Serializable {
         this.arrivalCanceled = arrivalCanceled;
     }
 
-    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, Date departureTime, int departureDelay, boolean departureCanceled, boolean hasLeft) {
+    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft) {
         this.station = station;
         this.destination = destination;
         this.isPlatformNormal = isPlatformNormal;
@@ -71,7 +73,7 @@ public class TrainStop implements Serializable {
         return isPlatformNormal;
     }
 
-    public Date getDepartureTime() {
+    public DateTime getDepartureTime() {
         return departureTime;
     }
 
@@ -79,12 +81,12 @@ public class TrainStop implements Serializable {
         return platform;
     }
 
-    public int getDepartureDelay() {
+    public Duration getDepartureDelay() {
         return departureDelay;
     }
 
-    public Date getDelayedDepartureTime() {
-        return new Date(departureTime.getTime() + departureDelay * 1000);
+    public DateTime getDelayedDepartureTime() {
+        return departureTime.plus(departureDelay);
     }
 
     public boolean isDepartureCanceled() {
@@ -103,16 +105,16 @@ public class TrainStop implements Serializable {
         return arrivalCanceled;
     }
 
-    public int getArrivalDelay() {
+    public Duration getArrivalDelay() {
         return arrivalDelay;
     }
 
-    public Date getArrivalTime() {
+    public DateTime getArrivalTime() {
         return arrivalTime;
     }
 
-    public Date getDelayedArrivalTime() {
-        return new Date(arrivalTime.getTime() + departureDelay * 1000);
+    public DateTime getDelayedArrivalTime() {
+        return arrivalTime.plus(arrivalDelay);
     }
 
     public void setHasLeft(boolean hasLeft) {

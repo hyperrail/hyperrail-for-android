@@ -14,7 +14,11 @@ package be.hyperrail.android.util;
 
 import android.annotation.SuppressLint;
 
-import java.util.Date;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 /**
  * Utility class to format durations
@@ -28,38 +32,35 @@ public class DurationFormatter {
      * @return The duration formatted as hh:mm string
      */
     @SuppressLint("DefaultLocale")
-    public static String formatDuration(long duration) {
+    public static String formatDuration(Period duration) {
         // to minutes
-        duration = duration / (1000 * 60);
-
-        int hours = (int) (duration / 60);
-        int minutes = (int) (duration % 60);
-        return String.format("%01d:%02d", hours, minutes);
+        PeriodFormatter hhmm = new PeriodFormatterBuilder()
+                .printZeroAlways()
+                .minimumPrintedDigits(2) // gives the '01'
+                .appendHours()
+                .appendSeparator(":")
+                .appendMinutes()
+                .toFormatter();
+        return duration.toString(hhmm);
     }
 
     /**
      * Calculate the duration between t1 (start time) and t2 (end time)
      *
      * @param t1     time 1 (start)
-     * @param delay1 delay in minutes
+     * @param delay1 delay in seconds
      * @param t2     time 2 (stop)
-     * @param delay2 delay in minutes
+     * @param delay2 delay in seconds
      * @return h:mm formatted duration
      */
     @SuppressLint("DefaultLocale")
-    public static String formatDuration(Date t1, int delay1, Date t2, int delay2) {
+    public static String formatDuration(DateTime t1, Duration delay1, DateTime t2, Duration delay2) {
 
         // duration in ms
-        long duration = t2.getTime() - t1.getTime();
-
-        // to minutes
-        duration = duration / (1000 * 60);
+        Period duration = new Period(t1, t2);
 
         // later start reduces, later stop increases duration
-        duration = duration - delay1 + delay2;
-
-        int hours = (int) (duration / 60);
-        int minutes = (int) (duration % 60);
-        return String.format("%01d:%02d", hours, minutes);
+        duration = duration.minus(delay1.toPeriod()).plus(delay2.toPeriod());
+        return formatDuration(duration);
     }
 }

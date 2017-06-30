@@ -12,7 +12,6 @@
 
 package be.hyperrail.android;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -24,8 +23,8 @@ import android.view.View;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.onRecyclerItemClickListener;
@@ -117,7 +116,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
     @Override
     protected InfiniteScrollingAdapter<TrainStop> getAdapter() {
-        LiveboardCardAdapter adapter = new LiveboardCardAdapter(this, vRecyclerView, this, null);
+        LiveboardCardAdapter adapter = new LiveboardCardAdapter(this, vRecyclerView, this);
         adapter.setOnItemClickListener(this);
         return adapter;
     }
@@ -168,9 +167,8 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 super.onPreExecute();
                 if (mSearchDate != null) {
                     vWarningNotRealtime.setVisibility(View.VISIBLE);
-                    @SuppressLint("SimpleDateFormat")
-                    DateFormat df = new SimpleDateFormat(getString(R.string.warning_not_realtime_datetime));
-                    vWarningNotRealtimeText.setText(String.format("%s %s", getString(R.string.warning_not_realtime), df.format(mSearchDate)));
+                    DateTimeFormatter df = DateTimeFormat.forPattern(getString(R.string.warning_not_realtime_datetime));
+                    vWarningNotRealtimeText.setText(String.format("%s %s", getString(R.string.warning_not_realtime), df.print(mSearchDate)));
                 } else {
                     vWarningNotRealtime.setVisibility(View.GONE);
                 }

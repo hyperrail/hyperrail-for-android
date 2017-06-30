@@ -12,8 +12,10 @@
 
 package be.hyperrail.android.irail.db;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Locale;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
@@ -58,14 +60,13 @@ public class Station implements Serializable {
     }
 
     /**
-     * Get the liveboard for this station on a certain date
-     *
-     * @param date the Date and time for which this liveboard should be retreived
+     * Get the liveboard for this station on a certain DateTime
+     * @param dateTime the DateTime and time for which this liveboard should be retreived
      * @return an {@link IrailDataResponse}, containing a {@link LiveBoard} for this station
      */
-    public IrailDataResponse<LiveBoard> getLiveBoard(Date date) {
+    public IrailDataResponse<LiveBoard> getLiveBoard(DateTime dateTime)  {
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        return api.getLiveboard(this.getName(), date);
+        return api.getLiveboard(this.getName(), dateTime);
     }
 
     /**

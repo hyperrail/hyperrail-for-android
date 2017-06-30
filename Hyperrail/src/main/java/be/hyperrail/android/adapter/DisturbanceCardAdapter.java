@@ -12,7 +12,6 @@
 
 package be.hyperrail.android.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,8 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.Disturbance;
@@ -76,9 +75,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             holder.vDescription.setText(disturbance.getDescription());
 
-            @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat("EEE dd/MM/yy HH:mm");
-            holder.vDate.setText(df.format(disturbance.getTime()));
-
+            DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd/MM/yy HH:mm");
+            holder.vDate.setText(df.print(disturbance.getTime()));
+          
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
