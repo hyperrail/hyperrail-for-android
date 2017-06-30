@@ -85,7 +85,7 @@ public class IrailApi implements IrailDataProvider {
     @AddTrace(name = "iRailGetroute")
     public IrailDataResponse<RouteResult> getRoute(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType) {
 
-        // https://api.irail.be/connections/?to=Halle&from=Brussels-south&dateTime={dmy}&time=2359&timeSel=arrive or depart&format=json
+        // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
 
         // suppress errors, this formatting is for an API call
         DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
@@ -109,7 +109,7 @@ public class IrailApi implements IrailDataProvider {
         String url = "https://api.irail.be/connections/?format=json"
                 + "&to=" + to_name
                 + "&from=" + from_name
-                + "&dateTime=" + dateformat.print(timeFilter)
+                + "&date=" + dateformat.print(timeFilter)
                 + "&time=" + timeformat.print(timeFilter);
 
         if (timeFilterType == RouteTimeDefinition.DEPART) {
@@ -160,7 +160,7 @@ public class IrailApi implements IrailDataProvider {
         String url = "https://api.irail.be/liveboard/?format=json"
                 // TODO: use id here instead of name, supported by API but slow ATM
                 + "&station=" + name
-                + "&dateTime=" + dateformat.print(timeFilter)
+                + "&date=" + dateformat.print(timeFilter)
                 + "&time=" + timeformat.print(timeFilter)
                 + "&arrdep=" + ((timeFilterType == RouteTimeDefinition.DEPART) ? "dep" : "arr");
 
@@ -185,7 +185,7 @@ public class IrailApi implements IrailDataProvider {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
-                + "&id=" + id + "&dateTime=" + dateTimeformat.print(day);
+                + "&id=" + id + "&date=" + dateTimeformat.print(day);
 
         try {
             return new ApiResponse<>(parser.parseTrain(getJsonData(url), new DateTime()));
@@ -273,7 +273,7 @@ public class IrailApi implements IrailDataProvider {
         try {
             URL url = new URL(address);
             FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt + ")");
-            Log.d(LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt + ")");
+            Log.i(LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt + ")");
 
             // Read all the text returned by the server
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));

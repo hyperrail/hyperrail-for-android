@@ -76,7 +76,7 @@ public class DateTimePicker implements DatePickerDialog.OnDateSetListener, TimeP
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        DateTime date = new DateTime(this.year, this.month, this.day, hourOfDay, minute, 0);
+        DateTime date = new DateTime(this.year, this.month+1, this.day, hourOfDay, minute, 0);
         listener.onDateTimePicked(date);
     }
 
