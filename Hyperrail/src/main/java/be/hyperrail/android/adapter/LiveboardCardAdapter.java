@@ -12,7 +12,6 @@
 
 package be.hyperrail.android.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -25,8 +24,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
@@ -40,13 +39,13 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     private LiveBoard liveboard;
     private final Context context;
+    private int differentdays = 1;
 
     private onRecyclerItemClickListener<TrainStop> listener;
 
-    public LiveboardCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener, LiveBoard liveboard) {
+    public LiveboardCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
         this.context = context;
-        this.liveboard = liveboard;
     }
 
     public void updateLiveboard(LiveBoard liveBoard) {
@@ -79,13 +78,13 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.vTrainNumber.setText(stop.getTrain().getNumber());
         holder.vTrainType.setText(stop.getTrain().getType());
 
-        @SuppressLint("SimpleDateFormat")
-        DateFormat df = new SimpleDateFormat("HH:mm");
 
-        holder.vDeparture.setText(df.format(stop.getDepartureTime()));
-        if (stop.getDepartureDelay() > 0) {
-            holder.vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay() / 60));
-            holder.vDelayTime.setText(df.format(stop.getDelayedDepartureTime()));
+        DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
+
+        holder.vDeparture.setText(df.print(stop.getDepartureTime()));
+        if (stop.getDepartureDelay().getStandardSeconds() > 0) {
+            holder.vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
+            holder.vDelayTime.setText(df.print(stop.getDelayedDepartureTime()));
         } else {
             holder.vDepartureDelay.setText("");
             holder.vDelayTime.setText("");

@@ -18,9 +18,9 @@ import android.content.Context;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
+import org.joda.time.DateTime;
+
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * A DateTimePicker will show a datePicker, followed by a timePicker, and make a callback with the selected datetime.
@@ -76,7 +76,7 @@ public class DateTimePicker implements DatePickerDialog.OnDateSetListener, TimeP
      */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        Date date = new GregorianCalendar(this.year, this.month, this.day, hourOfDay, minute, 0).getTime();
+        DateTime date = new DateTime(this.year, this.month, this.day, hourOfDay, minute, 0);
         listener.onDateTimePicked(date);
     }
 

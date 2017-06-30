@@ -12,7 +12,7 @@
 
 package be.hyperrail.android.irail.implementation;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
 
@@ -23,7 +23,7 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
 
     private final T data;
     private final Exception exception;
-    private final Date time;
+    private final DateTime time;
 
     public ApiResponse(T data) {
         this(data, null);
@@ -32,7 +32,7 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
     public ApiResponse(T data, Exception exception) {
         this.data = data;
         this.exception = exception;
-        this.time = new Date();
+        this.time = new DateTime();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
     }
 
     @Override
-    public Date getTime() {
+    public DateTime getTime() {
         return time;
     }
 }

@@ -12,8 +12,10 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+
 import java.io.Serializable;
-import java.util.Date;
 
 import be.hyperrail.android.irail.db.Station;
 
@@ -24,20 +26,20 @@ public class Transfer implements Serializable {
 
     private final TrainStub arrivingTrain;
     private final TrainStub departingTrain;
-    private final Date arrivalTime;
-    private final Date departureTime;
+    private final DateTime arrivalTime;
+    private final DateTime departureTime;
 
     private final Station station;
     private final String departurePlatform;
     private final boolean isDeparturePlatformNormal;
     private final String arrivalPlatform;
     private final boolean isArrivalPlatformNormal;
-    private final int arrivalDelay;
+    private final Duration arrivalDelay;
     private final boolean arrivalCanceled;
-    private final int departureDelay;
+    private final Duration departureDelay;
     private final boolean departureCanceled;
 
-    public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, String departurePlatform, boolean departureNormal, Date arrivalTime, Date departureTime, int arrivalDelay, boolean arrivalCanceled, int departureDelay, boolean departureCanceled) {
+    public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, String departurePlatform, boolean departureNormal, DateTime arrivalTime, DateTime departureTime, Duration arrivalDelay, boolean arrivalCanceled, Duration departureDelay, boolean departureCanceled) {
         this.station = station;
         this.arrivingTrain = arrivingTrain;
         this.departingTrain = departingTrain;
@@ -61,11 +63,11 @@ public class Transfer implements Serializable {
         return departingTrain;
     }
 
-    public Date getArrivalTime() {
+    public DateTime getArrivalTime() {
         return arrivalTime;
     }
 
-    public Date getDepartureTime() {
+    public DateTime getDepartureTime() {
         return departureTime;
     }
 
@@ -81,7 +83,7 @@ public class Transfer implements Serializable {
         return arrivalPlatform;
     }
 
-    public int getArrivalDelay() {
+    public Duration getArrivalDelay() {
         return arrivalDelay;
     }
 
@@ -89,7 +91,7 @@ public class Transfer implements Serializable {
         return arrivalCanceled;
     }
 
-    public int getDepartureDelay() {
+    public Duration getDepartureDelay() {
         return departureDelay;
     }
 

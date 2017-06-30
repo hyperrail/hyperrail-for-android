@@ -51,7 +51,7 @@
     <string name="unmarked_route_favorite">Voie non marquée comme favori</string>
     <string name="unmarked_station_favorite">Station non marquée comme favori</string>
     <string name="warning_not_realtime">Vous voyez les résultats pour</string>
-    <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy hh:mm</string>
+    <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy HH:mm</string>
     <string name="permission_description_location_title">Localisation des stations à proximité</string>
     <string name="permission_request_title">Cette fonction nécessite votre permission</string>
     <string name="powered_by_irail_be">Propulsé par irail.be</string>

@@ -12,7 +12,6 @@
 
 package be.hyperrail.android.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -29,9 +28,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.LiveboardActivity;
 import be.hyperrail.android.R;
@@ -84,19 +83,18 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         final RouteViewHolder holder = (RouteViewHolder) genericHolder;
         final Route route = routes[position];
 
-        @SuppressLint("SimpleDateFormat")
-        DateFormat hhmm = new SimpleDateFormat("HH:mm");
+        DateTimeFormatter hhmm = DateTimeFormat.forPattern("HH:mm");
 
-        holder.vDepartureTime.setText(hhmm.format(route.getDepartureTime()));
-        if (route.getDepartureDelay() > 0) {
-            holder.vDepartureDelay.setText(context.getString(R.string.delay, route.getDepartureDelay() / 60));
+        holder.vDepartureTime.setText(hhmm.print(route.getDepartureTime()));
+        if (route.getDepartureDelay().getStandardSeconds() > 0) {
+            holder.vDepartureDelay.setText(context.getString(R.string.delay, route.getDepartureDelay().getStandardMinutes()));
         } else {
             holder.vDepartureDelay.setText("");
         }
 
-        holder.vArrivalTime.setText(hhmm.format(route.getArrivalTime()));
-        if (route.getArrivalDelay() > 0) {
-            holder.vArrivalDelay.setText(context.getString(R.string.delay, route.getArrivalDelay() / 60));
+        holder.vArrivalTime.setText(hhmm.print(route.getArrivalTime()));
+        if (route.getArrivalDelay().getStandardSeconds() > 0) {
+            holder.vArrivalDelay.setText(context.getString(R.string.delay, route.getArrivalDelay().getStandardMinutes()));
         } else {
             holder.vArrivalDelay.setText("");
         }
@@ -134,7 +132,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
                             (TrainStub) ((Bundle) object).getSerializable("train"),
                             (Station) ((Bundle) object).getSerializable("from"),
                             (Station) ((Bundle) object).getSerializable("to"),
-                            (Date) ((Bundle) object).getSerializable("date"));
+                            (DateTime) ((Bundle) object).getSerializable("date"));
 
                 } else if (object instanceof Transfer) {
                     i = LiveboardActivity.createIntent(context, ((Transfer) object).getStation());

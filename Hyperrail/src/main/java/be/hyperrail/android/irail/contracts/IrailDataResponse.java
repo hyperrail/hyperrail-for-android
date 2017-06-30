@@ -12,7 +12,7 @@
 
 package be.hyperrail.android.irail.contracts;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 /**
  * A server response, containing a result (if any), an exception object (if any),
@@ -47,5 +47,5 @@ public interface IrailDataResponse<T> {
      *
      * @return The time when the response was received
      */
-    Date getTime();
+    DateTime getTime();
 }

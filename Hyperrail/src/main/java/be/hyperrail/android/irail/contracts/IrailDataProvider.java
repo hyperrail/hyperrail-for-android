@@ -12,7 +12,7 @@
 
 package be.hyperrail.android.irail.contracts;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Disturbance;
@@ -28,25 +28,25 @@ public interface IrailDataProvider {
 
     IrailDataResponse<RouteResult> getRoute(Station from, Station to);
 
-    IrailDataResponse<RouteResult> getRoute(Station from, Station to, Date timeFilter);
+    IrailDataResponse<RouteResult> getRoute(Station from, Station to, DateTime timeFilter);
 
-    IrailDataResponse<RouteResult> getRoute(Station from, Station to, Date timeFilter, RouteTimeDefinition timeFilterType);
+    IrailDataResponse<RouteResult> getRoute(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType);
 
     IrailDataResponse<RouteResult> getRoute(String from, String to);
 
-    IrailDataResponse<RouteResult> getRoute(String from, String to, Date timeFilter);
+    IrailDataResponse<RouteResult> getRoute(String from, String to, DateTime timeFilter);
 
-    IrailDataResponse<RouteResult> getRoute(String from, String to, Date timeFilter, RouteTimeDefinition timeFilterType);
+    IrailDataResponse<RouteResult> getRoute(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType);
 
     IrailDataResponse<LiveBoard> getLiveboard(String name);
 
-    IrailDataResponse<LiveBoard> getLiveboard(String name, Date timeFilter);
+    IrailDataResponse<LiveBoard> getLiveboard(String name, DateTime timeFilter);
 
-    IrailDataResponse<LiveBoard> getLiveboard(String name, Date timeFilter, RouteTimeDefinition timeFilterType);
+    IrailDataResponse<LiveBoard> getLiveboard(String name, DateTime timeFilter, RouteTimeDefinition timeFilterType);
 
     IrailDataResponse<Train> getTrain(String id);
 
-    IrailDataResponse<Train> getTrain(String id, Date day);
+    IrailDataResponse<Train> getTrain(String id, DateTime day);
 
     IrailDataResponse<Disturbance[]> getDisturbances();
 }

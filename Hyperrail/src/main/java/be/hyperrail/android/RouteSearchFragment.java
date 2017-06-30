@@ -12,7 +12,6 @@
 
 package be.hyperrail.android;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,9 +31,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.adapter.RouteHistoryCardAdapter;
 import be.hyperrail.android.adapter.onRecyclerItemClickListener;
@@ -61,7 +61,7 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
     private Spinner vArriveDepart;
     private LinearLayout vArriveDepartContainer;
 
-    private Calendar searchDateTime = null;
+    private DateTime searchDateTime = null;
     private Bundle parameters;
 
     private PersistentQueryProvider persistentQueryProvider;
@@ -333,9 +333,9 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
             arrivedepart = RouteTimeDefinition.ARRIVE;
         }
 
-        Date d = null;
+        DateTime d = null;
         if (searchDateTime != null) {
-            d = searchDateTime.getTime();
+            d = searchDateTime;
         }
         Intent i = RouteActivity.createIntent(getActivity(), from, to, d, arrivedepart);
         startActivity(i);
@@ -347,24 +347,23 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
     }
 
     @Override
-    public void onDateTimePicked(Date d) {
-        searchDateTime = Calendar.getInstance();
-        searchDateTime.setTime(d);
+    public void onDateTimePicked(DateTime d) {
+        searchDateTime = d;
 
-        Calendar now = Calendar.getInstance();
+        DateTime now = new DateTime();
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat df = new SimpleDateFormat("dd MMMM yyyy");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat tf = new SimpleDateFormat("HH:mm");
+        DateTimeFormatter df = DateTimeFormat.forPattern("dd MMMM yyyy");
+        DateTimeFormatter tf = DateTimeFormat.forPattern("HH:mm");
 
-        String day = df.format(searchDateTime.getTime());
-        String time = tf.format(searchDateTime.getTime());
+        String day = df.print(searchDateTime);
+        String time = tf.print(searchDateTime);
         String at = getActivity().getResources().getString(R.string.time_at);
 
-        if (now.get(Calendar.YEAR) == searchDateTime.get(Calendar.YEAR)) {
-            if (now.get(Calendar.DAY_OF_YEAR) == searchDateTime.get(Calendar.DAY_OF_YEAR)) {
+        if (now.get(DateTimeFieldType.year()) == searchDateTime.get(DateTimeFieldType.year())) {
+            if (now.get(DateTimeFieldType.dayOfYear()) == searchDateTime.get(DateTimeFieldType.dayOfYear())) {
                 day = getActivity().getResources().getString(R.string.time_today);
             } else  //noinspection RedundantCast
-                if (now.get(Calendar.DAY_OF_YEAR) + 1 == (int) searchDateTime.get(Calendar.DAY_OF_YEAR)) {
+                if (now.get(DateTimeFieldType.dayOfYear()) + 1 == (int) searchDateTime.get(DateTimeFieldType.dayOfYear())) {
                     day = getActivity().getResources().getString(R.string.time_tomorrow);
                 }
         }
