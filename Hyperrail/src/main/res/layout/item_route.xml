@@ -112,6 +112,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:id="@+id/image_duration"
                         android:layout_width="@dimen/cardlist_textrow_height"
                         android:layout_height="@dimen/cardlist_textrow_height"
                         android:padding="2dp"

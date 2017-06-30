@@ -25,10 +25,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -100,7 +102,23 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         }
 
         holder.vDirection.setText(route.getOrigin().getDepartingTrain().getDirection().getLocalizedName());
-        holder.vDuration.setText(DurationFormatter.formatDuration(route.getDuration()));
+
+        Duration routeWithDelays = route.getDurationIncludingDelays();
+        Duration routeWithoutDelays = route.getDuration();
+
+        if (routeWithDelays.equals(routeWithoutDelays)){
+            holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorMuted));
+            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context,R.color.colorMuted));
+        } else if (routeWithDelays.isLongerThan(routeWithoutDelays)){
+            holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorDelay));
+            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context,R.color.colorDelay));
+        } else {
+            holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorFaster));
+            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context,R.color.colorFaster));
+        }
+
+        holder.vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
+
         holder.vTrainCount.setText(String.valueOf(route.getTrains().length));
 
         holder.vPlatform.setText(route.getDeparturePlatform());
@@ -191,6 +209,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         final TextView vArrivalDelay;
         final TextView vDirection;
         final TextView vDuration;
+        final ImageView vDurationIcon;
         final TextView vTrainCount;
         final TextView vPlatform;
         final LinearLayout vPlatformContainer;
@@ -211,6 +230,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
             vDirection = ((TextView) view.findViewById(R.id.text_destination));
             vDuration = ((TextView) view.findViewById(R.id.text_duration));
+            vDurationIcon = ((ImageView) view.findViewById(R.id.image_duration));
             vTrainCount = ((TextView) view.findViewById(R.id.text_train_count));
 
             vPlatform = ((TextView) view.findViewById(R.id.text_platform));

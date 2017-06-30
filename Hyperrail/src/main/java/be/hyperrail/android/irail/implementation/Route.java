@@ -59,8 +59,12 @@ public class Route implements Serializable {
         this.transfers = transfers;
     }
 
-    public Period getDuration() {
-        return new Period(getDepartureTime(), getArrivalTime());
+    public Duration getDuration() {
+        return new Period(getDepartureTime(), getArrivalTime()).toStandardDuration();
+    }
+
+    public Duration getDurationIncludingDelays() {
+        return new Period(getDepartureTime().plus(departureDelay), getArrivalTime().plus(arrivalDelay)).toStandardDuration();
     }
 
     public DateTime getDepartureTime() {

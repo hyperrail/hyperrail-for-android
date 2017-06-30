@@ -17,6 +17,7 @@
 
     <color name="colorDelay">#b22525</color>
     <color name="colorMuted">#999999</color>
+    <color name="colorFaster">#1b5e20</color>
 
     <style name="Hyperrail" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
