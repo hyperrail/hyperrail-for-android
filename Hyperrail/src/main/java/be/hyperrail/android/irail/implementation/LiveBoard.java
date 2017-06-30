@@ -35,6 +35,7 @@ public class LiveBoard extends Station implements Serializable {
                 station.getAlternativeFr(),
                 station.getAlternativeDe(),
                 station.getAlternativeEn(),
+                station.getLocalizedName(),
                 station.getCountryCode(),
                 station.getLatitude(),
                 station.getLongitude(),

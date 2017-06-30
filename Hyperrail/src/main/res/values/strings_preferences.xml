@@ -20,6 +20,7 @@
     <string name="pref_short_tap_route_detail_summary">Short tap route to open in new window, long tap to expand result in current window</string>
     <string name="pref_github">View on github</string>
     <string name="pref_header_links">Links</string>
+    <string name="pref_stations_language">Station language</string>
 
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>
@@ -66,6 +67,20 @@
     <string-array name="pref_list_route_order_keys" translatable="false">
         <item>0</item>
         <item>1</item>
+    </string-array>
+
+    <string-array name="pref_list_languages">
+        <item>Dutch</item>
+        <item>English</item>
+        <item>French</item>
+        <item>German</item>
+    </string-array>
+
+    <string-array name="pref_list_languages_iso3" translatable="false">
+        <item>nld</item>
+        <item>eng</item>
+        <item>fra</item>
+        <item>deu</item>
     </string-array>
 
 </resources>
