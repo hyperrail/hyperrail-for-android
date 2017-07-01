@@ -18,8 +18,9 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import org.joda.time.DateTime;
+
 import java.text.DateFormat;
-import java.util.Date;
 
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.adapter.onRecyclerItemClickListener;
@@ -55,7 +56,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
 
         DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
 
-        setSubTitle(df.format(route.getDepartureTime().getTime()));
+        setSubTitle(df.format(route.getDepartureTime().toString()));
 
         // disable pull-to-refresh
         // TODO: support refreshing
@@ -89,7 +90,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
                             (TrainStub) ((Bundle) object).getSerializable("train"),
                             (Station) ((Bundle) object).getSerializable("from"),
                             (Station) ((Bundle) object).getSerializable("to"),
-                            (Date) ((Bundle) object).getSerializable("date"));
+                            (DateTime) ((Bundle) object).getSerializable("date"));
 
                 } else if (object instanceof Transfer) {
                     i = LiveboardActivity.createIntent(RouteDetailActivity.this, ((Transfer) object).getStation());

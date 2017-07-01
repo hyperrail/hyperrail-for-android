@@ -12,10 +12,9 @@
 
 package be.hyperrail.android.irail.contracts;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
 
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Disturbance;
@@ -30,11 +29,11 @@ import be.hyperrail.android.irail.implementation.Train;
  */
 public interface IrailParser {
 
-    Train parseTrain(JSONObject jsonData, Date searchDate) throws JSONException;
+    Train parseTrain(JSONObject jsonData, DateTime searchDate) throws JSONException;
 
-    LiveBoard parseLiveboard(JSONObject jsonData, Date searchDate) throws JSONException;
+    LiveBoard parseLiveboard(JSONObject jsonData, DateTime searchDate) throws JSONException;
 
-    RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, Date lastSearchTime, RouteTimeDefinition timeDefinition) throws JSONException;
+    RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, DateTime lastSearchTime, RouteTimeDefinition timeDefinition) throws JSONException;
 
     Route parseRoute(JSONObject json) throws JSONException;
 

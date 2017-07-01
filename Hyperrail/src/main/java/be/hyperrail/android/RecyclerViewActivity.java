@@ -37,7 +37,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
@@ -90,7 +90,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * Date for which should be searched. Null for 'now'.
      */
-    protected Date mSearchDate;
+    protected DateTime mSearchDate;
 
     /**
      * Reference to shared preferences
@@ -267,7 +267,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     protected abstract void showData(T data);
 
     @Override
-    public void onDateTimePicked(Date date) {
+    public void onDateTimePicked(DateTime date) {
         mSearchDate = date;
 
         // empty the view while loading

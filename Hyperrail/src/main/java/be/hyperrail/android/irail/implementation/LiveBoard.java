@@ -12,8 +12,11 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.io.Serializable;
-import java.util.Date;
 
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.db.Station;
@@ -24,10 +27,11 @@ import be.hyperrail.android.util.ArrayUtils;
  * This class extends a station with its departures.
  */
 public class LiveBoard extends Station implements Serializable {
-    private TrainStop[] stops;
-    private Date searchDate;
 
-    LiveBoard(Station station, TrainStop[] stops, Date searchDate) {
+    private TrainStop[] stops;
+    private DateTime searchDate;
+
+    LiveBoard(Station station, TrainStop[] stops, DateTime searchDate) {
         super(
                 station.getId(),
                 station.getName(),
@@ -35,6 +39,7 @@ public class LiveBoard extends Station implements Serializable {
                 station.getAlternativeFr(),
                 station.getAlternativeDe(),
                 station.getAlternativeEn(),
+                station.getLocalizedName(),
                 station.getCountryCode(),
                 station.getLatitude(),
                 station.getLongitude(),
@@ -49,21 +54,22 @@ public class LiveBoard extends Station implements Serializable {
 
     public ApiResponse<TrainStop[]> getNextStops() {
         // get last time
-        Date lastSearch;
+        DateTime lastSearchTime;
 
         if (this.stops.length > 0) {
-            lastSearch = (Date) this.stops[this.stops.length - 1].getDepartureTime().clone();
+            lastSearchTime = new DateTime(this.stops[this.stops.length - 1].getDelayedDepartureTime());
             // move one minute further
-            lastSearch.setTime(lastSearch.getTime() + 1000 * 60);
+            DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
+            lastSearchTime = lastSearchTime.plusMinutes(1);
         } else {
             // if it was empty (caused by e.g. night or weekend
-            lastSearch = (Date) searchDate.clone();
+            lastSearchTime = new DateTime(searchDate);
             // move one hour further
-            lastSearch.setTime(lastSearch.getTime() + 1000 * 60 * 60);
+            lastSearchTime = lastSearchTime.plusHours(1);
         }
 
         // load
-        IrailDataResponse<LiveBoard> apiResponse =  getLiveBoard(lastSearch);
+        IrailDataResponse<LiveBoard> apiResponse = getLiveBoard(lastSearchTime);
 
         if (!apiResponse.isSuccess()) {
             return new ApiResponse<>(null, apiResponse.getException());
@@ -73,11 +79,12 @@ public class LiveBoard extends Station implements Serializable {
 
         int i = 0;
         while (newSearch.getStops().length == 0 && i < 12) {
-            // add an hour
-            lastSearch.setTime(lastSearch.getTime() + 1000 * 60 * 60);
+
+            // add an hour when completely empty
+            lastSearchTime = lastSearchTime.plusHours(1);
 
             // load
-            apiResponse =  getLiveBoard(lastSearch);
+            apiResponse = getLiveBoard(lastSearchTime);
 
             if (!apiResponse.isSuccess()) {
                 return new ApiResponse<>(null, apiResponse.getException());
@@ -92,7 +99,7 @@ public class LiveBoard extends Station implements Serializable {
         return new ApiResponse<>(newSearch.getStops());
     }
 
-    public Date getSearchDate() {
+    public DateTime getSearchDate() {
         return searchDate;
     }
 }

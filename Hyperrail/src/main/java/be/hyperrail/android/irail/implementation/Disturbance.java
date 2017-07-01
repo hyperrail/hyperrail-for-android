@@ -12,21 +12,22 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * A disturbance on the rail network
  */
 public class Disturbance implements Serializable {
     private final String link;
-    private final Date timestamp;
+    private final DateTime timestamp;
     private final String title;
     private final String description;
     private final int id;
 
 
-    public Disturbance(int id, Date timestamp, String title, String description, String link) {
+    public Disturbance(int id, DateTime timestamp, String title, String description, String link) {
         this.id = id;
         this.timestamp = timestamp;
         this.title = title;
@@ -50,7 +51,7 @@ public class Disturbance implements Serializable {
         return link;
     }
 
-    public Date getTime() {
+    public DateTime getTime() {
         return timestamp;
     }
 }

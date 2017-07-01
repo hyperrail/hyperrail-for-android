@@ -218,7 +218,12 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
      * @param stations The new array of stations
      */
     private void setStations(Station[] stations) {
-        FirebaseCrash.logcat(INFO.intValue(),LogTag,"Setting liveboard search list to " + stations.length + " stations");
+        if (stations != null){
+            FirebaseCrash.logcat(INFO.intValue(),LogTag,"Setting liveboard search list to " + stations.length + " stations");
+        } else {
+            FirebaseCrash.logcat(INFO.intValue(),LogTag,"Setting liveboard search list to 0 stations");
+        }
+
         StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
         adapter.setStations(stations);
     }

@@ -12,7 +12,6 @@
 
 package be.hyperrail.android.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -27,8 +26,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.Route;
@@ -115,8 +114,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
-        @SuppressLint("SimpleDateFormat")
-        DateFormat hhmm = new SimpleDateFormat("HH:mm");
+        DateTimeFormatter hhmm = DateTimeFormat.forPattern("HH:mm");
 
         if (holder instanceof RouteTransferViewHolder) {
             // Create a transfer ViewHolder
@@ -142,30 +140,30 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             // if we have a departure, set the departure
             if (transfer.getDepartureTime() != null) {
-                routeTransferViewHolder.vDepartureTime.setText(hhmm.format(transfer.getDepartureTime()));
+                routeTransferViewHolder.vDepartureTime.setText(hhmm.print(transfer.getDepartureTime()));
             } else {
                 routeTransferViewHolder.vDepartureTime.setText("");
                 routeTransferViewHolder.vDepartureContainer.setVisibility(View.GONE);
             }
 
             // if we have a departure delay, set the departure delay
-            if (transfer.getDepartureDelay() > 0) {
-                routeTransferViewHolder.vDepartureDelay.setText(context.getString(R.string.delay, transfer.getDepartureDelay() / 60));
+            if (transfer.getDepartureDelay().getStandardSeconds() > 0) {
+                routeTransferViewHolder.vDepartureDelay.setText(context.getString(R.string.delay, transfer.getDepartureDelay().getStandardMinutes()));
             } else {
                 routeTransferViewHolder.vDepartureDelay.setText("");
             }
 
             // if we have an arrival time, set the arrival time
             if (transfer.getArrivalTime() != null) {
-                routeTransferViewHolder.vArrivalTime.setText(hhmm.format(transfer.getArrivalTime()));
+                routeTransferViewHolder.vArrivalTime.setText(hhmm.print(transfer.getArrivalTime()));
             } else {
                 routeTransferViewHolder.vArrivalTime.setText("");
                 routeTransferViewHolder.vArrivalContainer.setVisibility(View.GONE);
             }
 
             // if we have an arrival delay, set the arrival delay
-            if (transfer.getArrivalDelay() > 0) {
-                routeTransferViewHolder.vArrivalDelay.setText(context.getString(R.string.delay, transfer.getArrivalDelay() / 60));
+            if (transfer.getArrivalDelay().getStandardSeconds() > 0) {
+                routeTransferViewHolder.vArrivalDelay.setText(context.getString(R.string.delay, transfer.getArrivalDelay().getStandardMinutes()));
             } else {
                 routeTransferViewHolder.vArrivalDelay.setText("");
             }

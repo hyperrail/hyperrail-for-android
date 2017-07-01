@@ -36,17 +36,17 @@ class StationsDataContract {
     }
 
     public static final class StationsDataColumns implements BaseColumns {
-        public static final String TABLE_NAME = "stations";
-        public static final String _ID = "station_id";
-        public static final String COLUMN_NAME_NAME = "name";
-        public static final String COLUMN_NAME_ALTERNATIVE_NL = "alternative_nl";
-        public static final String COLUMN_NAME_ALTERNATIVE_FR = "alternative_fr";
-        public static final String COLUMN_NAME_ALTERNATIVE_DE = "alternative_de";
-        public static final String COLUMN_NAME_ALTERNATIVE_EN = "alternative_en";
-        public static final String COLUMN_NAME_COUNTRY_CODE = "country_code";
-        public static final String COLUMN_NAME_LONGITUDE = "longitude";
-        public static final String COLUMN_NAME_LATITUDE = "latitude";
-        public static final String COLUMN_NAME_AVG_STOP_TIMES = "avg_stop_times";
+        static final String TABLE_NAME = "stations";
+        static final String _ID = "station_id";
+        static final String COLUMN_NAME_NAME = "name";
+        static final String COLUMN_NAME_ALTERNATIVE_NL = "alternative_nl";
+        static final String COLUMN_NAME_ALTERNATIVE_FR = "alternative_fr";
+        static final String COLUMN_NAME_ALTERNATIVE_DE = "alternative_de";
+        static final String COLUMN_NAME_ALTERNATIVE_EN = "alternative_en";
+        static final String COLUMN_NAME_COUNTRY_CODE = "country_code";
+        static final String COLUMN_NAME_LONGITUDE = "longitude";
+        static final String COLUMN_NAME_LATITUDE = "latitude";
+        static final String COLUMN_NAME_AVG_STOP_TIMES = "avg_stop_times";
     }
 
     /**

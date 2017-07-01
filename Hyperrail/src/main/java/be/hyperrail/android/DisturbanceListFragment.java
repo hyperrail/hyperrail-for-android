@@ -28,7 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
 import be.hyperrail.android.adapter.onRecyclerItemClickListener;
@@ -45,7 +45,7 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
     private RecyclerView vRecyclerView;
     private SwipeRefreshLayout vRefreshLayout;
     private Disturbance[] disturbances;
-    private Date lastUpdate;
+    private DateTime lastUpdate;
 
     public DisturbanceListFragment() {
         // Required empty public constructor
@@ -94,7 +94,7 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
 
         if (savedInstanceState != null) {
             this.disturbances = (Disturbance[]) savedInstanceState.getSerializable("disturbances");
-            this.lastUpdate = new Date(savedInstanceState.getLong("updated"));
+            this.lastUpdate = new DateTime(savedInstanceState.getLong("updated"));
             this.setData(this.disturbances);
         } else {
             loadDisturbances();
@@ -105,7 +105,7 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("disturbances", disturbances);
-        outState.putLong("updated", lastUpdate.getTime());
+        outState.putLong("updated", lastUpdate.getMillis());
     }
 
     private void loadDisturbances() {
@@ -125,7 +125,7 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
                 vRefreshLayout.setRefreshing(false);
 
                 if (response.isSuccess()) {
-                    lastUpdate = new Date();
+                    lastUpdate = new DateTime();
                     setData(response.getData());
                 } else {
                     // Don't finish, this is the main activity
@@ -159,8 +159,10 @@ public class DisturbanceListFragment extends Fragment implements onRecyclerItemC
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Disturbance object) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(object.getLink()));
-        startActivity(browserIntent);
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Disturbance disturbance) {
+        if (disturbance.getLink() != null && !disturbance.getLink().isEmpty()) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(disturbance.getLink()));
+            startActivity(browserIntent);
+        }
     }
 }

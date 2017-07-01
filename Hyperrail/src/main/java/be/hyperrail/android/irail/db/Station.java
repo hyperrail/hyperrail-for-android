@@ -12,8 +12,9 @@
 
 package be.hyperrail.android.irail.db;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Locale;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
@@ -23,28 +24,31 @@ import be.hyperrail.android.irail.implementation.LiveBoard;
 
 /**
  * This class represents a station, as found in irail/stationscsv
- *
+ * <p>
  * https://github.com/iRail/stations/blob/master/stations.csv
  */
 public class Station implements Serializable {
+
     private final String id;
     private final String name;
     private final String alternative_nl;
     private final String alternative_fr;
     private final String alternative_de;
     private final String alternative_en;
+    private final String localizedName;
     private final String country_code;
     private final double latitude;
     private final double longitude;
     private final float avgStopTimes;
 
-    public Station(String id, String name, String nl, String fr, String de, String en, String country, double latitude, double longitude, float avgStopTimes) {
+    public Station(String id, String name, String nl, String fr, String de, String en, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
         this.id = id;
         this.name = name;
         this.alternative_nl = nl;
         this.alternative_fr = fr;
         this.alternative_en = en;
         this.alternative_de = de;
+        this.localizedName = localizedName;
         this.country_code = country;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -56,19 +60,21 @@ public class Station implements Serializable {
     }
 
     /**
-     * Get the liveboard for this station on a certain date
-     * @param date the Date and time for which this liveboard should be retreived
+     * Get the liveboard for this station on a certain DateTime
+     * @param dateTime the DateTime and time for which this liveboard should be retreived
      * @return an {@link IrailDataResponse}, containing a {@link LiveBoard} for this station
      */
-    public IrailDataResponse<LiveBoard> getLiveBoard(Date date)  {
+    public IrailDataResponse<LiveBoard> getLiveBoard(DateTime dateTime)  {
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        return api.getLiveboard(this.getName(), date);
+        return api.getLiveboard(this.getName(), dateTime);
     }
+
     /**
      * Get the liveboard for this station
+     *
      * @return an {@link IrailDataResponse}, containing a {@link LiveBoard} for this station
      */
-    public IrailDataResponse<LiveBoard> getLiveBoard()  {
+    public IrailDataResponse<LiveBoard> getLiveBoard() {
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         return api.getLiveboard(this.getName());
     }
@@ -102,39 +108,14 @@ public class Station implements Serializable {
     }
 
     // @TODO device language should be set as a setting (one time), after which user can choose in settings
+
     /**
      * Get the NL, FR, DE or EN name based on the device language
+     *
      * @return The NL, FR, DE or EN name based on the device language
      */
     public String getLocalizedName() {
-        switch (Locale.getDefault().getISO3Language()) {
-            case "nld":
-                if (getAlternativeNl() != null && !getAlternativeNl().isEmpty()) {
-                    return getAlternativeNl();
-                } else {
-                    return getName();
-                }
-            case "fra":
-                if (getAlternativeFr() != null && !getAlternativeFr().isEmpty()) {
-                    return getAlternativeFr();
-                } else {
-                    return getName();
-                }
-            case "deu":
-                if (getAlternativeDe() != null && !getAlternativeDe().isEmpty()) {
-                    return getAlternativeDe();
-                } else {
-                    return getName();
-                }
-            case "eng":
-                if (getAlternativeEn() != null && !getAlternativeEn().isEmpty()) {
-                    return getAlternativeEn();
-                } else {
-                    return getName();
-                }
-            default:
-                return getName();
-        }
+        return localizedName;
     }
 
     public String getCountryCode() {

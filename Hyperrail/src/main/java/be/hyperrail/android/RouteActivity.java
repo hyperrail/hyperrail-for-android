@@ -24,9 +24,9 @@ import android.view.View;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
@@ -47,14 +47,14 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
     private Station mSearchFrom;
     private Station mSearchTo;
     private RouteTimeDefinition mSearchTimeType = RouteTimeDefinition.DEPART;
-    private Date mSearchDate;
+    private DateTime mSearchDate;
 
     private AsyncTask runningTask;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private boolean initialLoadCompleted = false;
 
-    public static Intent createIntent(Context context, Station from, Station to, Date date, RouteTimeDefinition datetype) {
+    public static Intent createIntent(Context context, Station from, Station to, DateTime date, RouteTimeDefinition datetype) {
         Intent i = new Intent(context, RouteActivity.class);
         i.putExtra("from", from);
         i.putExtra("to", to);
@@ -65,7 +65,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
         return i;
     }
 
-    public static Intent createIntent(Context context, Station from, Station to, Date date) {
+    public static Intent createIntent(Context context, Station from, Station to, DateTime date) {
         Intent i = new Intent(context, RouteActivity.class);
         i.putExtra("from", from);
         i.putExtra("to", to);
@@ -89,7 +89,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
         mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
 
         if (mSearchArgs.containsKey("date")) {
-            mSearchDate = (Date) mSearchArgs.getSerializable("date");
+            mSearchDate = (DateTime) mSearchArgs.getSerializable("date");
         } else {
             mSearchDate = null;
         }
@@ -122,13 +122,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
     @Override
     protected void getInitialData() {
-
-        if (mRoutes != null) {
-            // routes are already retrieved from instance state (e.g. on rotation)
-            showData(mRoutes.getRoutes());
-            return;
-        }
-
         getData();
     }
 
@@ -163,8 +156,8 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
                 if (mSearchDate != null) {
                     vWarningNotRealtime.setVisibility(View.VISIBLE);
                     @SuppressLint("SimpleDateFormat")
-                    DateFormat df = new SimpleDateFormat(getString(R.string.warning_not_realtime_datetime));
-                    vWarningNotRealtimeText.setText(String.format("%s %s", getString(R.string.warning_not_realtime), df.format(mSearchDate)));
+                    DateTimeFormatter df = DateTimeFormat.forPattern(getString(R.string.warning_not_realtime_datetime));
+                    vWarningNotRealtimeText.setText(String.format("%s %s", getString(R.string.warning_not_realtime), df.print(mSearchDate)));
                 } else {
                     vWarningNotRealtime.setVisibility(View.GONE);
                 }
@@ -177,7 +170,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
                 if (mSearchDate != null) {
                     return api.getRoute(mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType);
                 } else {
-                    return api.getRoute(mSearchFrom, mSearchTo, new Date(), mSearchTimeType);
+                    return api.getRoute(mSearchFrom, mSearchTo, new DateTime(), mSearchTimeType);
                 }
 
             }
@@ -274,11 +267,11 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        return new RouteCardAdapter(this, vRecyclerView, this, null);
+        return new RouteCardAdapter(this, vRecyclerView, this);
     }
 
     @Override
-    public void onDateTimePicked(Date date) {
+    public void onDateTimePicked(DateTime date) {
         mSearchDate = date;
 
         // empty the view while loading

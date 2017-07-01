@@ -12,7 +12,6 @@
 
 package be.hyperrail.android.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -26,8 +25,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.Train;
@@ -65,19 +64,18 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
 
         holder.vDestination.setText(s.getStation().getLocalizedName());
 
-        @SuppressLint("SimpleDateFormat")
-        DateFormat df = new SimpleDateFormat("HH:mm");
+        DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
-        holder.vDepartureTime.setText(df.format(s.getDepartureTime()));
-        if (s.getDepartureDelay() > 0) {
-            holder.vDepartureDelay.setText(context.getString(R.string.delay, s.getDepartureDelay() / 60));
+        holder.vDepartureTime.setText(df.print(s.getDepartureTime()));
+        if (s.getDepartureDelay().getStandardSeconds() > 0) {
+            holder.vDepartureDelay.setText(context.getString(R.string.delay, s.getDepartureDelay().getStandardMinutes()));
         } else {
             holder.vDepartureDelay.setText("");
         }
 
-        holder.vArrivalTime.setText(df.format(s.getArrivalTime()));
-        if (s.getArrivalDelay() > 0) {
-            holder.vArrivalDelay.setText(context.getString(R.string.delay, s.getArrivalDelay() / 60));
+        holder.vArrivalTime.setText(df.print(s.getArrivalTime()));
+        if (s.getArrivalDelay().getStandardSeconds() > 0) {
+            holder.vArrivalDelay.setText(context.getString(R.string.delay, s.getArrivalDelay().getStandardMinutes()));
         } else {
             holder.vArrivalDelay.setText("");
         }

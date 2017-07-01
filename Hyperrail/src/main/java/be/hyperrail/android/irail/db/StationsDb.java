@@ -18,12 +18,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
+import android.preference.PreferenceManager;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Scanner;
 
 import be.hyperrail.android.R;
@@ -334,8 +336,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     @Override
     public String[] getStationNames(Station[] Stations) {
 
-        if (Stations == null ||Stations.length == 0){
-            FirebaseCrash.logcat(WARNING.intValue(),LOGTAG,"Tried to load station names on empty station list!");
+        if (Stations == null || Stations.length == 0) {
+            FirebaseCrash.logcat(WARNING.intValue(), LOGTAG, "Tried to load station names on empty station list!");
             return new String[0];
         }
 
@@ -456,12 +458,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     private Station[] loadStationCursor(Cursor c) {
         if (c.isClosed()) {
-            FirebaseCrash.logcat(SEVERE.intValue(),LOGTAG,"Tried to load closed cursor");
+            FirebaseCrash.logcat(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
             return null;
         }
 
-        if (c.getCount() == 0){
-            FirebaseCrash.logcat(SEVERE.intValue(),LOGTAG,"Tried to load cursor with 0 results!");
+        if (c.getCount() == 0) {
+            FirebaseCrash.logcat(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
             return null;
         }
 
@@ -469,13 +471,49 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] result = new Station[c.getCount()];
         int i = 0;
         while (!c.isAfterLast()) {
+
+            String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+            if (locale.isEmpty()) {
+                // Only get locale when needed
+                locale = Locale.getDefault().getISO3Language();
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putString("pref_stations_language", locale).apply();
+            }
+
+            String name = c.getString(c.getColumnIndex(COLUMN_NAME_NAME));
+            String localizedName = null;
+
+            String nl = c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_NL));
+            String fr = c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_FR));
+            String de = c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_DE));
+            String en = c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_EN));
+
+            switch (locale) {
+                case "nld":
+                    localizedName = nl;
+                    break;
+                case "fra":
+                    localizedName = fr;
+                    break;
+                case "deu":
+                    localizedName = de;
+                    break;
+                case "eng":
+                    localizedName = en;
+                    break;
+            }
+
+            if (localizedName == null || localizedName.isEmpty()) {
+                localizedName = name;
+            }
+
             Station s = new Station(
                     c.getString(c.getColumnIndex(_ID)),
-                    c.getString(c.getColumnIndex(COLUMN_NAME_NAME)),
-                    c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_NL)),
-                    c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_FR)),
-                    c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_DE)),
-                    c.getString(c.getColumnIndex(COLUMN_NAME_ALTERNATIVE_EN)),
+                    name,
+                    nl,
+                    fr,
+                    de,
+                    en,
+                    localizedName,
                     c.getString(c.getColumnIndex(COLUMN_NAME_COUNTRY_CODE)),
                     c.getDouble(c.getColumnIndex(COLUMN_NAME_LATITUDE)),
                     c.getDouble(c.getColumnIndex(COLUMN_NAME_LONGITUDE)),

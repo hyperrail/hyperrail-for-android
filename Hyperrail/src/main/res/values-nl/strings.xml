@@ -53,7 +53,7 @@
     <string name="to">Bestemming</string>
 
     <string name="warning_not_realtime">Je bekijkt resultaten voor</string>
-    <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy hh:mm</string>
+    <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy HH:mm</string>
 
     <string name="number_recent_searches">Aantal recente zoekopdrachten</string>
     <string name="title_departures">Vertrekken</string>

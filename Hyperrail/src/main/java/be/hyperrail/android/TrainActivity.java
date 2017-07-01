@@ -18,7 +18,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.TrainCardAdapter;
 import be.hyperrail.android.adapter.onRecyclerItemClickListener;
@@ -37,24 +37,24 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements onRecy
     private Station mScrollToStation;
     private Train mTrain;
     private TrainStub mCurrentSearchQuery;
-    private Date mTrainDate;
+    private DateTime mTrainDate;
 
     private AsyncTask runningTask;
 
-    public static Intent createIntent(Context context, TrainStub stub, Date day) {
+    public static Intent createIntent(Context context, TrainStub stub, DateTime day) {
         Intent i = new Intent(context, TrainActivity.class);
         i.putExtra("stub", stub);
         i.putExtra("date", day);
         return i;
     }
 
-    public static Intent createIntent(Context context, TrainStub stub, Station currentStation, Date day) {
+    public static Intent createIntent(Context context, TrainStub stub, Station currentStation, DateTime day) {
         Intent i = createIntent(context, stub, day);
         i.putExtra("currentStation", currentStation);
         return i;
     }
 
-    public static Intent createIntent(Context context, TrainStub stub, Station currentStation, Station destinationStation, Date day) {
+    public static Intent createIntent(Context context, TrainStub stub, Station currentStation, Station destinationStation, DateTime day) {
         Intent i = createIntent(context, stub,currentStation,day);
         i.putExtra("destinationStation", destinationStation);
         return i;
@@ -151,9 +151,9 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements onRecy
 
         mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
        if (getIntent().hasExtra("date")){
-           mTrainDate = (Date) getIntent().getSerializableExtra("date");
+           mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
        } else {
-           mTrainDate = new Date();
+           mTrainDate = new DateTime();
        }
 
         getData();

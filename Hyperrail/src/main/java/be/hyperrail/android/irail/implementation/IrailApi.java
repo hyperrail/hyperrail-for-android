@@ -12,11 +12,17 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.util.Log;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.metrics.AddTrace;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -26,8 +32,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
@@ -53,42 +57,44 @@ public class IrailApi implements IrailDataProvider {
 
     private static final String LOGTAG = "iRailApi";
 
-    public IrailApi(IrailParser parser, IrailStationProvider stationProvider) {
+    public IrailApi(Context context, IrailParser parser, IrailStationProvider stationProvider) {
+        this.context = context;
         this.parser = parser;
         this.stationProvider = stationProvider;
     }
 
+    private Context context;
     private final IrailParser parser;
     private final IrailStationProvider stationProvider;
 
     public IrailDataResponse<RouteResult> getRoute(String from, String to) {
-        return getRoute(from, to, new Date());
+        return getRoute(from, to, new DateTime());
     }
 
-    public IrailDataResponse<RouteResult> getRoute(String from, String to, Date timeFilter) {
+    public IrailDataResponse<RouteResult> getRoute(String from, String to, DateTime timeFilter) {
         return getRoute(from, to, timeFilter, RouteTimeDefinition.DEPART);
     }
 
-    public IrailDataResponse<RouteResult> getRoute(String from, String to, Date timeFilter, RouteTimeDefinition timeFilterType) {
+    public IrailDataResponse<RouteResult> getRoute(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType) {
         return getRoute(stationProvider.getStationByName(from), stationProvider.getStationByName(to), timeFilter, timeFilterType);
     }
 
     public IrailDataResponse<RouteResult> getRoute(Station from, Station to) {
-        return getRoute(from, to, new Date());
+        return getRoute(from, to, new DateTime());
     }
 
-    public IrailDataResponse<RouteResult> getRoute(Station from, Station to, Date timeFilter) {
+    public IrailDataResponse<RouteResult> getRoute(Station from, Station to, DateTime timeFilter) {
         return getRoute(from, to, timeFilter, RouteTimeDefinition.DEPART);
     }
 
     @AddTrace(name = "iRailGetroute")
-    public IrailDataResponse<RouteResult> getRoute(Station from, Station to, Date timeFilter, RouteTimeDefinition timeFilterType) {
+    public IrailDataResponse<RouteResult> getRoute(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType) {
 
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
 
         // suppress errors, this formatting is for an API call
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateformat = new SimpleDateFormat("ddMMyy");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeformat = new SimpleDateFormat("HHmm");
+        DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
+        DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
         if (from == null || to == null) {
             return new ApiResponse<>(null, new NotFoundException("", "One or both stations are null"));
@@ -108,8 +114,8 @@ public class IrailApi implements IrailDataProvider {
         String url = "https://api.irail.be/connections/?format=json"
                 + "&to=" + to_name
                 + "&from=" + from_name
-                + "&date=" + dateformat.format(timeFilter)
-                + "&time=" + timeformat.format(timeFilter);
+                + "&date=" + dateformat.print(timeFilter)
+                + "&time=" + timeformat.print(timeFilter);
 
         if (timeFilterType == RouteTimeDefinition.DEPART) {
             url += "&timeSel=depart";
@@ -135,20 +141,20 @@ public class IrailApi implements IrailDataProvider {
     }
 
     public IrailDataResponse<LiveBoard> getLiveboard(String name) {
-        return getLiveboard(name, new Date());
+        return getLiveboard(name, new DateTime());
     }
 
-    public IrailDataResponse<LiveBoard> getLiveboard(String name, Date timeFilter) {
+    public IrailDataResponse<LiveBoard> getLiveboard(String name, DateTime timeFilter) {
         return getLiveboard(name, timeFilter, RouteTimeDefinition.DEPART);
     }
 
     @AddTrace(name = "iRailGetLiveboard")
-    public IrailDataResponse<LiveBoard> getLiveboard(String name, Date timeFilter, RouteTimeDefinition timeFilterType) {
+    public IrailDataResponse<LiveBoard> getLiveboard(String name, DateTime timeFilter, RouteTimeDefinition timeFilterType) {
         // https://api.irail.be/liveboard/?station=Halle&fast=true
 
         // suppress errors, this formatting is for an API call
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateformat = new SimpleDateFormat("ddMMyy");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeformat = new SimpleDateFormat("HHmm");
+        DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
+        DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
         try {
             name = URLEncoder.encode(name, "UTF-8");
@@ -159,8 +165,8 @@ public class IrailApi implements IrailDataProvider {
         String url = "https://api.irail.be/liveboard/?format=json"
                 // TODO: use id here instead of name, supported by API but slow ATM
                 + "&station=" + name
-                + "&date=" + dateformat.format(timeFilter)
-                + "&time=" + timeformat.format(timeFilter)
+                + "&date=" + dateformat.print(timeFilter)
+                + "&time=" + timeformat.print(timeFilter)
                 + "&arrdep=" + ((timeFilterType == RouteTimeDefinition.DEPART) ? "dep" : "arr");
 
         try {
@@ -179,15 +185,15 @@ public class IrailApi implements IrailDataProvider {
         }
     }
 
-    public IrailDataResponse<Train> getTrain(String id, Date day) {
+    public IrailDataResponse<Train> getTrain(String id, DateTime day) {
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateformat = new SimpleDateFormat("ddMMyy");
+        DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
-                + "&id=" + id + "&date=" + dateformat.format(day);
+                + "&id=" + id + "&date=" + dateTimeformat.print(day);
 
         try {
-            return new ApiResponse<>(parser.parseTrain(getJsonData(url), new Date()));
+            return new ApiResponse<>(parser.parseTrain(getJsonData(url), new DateTime()));
         } catch (NetworkDisconnectedException e) {
             FirebaseCrash.logcat(WARNING.intValue(), "Failed to get train due to a network error", e.getMessage());
             return new ApiResponse<>(null, e);
@@ -203,11 +209,18 @@ public class IrailApi implements IrailDataProvider {
     }
 
     public IrailDataResponse<Train> getTrain(String id) {
-        return getTrain(id, new Date());
+        return getTrain(id, new DateTime());
     }
 
     public IrailDataResponse<Disturbance[]> getDisturbances() {
-        String url = "https://api.irail.be/disturbances/?format=json&lang=" + (Locale.getDefault().getISO3Language()).substring(0, 2);
+
+        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+        if (locale.isEmpty()) {
+            // Only get locale when needed
+            locale = Locale.getDefault().getISO3Language();
+        }
+
+        String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(0, 2);
 
         try {
             return new ApiResponse<>(parser.parseDisturbances(getJsonData(url)));
@@ -271,7 +284,8 @@ public class IrailApi implements IrailDataProvider {
     private static String getData(String address, int attempt) throws IOException {
         try {
             URL url = new URL(address);
-            FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt);
+            FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt + ")");
+            Log.i(LOGTAG, "Retrieving API URL: " + address + " (attempt " + attempt + ")");
 
             // Read all the text returned by the server
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
