@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="60dp"
+              android:clickable="true"
+              android:focusable="true"
+              android:gravity="center"
+              android:orientation="horizontal"
+              android:paddingBottom="@dimen/activity_small_margin"
+              android:paddingLeft="@dimen/activity_small_margin"
+              android:paddingRight="@dimen/activity_small_margin"
+              android:paddingTop="@dimen/activity_small_margin">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:src="@drawable/ruler_horizontal"
+        android:layout_marginRight="@dimen/activity_small_margin"/>
+
+    <TextView
+        android:id="@+id/text_date"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Monday June 20th 2017"/>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:src="@drawable/ruler_horizontal"
+        android:layout_marginLeft="@dimen/activity_small_margin"/>
+</LinearLayout>

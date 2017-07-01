@@ -36,8 +36,8 @@ import be.hyperrail.android.adapter.onRecyclerItemClickListener;
  */
 public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
+    protected final int VIEW_TYPE_ITEM = 601;
+    protected final int VIEW_TYPE_LOADING = 600;
 
     private final InfiniteScrollingDataSource mOnLoadMoreListener;
     private boolean isLoading;
@@ -47,8 +47,9 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     /**
      * Create a new InfiniteScrollingAdapter
-     * @param context The context
-     * @param recyclerView The recyclerview in which this adapter will be used
+     *
+     * @param context                      The context
+     * @param recyclerView                 The recyclerview in which this adapter will be used
      * @param mInfiniteScrollingDataSource The listener which should be notified when the end of the list is reached
      */
     protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, final InfiniteScrollingDataSource mInfiniteScrollingDataSource) {
@@ -69,9 +70,10 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     /**
      * Check if the listener should be called, and call it if necessary
+     *
      * @param recyclerView The recyclerview in which a scroll occurred
-     * @param dx The scroll distance along the x axis
-     * @param dy The scroll distance along the y axis
+     * @param dx           The scroll distance along the x axis
+     * @param dy           The scroll distance along the y axis
      */
     private void checkInfiniteScrolling(RecyclerView recyclerView, int dx, int dy) {
         if (infiniteScrollingEnabled && !isLoading && mOnLoadMoreListener != null && dy >= 0 && linearLayoutManager.findLastVisibleItemPosition() == InfiniteScrollingAdapter.this.getItemCount() - 1) {
@@ -83,6 +85,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     /**
      * Enable or disable the infinite scrolling. Useful e.g. at the end of lists.
+     *
      * @param enabled true to enable infinite scrolling
      */
     public void setInfiniteScrolling(boolean enabled) {
@@ -91,12 +94,21 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return (position == InfiniteScrollingAdapter.this.getItemCount() - 1) ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+    public final int getItemViewType(int position) {
+        if (infiniteScrollingEnabled && position == InfiniteScrollingAdapter.this.getItemCount() - 1) {
+            return VIEW_TYPE_LOADING;
+        } else {
+            return onGetItemViewType(position);
+        }
+    }
+
+    protected int onGetItemViewType(int position) {
+        return VIEW_TYPE_ITEM;
     }
 
     /**
      * Determine if the ViewHolder should be a spinner or a data item
+     *
      * @inheritDoc
      */
     @Override
@@ -104,21 +116,22 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
         if (viewType == VIEW_TYPE_LOADING) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_loading, parent, false);
             return new LoadingViewHolder(view);
-        } else if (viewType == VIEW_TYPE_ITEM) {
+        } else {
             return onCreateItemViewHolder(parent, viewType);
         }
-        return null;
     }
 
     /**
      * Determine the ViewHolder for data items
+     *
      * @inheritDoc
      */
     protected abstract RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType);
 
     /**
      * In case of a spinner, bind here, else call method in overriding class
-     * @param holder The ViewHolder to be bound
+     *
+     * @param holder   The ViewHolder to be bound
      * @param position The position to be bound
      */
     @Override
@@ -127,7 +140,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);
             loadingViewHolder.progressBar.getIndeterminateDrawable().setColorFilter(
-                    ContextCompat.getColor(context,R.color.colorPrimary),
+                    ContextCompat.getColor(context, R.color.colorPrimary),
                     PorterDuff.Mode.SRC_ATOP);
         } else {
             onBindItemViewHolder(holder, position);
@@ -136,13 +149,15 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     /**
      * Bind a ViewHolder for data items
-     * @param holder The ViewHolder to be bound
+     *
+     * @param holder   The ViewHolder to be bound
      * @param position The position to be bound
      */
     protected abstract void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position);
 
     /**
      * The number of data items + the progress bar
+     *
      * @return The number of data items + 1
      */
     @Override
@@ -156,6 +171,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     /**
      * The number of data items to be shown
+     *
      * @return The number of data items to be shown
      */
     protected abstract int getListItemCount();

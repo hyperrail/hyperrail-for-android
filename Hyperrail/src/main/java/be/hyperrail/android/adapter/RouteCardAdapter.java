@@ -22,6 +22,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.util.ArrayList;
 
 import be.hyperrail.android.LiveboardActivity;
 import be.hyperrail.android.R;
@@ -55,23 +58,80 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
     private final Context context;
     private onRecyclerItemClickListener<Route> listener;
 
-    public RouteCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener, Route[] routes) {
+    private Object[] displayList;
+
+    protected final static int VIEW_TYPE_DATE = 1;
+
+    public RouteCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
         this.context = context;
-        this.routes = routes;
     }
 
     public void updateRoutes(Route[] routes) {
         this.routes = routes;
+
+        ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
+
+        if (routes != null && routes.length > 0) {
+            DateTime lastday = routes[0].getDepartureTime().withTimeAtStartOfDay();
+
+            for (int i = 0; i < routes.length; i++) {
+                Route route = routes[i];
+
+                if (route.getDepartureTime().withTimeAtStartOfDay().isAfter(lastday)) {
+                    lastday = route.getDepartureTime().withTimeAtStartOfDay();
+                    daySeparatorPositions.add(i);
+                }
+            }
+
+            Log.d("DateSeparator", "Detected " + daySeparatorPositions.size() + " day changes");
+            this.displayList = new Object[daySeparatorPositions.size() + routes.length];
+
+            // Convert to array + take previous separators into account for position of next separator
+            int dayPosition = 0;
+            int routePosition = 0;
+            int resultPosition = 0;
+
+            while (resultPosition < daySeparatorPositions.size() + routes.length) {
+                // Keep in mind that position shifts with the number of already placed date separators
+                if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
+                    RouteCardAdapter.DateSeparator separator = new RouteCardAdapter.DateSeparator();
+                    // The date of this separator is the one of the next departure
+                    separator.separatorDate = routes[routePosition].getDepartureTime();
+                    this.displayList[resultPosition] = separator;
+
+                    dayPosition++;
+                } else {
+                    this.displayList[resultPosition] = routes[routePosition];
+                    routePosition++;
+                }
+
+                resultPosition++;
+            }
+        }
+
         super.setLoaded();
         this.notifyDataSetChanged();
     }
 
     @Override
-    public RouteViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+    protected int onGetItemViewType(int position) {
+        if (displayList[position] instanceof DateSeparator) {
+            return VIEW_TYPE_DATE;
+        }
+        return VIEW_TYPE_ITEM;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
-        if (! PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
+        if (viewType == VIEW_TYPE_DATE) {
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_separator_date, parent, false);
+            return new DateSeparatorViewHolder(itemView);
+        }
+
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_route, parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_route, parent, false);
@@ -82,8 +142,16 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder genericHolder, int position) {
+
+        if (genericHolder instanceof DateSeparatorViewHolder) {
+            final DateSeparatorViewHolder holder = (DateSeparatorViewHolder) genericHolder;
+            DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd MMMMMMMM yyyy");
+            holder.vDateText.setText(df.print(((RouteCardAdapter.DateSeparator) displayList[position]).separatorDate));
+            return;
+        }
+
         final RouteViewHolder holder = (RouteViewHolder) genericHolder;
-        final Route route = routes[position];
+        final Route route = (Route) displayList[position];
 
         DateTimeFormatter hhmm = DateTimeFormat.forPattern("HH:mm");
 
@@ -106,15 +174,15 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         Duration routeWithDelays = route.getDurationIncludingDelays();
         Duration routeWithoutDelays = route.getDuration();
 
-        if (routeWithDelays.equals(routeWithoutDelays)){
+        if (routeWithDelays.equals(routeWithoutDelays)) {
             holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorMuted));
-            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context,R.color.colorMuted));
-        } else if (routeWithDelays.isLongerThan(routeWithoutDelays)){
+            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorMuted));
+        } else if (routeWithDelays.isLongerThan(routeWithoutDelays)) {
             holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorDelay));
-            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context,R.color.colorDelay));
+            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay));
         } else {
             holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorFaster));
-            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context,R.color.colorFaster));
+            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorFaster));
         }
 
         holder.vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
@@ -125,17 +193,17 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
         if (route.getOrigin().isDepartureCanceled()) {
             holder.vPlatform.setText("");
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train_canceled));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
             holder.vStatusText.setText(R.string.status_cancelled);
         } else {
             holder.vStatusContainer.setVisibility(View.GONE);
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
         }
 
         if (!route.isDeparturePlatformNormal()) {
             Drawable drawable = holder.vPlatformContainer.getBackground();
             drawable.mutate();
-            drawable.setColorFilter(ContextCompat.getColor(context,R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
         }
 
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);
@@ -191,10 +259,10 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     @Override
     public int getListItemCount() {
-        if (routes == null) {
+        if (routes == null | displayList == null) {
             return 0;
         }
-        return routes.length;
+        return displayList.length;
     }
 
     public void setOnItemClickListener(onRecyclerItemClickListener<Route> listener) {
@@ -244,6 +312,11 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             vStatusText = (TextView) view.findViewById(R.id.text_train_status);
         }
 
+    }
+
+    private class DateSeparator {
+
+        DateTime separatorDate;
     }
 }
 

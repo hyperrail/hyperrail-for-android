@@ -13,6 +13,8 @@
 package be.hyperrail.android.irail.implementation;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.Serializable;
 
@@ -52,21 +54,22 @@ public class LiveBoard extends Station implements Serializable {
 
     public ApiResponse<TrainStop[]> getNextStops() {
         // get last time
-        DateTime lastSearch;
+        DateTime lastSearchTime;
 
         if (this.stops.length > 0) {
-            lastSearch = new DateTime(this.stops[this.stops.length - 1].getDepartureTime());
+            lastSearchTime = new DateTime(this.stops[this.stops.length - 1].getDelayedDepartureTime());
             // move one minute further
-            lastSearch = lastSearch.plusMinutes(1);
+            DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
+            lastSearchTime = lastSearchTime.plusMinutes(1);
         } else {
             // if it was empty (caused by e.g. night or weekend
-            lastSearch = new DateTime(searchDate);
+            lastSearchTime = new DateTime(searchDate);
             // move one hour further
-            lastSearch = lastSearch.plusHours(1);
+            lastSearchTime = lastSearchTime.plusHours(1);
         }
 
         // load
-        IrailDataResponse<LiveBoard> apiResponse = getLiveBoard(lastSearch);
+        IrailDataResponse<LiveBoard> apiResponse = getLiveBoard(lastSearchTime);
 
         if (!apiResponse.isSuccess()) {
             return new ApiResponse<>(null, apiResponse.getException());
@@ -78,10 +81,10 @@ public class LiveBoard extends Station implements Serializable {
         while (newSearch.getStops().length == 0 && i < 12) {
 
             // add an hour when completely empty
-            lastSearch = lastSearch.plusHours(1);
+            lastSearchTime = lastSearchTime.plusHours(1);
 
             // load
-            apiResponse = getLiveBoard(lastSearch);
+            apiResponse = getLiveBoard(lastSearchTime);
 
             if (!apiResponse.isSuccess()) {
                 return new ApiResponse<>(null, apiResponse.getException());

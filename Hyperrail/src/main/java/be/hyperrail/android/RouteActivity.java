@@ -274,7 +274,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        return new RouteCardAdapter(this, vRecyclerView, this, null);
+        return new RouteCardAdapter(this, vRecyclerView, this);
     }
 
     @Override
