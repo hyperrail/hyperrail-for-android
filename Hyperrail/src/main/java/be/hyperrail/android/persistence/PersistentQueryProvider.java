@@ -603,19 +603,20 @@ public class PersistentQueryProvider {
                 Station from = stationProvider.getStationById(object.getString("from"));
                 Station to = null;
 
-                if (!object.getString("to").equals("")) {
-                    to = stationProvider.getStationById(object.getString("to"));
-                }
-
-                RouteQuery query = new RouteQuery(from, to);
-                query.created_at = new Date(object.getLong("created_at"));
-                query.type = type;
-
                 if (from == null) {
                     FirebaseCrash.logcat(Level.SEVERE.intValue(), "PersistentQuery", "Loaded invalid routeQuery: " + object.getString("from") + " could not be decoded! Type is " + type.toString());
                 }
 
-                results.add(query);
+                if (!object.getString("to").equals("")) {
+                    to = stationProvider.getStationById(object.getString("to"));
+                }
+                if (from != null) {
+                    RouteQuery query = new RouteQuery(from, to);
+                    query.created_at = new Date(object.getLong("created_at"));
+                    query.type = type;
+
+                    results.add(query);
+                }
             } catch (JSONException exception) {
                 FirebaseCrash.logcat(Level.WARNING.intValue(), "PersistentQuery", "Failed to load routequery for type " + type.toString() + ": " + exception.getMessage());
                 // ignored
