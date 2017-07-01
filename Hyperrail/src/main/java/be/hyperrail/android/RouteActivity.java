@@ -122,13 +122,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
     @Override
     protected void getInitialData() {
-
-        if (mRoutes != null) {
-            // routes are already retrieved from instance state (e.g. on rotation)
-            showData(mRoutes.getRoutes());
-            return;
-        }
-
         getData();
     }
 

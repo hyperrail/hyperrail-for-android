@@ -79,6 +79,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         super.onSaveInstanceState(outState);
         outState.putSerializable("liveboard", mCurrentLiveboard);
     }
+
     @Override
     protected LiveBoard getRestoredInstanceStateItems() {
         return mCurrentLiveboard;
@@ -87,10 +88,11 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (runningTask != null  && runningTask.getStatus() != AsyncTask.Status.FINISHED){
+        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED) {
             runningTask.cancel(true);
         }
     }
+
     @Override
     protected int getLayout() {
         return R.layout.activity_liveboard;
@@ -123,11 +125,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
     @Override
     protected void getInitialData() {
-        if (mCurrentLiveboard == null) {
-            getData();
-        } else {
-            showData(mCurrentLiveboard);
-        }
+        getData();
     }
 
     @Override
@@ -152,7 +150,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                         LiveboardActivity.this.getNextData();
                     } else {
                         // Enable infinite scrolling, in case it was disabled during a previous search
-                        ((InfiniteScrollingAdapter)vRecyclerView.getAdapter()).setInfiniteScrolling(true);
+                        ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
                     }
 
                 } else {
@@ -176,15 +174,15 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
             @Override
             protected IrailDataResponse<LiveBoard> doInBackground(Station... stations) {
-                    if (mSearchDate == null) {
-                        return stations[0].getLiveBoard();
-                    } else {
-                        return stations[0].getLiveBoard(mSearchDate);
-                    }
+                if (mSearchDate == null) {
+                    return stations[0].getLiveBoard();
+                } else {
+                    return stations[0].getLiveBoard(mSearchDate);
+                }
             }
         };
 
-        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED){
+        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED) {
             runningTask.cancel(true);
         }
 
@@ -204,14 +202,14 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             protected void onPostExecute(ApiResponse<TrainStop[]> liveboard) {
                 super.onPostExecute(liveboard);
 
-                if (! liveboard.isSuccess()) {
+                if (!liveboard.isSuccess()) {
                     ErrorDialogFactory.showErrorDialog(liveboard.getException(), LiveboardActivity.this, false);
                     ((LiveboardCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
                     return;
                 }
 
-                if ( liveboard.getData().length == 0){
-                    ((InfiniteScrollingAdapter)vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                if (liveboard.getData().length == 0) {
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                 }
 
                 showData(mCurrentLiveboard);
@@ -232,7 +230,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             setSubTitle(liveBoard.getLocalizedName());
         }
 
-        if (mSearchDate == null){
+        if (mSearchDate == null) {
             vWarningNotRealtime.setVisibility(View.GONE);
         }
 
