@@ -36,6 +36,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     private onRecyclerItemClickListener<Disturbance> listener;
 
+    private static final int VIEW_TYPE_NO_RESULTS = 1;
+    private static final int VIEW_TYPE_DISTURBANCE = 0;
+
     public DisturbanceCardAdapter(Context context, Disturbance[] disturbances) {
         this.context = context;
         this.disturbances = disturbances;
@@ -47,10 +50,19 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if ((this.disturbances == null || this.disturbances.length == 0) && position == 0) {
+            return VIEW_TYPE_NO_RESULTS;
+        } else {
+            return VIEW_TYPE_DISTURBANCE;
+        }
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
-        if (this.disturbances == null || this.disturbances.length == 0) {
+        if (viewType == VIEW_TYPE_NO_RESULTS) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_no_disturbances, parent, false);
             return new NoResultsViewHolder(itemView);
         }
@@ -77,11 +89,11 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd/MM/yy HH:mm");
             holder.vDate.setText(df.print(disturbance.getTime()));
-          
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (listener != null){
+                    if (listener != null) {
                         listener.onRecyclerItemClick(DisturbanceCardAdapter.this, disturbance);
                     }
                 }
