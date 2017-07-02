@@ -68,6 +68,7 @@
     <string name="feedback_explanation">If you have any suggestions, ideas, or problems with this application, please report them here. All feedback will be mailed to the developer.</string>
     <string name="feedback_hint">Type your feedback here</string>
     <string name="feedback_send">Send feedback</string>
+    <string name="action_suggestion_delete">Remove from list</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

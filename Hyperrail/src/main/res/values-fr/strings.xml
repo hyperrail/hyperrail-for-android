@@ -65,5 +65,6 @@
     <string name="feedback_send">Envoyer des commentaires</string>
     <string name="feedback_hint">Tapez vos commentaires ici</string>
     <string name="placeholder_no_disturbances">Il n\'y a pas de perturbations en ce moment</string>
+    <string name="action_suggestion_delete">Retirer de la liste</string>
 
 </resources>

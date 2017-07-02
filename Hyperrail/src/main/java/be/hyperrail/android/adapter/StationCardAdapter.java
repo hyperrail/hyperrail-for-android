@@ -36,7 +36,8 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
     private Station[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
-
+    private onLongRecyclerItemClickListener<Object> longClickListener;
+    private onRecyclerItemClickListener<Station> listener;
     /**
      * Show nearby stations before suggestiosn
      *
@@ -53,9 +54,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         UNDEFINED
     }
 
-    private stationType currentType = stationType.UNDEFINED;
-
-    private onRecyclerItemClickListener<Station> listener;
+    private stationType currentDisplayType = stationType.UNDEFINED;
 
     public StationCardAdapter(Context context, Station[] stations) {
         this.context = context;
@@ -113,17 +112,27 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
                     }
                 }
             });
+
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (longClickListener != null) {
+                        longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, q);
+                    }
+                    return false;
+                }
+            });
         } else {
 
             if (!nearbyOnTop) {
                 position = position - suggestedStationsLength;
             }
 
-            final Station s = stations[position];
+            final Station station = stations[position];
 
-            holder.vStation.setText(s.getLocalizedName());
+            holder.vStation.setText(station.getLocalizedName());
 
-            switch (currentType) {
+            switch (currentDisplayType) {
                 case UNDEFINED:
                     holder.vIcon.setVisibility(View.INVISIBLE);
                     break;
@@ -141,8 +150,18 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
-                        listener.onRecyclerItemClick(StationCardAdapter.this, s);
+                        listener.onRecyclerItemClick(StationCardAdapter.this, station);
                     }
+                }
+            });
+
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (longClickListener != null) {
+                        longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, station);
+                    }
+                    return false;
                 }
             });
         }
@@ -159,7 +178,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
     }
 
     public void setStationIconType(stationType type) {
-        this.currentType = type;
+        this.currentDisplayType = type;
         this.notifyDataSetChanged();
     }
 
@@ -172,8 +191,8 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         this.listener = listener;
     }
 
-    public void clearOnItemClickListener() {
-        this.listener = null;
+    public void setOnLongItemClickListener(onLongRecyclerItemClickListener<Object> listener) {
+        this.longClickListener = listener;
     }
 
     @Override

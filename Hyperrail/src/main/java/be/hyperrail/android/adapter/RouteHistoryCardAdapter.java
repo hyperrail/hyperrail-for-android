@@ -33,6 +33,7 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
     private RouteQuery[] queries;
 
     private onRecyclerItemClickListener<RouteQuery> listener;
+    private onLongRecyclerItemClickListener<RouteQuery> longClickListener;
 
     public RouteHistoryCardAdapter(Context context, RouteQuery[] queries) {
         this.queries = queries;
@@ -80,14 +81,24 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
                 }
             }
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (longClickListener != null) {
+                    longClickListener.onLongRecyclerItemClick(RouteHistoryCardAdapter.this, query);
+                }
+                return false;
+            }
+        });
     }
 
     public void setOnItemClickListener(onRecyclerItemClickListener<RouteQuery> listener) {
         this.listener = listener;
     }
 
-    public void clearOnItemClickListener() {
-        this.listener = null;
+    public void setOnLongItemClickListener(onLongRecyclerItemClickListener<RouteQuery> listener) {
+        this.longClickListener = listener;
     }
 
     @Override
