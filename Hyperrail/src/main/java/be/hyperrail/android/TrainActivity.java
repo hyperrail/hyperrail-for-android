@@ -20,8 +20,8 @@ import android.support.v7.widget.RecyclerView;
 
 import org.joda.time.DateTime;
 
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.TrainCardAdapter;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Train;
@@ -32,7 +32,7 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 /**
  * Activity to show a train
  */
-public class TrainActivity extends RecyclerViewActivity<Train> implements onRecyclerItemClickListener<TrainStop> {
+public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<TrainStop> {
 
     private Station mScrollToStation;
     private Train mTrain;

@@ -48,7 +48,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     protected final static int VIEW_TYPE_DATE = 1;
 
-    private onRecyclerItemClickListener<TrainStop> listener;
+    private OnRecyclerItemClickListener<TrainStop> listener;
 
     public LiveboardCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
@@ -192,7 +192,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         return displayList.length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<TrainStop> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
         this.listener = listener;
     }
 

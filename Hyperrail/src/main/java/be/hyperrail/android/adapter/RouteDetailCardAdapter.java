@@ -52,7 +52,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private final Route route;
 
     private final Context context;
-    private onRecyclerItemClickListener<Object> listener;
+    private OnRecyclerItemClickListener<Object> listener;
 
     private final int VIEW_TYPE_TRANSFER = 0;
     private final int VIEW_TYPE_TRAIN = 1;
@@ -285,7 +285,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return route.getTrains().length + route.getTransfers().length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<Object> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Object> listener) {
         this.listener = listener;
     }
 

@@ -43,9 +43,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.crash.FirebaseCrash;
 
+import be.hyperrail.android.adapter.OnLongRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.StationCardAdapter;
-import be.hyperrail.android.adapter.onLongRecyclerItemClickListener;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
@@ -57,7 +57,7 @@ import static java.util.logging.Level.INFO;
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class LiveboardSearchFragment extends Fragment implements onRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, onLongRecyclerItemClickListener<Object> {
+public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnLongRecyclerItemClickListener<Object> {
 
     private static final String LogTag = "LiveboardSearch";
     private static final int COARSE_LOCATION_REQUEST = 1;
@@ -292,19 +292,19 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_delete) {
-            if (mLastSelectedQuery != null) {
-                if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
-                    persistentQueryProvider.removeFavoriteStation(mLastSelectedQuery.from);
-                    Snackbar.make(stationRecyclerView, R.string.unmarked_station_favorite, Snackbar.LENGTH_LONG).show();
-                } else {
-                    persistentQueryProvider.removeRecentStation(mLastSelectedQuery.from);
-                }
-                mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
+        if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
+            if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
+                persistentQueryProvider.removeFavoriteStation(mLastSelectedQuery.from);
+                Snackbar.make(stationRecyclerView, R.string.unmarked_station_favorite, Snackbar.LENGTH_LONG).show();
+            } else {
+                persistentQueryProvider.removeRecentStation(mLastSelectedQuery.from);
             }
+            mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
         }
+
         // handle menu here - get item index or ID from info
         return super.onContextItemSelected(item);
+
     }
 
     /**

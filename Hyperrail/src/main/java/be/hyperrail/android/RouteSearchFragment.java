@@ -38,9 +38,9 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import be.hyperrail.android.adapter.OnLongRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteHistoryCardAdapter;
-import be.hyperrail.android.adapter.onLongRecyclerItemClickListener;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
@@ -56,7 +56,7 @@ import be.hyperrail.android.util.SwipeDetector;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteSearchFragment extends Fragment implements onRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable, onLongRecyclerItemClickListener<RouteQuery> {
+public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable, OnLongRecyclerItemClickListener<RouteQuery> {
 
     private AutoCompleteTextView vFromText;
     private AutoCompleteTextView vToText;
@@ -262,17 +262,16 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_delete) {
-            if (mLastSelectedQuery != null) {
-                if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
-                    persistentQueryProvider.removeFavoriteRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
-                    Snackbar.make(mSuggestionsRecyclerView, R.string.unmarked_route_favorite, Snackbar.LENGTH_LONG).show();
-                } else {
-                    persistentQueryProvider.removeRecentRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
-                }
-                mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
+        if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
+            if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
+                persistentQueryProvider.removeFavoriteRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
+                Snackbar.make(mSuggestionsRecyclerView, R.string.unmarked_route_favorite, Snackbar.LENGTH_LONG).show();
+            } else {
+                persistentQueryProvider.removeRecentRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
             }
+            mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
         }
+
         // handle menu here - get item index or ID from info
         return super.onContextItemSelected(item);
     }

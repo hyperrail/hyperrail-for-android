@@ -36,8 +36,10 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
     private Station[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
-    private onLongRecyclerItemClickListener<Object> longClickListener;
-    private onRecyclerItemClickListener<Station> listener;
+    private OnLongRecyclerItemClickListener<Object> longClickListener;
+    private OnRecyclerItemClickListener<Station> listener;
+
+    private stationType currentDisplayType = stationType.UNDEFINED;
 
     /**
      * Show nearby stations before suggestiosn
@@ -54,8 +56,6 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         SEARCHED,
         UNDEFINED
     }
-
-    private stationType currentDisplayType = stationType.UNDEFINED;
 
     public StationCardAdapter(Context context, Station[] stations) {
         this.context = context;
@@ -84,88 +84,99 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             suggestedStationsLength = suggestedStations.length;
         }
 
-        if ((showSuggestions && suggestedStations != null && position < suggestedStationsLength && !nearbyOnTop) || (showSuggestions && suggestedStations != null && position >= stations.length && nearbyOnTop)) {
-
-            if (nearbyOnTop) {
-                position = position - stations.length;
-            }
-
-            final RouteQuery q = suggestedStations[position];
-
-            holder.vStation.setText(q.fromName);
-
-            switch (q.type) {
-                case FAVORITE_STATION:
-                    holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star));
-                    break;
-                case RECENT_STATION:
-                    holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_history));
-                    break;
-            }
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onRecyclerItemClick(StationCardAdapter.this, q.from);
-                    }
-                }
-            });
-
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    if (longClickListener != null) {
-                        longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, q);
-                    }
-                    return false;
-                }
-            });
+        if ((showSuggestions && suggestedStations != null && position < suggestedStationsLength && !nearbyOnTop) ||
+                (showSuggestions && suggestedStations != null && position >= stations.length && nearbyOnTop)) {
+            bindSuggestionViewHolder(holder, position);
         } else {
-
-            if (!nearbyOnTop) {
-                position = position - suggestedStationsLength;
-            }
-
-            final Station station = stations[position];
-
-            holder.vStation.setText(station.getLocalizedName());
-
-            switch (currentDisplayType) {
-                case UNDEFINED:
-                    holder.vIcon.setVisibility(View.INVISIBLE);
-                    break;
-                case NEARBY:
-                    holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_location_on_white));
-                    break;
-                case SEARCHED:
-                    holder.vIcon.setVisibility(View.VISIBLE);
-                    holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_search_white));
-                    break;
-            }
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onRecyclerItemClick(StationCardAdapter.this, station);
-                    }
-                }
-            });
-
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    if (longClickListener != null) {
-                        longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, station);
-                    }
-                    return false;
-                }
-            });
+            bindNearbyViewHolder(holder, position, suggestedStationsLength);
         }
+    }
+
+    private void bindNearbyViewHolder(StationViewHolder holder, int position, int suggestedStationsLength) {
+        if (!nearbyOnTop) {
+            position = position - suggestedStationsLength;
+        }
+
+        final Station station = stations[position];
+
+        holder.vStation.setText(station.getLocalizedName());
+
+        switch (currentDisplayType) {
+            case NEARBY:
+                holder.vIcon.setVisibility(View.VISIBLE);
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_location_on_white));
+                break;
+            case SEARCHED:
+                holder.vIcon.setVisibility(View.VISIBLE);
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_search_white));
+                break;
+            default:
+            case UNDEFINED:
+                holder.vIcon.setVisibility(View.INVISIBLE);
+                break;
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onRecyclerItemClick(StationCardAdapter.this, station);
+                }
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (longClickListener != null) {
+                    longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, station);
+                }
+                return false;
+            }
+        });
+    }
+
+    private void bindSuggestionViewHolder(StationViewHolder holder, int position) {
+        if (nearbyOnTop) {
+            position = position - stations.length;
+        }
+
+        final RouteQuery q = suggestedStations[position];
+
+        holder.vStation.setText(q.fromName);
+
+        switch (q.type) {
+            case FAVORITE_STATION:
+                holder.vIcon.setVisibility(View.VISIBLE);
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star));
+                break;
+            case RECENT_STATION:
+                holder.vIcon.setVisibility(View.VISIBLE);
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_history));
+                break;
+            default:
+                // No default icon
+                break;
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onRecyclerItemClick(StationCardAdapter.this, q.from);
+                }
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (longClickListener != null) {
+                    longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, q);
+                }
+                return false;
+            }
+        });
     }
 
     public void setSuggestedStations(RouteQuery[] suggestedStations) {
@@ -188,11 +199,11 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<Station> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Station> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(onLongRecyclerItemClickListener<Object> listener) {
+    public void setOnLongItemClickListener(OnLongRecyclerItemClickListener<Object> listener) {
         this.longClickListener = listener;
     }
 

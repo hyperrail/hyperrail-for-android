@@ -56,7 +56,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private Route[] routes;
     private final Context context;
-    private onRecyclerItemClickListener<Route> listener;
+    private OnRecyclerItemClickListener<Route> listener;
 
     private Object[] displayList;
 
@@ -209,7 +209,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);
 
         // Launch intents to view details / click through
-        adapter.setOnItemClickListener(new onRecyclerItemClickListener<Object>() {
+        adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
             @Override
             public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
                 Intent i = null;
@@ -265,7 +265,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         return displayList.length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<Route> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Route> listener) {
         this.listener = listener;
     }
 

@@ -27,7 +27,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
@@ -41,7 +41,7 @@ import be.hyperrail.android.util.OnDateTimeSetListener;
 /**
  * Activity to show a liveboard
  */
-public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements onRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource {
+public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements OnRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource {
 
     private LiveBoard mCurrentLiveboard;
     private Station mCurrentStation;

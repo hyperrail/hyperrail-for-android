@@ -39,7 +39,7 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
 
     private final Train train;
     private final Context context;
-    private onRecyclerItemClickListener<TrainStop> listener;
+    private OnRecyclerItemClickListener<TrainStop> listener;
 
     public TrainCardAdapter(Context context, Train train) {
         this.context = context;
@@ -135,7 +135,7 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
         return train.getStops().length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<TrainStop> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
         this.listener = listener;
     }
 
