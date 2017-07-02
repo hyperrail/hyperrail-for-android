@@ -18,7 +18,7 @@ When launching the app, you will be greeted by a screen where you can search for
 By using the navigation drawer, you can navigate to screens to search for routes, lookup disturbances, or adjust settings.
 The start screen can be adjusted in settings.
 
-##Bug reporting
+## Bug reporting
 Please report bugs on the github issue tracker.
 
 ## Contributing
