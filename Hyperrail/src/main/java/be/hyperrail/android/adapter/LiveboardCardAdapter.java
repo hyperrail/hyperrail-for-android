@@ -61,7 +61,16 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
         if (liveboard != null && liveboard.getStops() != null && liveboard.getStops().length > 0) {
-            DateTime lastday = liveBoard.getStops()[0].getDepartureTime().withTimeAtStartOfDay();
+            // Default day to compare to is today
+            DateTime lastday = DateTime.now().withTimeAtStartOfDay();
+
+            if (!liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay().isEqual(lastday)) {
+                // If the first stop is not today, add date separators everywhere
+                lastday = liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
+            } else if (!liveboard.getSearchTime().withTimeAtStartOfDay().equals(liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay())) {
+                // If the search results differ from the date searched, everything after the date searched should have separators
+                lastday = liveboard.getSearchTime().withTimeAtStartOfDay();
+            }
 
             for (int i = 0; i < liveboard.getStops().length; i++) {
                 TrainStop stop = liveBoard.getStops()[i];
@@ -95,6 +104,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
                 resultPosition++;
             }
+        } else {
+            displayList = null;
         }
 
         super.setLoaded();
