@@ -69,7 +69,6 @@
     <string name="feedback_hint">Type your feedback here</string>
     <string name="feedback_send">Send feedback</string>
     <string name="action_suggestion_delete">Remove from list</string>
-    <string name="no_more_results">There are no more results</string>
 
     <string-array name="departarrive">
         <item>Leave</item>
