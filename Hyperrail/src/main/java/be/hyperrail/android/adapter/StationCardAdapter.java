@@ -38,6 +38,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
     private boolean nearbyOnTop;
     private onLongRecyclerItemClickListener<Object> longClickListener;
     private onRecyclerItemClickListener<Station> listener;
+
     /**
      * Show nearby stations before suggestiosn
      *
@@ -213,8 +214,8 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
      */
     class StationViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vStation;
-        final ImageView vIcon;
+        protected final TextView vStation;
+        protected final ImageView vIcon;
 
         StationViewHolder(View v) {
             super(v);

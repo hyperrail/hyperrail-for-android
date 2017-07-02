@@ -121,9 +121,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     class DisturbanceViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vTitle;
-        final TextView vDescription;
-        final TextView vDate;
+        protected final TextView vTitle;
+        protected final TextView vDescription;
+        protected final TextView vDate;
 
         DisturbanceViewHolder(View view) {
             super(view);

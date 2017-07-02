@@ -271,21 +271,21 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private class RouteViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vDepartureTime;
-        final TextView vDepartureDelay;
-        final TextView vArrivalTime;
-        final TextView vArrivalDelay;
-        final TextView vDirection;
-        final TextView vDuration;
-        final ImageView vDurationIcon;
-        final TextView vTrainCount;
-        final TextView vPlatform;
-        final LinearLayout vPlatformContainer;
-        final RecyclerView vRecyclerView;
-        final LinearLayout vHeaderContainer;
-        final LinearLayout vDetailContainer;
-        final TextView vStatusText;
-        final LinearLayout vStatusContainer;
+        protected final TextView vDepartureTime;
+        protected final TextView vDepartureDelay;
+        protected final TextView vArrivalTime;
+        protected final TextView vArrivalDelay;
+        protected final TextView vDirection;
+        protected final TextView vDuration;
+        protected final ImageView vDurationIcon;
+        protected final TextView vTrainCount;
+        protected final TextView vPlatform;
+        protected final LinearLayout vPlatformContainer;
+        protected final RecyclerView vRecyclerView;
+        protected final LinearLayout vHeaderContainer;
+        protected final LinearLayout vDetailContainer;
+        protected final TextView vStatusText;
+        protected final LinearLayout vStatusContainer;
 
         RouteViewHolder(View view) {
             super(view);

@@ -198,17 +198,17 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     private class LiveboardStopViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vDestination;
-        final TextView vTrainType;
-        final TextView vTrainNumber;
-        final TextView vDeparture;
-        final TextView vDepartureDelay;
-        final TextView vDelayTime;
-        final TextView vPlatform;
-        final LinearLayout vPlatformContainer;
+        protected final TextView vDestination;
+        protected final TextView vTrainType;
+        protected final TextView vTrainNumber;
+        protected final TextView vDeparture;
+        protected final TextView vDepartureDelay;
+        protected final TextView vDelayTime;
+        protected final TextView vPlatform;
+        protected final LinearLayout vPlatformContainer;
 
-        final LinearLayout vStatusContainer;
-        final TextView vStatusText;
+        protected final LinearLayout vStatusContainer;
+        protected final TextView vStatusText;
 
         LiveboardStopViewHolder(View view) {
             super(view);

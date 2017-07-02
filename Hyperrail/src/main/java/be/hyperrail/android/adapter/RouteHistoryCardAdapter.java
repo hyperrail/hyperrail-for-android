@@ -108,9 +108,9 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
 
     class RouteHistoryViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vFrom;
-        final TextView vTo;
-        final ImageView vIcon;
+        protected final TextView vFrom;
+        protected final TextView vTo;
+        protected final ImageView vIcon;
 
         public RouteHistoryViewHolder(View v) {
             super(v);
