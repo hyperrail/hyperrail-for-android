@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.util.Log;
+
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -33,12 +35,12 @@ public class RouteResult implements Serializable {
     private final Station origin;
     private final Station destination;
     private final RouteTimeDefinition timeDefinition;
-    private final DateTime lastSearchTime;
+    private final DateTime mLastSearchTime;
     private Route[] routes;
 
-    public RouteResult(Station origin, Station destination, DateTime lastSearchTime, RouteTimeDefinition timeDefinition, Route[] routes) {
+    public RouteResult(Station origin, Station destination, DateTime searchTime, RouteTimeDefinition timeDefinition, Route[] routes) {
         this.destination = destination;
-        this.lastSearchTime = lastSearchTime;
+        this.mLastSearchTime = searchTime;
         this.origin = origin;
         this.routes = routes;
         this.timeDefinition = timeDefinition;
@@ -56,8 +58,8 @@ public class RouteResult implements Serializable {
         return timeDefinition;
     }
 
-    public DateTime getLastSearchTime() {
-        return lastSearchTime;
+    public DateTime getSearchTime() {
+        return mLastSearchTime;
     }
 
     public Route[] getRoutes() {
@@ -73,7 +75,7 @@ public class RouteResult implements Serializable {
         if (this.routes != null) {
             lastsearch = new DateTime(this.routes[this.routes.length - 1].getDepartureTime());
         } else {
-            lastsearch = lastSearchTime;
+            lastsearch = mLastSearchTime;
         }
         // move one minute further
         lastsearch = lastsearch.plusMinutes(1);
@@ -90,12 +92,13 @@ public class RouteResult implements Serializable {
 
         while (newSearch == null || newSearch.length == 0) {
             // add an hour
-            lastsearch = lastsearch.plusHours(1);
+            lastsearch = lastsearch.plusHours(2);
             // load
 
             apiResponse = api.getRoute(origin.getName(), destination.getName(), lastsearch);
 
             if (!apiResponse.isSuccess()) {
+                Log.d("RouteResult", "Extending route list failed with exception " + apiResponse.getException().getMessage());
                 return new ApiResponse<>(null, apiResponse.getException());
             }
 

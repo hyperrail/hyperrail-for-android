@@ -36,13 +36,13 @@ public class IrailApiParser implements IrailParser {
         this.stationProvider = stationProvider;
     }
 
-    public RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, DateTime lastSearchTime, RouteTimeDefinition timeDefinition) throws JSONException {
+    public RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, DateTime searchTime, RouteTimeDefinition timeDefinition) throws JSONException {
         JSONArray routesObject = json.getJSONArray("connection");
         Route[] routes = new Route[routesObject.length()];
         for (int i = 0; i < routesObject.length(); i++) {
             routes[i] = parseRoute(routesObject.getJSONObject(i));
         }
-        return new RouteResult(origin, destination, lastSearchTime, timeDefinition, routes);
+        return new RouteResult(origin, destination, searchTime, timeDefinition, routes);
     }
 
     public Route parseRoute(JSONObject routeObject) throws JSONException {

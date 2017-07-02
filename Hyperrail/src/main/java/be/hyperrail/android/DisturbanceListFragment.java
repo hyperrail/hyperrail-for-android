@@ -31,7 +31,7 @@ import android.view.ViewGroup;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Disturbance;
@@ -40,7 +40,7 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 /**
  * A list with disturbances
  */
-public class DisturbanceListFragment extends Fragment implements onRecyclerItemClickListener<Disturbance> {
+public class DisturbanceListFragment extends Fragment implements OnRecyclerItemClickListener<Disturbance> {
 
     private RecyclerView vRecyclerView;
     private SwipeRefreshLayout vRefreshLayout;

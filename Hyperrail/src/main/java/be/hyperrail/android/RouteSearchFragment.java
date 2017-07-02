@@ -20,8 +20,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -36,8 +38,9 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import be.hyperrail.android.adapter.OnLongRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteHistoryCardAdapter;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
@@ -53,7 +56,7 @@ import be.hyperrail.android.util.SwipeDetector;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteSearchFragment extends Fragment implements onRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable {
+public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable, OnLongRecyclerItemClickListener<RouteQuery> {
 
     private AutoCompleteTextView vFromText;
     private AutoCompleteTextView vToText;
@@ -67,6 +70,9 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
     private PersistentQueryProvider persistentQueryProvider;
 
     private final int TAG_ACCENT_SEARCH = 1;
+    private RouteQuery mLastSelectedQuery;
+    private RecyclerView mSuggestionsRecyclerView;
+    private RouteHistoryCardAdapter mSuggestionsAdapter;
 
     public RouteSearchFragment() {
         // Required empty public constructor
@@ -206,20 +212,21 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
 
         persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
 
-        RecyclerView suggestions = (RecyclerView) this.getActivity().findViewById(R.id.recyclerview_primary);
-        suggestions.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        mSuggestionsRecyclerView = (RecyclerView) this.getActivity().findViewById(R.id.recyclerview_primary);
+        mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        registerForContextMenu(mSuggestionsRecyclerView);
 
-        RouteHistoryCardAdapter suggestionAdapter = new RouteHistoryCardAdapter(this.getActivity(), persistentQueryProvider.getAllRoutes());
-        suggestionAdapter.setOnItemClickListener(this);
-
-        suggestions.setAdapter(suggestionAdapter);
-        suggestionAdapter.notifyDataSetChanged();
+        mSuggestionsAdapter = new RouteHistoryCardAdapter(this.getActivity(), persistentQueryProvider.getAllRoutes());
+        mSuggestionsAdapter.setOnItemClickListener(this);
+        mSuggestionsAdapter.setOnLongItemClickListener(this);
+        mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
+        mSuggestionsAdapter.notifyDataSetChanged();
 
         if (this.getArguments() != null && (this.getArguments().containsKey("from") || this.getArguments().containsKey("to"))) {
             vFromText.setText(this.getArguments().getString("from", ""), false);
             vToText.setText(this.getArguments().getString("to", ""), false);
 
-            if ( !this.getArguments().containsKey("to")){
+            if (!this.getArguments().containsKey("to")) {
                 vToText.requestFocus();
             } else {
                 vFromText.requestFocus();
@@ -237,6 +244,36 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
 
     private void hideDateTimeRow() {
         vArriveDepartContainer.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onLongRecyclerItemClick(RecyclerView.Adapter sender, RouteQuery object) {
+        mLastSelectedQuery = object;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
+        if (mLastSelectedQuery != null) {
+            menu.setHeaderTitle(mLastSelectedQuery.fromName + " - " + mLastSelectedQuery.toName);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
+            if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
+                persistentQueryProvider.removeFavoriteRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
+                Snackbar.make(mSuggestionsRecyclerView, R.string.unmarked_route_favorite, Snackbar.LENGTH_LONG).show();
+            } else {
+                persistentQueryProvider.removeRecentRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
+            }
+            mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
+        }
+
+        // handle menu here - get item index or ID from info
+        return super.onContextItemSelected(item);
     }
 
     @Override
@@ -302,7 +339,6 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
 
         IrailStationProvider p = IrailFactory.getStationsProviderInstance();
         Station station_from = p.getStationByName(from);
-
 
         Station station_to = p.getStationByName(to);
 
@@ -393,5 +429,6 @@ public class RouteSearchFragment extends Fragment implements onRecyclerItemClick
             showDateTimeRow();
         }
     }
+
 }
 

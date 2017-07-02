@@ -76,4 +76,5 @@
     <string name="feedback_send">Verstuur feedback</string>
     <string name="feedback_explanation">Indien je suggiesties, ideeën, of problemen hebt met de applicatie, kan je deze hier melden. Feedback wordt rechtstreeks naar de ontwikkelaar verstuurd.</string>
     <string name="placeholder_no_disturbances">Er zijn geen storingen op dit moment</string>
+    <string name="action_suggestion_delete">Uit lijst verwijderen</string>
 </resources>

@@ -48,7 +48,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     protected final static int VIEW_TYPE_DATE = 1;
 
-    private onRecyclerItemClickListener<TrainStop> listener;
+    private OnRecyclerItemClickListener<TrainStop> listener;
 
     public LiveboardCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
@@ -61,7 +61,16 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
         if (liveboard != null && liveboard.getStops() != null && liveboard.getStops().length > 0) {
-            DateTime lastday = liveBoard.getStops()[0].getDepartureTime().withTimeAtStartOfDay();
+            // Default day to compare to is today
+            DateTime lastday = DateTime.now().withTimeAtStartOfDay();
+
+            if (!liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay().isEqual(lastday)) {
+                // If the first stop is not today, add date separators everywhere
+                lastday = liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
+            } else if (!liveboard.getSearchTime().withTimeAtStartOfDay().equals(liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay())) {
+                // If the search results differ from the date searched, everything after the date searched should have separators
+                lastday = liveboard.getSearchTime().withTimeAtStartOfDay();
+            }
 
             for (int i = 0; i < liveboard.getStops().length; i++) {
                 TrainStop stop = liveBoard.getStops()[i];
@@ -95,6 +104,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
                 resultPosition++;
             }
+        } else {
+            displayList = null;
         }
 
         super.setLoaded();
@@ -192,23 +203,23 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         return displayList.length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<TrainStop> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
         this.listener = listener;
     }
 
     private class LiveboardStopViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vDestination;
-        final TextView vTrainType;
-        final TextView vTrainNumber;
-        final TextView vDeparture;
-        final TextView vDepartureDelay;
-        final TextView vDelayTime;
-        final TextView vPlatform;
-        final LinearLayout vPlatformContainer;
+        protected final TextView vDestination;
+        protected final TextView vTrainType;
+        protected final TextView vTrainNumber;
+        protected final TextView vDeparture;
+        protected final TextView vDepartureDelay;
+        protected final TextView vDelayTime;
+        protected final TextView vPlatform;
+        protected final LinearLayout vPlatformContainer;
 
-        final LinearLayout vStatusContainer;
-        final TextView vStatusText;
+        protected final LinearLayout vStatusContainer;
+        protected final TextView vStatusText;
 
         LiveboardStopViewHolder(View view) {
             super(view);

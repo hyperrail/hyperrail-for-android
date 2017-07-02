@@ -14,7 +14,7 @@ import be.hyperrail.android.R;
 
 public class DateSeparatorViewHolder extends RecyclerView.ViewHolder {
 
-    final TextView vDateText;
+    protected final TextView vDateText;
 
     DateSeparatorViewHolder(View view) {
         super(view);

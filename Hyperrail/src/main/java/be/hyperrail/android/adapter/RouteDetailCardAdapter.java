@@ -52,7 +52,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private final Route route;
 
     private final Context context;
-    private onRecyclerItemClickListener<Object> listener;
+    private OnRecyclerItemClickListener<Object> listener;
 
     private final int VIEW_TYPE_TRANSFER = 0;
     private final int VIEW_TYPE_TRAIN = 1;
@@ -285,7 +285,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return route.getTrains().length + route.getTransfers().length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<Object> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Object> listener) {
         this.listener = listener;
     }
 
@@ -327,24 +327,24 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     private class RouteTransferViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vDepartureTime;
-        final LinearLayout vDepartureContainer;
-        final TextView vDepartureDelay;
+        protected final TextView vDepartureTime;
+        protected final LinearLayout vDepartureContainer;
+        protected final TextView vDepartureDelay;
 
-        final TextView vArrivalTime;
-        final LinearLayout vArrivalContainer;
-        final TextView vArrivalDelay;
+        protected final TextView vArrivalTime;
+        protected final LinearLayout vArrivalContainer;
+        protected final TextView vArrivalDelay;
 
-        final TextView vArrivalPlatform;
-        final LinearLayout vArrivalPlatformContainer;
-        final TextView vDeparturePlatform;
-        final LinearLayout vDeparturePlatformContainer;
+        protected final TextView vArrivalPlatform;
+        protected final LinearLayout vArrivalPlatformContainer;
+        protected final TextView vDeparturePlatform;
+        protected final LinearLayout vDeparturePlatformContainer;
 
-        final TextView vStation;
-        final TextView vWaitingTime;
-        final LinearLayout vWaitingTimeContainer;
+        protected final TextView vStation;
+        protected final TextView vWaitingTime;
+        protected final LinearLayout vWaitingTimeContainer;
 
-        final ImageView vTimeline;
+        protected final ImageView vTimeline;
 
         RouteTransferViewHolder(View view) {
             super(view);

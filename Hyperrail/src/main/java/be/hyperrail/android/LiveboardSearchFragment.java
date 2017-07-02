@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -30,7 +31,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -40,19 +43,21 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.crash.FirebaseCrash;
 
+import be.hyperrail.android.adapter.OnLongRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.StationCardAdapter;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
+import be.hyperrail.android.persistence.RouteQuery;
 
 import static java.util.logging.Level.INFO;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class LiveboardSearchFragment extends Fragment implements onRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnLongRecyclerItemClickListener<Object> {
 
     private static final String LogTag = "LiveboardSearch";
     private static final int COARSE_LOCATION_REQUEST = 1;
@@ -65,6 +70,8 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
 
     private PersistentQueryProvider persistentQueryProvider;
     private boolean mNearbyOnTop;
+    private RouteQuery mLastSelectedQuery;
+    private StationCardAdapter mStationAdapter;
 
     public LiveboardSearchFragment() {
         // Required empty public constructor
@@ -110,11 +117,13 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
 
         stationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         stationRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        registerForContextMenu(stationRecyclerView);
 
-        StationCardAdapter adapter = new StationCardAdapter(this.getActivity(), null);
+        mStationAdapter = new StationCardAdapter(this.getActivity(), null);
 
-        adapter.setOnItemClickListener(this);
-        stationRecyclerView.setAdapter(adapter);
+        mStationAdapter.setOnItemClickListener(this);
+        mStationAdapter.setOnLongItemClickListener(this);
+        stationRecyclerView.setAdapter(mStationAdapter);
 
         vStationSearchField = ((EditText) view.findViewById(R.id.input_station));
 
@@ -218,10 +227,10 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
      * @param stations The new array of stations
      */
     private void setStations(Station[] stations) {
-        if (stations != null){
-            FirebaseCrash.logcat(INFO.intValue(),LogTag,"Setting liveboard search list to " + stations.length + " stations");
+        if (stations != null) {
+            FirebaseCrash.logcat(INFO.intValue(), LogTag, "Setting liveboard search list to " + stations.length + " stations");
         } else {
-            FirebaseCrash.logcat(INFO.intValue(),LogTag,"Setting liveboard search list to 0 stations");
+            FirebaseCrash.logcat(INFO.intValue(), LogTag, "Setting liveboard search list to 0 stations");
         }
 
         StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
@@ -261,6 +270,41 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Station object) {
         openLiveboard(object);
+    }
+
+    @Override
+    public void onLongRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
+        if (object instanceof RouteQuery) {
+            mLastSelectedQuery = (RouteQuery) object;
+        } else {
+            mLastSelectedQuery = null;
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (mLastSelectedQuery != null) {
+            getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
+            menu.setHeaderTitle(mLastSelectedQuery.fromName);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
+            if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
+                persistentQueryProvider.removeFavoriteStation(mLastSelectedQuery.from);
+                Snackbar.make(stationRecyclerView, R.string.unmarked_station_favorite, Snackbar.LENGTH_LONG).show();
+            } else {
+                persistentQueryProvider.removeRecentStation(mLastSelectedQuery.from);
+            }
+            mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
+        }
+
+        // handle menu here - get item index or ID from info
+        return super.onContextItemSelected(item);
+
     }
 
     /**
@@ -342,7 +386,6 @@ public class LiveboardSearchFragment extends Fragment implements onRecyclerItemC
     public void onConnectionSuspended(int i) {
 
     }
-
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

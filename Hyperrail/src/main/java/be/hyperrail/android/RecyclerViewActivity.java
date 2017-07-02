@@ -269,10 +269,6 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     @Override
     public void onDateTimePicked(DateTime date) {
         mSearchDate = date;
-
-        // empty the view while loading
-        this.showData(null);
-
         getData();
     }
 

@@ -163,6 +163,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         outState.putInt("view", mCurrentView);
     }
 
+    /**
+     * Set the view to a certain fragment. Changes the subtitle as well.
+     * @param i The view type constant
+     * @param args The parameters for the fragment
+     */
     private void setView(int i, Bundle args) {
         Fragment frg = null;
         switch (i) {
@@ -203,6 +208,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Required for drawer toggle to work. Other options can be handled here as well
+     * @inheritDoc
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
@@ -210,6 +219,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    /**
+     * On navigation through drawer
+     * @inheritDoc
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -236,6 +249,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    /**
+     * Set the activity's subtitle
+     * @param s Sring resource to use as subtitle
+     */
     private void setSubTitle(@StringRes int s){
         if (getSupportActionBar() != null){
             getSupportActionBar().setSubtitle(s);

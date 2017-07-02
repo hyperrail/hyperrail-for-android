@@ -34,7 +34,7 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private Disturbance[] disturbances;
     private final Context context;
 
-    private onRecyclerItemClickListener<Disturbance> listener;
+    private OnRecyclerItemClickListener<Disturbance> listener;
 
     private static final int VIEW_TYPE_NO_RESULTS = 1;
     private static final int VIEW_TYPE_DISTURBANCE = 0;
@@ -111,7 +111,7 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return disturbances.length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<Disturbance> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Disturbance> listener) {
         this.listener = listener;
     }
 
@@ -121,9 +121,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     class DisturbanceViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vTitle;
-        final TextView vDescription;
-        final TextView vDate;
+        protected final TextView vTitle;
+        protected final TextView vDescription;
+        protected final TextView vDate;
 
         DisturbanceViewHolder(View view) {
             super(view);

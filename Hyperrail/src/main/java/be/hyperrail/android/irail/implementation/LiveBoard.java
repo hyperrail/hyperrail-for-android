@@ -29,9 +29,9 @@ import be.hyperrail.android.util.ArrayUtils;
 public class LiveBoard extends Station implements Serializable {
 
     private TrainStop[] stops;
-    private DateTime searchDate;
+    private DateTime searchTime;
 
-    LiveBoard(Station station, TrainStop[] stops, DateTime searchDate) {
+    LiveBoard(Station station, TrainStop[] stops, DateTime searchTime) {
         super(
                 station.getId(),
                 station.getName(),
@@ -45,7 +45,7 @@ public class LiveBoard extends Station implements Serializable {
                 station.getLongitude(),
                 station.getAvgStopTimes());
         this.stops = stops;
-        this.searchDate = searchDate;
+        this.searchTime = searchTime;
     }
 
     public TrainStop[] getStops() {
@@ -63,7 +63,7 @@ public class LiveBoard extends Station implements Serializable {
             lastSearchTime = lastSearchTime.plusMinutes(1);
         } else {
             // if it was empty (caused by e.g. night or weekend
-            lastSearchTime = new DateTime(searchDate);
+            lastSearchTime = new DateTime(searchTime);
             // move one hour further
             lastSearchTime = lastSearchTime.plusHours(1);
         }
@@ -99,7 +99,7 @@ public class LiveBoard extends Station implements Serializable {
         return new ApiResponse<>(newSearch.getStops());
     }
 
-    public DateTime getSearchDate() {
-        return searchDate;
+    public DateTime getSearchTime() {
+        return searchTime;
     }
 }

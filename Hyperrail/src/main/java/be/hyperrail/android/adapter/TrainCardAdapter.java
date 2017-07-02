@@ -39,7 +39,7 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
 
     private final Train train;
     private final Context context;
-    private onRecyclerItemClickListener<TrainStop> listener;
+    private OnRecyclerItemClickListener<TrainStop> listener;
 
     public TrainCardAdapter(Context context, Train train) {
         this.context = context;
@@ -50,7 +50,7 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
     public TrainStopViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
-        if (! PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_trainstop, parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_trainstop, parent, false);
@@ -84,36 +84,36 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
 
         if (s.isDepartureCanceled()) {
             holder.vPlatform.setText("");
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train_canceled));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
             holder.vStatusText.setText(R.string.status_cancelled);
         } else {
 
             holder.vStatusContainer.setVisibility(View.GONE);
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.platform_train));
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
 
             if (!s.isPlatformNormal()) {
                 Drawable drawable = holder.vPlatformContainer.getBackground();
                 drawable.mutate();
-                drawable.setColorFilter(ContextCompat.getColor(context,R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+                drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
 
             }
         }
 
         if (s.hasLeft()) {
             if (position == 0) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_departure_filled));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
             } else if (position == this.getItemCount() - 1) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_arrival_filled));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
             } else {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_transfer_filled));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
             }
         } else {
             if (position == 0) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_departure_hollow));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
             } else if (position == this.getItemCount() - 1) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_arrival_hollow));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
             } else {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_transfer_hollow));
+                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
             }
         }
 
@@ -135,7 +135,7 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
         return train.getStops().length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<TrainStop> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
         this.listener = listener;
     }
 
@@ -153,17 +153,17 @@ public class TrainCardAdapter extends RecyclerView.Adapter<TrainCardAdapter.Trai
      */
     class TrainStopViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vDestination;
-        final TextView vDepartureTime;
-        final TextView vDepartureDelay;
-        final TextView vArrivalTime;
-        final TextView vArrivalDelay;
-        final TextView vPlatform;
-        final LinearLayout vPlatformContainer;
-        final ImageView vIcon;
+        protected final TextView vDestination;
+        protected final TextView vDepartureTime;
+        protected final TextView vDepartureDelay;
+        protected final TextView vArrivalTime;
+        protected final TextView vArrivalDelay;
+        protected final TextView vPlatform;
+        protected final LinearLayout vPlatformContainer;
+        protected final ImageView vIcon;
 
-        final LinearLayout vStatusContainer;
-        final TextView vStatusText;
+        protected final LinearLayout vStatusContainer;
+        protected final TextView vStatusText;
 
         TrainStopViewHolder(View v) {
             super(v);

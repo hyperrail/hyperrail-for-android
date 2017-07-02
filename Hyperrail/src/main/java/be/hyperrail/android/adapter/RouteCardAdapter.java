@@ -22,7 +22,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +44,7 @@ import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
+import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
@@ -56,7 +56,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private Route[] routes;
     private final Context context;
-    private onRecyclerItemClickListener<Route> listener;
+    private OnRecyclerItemClickListener<Route> listener;
 
     private Object[] displayList;
 
@@ -67,14 +67,28 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         this.context = context;
     }
 
-    public void updateRoutes(Route[] routes) {
-        this.routes = routes;
+    public void updateRoutes(RouteResult routeResult) {
+        if (routeResult == null || routeResult.getRoutes() == null || routeResult.getRoutes().length < 1) {
+            this.routes = null;
+            this.displayList = null;
+            return;
+        }
+
+        this.routes = routeResult.getRoutes();
 
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
         if (routes != null && routes.length > 0) {
-            DateTime lastday = routes[0].getDepartureTime().withTimeAtStartOfDay();
+            // Default day to compare to is today
+            DateTime lastday = DateTime.now().withTimeAtStartOfDay();
 
+            if (!routes[0].getDepartureTime().withTimeAtStartOfDay().isEqual(lastday)) {
+                // If the first stop is not today, add date separators everywhere
+                lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
+            } else if (!routeResult.getSearchTime().withTimeAtStartOfDay().equals(routes[0].getDepartureTime().withTimeAtStartOfDay())) {
+                // If the search results differ from the date searched, everything after the date searched should have separators
+                lastday = routeResult.getSearchTime().withTimeAtStartOfDay();
+            }
             for (int i = 0; i < routes.length; i++) {
                 Route route = routes[i];
 
@@ -84,7 +98,6 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
                 }
             }
 
-            Log.d("DateSeparator", "Detected " + daySeparatorPositions.size() + " day changes");
             this.displayList = new Object[daySeparatorPositions.size() + routes.length];
 
             // Convert to array + take previous separators into account for position of next separator
@@ -108,6 +121,8 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
                 resultPosition++;
             }
+        } else {
+            displayList = null;
         }
 
         super.setLoaded();
@@ -209,7 +224,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);
 
         // Launch intents to view details / click through
-        adapter.setOnItemClickListener(new onRecyclerItemClickListener<Object>() {
+        adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
             @Override
             public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
                 Intent i = null;
@@ -265,27 +280,27 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         return displayList.length;
     }
 
-    public void setOnItemClickListener(onRecyclerItemClickListener<Route> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Route> listener) {
         this.listener = listener;
     }
 
     private class RouteViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView vDepartureTime;
-        final TextView vDepartureDelay;
-        final TextView vArrivalTime;
-        final TextView vArrivalDelay;
-        final TextView vDirection;
-        final TextView vDuration;
-        final ImageView vDurationIcon;
-        final TextView vTrainCount;
-        final TextView vPlatform;
-        final LinearLayout vPlatformContainer;
-        final RecyclerView vRecyclerView;
-        final LinearLayout vHeaderContainer;
-        final LinearLayout vDetailContainer;
-        final TextView vStatusText;
-        final LinearLayout vStatusContainer;
+        protected final TextView vDepartureTime;
+        protected final TextView vDepartureDelay;
+        protected final TextView vArrivalTime;
+        protected final TextView vArrivalDelay;
+        protected final TextView vDirection;
+        protected final TextView vDuration;
+        protected final ImageView vDurationIcon;
+        protected final TextView vTrainCount;
+        protected final TextView vPlatform;
+        protected final LinearLayout vPlatformContainer;
+        protected final RecyclerView vRecyclerView;
+        protected final LinearLayout vHeaderContainer;
+        protected final LinearLayout vDetailContainer;
+        protected final TextView vStatusText;
+        protected final LinearLayout vStatusContainer;
 
         RouteViewHolder(View view) {
             super(view);

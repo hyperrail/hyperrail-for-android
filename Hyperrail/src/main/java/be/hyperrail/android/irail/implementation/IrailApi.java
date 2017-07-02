@@ -12,10 +12,9 @@
 
 package be.hyperrail.android.irail.implementation;
 
-import android.util.Log;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.metrics.AddTrace;
@@ -63,7 +62,7 @@ public class IrailApi implements IrailDataProvider {
         this.stationProvider = stationProvider;
     }
 
-    private Context context;
+    private final Context context;
     private final IrailParser parser;
     private final IrailStationProvider stationProvider;
 

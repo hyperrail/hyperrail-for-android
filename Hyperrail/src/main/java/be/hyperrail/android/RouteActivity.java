@@ -12,13 +12,13 @@
 
 package be.hyperrail.android;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -27,6 +27,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.io.FileNotFoundException;
 
 import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
@@ -40,7 +42,7 @@ import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 
-public class RouteActivity extends RecyclerViewActivity<Route[]> implements InfiniteScrollingDataSource, OnDateTimeSetListener {
+public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener {
 
     private RouteResult mRoutes;
 
@@ -112,11 +114,11 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
     }
 
     @Override
-    protected Route[] getRestoredInstanceStateItems() {
+    protected RouteResult getRestoredInstanceStateItems() {
         if (mRoutes == null) {
             return null;
         } else {
-            return mRoutes.getRoutes();
+            return mRoutes;
         }
     }
 
@@ -126,6 +128,7 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
     }
 
     protected void getData() {
+        Log.d("RouteActivity", "Get original data");
         AsyncTask<Void, Integer, IrailDataResponse<RouteResult>> t = new AsyncTask<Void, Integer, IrailDataResponse<RouteResult>>() {
 
             @Override
@@ -135,11 +138,12 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
                 vRefreshLayout.setRefreshing(false);
 
                 if (response.isSuccess()) {
-                    initialLoadCompleted = true;
                     mRoutes = response.getData();
-                    showData(mRoutes.getRoutes());
+                    showData(mRoutes);
+                    initialLoadCompleted = true;
                 } else {
                     // only finish if we're loading new data
+                    ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                     ErrorDialogFactory.showErrorDialog(response.getException(), RouteActivity.this, mRoutes == null);
                 }
 
@@ -148,14 +152,20 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                // Disable infinite scrolling until loading initial data is done
+                initialLoadCompleted = false;
+
+                // Clear the view
                 showData(null);
 
                 setTitle(R.string.title_route);
                 setSubTitle(mSearchFrom.getLocalizedName() + " - " + mSearchTo.getLocalizedName());
 
+                // Restore infinite scrolling
+                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
+
                 if (mSearchDate != null) {
                     vWarningNotRealtime.setVisibility(View.VISIBLE);
-                    @SuppressLint("SimpleDateFormat")
                     DateTimeFormatter df = DateTimeFormat.forPattern(getString(R.string.warning_not_realtime_datetime));
                     vWarningNotRealtimeText.setText(String.format("%s %s", getString(R.string.warning_not_realtime), df.print(mSearchDate)));
                 } else {
@@ -197,9 +207,15 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
 
                 if (response.isSuccess()) {
                     // mRoutes is updated with new routes
-                    showData(mRoutes.getRoutes());
+                    showData(mRoutes);
+
+                    if (mRoutes.getRoutes().length == 0) {
+                        ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this, false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                    }
                 } else {
                     ErrorDialogFactory.showErrorDialog(response.getException(), RouteActivity.this, false);
+                    ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                     ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
                 }
             }
@@ -208,7 +224,6 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
             protected IrailDataResponse<Route[]> doInBackground(Void... arglist) {
 
                 return RouteActivity.this.mRoutes.getNextResults();
-
             }
         };
         t.execute();
@@ -223,17 +238,18 @@ public class RouteActivity extends RecyclerViewActivity<Route[]> implements Infi
         }
     }
 
-    protected void showData(Route[] routeList) {
+    protected void showData(RouteResult routeList) {
         if (mSearchDate == null) {
             vWarningNotRealtime.setVisibility(View.GONE);
         }
 
-        if (routeList != null) {
+        if (routeList != null && routeList.getRoutes() != null && routeList.getRoutes().length > 0) {
             setTitle(R.string.title_route);
             // Ensure we show the correct from-to by showing it from the actual route result
-            setSubTitle(routeList[0].getDepartureStation().getLocalizedName() + " - " + routeList[0].getArrivalStation().getLocalizedName());
+            setSubTitle(routeList.getRoutes()[0].getDepartureStation().getLocalizedName() + " - " + routeList.getRoutes()[0].getArrivalStation().getLocalizedName());
+            Log.d("RouteActivity", "Updating routes " + routeList.getRoutes().length);
         }
-
+        Log.d("RouteActivity", "Updating routes");
         ((RouteCardAdapter) vRecyclerView.getAdapter()).updateRoutes(routeList);
     }
 

@@ -1,23 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
 <resources>
-    <color name="colorPrimary">#C72929</color>
-    <color name="colorPrimaryDark">#b22525</color>
-    <color name="colorAccent">#FFF</color>
-
-    <color name="colorWhite">#FFF</color>
-    <color name="backgroundMaterialDark">#ff212121</color>
-    <color name="backgroundMaterialLight">#fffafafa</color>
-    <color name="colorTextDark">#333</color>
-    <color name="colorTextLight">#eee</color>
-    <color name="colorWarningNotRealtime">#1860d8</color>
-
-    <!-- History list -->
-    <color name="colorStar">#C72929</color>
-    <color name="colorHistory">#C72929</color>
-
-    <color name="colorDelay">#b22525</color>
-    <color name="colorMuted">#999999</color>
-
     <style name="Hyperrail" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -28,13 +16,11 @@
         <item name="android:actionMenuTextColor">@color/colorTextLight</item>
 
         <item name="actionModeBackground">@color/colorPrimaryDark</item>
-        <item name="android:progressTint">@color/colorPrimary</item>
     </style>
 
     <style name="ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColor">@color/colorTextLight</item>
         <item name="android:background">@color/colorPrimary</item>
-        <item name="android:foregroundTint">@color/colorTextLight</item>
     </style>
 
     <style name="ActionBarPopupTheme" parent="@style/ThemeOverlay.AppCompat.Dark">
@@ -51,7 +37,6 @@
     <style name="HyperrailAccentSearchContainer" parent="HyperrailAccentSearchField">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:padding">16dp</item>
-        <item name="android:elevation">4dp</item>
     </style>
 
     <style name="HyperrailAccentSearchField" parent="Hyperrail">
@@ -61,29 +46,19 @@
         <item name="android:textColor">@color/colorTextLight</item>
         <item name="android:textColorHint">@color/colorTextLight</item>
 
-        <item name="android:colorAccent">@color/colorTextLight</item>
         <item name="colorAccent">@color/colorTextLight</item>
-
-        <item name="android:colorControlNormal">@color/colorTextLight</item>
-        <item name="android:colorControlActivated">@color/colorTextLight</item>
-        <item name="android:colorControlHighlight">@color/colorTextLight</item>
-
 
         <item name="android:spinnerDropDownItemStyle">@style/HyperrailAccentSearchSpinnerDropdown</item>
         <item name="android:editTextStyle">@style/HyperrailAccentSearchText</item>
     </style>
 
-    <style name="HyperrailAccentSearchText" parent="android:Widget.Material.EditText">
+    <style name="HyperrailAccentSearchText">
 
         <item name="android:padding">0dp</item>
 
         <item name="android:textColor">@color/colorTextLight</item>
         <item name="android:textColorHint">@color/colorTextLight</item>
         <item name="android:background">@color/colorTextLight</item>
-
-        <item name="android:backgroundTint">@color/colorTextLight</item>
-        <item name="android:foregroundTint">@color/colorTextLight</item>
-        <item name="android:progressTint">@color/colorTextLight</item>
 
     </style>
 
@@ -100,5 +75,4 @@
 
         <item name="android:textColor">@color/colorTextDark</item>
     </style>
-
 </resources>

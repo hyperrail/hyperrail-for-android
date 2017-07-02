@@ -22,8 +22,8 @@ import org.joda.time.DateTime;
 
 import java.text.DateFormat;
 
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
@@ -81,7 +81,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(this.getApplicationContext(), route, false);
 
         // Launch intents to view details / click through
-        adapter.setOnItemClickListener(new onRecyclerItemClickListener<Object>() {
+        adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
             @Override
             public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
                 Intent i = null;

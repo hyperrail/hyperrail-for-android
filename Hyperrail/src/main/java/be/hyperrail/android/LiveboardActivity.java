@@ -26,8 +26,10 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.FileNotFoundException;
+
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
-import be.hyperrail.android.adapter.onRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
@@ -41,7 +43,7 @@ import be.hyperrail.android.util.OnDateTimeSetListener;
 /**
  * Activity to show a liveboard
  */
-public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements onRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource {
+public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements OnRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource {
 
     private LiveBoard mCurrentLiveboard;
     private Station mCurrentStation;
@@ -139,9 +141,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 vRefreshLayout.setRefreshing(false);
 
                 if (response.isSuccess()) {
+
                     // store retrieved data
                     mCurrentLiveboard = response.getData();
-
                     // Show retrieved data
                     showData(mCurrentLiveboard);
 
@@ -170,6 +172,11 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 } else {
                     vWarningNotRealtime.setVisibility(View.GONE);
                 }
+                mCurrentLiveboard = null;
+                showData(null);
+
+                // Enable infinite scrolling, in case it was disabled during a previous search
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
             }
 
             @Override
@@ -210,6 +217,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
                 if (liveboard.getData().length == 0) {
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                    ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
                 }
 
                 showData(mCurrentLiveboard);
