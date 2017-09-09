@@ -19,8 +19,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import org.joda.time.DateTime;
-
-import java.text.DateFormat;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
@@ -28,6 +28,8 @@ import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
+
+import static be.hyperrail.android.R.string.warning_not_realtime_datetime;
 
 /**
  * Activity to show one specific route
@@ -54,9 +56,8 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
 
         setTitle(route.getDepartureStation().getLocalizedName() + " - " + route.getArrivalStation().getLocalizedName());
 
-        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
-
-        setSubTitle(df.format(route.getDepartureTime().toString()));
+        DateTimeFormatter df = DateTimeFormat.forPattern(getString(warning_not_realtime_datetime));
+        setSubTitle(df.print(route.getDepartureTime()));
 
         // disable pull-to-refresh
         // TODO: support refreshing
@@ -108,7 +109,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
 
     @Override
     protected void getInitialData() {
-       route = (Route) getIntent().getSerializableExtra("route");
+        route = (Route) getIntent().getSerializableExtra("route");
     }
 
     @Override
