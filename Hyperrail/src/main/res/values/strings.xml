@@ -48,7 +48,7 @@
     <string name="search_station_name">Station name</string>
     <string name="from">From</string>
     <string name="to">To</string>
-    <string name="warning_not_realtime_datetime">yyyy/MM/dd HH:mm</string>
+    <string name="warning_not_realtime_datetime">EEE yyyy/MM/dd HH:mm</string>
     <string name="warning_not_realtime">You are viewing results for</string>
     <string name="title_departures">Departures</string>
     <string name="action_swap">Swap direction</string>
