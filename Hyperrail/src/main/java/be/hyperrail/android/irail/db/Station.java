@@ -12,13 +12,14 @@
 
 package be.hyperrail.android.irail.db;
 
+import android.util.Log;
+
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
+import be.hyperrail.android.irail.contracts.IrailResponseListener;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 
@@ -61,22 +62,20 @@ public class Station implements Serializable {
 
     /**
      * Get the liveboard for this station on a certain DateTime
-     * @param dateTime the DateTime and time for which this liveboard should be retreived
-     * @return an {@link IrailDataResponse}, containing a {@link LiveBoard} for this station
+     *
+     * @param dateTime the DateTime and time for which this liveboard should be retrieved
      */
-    public IrailDataResponse<LiveBoard> getLiveBoard(DateTime dateTime)  {
+    public void getLiveBoard(IrailResponseListener<LiveBoard> callback, int tag, DateTime dateTime) {
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        return api.getLiveboard(this.getName(), dateTime);
+        api.getLiveboard(callback, tag, this.getName(), dateTime);
     }
 
     /**
      * Get the liveboard for this station
-     *
-     * @return an {@link IrailDataResponse}, containing a {@link LiveBoard} for this station
      */
-    public IrailDataResponse<LiveBoard> getLiveBoard() {
+    public void getLiveBoard(IrailResponseListener<LiveBoard> callback, int tag) {
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        return api.getLiveboard(this.getName());
+        api.getLiveboard(callback, tag, this.getName());
     }
 
     public double getLatitude() {
@@ -89,6 +88,11 @@ public class Station implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public String getSemanticId() {
+        Log.i("Station", "Semantic id: " + id);
+        return "http://irail.be/stations/NMBS/" + id;
     }
 
     public String getAlternativeNl() {

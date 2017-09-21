@@ -15,7 +15,6 @@ package be.hyperrail.android;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -32,7 +31,7 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
+import be.hyperrail.android.irail.contracts.IrailResponseListener;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Disturbance;
 import be.hyperrail.android.util.ErrorDialogFactory;
@@ -40,12 +39,13 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 /**
  * A list with disturbances
  */
-public class DisturbanceListFragment extends Fragment implements OnRecyclerItemClickListener<Disturbance> {
+public class DisturbanceListFragment extends Fragment implements OnRecyclerItemClickListener<Disturbance>, IrailResponseListener<Disturbance[]> {
 
     private RecyclerView vRecyclerView;
     private SwipeRefreshLayout vRefreshLayout;
     private Disturbance[] disturbances;
     private DateTime lastUpdate;
+    private int NEW_DATA = 0;
 
     public DisturbanceListFragment() {
         // Required empty public constructor
@@ -109,44 +109,10 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
     }
 
     private void loadDisturbances() {
-        AsyncTask<Void, Void, IrailDataResponse<Disturbance[]>> t = new AsyncTask<Void, Void, IrailDataResponse<Disturbance[]>>() {
+        vRefreshLayout.setRefreshing(true);
 
-            @Override
-            protected void onCancelled() {
-                super.onCancelled();
-
-                vRefreshLayout.setRefreshing(false);
-
-            }
-
-            @Override
-            protected void onPostExecute(IrailDataResponse<Disturbance[]> response) {
-                super.onPostExecute(response);
-                vRefreshLayout.setRefreshing(false);
-
-                if (response.isSuccess()) {
-                    lastUpdate = new DateTime();
-                    setData(response.getData());
-                } else {
-                    // Don't finish, this is the main activity
-                    ErrorDialogFactory.showErrorDialog(response.getException(), DisturbanceListFragment.this.getActivity(), false);
-                }
-
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                vRefreshLayout.setRefreshing(true);
-
-            }
-
-            @Override
-            protected IrailDataResponse<Disturbance[]> doInBackground(Void... v) {
-                return IrailFactory.getDataProviderInstance().getDisturbances();
-            }
-        };
-        t.execute();
+        IrailFactory.getDataProviderInstance().abortAllQueries();
+        IrailFactory.getDataProviderInstance().getDisturbances(this, NEW_DATA);
     }
 
     private void setData(Disturbance[] disturbances) {
@@ -164,5 +130,20 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(disturbance.getLink()));
             startActivity(browserIntent);
         }
+    }
+
+    @Override
+    public void onIrailSuccessResponse(Disturbance[] data, int tag) {
+        vRefreshLayout.setRefreshing(false);
+        lastUpdate = new DateTime();
+        setData(data);
+    }
+
+    @Override
+    public void onIrailErrorResponse(Exception e, int tag) {
+        vRefreshLayout.setRefreshing(false);
+        // Don't finish, this is the main activity
+        ErrorDialogFactory.showErrorDialog(e, DisturbanceListFragment.this.getActivity(), false);
+
     }
 }

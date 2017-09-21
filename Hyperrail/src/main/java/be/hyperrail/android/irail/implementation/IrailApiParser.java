@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 
@@ -237,7 +238,9 @@ public class IrailApiParser implements IrailParser {
                 timestamp2date(item.getString("time")),
                 new Duration(item.getInt("delay") * 1000),
                 item.getInt("canceled") != 0,
-                (item.has("left")) && (item.getInt("left") == 1)
+                (item.has("left")) && (item.getInt("left") == 1),
+                item.getString("departureConnection"),
+                OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase())
         );
     }
 
@@ -256,7 +259,9 @@ public class IrailApiParser implements IrailParser {
                 new Duration(item.getInt("arrivalDelay") * 1000),
                 item.getInt("departureCanceled") != 0,
                 item.getInt("arrivalCanceled") != 0,
-                item.getInt("left") == 1
+                item.getInt("left") == 1,
+                item.getString("departureConnection"),
+                OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase())
         );
     }
 

@@ -19,6 +19,8 @@ import be.hyperrail.android.irail.implementation.Disturbance;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.Train;
+import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.TrainStub;
 
 /**
  * Retrieve (realtime) data according from the iRail API, or any API which has identical endpoints.
@@ -26,27 +28,37 @@ import be.hyperrail.android.irail.implementation.Train;
  */
 public interface IrailDataProvider {
 
-    IrailDataResponse<RouteResult> getRoute(Station from, Station to);
+    void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to);
 
-    IrailDataResponse<RouteResult> getRoute(Station from, Station to, DateTime timeFilter);
+    void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to, DateTime timeFilter);
 
-    IrailDataResponse<RouteResult> getRoute(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType);
+    void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType);
 
-    IrailDataResponse<RouteResult> getRoute(String from, String to);
+    void getRoute(IrailResponseListener<RouteResult> callback, int tag, String from, String to);
 
-    IrailDataResponse<RouteResult> getRoute(String from, String to, DateTime timeFilter);
+    void getRoute(IrailResponseListener<RouteResult> callback, int tag, String from, String to, DateTime timeFilter);
 
-    IrailDataResponse<RouteResult> getRoute(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType);
+    void getRoute(IrailResponseListener<RouteResult> callback, int tag, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType, String from);
 
-    IrailDataResponse<LiveBoard> getLiveboard(String name);
+    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name);
 
-    IrailDataResponse<LiveBoard> getLiveboard(String name, DateTime timeFilter);
+    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station);
 
-    IrailDataResponse<LiveBoard> getLiveboard(String name, DateTime timeFilter, RouteTimeDefinition timeFilterType);
+    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name, DateTime timeFilter);
 
-    IrailDataResponse<Train> getTrain(String id);
+    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station, DateTime timeFilter);
 
-    IrailDataResponse<Train> getTrain(String id, DateTime day);
+    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name, DateTime timeFilter, RouteTimeDefinition timeFilterType);
 
-    IrailDataResponse<Disturbance[]> getDisturbances();
+    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station, DateTime timeFilter, RouteTimeDefinition timeFilterType);
+
+    void getTrain(IrailResponseListener<Train> callback, int tag, String id);
+
+    void getTrain(IrailResponseListener<Train> callback, int tag, String id, DateTime day);
+
+    void getDisturbances(IrailResponseListener<Disturbance[]> callback, int tag);
+
+    void postOccupancy(IrailResponseListener<Boolean> callback, int tag, TrainStub train, TrainStop stop, OccupancyLevel occupancy);
+
+    void abortAllQueries();
 }
