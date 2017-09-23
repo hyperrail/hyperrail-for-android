@@ -32,8 +32,8 @@ import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
-import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
+import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
@@ -55,9 +55,6 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private boolean initialLoadCompleted = false;
-
-    private static final int NEW_DATA = 0;
-    private static final int APPEND_DATA = 1;
 
     public static Intent createIntent(Context context, Station from, Station to, DateTime date, RouteTimeDefinition datetype) {
         Intent i = new Intent(context, RouteActivity.class);

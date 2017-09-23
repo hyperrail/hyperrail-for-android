@@ -40,8 +40,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     private TrainStub mCurrentSearchQuery;
     private DateTime mTrainDate;
 
-    private int NEW_DATA = 0;
-
     public static Intent createIntent(Context context, TrainStub stub, DateTime day) {
         Intent i = new Intent(context, TrainActivity.class);
         i.putExtra("stub", stub);

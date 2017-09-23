@@ -387,7 +387,6 @@ jsObjRequest.setRetryPolicy(requestPolicy);
     private static String postJsonRequest(String uri, String json) {
         HttpURLConnection urlConnection;
         String url;
-        String data = json;
         String result = null;
         try {
             //Connect
@@ -401,7 +400,7 @@ jsObjRequest.setRetryPolicy(requestPolicy);
             //Write
             OutputStream outputStream = urlConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-            writer.write(data);
+            writer.write(json);
             writer.close();
             outputStream.close();
 

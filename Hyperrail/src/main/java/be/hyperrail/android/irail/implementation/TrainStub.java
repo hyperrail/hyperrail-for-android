@@ -35,7 +35,7 @@ public class TrainStub implements Serializable {
 
     /**
      * The ID, for example BE.NMBS.IC4516
-     * @return
+     * @return ID, for example BE.NMBS.IC4516
      */
     public String getId() {
         return id;
@@ -43,7 +43,7 @@ public class TrainStub implements Serializable {
 
     /**
      * The direction (final stop) of this train
-     * @return
+     * @return direction (final stop) of this train
      */
     public Station getDirection() {
         return direction;
@@ -51,7 +51,7 @@ public class TrainStub implements Serializable {
 
     /**
      * Human-readable name, for example IC 4516
-     * @return
+     * @return Human-readable name
      */
     public String getName() {
         return getType() + " " + getNumber();
@@ -59,7 +59,7 @@ public class TrainStub implements Serializable {
 
     /**
      * ID without leading BE.NMBS, for example IC4516
-     * @return
+     * @return ID without leading BE.NMBS
      */
     private String getReducedId() {
         return this.id.substring(8);
@@ -67,7 +67,7 @@ public class TrainStub implements Serializable {
 
     /**
      * Semantic ID, for example http://irail.be/vehicle/IC4516
-     * @return
+     * @return Semantic ID
      */
     public String getSemanticId() {
         return "http://irail.be/vehicle/" + getReducedId();
@@ -75,7 +75,7 @@ public class TrainStub implements Serializable {
 
     /**
      * Train type, for example S, IC, L, P
-     * @return
+     * @return The type of this train
      */
     public String getType() {
         String rid = getReducedId();
@@ -99,7 +99,7 @@ public class TrainStub implements Serializable {
 
     /**
      * Train number, for example 4516
-     * @return
+     * @return The number of this train
      */
     public String getNumber() {
         String rid = getReducedId();

@@ -65,7 +65,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     private LinearLayout vArriveDepartContainer;
 
     private DateTime searchDateTime = null;
-    private Bundle parameters;
 
     private PersistentQueryProvider persistentQueryProvider;
 
@@ -302,7 +301,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     public void onViewStateRestored(Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        parameters = savedInstanceState;
     }
 
     public static RouteSearchFragment newInstance() {

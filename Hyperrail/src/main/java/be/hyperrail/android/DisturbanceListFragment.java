@@ -66,7 +66,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        vRefreshLayout = view.findViewById(R.id.swiperefresh);
         vRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -78,7 +78,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
                 }
         );
 
-        vRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_primary);
+        vRecyclerView = view.findViewById(R.id.recyclerview_primary);
 
         vRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
