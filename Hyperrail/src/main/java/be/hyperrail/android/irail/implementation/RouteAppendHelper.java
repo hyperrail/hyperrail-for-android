@@ -14,25 +14,33 @@ package be.hyperrail.android.irail.implementation;
 
 import org.joda.time.DateTime;
 
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.util.ArrayUtils;
 
-public class RouteAppendHelper implements IrailResponseListener<RouteResult> {
+public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResult>, IRailErrorResponseListener<RouteResult> {
 
     private final static int APPEND_ROUTE = 0;
 
     private int attempt = 0;
     private DateTime lastSearchTime;
     private RouteResult originalRouteResult;
-    private IrailResponseListener<RouteResult> callback;
-    private int tag;
+
+    private IRailSuccessResponseListener<RouteResult> successResponseListener;
+    private IRailErrorResponseListener<RouteResult> errorResponseListener;
+    private Object tag;
+
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
-    public void appendRouteResult(final IrailResponseListener<RouteResult> callback, final int tag, final RouteResult routes) {
-        this.callback = callback;
+    public void appendRouteResult(final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
+                                  final IRailErrorResponseListener<RouteResult> errorResponseListener, final Object tag) {
+        this.successResponseListener = successResponseListener;
+        this.errorResponseListener = errorResponseListener;
         this.tag = tag;
+
         this.originalRouteResult = routes;
 
         if (routes.getRoutes().length > 0) {
@@ -40,35 +48,29 @@ public class RouteAppendHelper implements IrailResponseListener<RouteResult> {
         } else {
             lastSearchTime = routes.getSearchTime().plusHours(1);
         }
-        api.getRoute(this, APPEND_ROUTE, routes.getOrigin(), routes.getDestination(), lastSearchTime);
+
+        api.getRoute(routes.getOrigin(), routes.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, null);
     }
 
     @Override
-    public void onIrailSuccessResponse(RouteResult data, int tag) {
-        switch (tag) {
-            case APPEND_ROUTE:
-                if (data.getRoutes().length > 0) {
-                    Route[] mergedRoutes = ArrayUtils.concatenate(originalRouteResult.getRoutes(), data.getRoutes());
-                    RouteResult merged = new RouteResult(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
-                    callback.onIrailSuccessResponse(merged, tag);
-                } else {
-                    attempt++;
-                    lastSearchTime = lastSearchTime.plusHours(2);
-                    if (attempt < 12) {
-                        api.getRoute(this, APPEND_ROUTE, originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime);
-                    } else {
-                        this.callback.onIrailSuccessResponse(originalRouteResult, this.tag);
-                    }
-                }
+    public void onSuccessResponse(RouteResult data, Object tag) {
+        if (data.getRoutes().length > 0) {
+            Route[] mergedRoutes = ArrayUtils.concatenate(originalRouteResult.getRoutes(), data.getRoutes());
+            RouteResult merged = new RouteResult(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
+            successResponseListener.onSuccessResponse(merged, tag);
+        } else {
+            attempt++;
+            lastSearchTime = lastSearchTime.plusHours(2);
+            if (attempt < 12) {
+                api.getRoute(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, null);
+            } else {
+                this.successResponseListener.onSuccessResponse(originalRouteResult, this.tag);
+            }
         }
     }
 
     @Override
-    public void onIrailErrorResponse(Exception e, int tag) {
-        switch (tag) {
-            case APPEND_ROUTE:
-                callback.onIrailErrorResponse(e, this.tag);
-                break;
-        }
+    public void onErrorResponse(Exception e, Object tag) {
+        errorResponseListener.onErrorResponse(e, this.tag);
     }
 }

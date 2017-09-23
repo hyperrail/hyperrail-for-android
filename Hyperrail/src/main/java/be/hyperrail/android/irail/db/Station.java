@@ -14,14 +14,7 @@ package be.hyperrail.android.irail.db;
 
 import android.util.Log;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
-
-import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailResponseListener;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.LiveBoard;
 
 /**
  * This class represents a station, as found in irail/stationscsv
@@ -58,24 +51,6 @@ public class Station implements Serializable {
 
     public String getName() {
         return name;
-    }
-
-    /**
-     * Get the liveboard for this station on a certain DateTime
-     *
-     * @param dateTime the DateTime and time for which this liveboard should be retrieved
-     */
-    public void getLiveBoard(IrailResponseListener<LiveBoard> callback, int tag, DateTime dateTime) {
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        api.getLiveboard(callback, tag, this.getName(), dateTime);
-    }
-
-    /**
-     * Get the liveboard for this station
-     */
-    public void getLiveBoard(IrailResponseListener<LiveBoard> callback, int tag) {
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        api.getLiveboard(callback, tag, this.getName());
     }
 
     public double getLatitude() {

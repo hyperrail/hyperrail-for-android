@@ -28,37 +28,21 @@ import be.hyperrail.android.irail.implementation.TrainStub;
  */
 public interface IrailDataProvider {
 
-    void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to);
+    void getRoute(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
 
-    void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to, DateTime timeFilter);
+    void getRoute(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
 
-    void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType);
+    void getLiveboard(String name, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<LiveBoard> successListener, IRailErrorResponseListener<LiveBoard> errorListener, Object tag);
 
-    void getRoute(IrailResponseListener<RouteResult> callback, int tag, String from, String to);
+    void getLiveboard(Station station, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<LiveBoard> successListener, IRailErrorResponseListener<LiveBoard> errorListener, Object tag);
 
-    void getRoute(IrailResponseListener<RouteResult> callback, int tag, String from, String to, DateTime timeFilter);
+    void getTrain(String id, IRailSuccessResponseListener<Train> successListener, IRailErrorResponseListener<Train> errorListener, Object tag);
 
-    void getRoute(IrailResponseListener<RouteResult> callback, int tag, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType, String from);
+    void getTrain(String id, DateTime day, IRailSuccessResponseListener<Train> successListener, IRailErrorResponseListener<Train> errorListener, Object tag);
 
-    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name);
+    void getDisturbances(IRailSuccessResponseListener<Disturbance[]> successListener, IRailErrorResponseListener<Disturbance[]> errorListener, Object tag);
 
-    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station);
-
-    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name, DateTime timeFilter);
-
-    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station, DateTime timeFilter);
-
-    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name, DateTime timeFilter, RouteTimeDefinition timeFilterType);
-
-    void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station, DateTime timeFilter, RouteTimeDefinition timeFilterType);
-
-    void getTrain(IrailResponseListener<Train> callback, int tag, String id);
-
-    void getTrain(IrailResponseListener<Train> callback, int tag, String id, DateTime day);
-
-    void getDisturbances(IrailResponseListener<Disturbance[]> callback, int tag);
-
-    void postOccupancy(IrailResponseListener<Boolean> callback, int tag, TrainStub train, TrainStop stop, OccupancyLevel occupancy);
+    void postOccupancy(TrainStub train, TrainStop stop, OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener, IRailErrorResponseListener<Boolean> errorListener, Object tag);
 
     void abortAllQueries();
 }

@@ -6,9 +6,8 @@
 
 package be.hyperrail.android.irail.contracts;
 
-public interface IrailResponseListener<T> {
+public interface IRailSuccessResponseListener<T> {
 
-    void onIrailSuccessResponse(T data, int tag);
+    void onSuccessResponse(T data, Object tag);
 
-    void onIrailErrorResponse(Exception e, int tag);
 }

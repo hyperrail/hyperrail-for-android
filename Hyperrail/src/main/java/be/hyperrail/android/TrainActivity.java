@@ -21,7 +21,8 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.TrainCardAdapter;
-import be.hyperrail.android.irail.contracts.IrailResponseListener;
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
@@ -32,7 +33,7 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 /**
  * Activity to show a train
  */
-public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<TrainStop>, IrailResponseListener<Train> {
+public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<TrainStop> {
 
     private Station mScrollToStation;
     private Train mTrain;
@@ -100,7 +101,23 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         vRefreshLayout.setRefreshing(true);
 
         IrailFactory.getDataProviderInstance().abortAllQueries();
-        IrailFactory.getDataProviderInstance().getTrain(this, NEW_DATA, mCurrentSearchQuery.getId(), mTrainDate);
+        IrailFactory.getDataProviderInstance().getTrain(mCurrentSearchQuery.getId(), mTrainDate, new IRailSuccessResponseListener<Train>() {
+            @Override
+            public void onSuccessResponse(Train data, Object tag) {
+                vRefreshLayout.setRefreshing(false);
+
+                mTrain = data;
+                showData(mTrain);
+            }
+        }, new IRailErrorResponseListener<Train>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                vRefreshLayout.setRefreshing(false);
+
+                // only finish if we're loading new data
+                ErrorDialogFactory.showErrorDialog(e, TrainActivity.this, mTrain == null);
+            }
+        }, null);
     }
 
     @Override
@@ -164,21 +181,4 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         startActivity(i);
     }
 
-    @Override
-    public void onIrailSuccessResponse(Train data, int tag) {
-        vRefreshLayout.setRefreshing(false);
-
-        mTrain = data;
-        showData(mTrain);
-
-    }
-
-    @Override
-    public void onIrailErrorResponse(Exception e, int tag) {
-        vRefreshLayout.setRefreshing(false);
-
-        // only finish if we're loading new data
-        ErrorDialogFactory.showErrorDialog(e, TrainActivity.this, mTrain == null);
-
-    }
 }

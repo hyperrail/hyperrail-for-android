@@ -32,7 +32,10 @@ import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.contracts.IrailResponseListener;
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
+import be.hyperrail.android.irail.contracts.IrailDataProvider;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
@@ -44,16 +47,13 @@ import be.hyperrail.android.util.OnDateTimeSetListener;
 /**
  * Activity to show a liveboard
  */
-public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements OnRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource, IrailResponseListener<LiveBoard> {
+public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements OnRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource {
 
     private LiveBoard mCurrentLiveboard;
     private Station mCurrentStation;
 
     private AsyncTask runningTask;
     private FirebaseAnalytics mFirebaseAnalytics;
-
-    private static final int NEW_DATA = 0;
-    private static final int APPEND_DATA = 1;
 
     public static Intent createIntent(Context context, Station station) {
         Intent i = new Intent(context, LiveboardActivity.class);
@@ -147,12 +147,34 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         mCurrentLiveboard = null;
         showData(null);
 
-        IrailFactory.getDataProviderInstance().abortAllQueries();
-        if (mSearchDate == null) {
-            mCurrentStation.getLiveBoard(this, NEW_DATA);
-        } else {
-            mCurrentStation.getLiveBoard(this, NEW_DATA, mSearchDate);
-        }
+        IrailDataProvider api =  IrailFactory.getDataProviderInstance();
+        api.abortAllQueries();
+
+        api.getLiveboard(mCurrentStation, mSearchDate, RouteTimeDefinition.DEPART, new IRailSuccessResponseListener<LiveBoard>() {
+            @Override
+            public void onSuccessResponse(LiveBoard data, Object tag) {
+                // store retrieved data
+                mCurrentLiveboard = data;
+                // Show retrieved data
+                showData(mCurrentLiveboard);
+
+                // If we didn't get a result, try the next data
+                if (data.getStops().length == 0) {
+                    LiveboardActivity.this.getNextData();
+                } else {
+                    // Enable infinite scrolling, in case it was disabled during a previous search
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
+                }
+            }
+
+        }, new IRailErrorResponseListener<LiveBoard>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                // only finish if we're loading new data
+                ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, mCurrentLiveboard == null);
+            }
+        },null);
+
     }
 
     @Override
@@ -162,7 +184,26 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         }
 
         LiveboardAppendHelper helper = new LiveboardAppendHelper();
-        helper.appendLiveboard(this, APPEND_DATA, mCurrentLiveboard);
+        helper.appendLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
+            @Override
+            public void onSuccessResponse(LiveBoard data, Object tag) {
+                // Compare the new one with the old one to check if stops have been added
+                if (data.getStops().length == mCurrentLiveboard.getStops().length) {
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                    if (mCurrentLiveboard == null) {
+                        ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
+                    }
+                }
+                mCurrentLiveboard = data;
+                showData(mCurrentLiveboard);
+            }
+        }, new IRailErrorResponseListener<LiveBoard>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
+                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+            }
+        }, null);
     }
 
     @Override
@@ -223,45 +264,5 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         // If it's not loaded, it's not a favorite
         return mCurrentStation != null && mPersistentQuaryProvider.isFavoriteStation(mCurrentStation);
 
-    }
-
-    @Override
-    public void onIrailSuccessResponse(LiveBoard data, int tag) {
-        switch (tag) {
-            case NEW_DATA:
-                // store retrieved data
-                mCurrentLiveboard = data;
-                // Show retrieved data
-                showData(mCurrentLiveboard);
-
-                // If we didn't get a result, try the next data
-                if (data.getStops().length == 0) {
-                    LiveboardActivity.this.getNextData();
-                } else {
-                    // Enable infinite scrolling, in case it was disabled during a previous search
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
-                }
-                break;
-
-            case APPEND_DATA:
-                // Compare the new one with the old one to check if stops have been added
-                if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                    if (mCurrentLiveboard == null) {
-                        ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
-                    }
-                }
-                mCurrentLiveboard = data;
-                showData(mCurrentLiveboard);
-        }
-    }
-
-    @Override
-    public void onIrailErrorResponse(Exception e, int tag) {
-        switch (tag) {
-            case APPEND_DATA:
-                ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
-        }
     }
 }

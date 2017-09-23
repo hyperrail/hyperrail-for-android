@@ -229,6 +229,12 @@ public class IrailApiParser implements IrailParser {
     // allow providing station, so liveboards don't need to parse a station over and over
     private TrainStop parseLiveboardStop(Station stop, JSONObject item) throws JSONException {
         Station destination = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+
+        OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
+        if (item.has("occupancy")) {
+            occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
+
         return new TrainStop(
                 stop,
                 destination,
@@ -240,13 +246,19 @@ public class IrailApiParser implements IrailParser {
                 item.getInt("canceled") != 0,
                 (item.has("left")) && (item.getInt("left") == 1),
                 item.getString("departureConnection"),
-                OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase())
+                occupancyLevel
         );
     }
 
     // allow providing station, so liveboards don't need to parse a station over and over
     private TrainStop parseTrainStop(Station destination, TrainStub t, JSONObject item) throws JSONException {
         Station stop = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+
+        OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
+        if (item.has("occupancy")) {
+            occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
+
         return new TrainStop(
                 stop,
                 destination,
@@ -261,7 +273,7 @@ public class IrailApiParser implements IrailParser {
                 item.getInt("arrivalCanceled") != 0,
                 item.getInt("left") == 1,
                 item.getString("departureConnection"),
-                OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase())
+                occupancyLevel
         );
     }
 

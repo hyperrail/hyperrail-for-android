@@ -31,8 +31,9 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
@@ -41,7 +42,7 @@ import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 
-public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener, IrailResponseListener<RouteResult> {
+public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener {
 
     private RouteResult mRoutes;
 
@@ -154,11 +155,24 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         api.abortAllQueries();
-        if (mSearchDate != null) {
-            api.getRoute(this, NEW_DATA, mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType);
-        } else {
-            api.getRoute(this, NEW_DATA, mSearchFrom, mSearchTo, new DateTime(), mSearchTimeType);
-        }
+
+        api.getRoute(mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType, new IRailSuccessResponseListener<RouteResult>() {
+                    @Override
+                    public void onSuccessResponse(RouteResult data, Object tag) {
+                        vRefreshLayout.setRefreshing(false);
+                        mRoutes = data;
+                        showData(mRoutes);
+                        initialLoadCompleted = true;
+                    }
+                }, new IRailErrorResponseListener<RouteResult>() {
+                    @Override
+                    public void onErrorResponse(Exception e, Object tag) {
+                        // only finish if we're loading new data
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                        ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, mRoutes == null);
+                    }
+                },
+                null);
     }
 
     protected void getNextData() {
@@ -167,7 +181,27 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         }
 
         RouteAppendHelper appendHelper = new RouteAppendHelper();
-        appendHelper.appendRouteResult(this, APPEND_DATA, mRoutes);
+        appendHelper.appendRouteResult(mRoutes, new IRailSuccessResponseListener<RouteResult>() {
+                    @Override
+                    public void onSuccessResponse(RouteResult data, Object tag) {
+                        // data consists of both old and new routes
+                        if (data.getRoutes().length == mRoutes.getRoutes().length) {
+                            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                        }
+
+                        mRoutes = data;
+                        showData(mRoutes);
+                    }
+                }, new IRailErrorResponseListener<RouteResult>() {
+                    @Override
+                    public void onErrorResponse(Exception e, Object tag) {
+                        ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+                    }
+                },
+                null);
     }
 
     @Override
@@ -269,41 +303,5 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
     public boolean isFavorite() {
         return mPersistentQuaryProvider.isFavoriteRoute(mSearchFrom, mSearchTo);
-    }
-
-    @Override
-    public void onIrailSuccessResponse(RouteResult data, int tag) {
-        switch (tag) {
-            case NEW_DATA:
-                vRefreshLayout.setRefreshing(false);
-                mRoutes = data;
-                showData(mRoutes);
-                initialLoadCompleted = true;
-                break;
-            case APPEND_DATA:
-                // data consists of both old and new routes
-                if (data.getRoutes().length == mRoutes.getRoutes().length) {
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                    // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
-                }
-
-                mRoutes = data;
-                showData(mRoutes);
-        }
-    }
-
-    @Override
-    public void onIrailErrorResponse(Exception e, int tag) {
-        switch (tag) {
-            case NEW_DATA:
-                // only finish if we're loading new data
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, mRoutes == null);
-                break;
-            case APPEND_DATA:
-                ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
-        }
     }
 }

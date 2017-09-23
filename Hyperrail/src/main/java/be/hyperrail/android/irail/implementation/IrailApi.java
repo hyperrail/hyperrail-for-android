@@ -15,10 +15,13 @@ package be.hyperrail.android.irail.implementation;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -37,20 +40,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
+import be.hyperrail.android.BuildConfig;
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailParser;
-import be.hyperrail.android.irail.contracts.IrailResponseListener;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.exception.NotFoundException;
 
 import static java.util.logging.Level.WARNING;
 
@@ -63,12 +67,17 @@ public class IrailApi implements IrailDataProvider {
 
     private static final String LOGTAG = "iRailApi";
     private final RequestQueue requestQueue;
+    private static final String UA = "HyperRail for Android - " + BuildConfig.VERSION_NAME;
+    private final RetryPolicy requestPolicy;
 
     public IrailApi(Context context, IrailParser parser, IrailStationProvider stationProvider) {
         this.context = context;
         this.parser = parser;
         this.stationProvider = stationProvider;
         this.requestQueue = Volley.newRequestQueue(context);
+        this.requestPolicy = new DefaultRetryPolicy(10000,
+                3,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
     }
 
     private final Context context;
@@ -78,61 +87,36 @@ public class IrailApi implements IrailDataProvider {
     private final int TAG_IRAIL_API_GET = 0;
 
     @Override
-    public void getRoute(IrailResponseListener<RouteResult> callback, int tag, String from, String to) {
-        getRoute(callback, tag, from, to, new DateTime());
-    }
-
-    @Override
-    public void getRoute(IrailResponseListener<RouteResult> callback, int tag, String from, String to, DateTime timeFilter) {
-        getRoute(callback, tag, to, timeFilter, RouteTimeDefinition.DEPART, from);
-    }
-
-    @Override
-    public void getRoute(IrailResponseListener<RouteResult> callback, int tag, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType, String from) {
-        getRoute(callback, tag, stationProvider.getStationByName(from), stationProvider.getStationByName(to), timeFilter, timeFilterType);
-    }
-
-    @Override
-    public void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to) {
-        getRoute(callback, tag, from, to, new DateTime());
-    }
-
-    @Override
-    public void getRoute(IrailResponseListener<RouteResult> callback, int tag, Station from, Station to, DateTime timeFilter) {
-        getRoute(callback, tag, from, to, timeFilter, RouteTimeDefinition.DEPART);
+    public void getRoute(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType,
+                         IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener,
+                         Object tag) {
+        getRoute(stationProvider.getStationByName(from), stationProvider.getStationByName(to), timeFilter, timeFilterType, successListener, errorListener, tag);
     }
 
     @Override
     @AddTrace(name = "iRailGetroute")
-    public void getRoute(final IrailResponseListener<RouteResult> callback, final int tag, final Station from, final Station to, final DateTime timeFilter, final RouteTimeDefinition timeFilterType) {
-        if (callback == null) {
-            return;
+    public void getRoute(final Station from, final Station to, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
+                         final IRailSuccessResponseListener<RouteResult> successListener, final IRailErrorResponseListener<RouteResult> errorListener,
+                         final Object tag) {
+
+        if (timeFilter == null) {
+            timeFilter = new DateTime();
         }
+
+        final DateTime finalDateTime = timeFilter;
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
 
-        // suppress errors, this formatting is for an API call
         DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
         if (from == null || to == null) {
-            callback.onIrailErrorResponse(new NotFoundException("", "One or both stations are null"), tag);
+            errorListener.onErrorResponse(new IllegalArgumentException("One or both stations are null"), tag);
             return;
         }
 
-        String from_name;
-        String to_name;
-        try {
-            from_name = URLEncoder.encode(from.getName(), "UTF-8");
-            to_name = URLEncoder.encode(to.getName(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            from_name = from.getName();
-            to_name = to.getName();
-            e.printStackTrace();
-        }
-
         String url = "https://api.irail.be/connections/?format=json"
-                + "&to=" + to_name
-                + "&from=" + from_name
+                + "&to=" + to.getId()
+                + "&from=" + from.getId()
                 + "&date=" + dateformat.print(timeFilter)
                 + "&time=" + timeformat.print(timeFilter);
 
@@ -146,68 +130,62 @@ public class IrailApi implements IrailDataProvider {
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        RouteResult routeResult;
                         try {
-                            callback.onIrailSuccessResponse(parser.parseRouteResult(response, from, to, timeFilter, timeFilterType), tag);
+                            routeResult = parser.parseRouteResult(response, from, to, finalDateTime, timeFilterType);
                         } catch (JSONException e) {
                             FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse routes", e.getMessage());
                             FirebaseCrash.report(e);
-                            callback.onIrailErrorResponse(e, tag);
+                            errorListener.onErrorResponse(e, tag);
+                            return;
+                        }
+                        if (successListener != null) {
+                            successListener.onSuccessResponse(routeResult, tag);
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         FirebaseCrash.logcat(WARNING.intValue(), "Failed to get routes", e.getMessage());
-                        callback.onIrailErrorResponse(e, tag);
-                        callback.onIrailErrorResponse(e, tag);
+                        errorListener.onErrorResponse(e, tag);
                     }
-                });
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("User-agent", UA);
+                return headers;
+            }
+        };
+jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
         requestQueue.add(jsObjRequest);
     }
 
-    @Override
-    public void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name) {
-        getLiveboard(callback, tag, stationProvider.getStationByName(name));
-    }
-
-    @Override
-    public void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station) {
-        getLiveboard(callback, tag, station, new DateTime());
-    }
-
-    @Override
-    public void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, String name, DateTime timeFilter) {
-        getLiveboard(callback, tag, stationProvider.getStationByName(name), timeFilter, RouteTimeDefinition.DEPART);
-    }
-
-    @Override
-    public void getLiveboard(IrailResponseListener<LiveBoard> callback, int tag, Station station, DateTime timeFilter) {
-        if (timeFilter == null) {
-            timeFilter = new DateTime();
-        }
-        getLiveboard(callback, tag, station, timeFilter, RouteTimeDefinition.DEPART);
-    }
-
-    public void getLiveboard(final IrailResponseListener<LiveBoard> callback, final int tag, String name, final DateTime timeFilter, final RouteTimeDefinition timeFilterType) {
-        getLiveboard(callback, tag, stationProvider.getStationByName(name), timeFilter, timeFilterType);
+    public void getLiveboard(String name, final DateTime timeFilter, final RouteTimeDefinition timeFilterType,
+                             final IRailSuccessResponseListener<LiveBoard> successListener, final IRailErrorResponseListener<LiveBoard> errorListener,
+                             final Object tag) {
+        getLiveboard(stationProvider.getStationByName(name), timeFilter, timeFilterType, successListener, errorListener, tag);
     }
 
     @Override
     @AddTrace(name = "iRailGetLiveboard")
-    public void getLiveboard(final IrailResponseListener<LiveBoard> callback, final int tag, Station station, final DateTime timeFilter, final RouteTimeDefinition timeFilterType) {
-        if (callback == null) {
-            return;
+    public void getLiveboard(Station station, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
+                             final IRailSuccessResponseListener<LiveBoard> successListener, final IRailErrorResponseListener<LiveBoard> errorListener,
+                             final Object tag) {
+        if (timeFilter == null) {
+            timeFilter = new DateTime();
         }
+        final DateTime finalDateTime = timeFilter;
+
         // https://api.irail.be/liveboard/?station=Halle&fast=true
 
         // suppress errors, this formatting is for an API call
         DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
-        String url = "https://api.irail.be/liveboard/?format=json"
-                // TODO: use id here instead of name, supported by API but slow ATM
-                + "&station=" + station.getId()
+        final String url = "https://api.irail.be/liveboard/?format=json"
+                + "&id=" + station.getId()
                 + "&date=" + dateformat.print(timeFilter)
                 + "&time=" + timeformat.print(timeFilter)
                 + "&arrdep=" + ((timeFilterType == RouteTimeDefinition.DEPART) ? "dep" : "arr");
@@ -216,31 +194,48 @@ public class IrailApi implements IrailDataProvider {
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        LiveBoard result;
                         try {
-                            callback.onIrailSuccessResponse(parser.parseLiveboard(response, timeFilter), tag);
+                            result = parser.parseLiveboard(response, finalDateTime);
                         } catch (JSONException e) {
                             FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
                             FirebaseCrash.report(e);
-                            callback.onIrailErrorResponse(e, tag);
+                            if (errorListener != null) {
+                                errorListener.onErrorResponse(e, tag);
+                            }
+                            return;
+                        }
+
+                        if (successListener != null) {
+                            successListener.onSuccessResponse(result, tag);
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
+                        Log.w(LOGTAG, "Tried loading liveboard from " + url + " failed with error " + e);
                         FirebaseCrash.logcat(WARNING.intValue(), "Failed to get liveboard", e.getMessage());
-                        callback.onIrailErrorResponse(e, tag);
-                        callback.onIrailErrorResponse(e, tag);
+                        if (errorListener != null) {
+                            errorListener.onErrorResponse(e, tag);
+                        }
                     }
-                });
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("User-agent", UA);
+                return headers;
+            }
+        };
+
+        jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
         requestQueue.add(jsObjRequest);
     }
 
     @Override
-    public void getTrain(final IrailResponseListener<Train> callback, final int tag, final String id, final DateTime day) {
-        if (callback == null) {
-            return;
-        }
+    public void getTrain(final String id, final DateTime day, final IRailSuccessResponseListener<Train> successListener,
+                         final IRailErrorResponseListener<Train> errorListener, final Object tag) {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
@@ -250,37 +245,52 @@ public class IrailApi implements IrailDataProvider {
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Train result;
                         try {
-                            callback.onIrailSuccessResponse(parser.parseTrain(response, new DateTime()), tag);
+                            result = parser.parseTrain(response, new DateTime());
                         } catch (JSONException e) {
                             FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse train", e.getMessage());
                             FirebaseCrash.report(e);
-                            callback.onIrailErrorResponse(e, tag);
+                            if (errorListener != null) {
+                                errorListener.onErrorResponse(e, tag);
+                            }
+                            return;
+                        }
+                        if (successListener != null) {
+                            successListener.onSuccessResponse(result, tag);
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         FirebaseCrash.logcat(WARNING.intValue(), "Failed to get train", e.getMessage());
-                        callback.onIrailErrorResponse(e, tag);
-                        callback.onIrailErrorResponse(e, tag);
+                        if (errorListener != null) {
+                            errorListener.onErrorResponse(e, tag);
+                        }
                     }
-                });
+                })
+
+        {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("User-agent", UA);
+                return headers;
+            }
+        };
+
+        jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
         requestQueue.add(jsObjRequest);
     }
 
     @Override
-    public void getTrain(IrailResponseListener<Train> callback, int tag, String id) {
-        getTrain(callback, tag, id, new DateTime());
+    public void getTrain(String id, final IRailSuccessResponseListener<Train> successListener, final IRailErrorResponseListener<Train> errorListener, final Object tag) {
+        getTrain(id, new DateTime(), successListener, errorListener, tag);
     }
 
     @Override
-    public void getDisturbances(final IrailResponseListener<Disturbance[]> callback, final int tag) {
-        if (callback == null) {
-            return;
-        }
-
+    public void getDisturbances(final IRailSuccessResponseListener<Disturbance[]> successListener, final IRailErrorResponseListener<Disturbance[]> errorListener, final Object tag) {
         String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
         if (locale.isEmpty()) {
             // Only get locale when needed
@@ -293,37 +303,54 @@ public class IrailApi implements IrailDataProvider {
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Disturbance[] result;
                         try {
-                            callback.onIrailSuccessResponse(parser.parseDisturbances(response), tag);
+                            result = parser.parseDisturbances(response);
                         } catch (JSONException e) {
                             FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
                             FirebaseCrash.report(e);
-                            callback.onIrailErrorResponse(e, tag);
+                            if (errorListener != null) {
+                                errorListener.onErrorResponse(e, tag);
+                            }
+                            return;
                         }
+                        successListener.onSuccessResponse(result, tag);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         FirebaseCrash.logcat(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
-                        callback.onIrailErrorResponse(e, tag);
-                        callback.onIrailErrorResponse(e, tag);
+                        if (errorListener != null) {
+                            errorListener.onErrorResponse(e, tag);
+                        }
                     }
-                });
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("User-agent", UA);
+                return headers;
+            }
+        };
+
+        jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
         requestQueue.add(jsObjRequest);
-
     }
 
     @Override
-    public void postOccupancy(IrailResponseListener<Boolean> callback, int tag, TrainStub train, TrainStop stop, OccupancyLevel occupancy) {
+    public void postOccupancy(TrainStub train, TrainStop stop, OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener,
+                              IRailErrorResponseListener<Boolean> errorListener, Object tag) {
         final String url = "https://api.irail.be/feedback/occupancy.php";
-        final String payload =
-                "{\"connection\": \"" + stop.getSemanticDepartureConnection() + "\"," +
-                        "\"from\": \"" + stop.getStation().getSemanticId() + "\"," +
-                        "\"date\": \"" + DateTimeFormat.forPattern("Ymd").print(stop.getDepartureTime()) + "\"," +
-                        "\"vehicle\": \"" + train.getSemanticId() + "\"," +
-                        "\"occupancy\":\"http://api.irail.be/terms/" + occupancy.name().toLowerCase() + "\"}";
+
         try {
+            JSONObject payload = new JSONObject();
+
+            payload.put("connection", stop.getSemanticDepartureConnection());
+            payload.put("from", stop.getStation().getSemanticId());
+            payload.put("date", DateTimeFormat.forPattern("Ymd").print(stop.getDepartureTime()));
+            payload.put("vehicle", train.getSemanticId());
+            payload.put("occupancy", "http://api.irail.be/terms/" + occupancy.name().toLowerCase());
 
             AsyncTask<String, Void, Void> t = new AsyncTask<String, Void, Void>() {
                 @Override
@@ -332,11 +359,16 @@ public class IrailApi implements IrailDataProvider {
                     return null;
                 }
             };
-            t.execute(payload);
+            t.execute(payload.toString());
         } catch (Exception e) {
-            callback.onIrailErrorResponse(e, tag);
+            if (errorListener != null) {
+                errorListener.onErrorResponse(e, tag);
+            }
+            return;
         }
-        callback.onIrailSuccessResponse(true, tag);
+        if (successListener != null) {
+            successListener.onSuccessResponse(true, tag);
+        }
     }
 
     @Override
@@ -351,6 +383,7 @@ public class IrailApi implements IrailDataProvider {
      * @param json The request body
      * @return The return text from the server
      */
+
     private static String postJsonRequest(String uri, String json) {
         HttpURLConnection urlConnection;
         String url;
