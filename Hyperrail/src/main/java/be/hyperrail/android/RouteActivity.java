@@ -28,16 +28,16 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.FileNotFoundException;
-
 import be.hyperrail.android.adapter.RouteCardAdapter;
+import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Route;
+import be.hyperrail.android.irail.implementation.RouteAppendHelper;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
@@ -129,69 +129,47 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
     protected void getData() {
         Log.d("RouteActivity", "Get original data");
-        AsyncTask<Void, Integer, IrailDataResponse<RouteResult>> t = new AsyncTask<Void, Integer, IrailDataResponse<RouteResult>>() {
 
-            @Override
-            protected void onPostExecute(IrailDataResponse<RouteResult> response) {
-                super.onPostExecute(response);
+        // Disable infinite scrolling until loading initial data is done
+        initialLoadCompleted = false;
 
-                vRefreshLayout.setRefreshing(false);
+        // Clear the view
+        showData(null);
 
-                if (response.isSuccess()) {
-                    mRoutes = response.getData();
-                    showData(mRoutes);
-                    initialLoadCompleted = true;
-                } else {
-                    // only finish if we're loading new data
-                    ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                    ErrorDialogFactory.showErrorDialog(response.getException(), RouteActivity.this, mRoutes == null);
-                }
+        setTitle(R.string.title_route);
+        setSubTitle(mSearchFrom.getLocalizedName() + " - " + mSearchTo.getLocalizedName());
 
-            }
+        // Restore infinite scrolling
+        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
 
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                // Disable infinite scrolling until loading initial data is done
-                initialLoadCompleted = false;
-
-                // Clear the view
-                showData(null);
-
-                setTitle(R.string.title_route);
-                setSubTitle(mSearchFrom.getLocalizedName() + " - " + mSearchTo.getLocalizedName());
-
-                // Restore infinite scrolling
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
-
-                if (mSearchDate != null) {
-                    vWarningNotRealtime.setVisibility(View.VISIBLE);
-                    DateTimeFormatter df = DateTimeFormat.forPattern(getString(R.string.warning_not_realtime_datetime));
-                    vWarningNotRealtimeText.setText(String.format("%s %s", getString(R.string.warning_not_realtime), df.print(mSearchDate)));
-                } else {
-                    vWarningNotRealtime.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            protected IrailDataResponse<RouteResult> doInBackground(Void... arglist) {
-
-                IrailDataProvider api = IrailFactory.getDataProviderInstance();
-                if (mSearchDate != null) {
-                    return api.getRoute(mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType);
-                } else {
-                    return api.getRoute(mSearchFrom, mSearchTo, new DateTime(), mSearchTimeType);
-                }
-
-            }
-        };
-
-        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED) {
-            runningTask.cancel(true);
+        if (mSearchDate != null) {
+            vWarningNotRealtime.setVisibility(View.VISIBLE);
+            DateTimeFormatter df = DateTimeFormat.forPattern(getString(R.string.warning_not_realtime_datetime));
+            vWarningNotRealtimeText.setText(String.format("%s %s", getString(R.string.warning_not_realtime), df.print(mSearchDate)));
+        } else {
+            vWarningNotRealtime.setVisibility(View.GONE);
         }
 
-        t.execute();
-        runningTask = t;
+        IrailDataProvider api = IrailFactory.getDataProviderInstance();
+        api.abortAllQueries();
+
+        api.getRoute(mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType, new IRailSuccessResponseListener<RouteResult>() {
+                    @Override
+                    public void onSuccessResponse(RouteResult data, Object tag) {
+                        vRefreshLayout.setRefreshing(false);
+                        mRoutes = data;
+                        showData(mRoutes);
+                        initialLoadCompleted = true;
+                    }
+                }, new IRailErrorResponseListener<RouteResult>() {
+                    @Override
+                    public void onErrorResponse(Exception e, Object tag) {
+                        // only finish if we're loading new data
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                        ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, mRoutes == null);
+                    }
+                },
+                null);
     }
 
     protected void getNextData() {
@@ -199,35 +177,28 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
             return;
         }
 
-        AsyncTask<Void, Integer, IrailDataResponse<Route[]>> t = new AsyncTask<Void, Integer, IrailDataResponse<Route[]>>() {
+        RouteAppendHelper appendHelper = new RouteAppendHelper();
+        appendHelper.appendRouteResult(mRoutes, new IRailSuccessResponseListener<RouteResult>() {
+                    @Override
+                    public void onSuccessResponse(RouteResult data, Object tag) {
+                        // data consists of both old and new routes
+                        if (data.getRoutes().length == mRoutes.getRoutes().length) {
+                            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                        }
 
-            @Override
-            protected void onPostExecute(IrailDataResponse<Route[]> response) {
-                super.onPostExecute(response);
-
-                if (response.isSuccess()) {
-                    // mRoutes is updated with new routes
-                    showData(mRoutes);
-
-                    if (mRoutes.getRoutes().length == 0) {
-                        ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this, false);
-                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                        mRoutes = data;
+                        showData(mRoutes);
                     }
-                } else {
-                    ErrorDialogFactory.showErrorDialog(response.getException(), RouteActivity.this, false);
-                    ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                    ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
-                }
-            }
-
-            @Override
-            protected IrailDataResponse<Route[]> doInBackground(Void... arglist) {
-
-                return RouteActivity.this.mRoutes.getNextResults();
-            }
-        };
-        t.execute();
-        runningTask = t;
+                }, new IRailErrorResponseListener<RouteResult>() {
+                    @Override
+                    public void onErrorResponse(Exception e, Object tag) {
+                        ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+                    }
+                },
+                null);
     }
 
     @Override

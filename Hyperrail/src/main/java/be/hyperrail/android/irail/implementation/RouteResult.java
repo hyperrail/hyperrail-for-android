@@ -12,18 +12,12 @@
 
 package be.hyperrail.android.irail.implementation;
 
-import android.util.Log;
-
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
-import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.util.ArrayUtils;
 
 /**
  * Result of a route query. Includes the query, as parsed server-side.
@@ -64,50 +58,5 @@ public class RouteResult implements Serializable {
 
     public Route[] getRoutes() {
         return routes;
-    }
-
-    public IrailDataResponse<Route[]> getNextResults() {
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
-
-        // get last time
-        DateTime lastsearch;
-
-        if (this.routes != null) {
-            lastsearch = new DateTime(this.routes[this.routes.length - 1].getDepartureTime());
-        } else {
-            lastsearch = mLastSearchTime;
-        }
-        // move one minute further
-        lastsearch = lastsearch.plusMinutes(1);
-        // load
-        Route[] newSearch;
-
-        IrailDataResponse<RouteResult> apiResponse = api.getRoute(origin.getName(), destination.getName(), lastsearch);
-
-        if (!apiResponse.isSuccess()) {
-            return new ApiResponse<>(null, apiResponse.getException());
-        }
-
-        newSearch = apiResponse.getData().getRoutes();
-
-        while (newSearch == null || newSearch.length == 0) {
-            // add an hour
-            lastsearch = lastsearch.plusHours(2);
-            // load
-
-            apiResponse = api.getRoute(origin.getName(), destination.getName(), lastsearch);
-
-            if (!apiResponse.isSuccess()) {
-                Log.d("RouteResult", "Extending route list failed with exception " + apiResponse.getException().getMessage());
-                return new ApiResponse<>(null, apiResponse.getException());
-            }
-
-            newSearch = apiResponse.getData().getRoutes();
-        }
-
-        // add new stops
-        this.routes = ArrayUtils.concatenate(this.getRoutes(), newSearch);
-
-        return new ApiResponse<>(newSearch);
     }
 }

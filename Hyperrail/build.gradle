@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.firebase-crash'
 
-def VERSION_CODE = 8
-def VERSION_NAME = '0.9.6'
+def VERSION_CODE = 9
+def VERSION_NAME = '0.9.7a'
 
 android {
     signingConfigs {
@@ -55,6 +55,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    compile 'com.android.volley:volley:1.0.0'
     compile 'joda-time:joda-time:2.9.4'
     compile 'com.android.support:appcompat-v7:26.0.0'
     compile 'com.android.support:support-v4:26.0.0'

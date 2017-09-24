@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 
@@ -228,6 +229,12 @@ public class IrailApiParser implements IrailParser {
     // allow providing station, so liveboards don't need to parse a station over and over
     private TrainStop parseLiveboardStop(Station stop, JSONObject item) throws JSONException {
         Station destination = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+
+        OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
+        if (item.has("occupancy")) {
+            occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
+
         return new TrainStop(
                 stop,
                 destination,
@@ -237,13 +244,21 @@ public class IrailApiParser implements IrailParser {
                 timestamp2date(item.getString("time")),
                 new Duration(item.getInt("delay") * 1000),
                 item.getInt("canceled") != 0,
-                (item.has("left")) && (item.getInt("left") == 1)
+                (item.has("left")) && (item.getInt("left") == 1),
+                item.getString("departureConnection"),
+                occupancyLevel
         );
     }
 
     // allow providing station, so liveboards don't need to parse a station over and over
     private TrainStop parseTrainStop(Station destination, TrainStub t, JSONObject item) throws JSONException {
         Station stop = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+
+        OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
+        if (item.has("occupancy")) {
+            occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
+
         return new TrainStop(
                 stop,
                 destination,
@@ -256,7 +271,9 @@ public class IrailApiParser implements IrailParser {
                 new Duration(item.getInt("arrivalDelay") * 1000),
                 item.getInt("departureCanceled") != 0,
                 item.getInt("arrivalCanceled") != 0,
-                item.getInt("left") == 1
+                item.getInt("left") == 1,
+                item.getString("departureConnection"),
+                occupancyLevel
         );
     }
 
