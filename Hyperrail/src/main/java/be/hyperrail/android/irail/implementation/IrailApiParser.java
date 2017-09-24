@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 
@@ -57,6 +58,10 @@ public class IrailApiParser implements IrailParser {
                 arrival.getString("vehicle"),
                 stationProvider.getStationByName(arrival.getJSONObject("direction").getString("name")));
 
+        OccupancyLevel departureOccupancyLevel = OccupancyLevel.UNKNOWN;
+        if (departure.has("occupancy")) {
+            departureOccupancyLevel = OccupancyLevel.valueOf(departure.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
         Transfer departureTransfer = new Transfer(
                 stationProvider.getStationById(departure.getJSONObject("stationinfo").getString("id")),
                 null,
@@ -70,7 +75,9 @@ public class IrailApiParser implements IrailParser {
                 new Duration(0),
                 false,
                 new Duration(departure.getInt("delay") * 1000),
-                departure.getInt("canceled") != 0
+                departure.getInt("canceled") != 0,
+                departure.getString("departureConnection"),
+                departureOccupancyLevel
         );
         Station departureStation = departureTransfer.getStation();
 
@@ -86,8 +93,11 @@ public class IrailApiParser implements IrailParser {
                 null,
                 new Duration(arrival.getInt("delay") * 1000),
                 arrival.getInt("canceled") != 0,
-                new Duration(0), false
+                new Duration(0), false,
+                null,
+                OccupancyLevel.UNKNOWN
         );
+
         Station arrivalStation = arrivalTransfer.getStation();
 
         TrainStub[] trains;
@@ -120,6 +130,11 @@ public class IrailApiParser implements IrailParser {
                             stationProvider.getStationByName(via.getJSONObject("direction").getString("name")));
                 }
 
+                OccupancyLevel viaOccupancyLevel = OccupancyLevel.UNKNOWN;
+                if (viaDeparture.has("occupancy")) {
+                    viaOccupancyLevel = OccupancyLevel.valueOf(viaDeparture.getJSONObject("occupancy").getString("name").toUpperCase());
+                }
+
                 // don't use parseStop function, we have to combine data!
                 Transfer s = new Transfer(
                         stationProvider.getStationById(via.getJSONObject("stationinfo").getString("id")),
@@ -134,7 +149,9 @@ public class IrailApiParser implements IrailParser {
                         new Duration(viaArrival.getInt("delay") * 1000),
                         viaArrival.getInt("canceled") != 0,
                         new Duration(viaDeparture.getInt("delay") * 1000),
-                        viaDeparture.getInt("canceled") != 0
+                        viaDeparture.getInt("canceled") != 0,
+                        viaDeparture.getString("departureConnection"),
+                        viaOccupancyLevel
                 );
                 transfers[i + 1] = s;
             }
@@ -228,6 +245,12 @@ public class IrailApiParser implements IrailParser {
     // allow providing station, so liveboards don't need to parse a station over and over
     private TrainStop parseLiveboardStop(Station stop, JSONObject item) throws JSONException {
         Station destination = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+
+        OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
+        if (item.has("occupancy")) {
+            occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
+
         return new TrainStop(
                 stop,
                 destination,
@@ -237,13 +260,21 @@ public class IrailApiParser implements IrailParser {
                 timestamp2date(item.getString("time")),
                 new Duration(item.getInt("delay") * 1000),
                 item.getInt("canceled") != 0,
-                (item.has("left")) && (item.getInt("left") == 1)
+                (item.has("left")) && (item.getInt("left") == 1),
+                item.getString("departureConnection"),
+                occupancyLevel
         );
     }
 
     // allow providing station, so liveboards don't need to parse a station over and over
     private TrainStop parseTrainStop(Station destination, TrainStub t, JSONObject item) throws JSONException {
         Station stop = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+
+        OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
+        if (item.has("occupancy")) {
+            occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
+
         return new TrainStop(
                 stop,
                 destination,
@@ -256,7 +287,9 @@ public class IrailApiParser implements IrailParser {
                 new Duration(item.getInt("arrivalDelay") * 1000),
                 item.getInt("departureCanceled") != 0,
                 item.getInt("arrivalCanceled") != 0,
-                item.getInt("left") == 1
+                item.getInt("left") == 1,
+                item.getString("departureConnection"),
+                occupancyLevel
         );
     }
 

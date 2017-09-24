@@ -14,32 +14,30 @@ package be.hyperrail.android;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import be.hyperrail.android.adapter.TrainCardAdapter;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
+import be.hyperrail.android.adapter.TrainStopCardAdapter;
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.db.Station;
+import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
-import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * Activity to show a train
  */
-public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<TrainStop> {
+public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<be.hyperrail.android.irail.implementation.TrainStop> {
 
     private Station mScrollToStation;
     private Train mTrain;
     private TrainStub mCurrentSearchQuery;
     private DateTime mTrainDate;
-
-    private AsyncTask runningTask;
 
     public static Intent createIntent(Context context, TrainStub stub, DateTime day) {
         Intent i = new Intent(context, TrainActivity.class);
@@ -55,7 +53,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     }
 
     public static Intent createIntent(Context context, TrainStub stub, Station currentStation, Station destinationStation, DateTime day) {
-        Intent i = createIntent(context, stub,currentStation,day);
+        Intent i = createIntent(context, stub, currentStation, day);
         i.putExtra("destinationStation", destinationStation);
         return i;
     }
@@ -73,12 +71,12 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("train",mTrain);
+        outState.putSerializable("train", mTrain);
     }
 
     @Override
     protected Train getRestoredInstanceStateItems() {
-            return mTrain;
+        return mTrain;
     }
 
     @Override
@@ -93,52 +91,30 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        return new TrainCardAdapter(this, null);
+        return new TrainStopCardAdapter(this, null);
     }
 
     protected void getData() {
-        AsyncTask<TrainStub, Integer, IrailDataResponse<Train>> t = new AsyncTask<TrainStub, Integer, IrailDataResponse<Train>>() {
+        vRefreshLayout.setRefreshing(true);
 
+        IrailFactory.getDataProviderInstance().abortAllQueries();
+        IrailFactory.getDataProviderInstance().getTrain(mCurrentSearchQuery.getId(), mTrainDate, new IRailSuccessResponseListener<Train>() {
             @Override
-            protected void onPostExecute(IrailDataResponse<Train> response) {
-                super.onPostExecute(response);
-
+            public void onSuccessResponse(Train data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
 
-                if (response.isSuccess()) {
-                    mTrain = response.getData();
-                    showData(mTrain);
-                } else {
-                    // only finish if we're loading new data
-                    ErrorDialogFactory.showErrorDialog(response.getException(),TrainActivity.this, mTrain == null);
-                }
-
+                mTrain = data;
+                showData(mTrain);
             }
-
+        }, new IRailErrorResponseListener<Train>() {
             @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                vRefreshLayout.setRefreshing(true);
+            public void onErrorResponse(Exception e, Object tag) {
+                vRefreshLayout.setRefreshing(false);
+
+                // only finish if we're loading new data
+                ErrorDialogFactory.showErrorDialog(e, TrainActivity.this, mTrain == null);
             }
-
-            @Override
-            protected IrailDataResponse<Train> doInBackground(TrainStub... trains) {
-                if (trains != null && trains.length > 0) {
-                    return trains[0].getTrain(mTrainDate);
-                } else {
-                    return null;
-                }
-            }
-        };
-
-        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED){
-            // Keep the existing task running to reload this data
-            return;
-        }
-
-        t.execute(mCurrentSearchQuery);
-
-        runningTask = t;
+        }, null);
     }
 
     @Override
@@ -150,11 +126,11 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         }
 
         mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
-       if (getIntent().hasExtra("date")){
-           mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
-       } else {
-           mTrainDate = new DateTime();
-       }
+        if (getIntent().hasExtra("date")) {
+            mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
+        } else {
+            mTrainDate = new DateTime();
+        }
 
         getData();
     }
@@ -166,7 +142,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     protected void showData(Train train) {
         setSubTitle(train.getName() + " " + train.getDirection().getLocalizedName());
 
-        TrainCardAdapter adapter = new TrainCardAdapter(this, train);
+        TrainStopCardAdapter adapter = new TrainStopCardAdapter(this, train);
         vRecyclerView.setAdapter(adapter);
         if (mScrollToStation != null) {
             int i = train.getStopNumberForStation(mScrollToStation);
@@ -183,9 +159,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED){
-            runningTask.cancel(true);
-        }
+        IrailFactory.getDataProviderInstance().abortAllQueries();
     }
 
     @Override
@@ -199,8 +173,9 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        Intent i = LiveboardActivity.createIntent(getApplicationContext(), object.getStation());
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, be.hyperrail.android.irail.implementation.TrainStop object) {
+        Intent i = LiveboardActivity.createIntent(getApplicationContext(), object.getStation(), object.getDepartureTime());
         startActivity(i);
     }
+
 }

@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,9 +32,12 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
+import be.hyperrail.android.OccupancyDialog;
+import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
 
 /**
@@ -185,12 +189,22 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             }
         }
 
+        holder.vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listener != null) {
                     listener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
                 }
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                (new OccupancyDialog(LiveboardCardAdapter.this.context, stop)).show();
+                return false;
             }
         });
     }
@@ -221,19 +235,22 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         protected final LinearLayout vStatusContainer;
         protected final TextView vStatusText;
 
+        protected final ImageView vOccupancy;
+
         LiveboardStopViewHolder(View view) {
             super(view);
-            vDestination = (TextView) view.findViewById(be.hyperrail.android.R.id.text_destination);
-            vTrainNumber = ((TextView) view.findViewById(be.hyperrail.android.R.id.text_train_number));
-            vTrainType = ((TextView) view.findViewById(be.hyperrail.android.R.id.text_train_type));
-            vDeparture = (TextView) view.findViewById(be.hyperrail.android.R.id.text_departure_time);
-            vDepartureDelay = (TextView) view.findViewById(be.hyperrail.android.R.id.text_departure_delay);
-            vDelayTime = (TextView) view.findViewById(be.hyperrail.android.R.id.text_delay_time);
-            vPlatform = (TextView) view.findViewById(be.hyperrail.android.R.id.text_platform);
-            vPlatformContainer = (LinearLayout) view.findViewById(be.hyperrail.android.R.id.layout_platform_container);
+            vDestination = view.findViewById(be.hyperrail.android.R.id.text_destination);
+            vTrainNumber = view.findViewById(be.hyperrail.android.R.id.text_train_number);
+            vTrainType = view.findViewById(be.hyperrail.android.R.id.text_train_type);
+            vDeparture = view.findViewById(be.hyperrail.android.R.id.text_departure_time);
+            vDepartureDelay = view.findViewById(be.hyperrail.android.R.id.text_departure_delay);
+            vDelayTime = view.findViewById(be.hyperrail.android.R.id.text_delay_time);
+            vPlatform = view.findViewById(be.hyperrail.android.R.id.text_platform);
+            vPlatformContainer = view.findViewById(be.hyperrail.android.R.id.layout_platform_container);
 
-            vStatusContainer = (LinearLayout) view.findViewById(be.hyperrail.android.R.id.layout_train_status_container);
-            vStatusText = (TextView) view.findViewById(be.hyperrail.android.R.id.text_train_status);
+            vStatusContainer = view.findViewById(be.hyperrail.android.R.id.layout_train_status_container);
+            vStatusText = view.findViewById(be.hyperrail.android.R.id.text_train_status);
+            vOccupancy = view.findViewById(R.id.image_occupancy);
         }
     }
 

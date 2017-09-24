@@ -12,16 +12,11 @@
 
 package be.hyperrail.android.irail.implementation;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
 
 /**
  * Train information, except its stops.
@@ -38,27 +33,50 @@ public class TrainStub implements Serializable {
         this.direction = direction;
     }
 
+    /**
+     * The ID, for example BE.NMBS.IC4516
+     * @return ID, for example BE.NMBS.IC4516
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * The direction (final stop) of this train
+     * @return direction (final stop) of this train
+     */
     public Station getDirection() {
         return direction;
     }
 
-    public IrailDataResponse<Train> getTrain(DateTime day) {
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        return api.getTrain(id, day);
-    }
-
+    /**
+     * Human-readable name, for example IC 4516
+     * @return Human-readable name
+     */
     public String getName() {
         return getType() + " " + getNumber();
     }
 
+    /**
+     * ID without leading BE.NMBS, for example IC4516
+     * @return ID without leading BE.NMBS
+     */
     private String getReducedId() {
         return this.id.substring(8);
     }
 
+    /**
+     * Semantic ID, for example http://irail.be/vehicle/IC4516
+     * @return Semantic ID
+     */
+    public String getSemanticId() {
+        return "http://irail.be/vehicle/" + getReducedId();
+    }
+
+    /**
+     * Train type, for example S, IC, L, P
+     * @return The type of this train
+     */
     public String getType() {
         String rid = getReducedId();
         // S trains are special
@@ -79,6 +97,10 @@ public class TrainStub implements Serializable {
         return "";
     }
 
+    /**
+     * Train number, for example 4516
+     * @return The number of this train
+     */
     public String getNumber() {
         String rid = getReducedId();
         // S trains are special

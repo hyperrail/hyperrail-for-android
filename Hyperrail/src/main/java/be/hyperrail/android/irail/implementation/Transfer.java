@@ -17,6 +17,7 @@ import org.joda.time.Duration;
 
 import java.io.Serializable;
 
+import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.db.Station;
 
 /**
@@ -39,7 +40,10 @@ public class Transfer implements Serializable {
     private final Duration departureDelay;
     private final boolean departureCanceled;
 
-    public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, String departurePlatform, boolean departureNormal, DateTime arrivalTime, DateTime departureTime, Duration arrivalDelay, boolean arrivalCanceled, Duration departureDelay, boolean departureCanceled) {
+    private final OccupancyLevel departureOccupancy;
+    private final String departureConnectionSemanticId;
+
+    public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, String departurePlatform, boolean departureNormal, DateTime arrivalTime, DateTime departureTime, Duration arrivalDelay, boolean arrivalCanceled, Duration departureDelay, boolean departureCanceled, String departureConnectionSemanticId, OccupancyLevel departureOccupancy) {
         this.station = station;
         this.arrivingTrain = arrivingTrain;
         this.departingTrain = departingTrain;
@@ -53,6 +57,8 @@ public class Transfer implements Serializable {
         this.departureCanceled = departureCanceled;
         this.isDeparturePlatformNormal = departureNormal;
         this.isArrivalPlatformNormal = arrivalNormal;
+        this.departureConnectionSemanticId = departureConnectionSemanticId;
+        this.departureOccupancy = departureOccupancy;
     }
 
     public TrainStub getArrivingTrain() {
@@ -105,5 +111,13 @@ public class Transfer implements Serializable {
 
     public boolean isDeparturePlatformNormal() {
         return isDeparturePlatformNormal;
+    }
+
+    public OccupancyLevel getDepartureOccupancy() {
+        return departureOccupancy;
+    }
+
+    public String getDepartureConnectionSemanticId() {
+        return departureConnectionSemanticId;
     }
 }

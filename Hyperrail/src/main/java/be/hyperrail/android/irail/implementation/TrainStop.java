@@ -17,6 +17,7 @@ import org.joda.time.Duration;
 
 import java.io.Serializable;
 
+import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.db.Station;
 
 /**
@@ -40,15 +41,18 @@ public class TrainStop implements Serializable {
     private Duration arrivalDelay;
     private boolean arrivalCanceled;
 
-    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft) {
-        this(station, destination, train, platform, isPlatformNormal, departureTime, departureDelay, departureCanceled, hasLeft);
+    private final String semanticDepartureConnection;
+    private final OccupancyLevel occupancyLevel;
+
+    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
+        this(station, destination, train, platform, isPlatformNormal, departureTime, departureDelay, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
 
         this.arrivalTime = arrivalTime;
         this.arrivalDelay = arrivalDelay;
         this.arrivalCanceled = arrivalCanceled;
     }
 
-    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft) {
+    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
         this.station = station;
         this.destination = destination;
         this.isPlatformNormal = isPlatformNormal;
@@ -59,6 +63,8 @@ public class TrainStop implements Serializable {
         this.arrivalCanceled = departureCanceled;
         this.train = train;
         this.hasLeft = hasLeft;
+        this.semanticDepartureConnection = semanticDepartureConnection;
+        this.occupancyLevel = occupancyLevel;
     }
 
     public TrainStub getTrain() {
@@ -119,6 +125,14 @@ public class TrainStop implements Serializable {
 
     public void setHasLeft(boolean hasLeft) {
         this.hasLeft = hasLeft;
+    }
+
+    public String getSemanticDepartureConnection() {
+        return semanticDepartureConnection;
+    }
+
+    public OccupancyLevel getOccupancyLevel() {
+        return occupancyLevel;
     }
 }
 

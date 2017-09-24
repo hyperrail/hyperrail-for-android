@@ -15,7 +15,6 @@ package be.hyperrail.android;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -32,7 +31,8 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Disturbance;
 import be.hyperrail.android.util.ErrorDialogFactory;
@@ -66,7 +66,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        vRefreshLayout = view.findViewById(R.id.swiperefresh);
         vRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -78,7 +78,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
                 }
         );
 
-        vRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_primary);
+        vRecyclerView = view.findViewById(R.id.recyclerview_primary);
 
         vRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -109,44 +109,24 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
     }
 
     private void loadDisturbances() {
-        AsyncTask<Void, Void, IrailDataResponse<Disturbance[]>> t = new AsyncTask<Void, Void, IrailDataResponse<Disturbance[]>>() {
+        vRefreshLayout.setRefreshing(true);
 
+        IrailFactory.getDataProviderInstance().abortAllQueries();
+        IrailFactory.getDataProviderInstance().getDisturbances(new IRailSuccessResponseListener<Disturbance[]>() {
             @Override
-            protected void onCancelled() {
-                super.onCancelled();
-
+            public void onSuccessResponse(Disturbance[] data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
-
+                lastUpdate = new DateTime();
+                setData(data);
             }
-
+        }, new IRailErrorResponseListener<Disturbance[]>() {
             @Override
-            protected void onPostExecute(IrailDataResponse<Disturbance[]> response) {
-                super.onPostExecute(response);
+            public void onErrorResponse(Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
-
-                if (response.isSuccess()) {
-                    lastUpdate = new DateTime();
-                    setData(response.getData());
-                } else {
-                    // Don't finish, this is the main activity
-                    ErrorDialogFactory.showErrorDialog(response.getException(), DisturbanceListFragment.this.getActivity(), false);
-                }
-
+                // Don't finish, this is the main activity
+                ErrorDialogFactory.showErrorDialog(e, DisturbanceListFragment.this.getActivity(), false);
             }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                vRefreshLayout.setRefreshing(true);
-
-            }
-
-            @Override
-            protected IrailDataResponse<Disturbance[]> doInBackground(Void... v) {
-                return IrailFactory.getDataProviderInstance().getDisturbances();
-            }
-        };
-        t.execute();
+        }, null);
     }
 
     private void setData(Disturbance[] disturbances) {

@@ -45,7 +45,7 @@ public class IrailFactory {
         if (IrailFactory.parserInstance == null) {
             FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
             FirebaseCrash.report(new Exception("IrailApiParser was requested before the factory was initialized"));
-            return null;
+            throw new IllegalStateException();
         }
         return parserInstance;
     }
@@ -54,7 +54,7 @@ public class IrailFactory {
         if (IrailFactory.stationProviderInstance == null) {
             FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
             FirebaseCrash.report(new Exception("IrailStationProvider was requested before the factory was initialized"));
-            return null;
+            throw new IllegalStateException();
         }
         return stationProviderInstance;
     }
@@ -63,7 +63,7 @@ public class IrailFactory {
         if (IrailFactory.dataProviderInstance == null) {
             FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide data provider! Call setup() before calling any factory method!");
             FirebaseCrash.report(new Exception("IrailDataProvider was requested before the factory was initialized"));
-            return null;
+            throw new IllegalStateException();
         }
         return dataProviderInstance;
     }

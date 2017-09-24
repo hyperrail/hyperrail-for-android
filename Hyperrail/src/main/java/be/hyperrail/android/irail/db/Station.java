@@ -12,15 +12,9 @@
 
 package be.hyperrail.android.irail.db;
 
-import org.joda.time.DateTime;
+import android.util.Log;
 
 import java.io.Serializable;
-import java.util.Locale;
-
-import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.LiveBoard;
 
 /**
  * This class represents a station, as found in irail/stationscsv
@@ -59,26 +53,6 @@ public class Station implements Serializable {
         return name;
     }
 
-    /**
-     * Get the liveboard for this station on a certain DateTime
-     * @param dateTime the DateTime and time for which this liveboard should be retreived
-     * @return an {@link IrailDataResponse}, containing a {@link LiveBoard} for this station
-     */
-    public IrailDataResponse<LiveBoard> getLiveBoard(DateTime dateTime)  {
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        return api.getLiveboard(this.getName(), dateTime);
-    }
-
-    /**
-     * Get the liveboard for this station
-     *
-     * @return an {@link IrailDataResponse}, containing a {@link LiveBoard} for this station
-     */
-    public IrailDataResponse<LiveBoard> getLiveBoard() {
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        return api.getLiveboard(this.getName());
-    }
-
     public double getLatitude() {
         return latitude;
     }
@@ -89,6 +63,11 @@ public class Station implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public String getSemanticId() {
+        Log.i("Station", "Semantic id: " + id);
+        return "http://irail.be/stations/NMBS/" + id;
     }
 
     public String getAlternativeNl() {

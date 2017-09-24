@@ -67,6 +67,8 @@
                     tools:ignore="HardcodedText"/>
             </LinearLayout>
 
+            <include layout="@layout/include_occupancy"/>
+
             <include layout="@layout/include_text_train_status"/>
 
         </LinearLayout>
