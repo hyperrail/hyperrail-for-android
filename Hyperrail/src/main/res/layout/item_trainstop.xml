@@ -49,10 +49,10 @@
                 <TextView
                     android:id="@+id/text_arrival_delay"
                     android:layout_width="wrap_content"
-                    android:minWidth="@dimen/card_delay_width"
                     android:layout_height="@dimen/cardlist_textrow_height"
                     android:layout_marginLeft="@dimen/activity_tiny_margin"
                     android:gravity="center_vertical|right"
+                    android:minWidth="@dimen/card_delay_width"
                     android:text="51'"
                     android:textColor="@color/colorDelay"
                     android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
@@ -78,10 +78,10 @@
                 <TextView
                     android:id="@+id/text_departure_delay"
                     android:layout_width="wrap_content"
-                    android:minWidth="@dimen/card_delay_width"
                     android:layout_height="@dimen/cardlist_textrow_height"
                     android:layout_marginLeft="@dimen/activity_tiny_margin"
                     android:gravity="center_vertical|right"
+                    android:minWidth="@dimen/card_delay_width"
                     android:text="6'"
                     android:textColor="@color/colorDelay"
                     android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
@@ -107,7 +107,16 @@
                 android:textSize="@dimen/cardlist_textrow_primary_textsizea"
                 tools:ignore="HardcodedText"/>
 
-            <include layout="@layout/include_text_train_status"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/cardlist_textrow_height"
+                android:orientation="horizontal">
+
+                <include layout="@layout/include_occupancy"/>
+
+                <include layout="@layout/include_text_train_status"/>
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
