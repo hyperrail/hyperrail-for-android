@@ -20,20 +20,19 @@ import android.support.v7.widget.RecyclerView;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import be.hyperrail.android.adapter.TrainCardAdapter;
+import be.hyperrail.android.adapter.TrainStopCardAdapter;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
-import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * Activity to show a train
  */
-public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<TrainStop> {
+public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<be.hyperrail.android.irail.implementation.TrainStop> {
 
     private Station mScrollToStation;
     private Train mTrain;
@@ -92,7 +91,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        return new TrainCardAdapter(this, null);
+        return new TrainStopCardAdapter(this, null);
     }
 
     protected void getData() {
@@ -143,7 +142,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     protected void showData(Train train) {
         setSubTitle(train.getName() + " " + train.getDirection().getLocalizedName());
 
-        TrainCardAdapter adapter = new TrainCardAdapter(this, train);
+        TrainStopCardAdapter adapter = new TrainStopCardAdapter(this, train);
         vRecyclerView.setAdapter(adapter);
         if (mScrollToStation != null) {
             int i = train.getStopNumberForStation(mScrollToStation);
@@ -174,8 +173,8 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        Intent i = LiveboardActivity.createIntent(getApplicationContext(), object.getStation());
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, be.hyperrail.android.irail.implementation.TrainStop object) {
+        Intent i = LiveboardActivity.createIntent(getApplicationContext(), object.getStation(), object.getDepartureTime());
         startActivity(i);
     }
 

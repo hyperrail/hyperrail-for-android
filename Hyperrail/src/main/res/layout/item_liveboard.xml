@@ -90,7 +90,10 @@
 
             <include layout="@layout/include_text_train_type_number"/>
 
+            <include layout="@layout/include_occupancy"/>
+
             <include layout="@layout/include_text_train_status"/>
+
         </LinearLayout>
     </LinearLayout>
 

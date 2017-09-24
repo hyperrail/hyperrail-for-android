@@ -29,7 +29,9 @@ import android.widget.TextView;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import be.hyperrail.android.OccupancyDialog;
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
@@ -254,6 +256,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 routeTrainViewHolder.vStatusContainer.setVisibility(View.GONE);
             }
 
+            routeTrainViewHolder.vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -269,6 +273,22 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     }
                 }
             });
+
+            holder.itemView.setOnLongClickListener(
+                    new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                        transferBefore.getDepartureConnectionSemanticId(),
+                                        transferBefore.getStation().getSemanticId(),
+                                        train.getSemanticId(),
+                                        transferBefore.getDepartureTime())
+                                ).show();
+                                return false;
+                            }
+
+                    }
+            );
 
         }
 
@@ -306,18 +326,21 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         final LinearLayout vStatusContainer;
         final TextView vStatusText;
 
+        final ImageView vOccupancy;
+
         RouteTrainViewHolder(View view) {
             super(view);
 
-            vDirection = ((TextView) view.findViewById(R.id.text_direction));
-            vDuration = ((TextView) view.findViewById(R.id.text_duration));
+            vDirection = view.findViewById(R.id.text_direction);
+            vDuration = view.findViewById(R.id.text_duration);
 
-            vTrainNumber = ((TextView) view.findViewById(R.id.text_train_number));
-            vTrainType = ((TextView) view.findViewById(R.id.text_train_type));
+            vTrainNumber = view.findViewById(R.id.text_train_number);
+            vTrainType = view.findViewById(R.id.text_train_type);
 
-            vStatusContainer = (LinearLayout) view.findViewById(R.id.layout_train_status_container);
-            vStatusText = (TextView) view.findViewById(R.id.text_train_status);
+            vStatusContainer = view.findViewById(R.id.layout_train_status_container);
+            vStatusText = view.findViewById(R.id.text_train_status);
 
+            vOccupancy = view.findViewById(R.id.image_occupancy);
         }
 
     }
@@ -349,24 +372,24 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         RouteTransferViewHolder(View view) {
             super(view);
 
-            vDepartureTime = ((TextView) view.findViewById(R.id.text_departure_time));
-            vDepartureContainer = ((LinearLayout) view.findViewById(R.id.text_departure_container));
-            vDepartureDelay = ((TextView) view.findViewById(R.id.text_departure_delay));
+            vDepartureTime = view.findViewById(R.id.text_departure_time);
+            vDepartureContainer = view.findViewById(R.id.text_departure_container);
+            vDepartureDelay = view.findViewById(R.id.text_departure_delay);
 
-            vArrivalTime = ((TextView) view.findViewById(R.id.text_arrival_time));
-            vArrivalContainer = ((LinearLayout) view.findViewById(R.id.text_arrival_container));
-            vArrivalDelay = ((TextView) view.findViewById(R.id.text_arrival_delay));
+            vArrivalTime = view.findViewById(R.id.text_arrival_time);
+            vArrivalContainer = view.findViewById(R.id.text_arrival_container);
+            vArrivalDelay = view.findViewById(R.id.text_arrival_delay);
 
-            vArrivalPlatform = ((TextView) view.findViewById(R.id.text_platform_arrival));
-            vArrivalPlatformContainer = ((LinearLayout) view.findViewById(R.id.layout_platform_arrival_container));
-            vDeparturePlatform = ((TextView) view.findViewById(R.id.text_platform_departure));
-            vDeparturePlatformContainer = ((LinearLayout) view.findViewById(R.id.layout_platform_departure_container));
+            vArrivalPlatform = view.findViewById(R.id.text_platform_arrival);
+            vArrivalPlatformContainer = view.findViewById(R.id.layout_platform_arrival_container);
+            vDeparturePlatform = view.findViewById(R.id.text_platform_departure);
+            vDeparturePlatformContainer = view.findViewById(R.id.layout_platform_departure_container);
 
-            vStation = ((TextView) view.findViewById(R.id.text_station));
-            vWaitingTime = ((TextView) view.findViewById(R.id.text_waiting_time));
-            vWaitingTimeContainer = ((LinearLayout) view.findViewById(R.id.cardview_detail_1));
+            vStation = view.findViewById(R.id.text_station);
+            vWaitingTime = view.findViewById(R.id.text_waiting_time);
+            vWaitingTimeContainer = view.findViewById(R.id.cardview_detail_1);
 
-            vTimeline = ((ImageView) view.findViewById(R.id.image_timeline));
+            vTimeline = view.findViewById(R.id.image_timeline);
         }
 
     }

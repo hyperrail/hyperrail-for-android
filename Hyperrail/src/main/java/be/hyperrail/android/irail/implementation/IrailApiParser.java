@@ -58,6 +58,10 @@ public class IrailApiParser implements IrailParser {
                 arrival.getString("vehicle"),
                 stationProvider.getStationByName(arrival.getJSONObject("direction").getString("name")));
 
+        OccupancyLevel departureOccupancyLevel = OccupancyLevel.UNKNOWN;
+        if (departure.has("occupancy")) {
+            departureOccupancyLevel = OccupancyLevel.valueOf(departure.getJSONObject("occupancy").getString("name").toUpperCase());
+        }
         Transfer departureTransfer = new Transfer(
                 stationProvider.getStationById(departure.getJSONObject("stationinfo").getString("id")),
                 null,
@@ -71,7 +75,9 @@ public class IrailApiParser implements IrailParser {
                 new Duration(0),
                 false,
                 new Duration(departure.getInt("delay") * 1000),
-                departure.getInt("canceled") != 0
+                departure.getInt("canceled") != 0,
+                departure.getString("departureConnection"),
+                departureOccupancyLevel
         );
         Station departureStation = departureTransfer.getStation();
 
@@ -87,8 +93,11 @@ public class IrailApiParser implements IrailParser {
                 null,
                 new Duration(arrival.getInt("delay") * 1000),
                 arrival.getInt("canceled") != 0,
-                new Duration(0), false
+                new Duration(0), false,
+                null,
+                OccupancyLevel.UNKNOWN
         );
+
         Station arrivalStation = arrivalTransfer.getStation();
 
         TrainStub[] trains;
@@ -121,6 +130,11 @@ public class IrailApiParser implements IrailParser {
                             stationProvider.getStationByName(via.getJSONObject("direction").getString("name")));
                 }
 
+                OccupancyLevel viaOccupancyLevel = OccupancyLevel.UNKNOWN;
+                if (viaDeparture.has("occupancy")) {
+                    viaOccupancyLevel = OccupancyLevel.valueOf(viaDeparture.getJSONObject("occupancy").getString("name").toUpperCase());
+                }
+
                 // don't use parseStop function, we have to combine data!
                 Transfer s = new Transfer(
                         stationProvider.getStationById(via.getJSONObject("stationinfo").getString("id")),
@@ -135,7 +149,9 @@ public class IrailApiParser implements IrailParser {
                         new Duration(viaArrival.getInt("delay") * 1000),
                         viaArrival.getInt("canceled") != 0,
                         new Duration(viaDeparture.getInt("delay") * 1000),
-                        viaDeparture.getInt("canceled") != 0
+                        viaDeparture.getInt("canceled") != 0,
+                        viaDeparture.getString("departureConnection"),
+                        viaOccupancyLevel
                 );
                 transfers[i + 1] = s;
             }

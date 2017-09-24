@@ -157,7 +157,7 @@ public class IrailApi implements IrailDataProvider {
                 return headers;
             }
         };
-jsObjRequest.setRetryPolicy(requestPolicy);
+        jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
         requestQueue.add(jsObjRequest);
     }
@@ -339,18 +339,20 @@ jsObjRequest.setRetryPolicy(requestPolicy);
     }
 
     @Override
-    public void postOccupancy(TrainStub train, TrainStop stop, OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener,
+    public void postOccupancy(String departureConnection, String stationSemanticId, String vehicleSemanticId, DateTime date,  OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener,
                               IRailErrorResponseListener<Boolean> errorListener, Object tag) {
         final String url = "https://api.irail.be/feedback/occupancy.php";
 
         try {
             JSONObject payload = new JSONObject();
 
-            payload.put("connection", stop.getSemanticDepartureConnection());
-            payload.put("from", stop.getStation().getSemanticId());
-            payload.put("date", DateTimeFormat.forPattern("Ymd").print(stop.getDepartureTime()));
-            payload.put("vehicle", train.getSemanticId());
+            payload.put("connection", departureConnection);
+            payload.put("from", vehicleSemanticId);
+            payload.put("date", DateTimeFormat.forPattern("Ymd").print(date));
+            payload.put("vehicle", vehicleSemanticId);
             payload.put("occupancy", "http://api.irail.be/terms/" + occupancy.name().toLowerCase());
+
+            Log.d(LOGTAG, "Posting feedback: " + url + " : " + payload);
 
             AsyncTask<String, Void, Void> t = new AsyncTask<String, Void, Void>() {
                 @Override

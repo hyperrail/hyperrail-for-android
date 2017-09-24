@@ -19,8 +19,6 @@ import be.hyperrail.android.irail.implementation.Disturbance;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.Train;
-import be.hyperrail.android.irail.implementation.TrainStop;
-import be.hyperrail.android.irail.implementation.TrainStub;
 
 /**
  * Retrieve (realtime) data according from the iRail API, or any API which has identical endpoints.
@@ -42,7 +40,7 @@ public interface IrailDataProvider {
 
     void getDisturbances(IRailSuccessResponseListener<Disturbance[]> successListener, IRailErrorResponseListener<Disturbance[]> errorListener, Object tag);
 
-    void postOccupancy(TrainStub train, TrainStop stop, OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener, IRailErrorResponseListener<Boolean> errorListener, Object tag);
+    void postOccupancy(String departureConnection, String stationSemanticId, String vehicleSemanticId, DateTime date, OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener, IRailErrorResponseListener<Boolean> errorListener, Object tag);
 
     void abortAllQueries();
 }

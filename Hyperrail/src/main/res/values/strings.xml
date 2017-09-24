@@ -69,6 +69,9 @@
     <string name="feedback_hint">Type your feedback here</string>
     <string name="feedback_send">Send feedback</string>
     <string name="action_suggestion_delete">Remove from list</string>
+    <string name="high_occupancy">High occupancy</string>
+    <string name="low_occupancy">Low occupancy</string>
+    <string name="medium_occupancy">Medium occupancy</string>
 
     <string-array name="departarrive">
         <item>Leave</item>
