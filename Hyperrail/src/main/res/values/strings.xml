@@ -72,6 +72,7 @@
     <string name="high_occupancy">High occupancy</string>
     <string name="low_occupancy">Low occupancy</string>
     <string name="medium_occupancy">Medium occupancy</string>
+    <string name="occupancy_question">How crowded is your train?</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

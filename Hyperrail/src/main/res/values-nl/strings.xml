@@ -77,4 +77,8 @@
     <string name="feedback_explanation">Indien je suggiesties, ideeën, of problemen hebt met de applicatie, kan je deze hier melden. Feedback wordt rechtstreeks naar de ontwikkelaar verstuurd.</string>
     <string name="placeholder_no_disturbances">Er zijn geen storingen op dit moment</string>
     <string name="action_suggestion_delete">Uit lijst verwijderen</string>
+    <string name="high_occupancy">Zeer druk</string>
+    <string name="medium_occupancy">Gemiddeld</string>
+    <string name="low_occupancy">Rustig</string>
+    <string name="occupancy_question">Hoe druk is deze trein?</string>
 </resources>

@@ -46,7 +46,7 @@ public class OccupancyDialog {
         final IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
         dialog.setContentView(R.layout.dialog_spitsgids);
-        dialog.setTitle("How is your train?");
+        dialog.setTitle(R.string.occupancy_question);
 
         LinearLayout lowOccupancy = dialog.findViewById(R.id.button_low_occupancy);
         LinearLayout mediumOccupancy = dialog.findViewById(R.id.button_medium_occupancy);
