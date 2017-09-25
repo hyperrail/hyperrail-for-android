@@ -28,6 +28,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
@@ -37,12 +39,13 @@ import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteAppendHelper;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 
-public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener {
+public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener, OnRecyclerItemClickListener<Route>,OnRecyclerItemLongClickListener<Route> {
 
     private RouteResult mRoutes;
 
@@ -254,7 +257,10 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        return new RouteCardAdapter(this, vRecyclerView, this);
+        RouteCardAdapter adapter = new RouteCardAdapter(this, vRecyclerView, this);
+        adapter.setOnItemClickListener(this);
+        adapter.setOnItemLongClickListener(this);
+        return adapter;
     }
 
     @Override
@@ -300,5 +306,17 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
     public boolean isFavorite() {
         return mPersistentQuaryProvider.isFavoriteRoute(mSearchFrom, mSearchTo);
+    }
+
+    @Override
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Route object) {
+
+    }
+
+    @Override
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Route object) {
+        // TODO: cleaner way to detect clicked route, likely to break when inserting date headers!
+        Intent i = RouteDetailActivity.createIntent(this, object);
+        this.startActivity(i);
     }
 }

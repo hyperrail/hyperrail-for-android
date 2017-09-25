@@ -24,6 +24,6 @@ import android.support.v7.widget.RecyclerView;
  * Interface for item click callbacks
  * @param <T>
  */
-public interface OnLongRecyclerItemClickListener<T> {
-    void onLongRecyclerItemClick(RecyclerView.Adapter sender, T object);
+public interface OnRecyclerItemLongClickListener<T> {
+    void onRecyclerItemLongClick(RecyclerView.Adapter sender, T object);
 }

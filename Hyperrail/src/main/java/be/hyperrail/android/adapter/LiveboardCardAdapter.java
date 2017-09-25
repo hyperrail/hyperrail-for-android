@@ -32,7 +32,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
-import be.hyperrail.android.OccupancyDialog;
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
@@ -51,8 +50,6 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
     private Object[] displayList;
 
     protected final static int VIEW_TYPE_DATE = 1;
-
-    private OnRecyclerItemClickListener<TrainStop> listener;
 
     public LiveboardCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
@@ -194,8 +191,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
+                if (onClickListener != null) {
+                    onClickListener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
                 }
             }
         });
@@ -203,7 +200,9 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                (new OccupancyDialog(LiveboardCardAdapter.this.context, stop)).show();
+                if (onLongClickListener != null){
+                    onLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this,stop);
+                }
                 return false;
             }
         });
@@ -215,10 +214,6 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             return 0;
         }
         return displayList.length;
-    }
-
-    public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
-        this.listener = listener;
     }
 
     private class LiveboardStopViewHolder extends RecyclerView.ViewHolder {

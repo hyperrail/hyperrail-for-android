@@ -43,8 +43,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.crash.FirebaseCrash;
 
-import be.hyperrail.android.adapter.OnLongRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.StationCardAdapter;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
@@ -57,7 +57,7 @@ import static java.util.logging.Level.INFO;
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnLongRecyclerItemClickListener<Object> {
+public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Object> {
 
     private static final String LogTag = "LiveboardSearch";
     private static final int COARSE_LOCATION_REQUEST = 1;
@@ -273,7 +273,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
-    public void onLongRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Object object) {
         if (object instanceof RouteQuery) {
             mLastSelectedQuery = (RouteQuery) object;
         } else {

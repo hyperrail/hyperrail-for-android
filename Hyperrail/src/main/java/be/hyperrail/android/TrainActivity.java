@@ -20,19 +20,21 @@ import android.support.v7.widget.RecyclerView;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.TrainStopCardAdapter;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
+import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * Activity to show a train
  */
-public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<be.hyperrail.android.irail.implementation.TrainStop> {
+public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<be.hyperrail.android.irail.implementation.TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
 
     private Station mScrollToStation;
     private Train mTrain;
@@ -154,6 +156,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
             }
         }
         adapter.setOnItemClickListener(this);
+        adapter.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -178,4 +181,9 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         startActivity(i);
     }
 
+    @Override
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop stop) {
+        (new OccupancyDialog(TrainActivity.this, stop)).show();
+    }
 }
+

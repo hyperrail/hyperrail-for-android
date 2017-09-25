@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 
 /**
  * This class provides a reusable base for infinite scrolling recyclerviews.
@@ -44,6 +45,8 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     private final Context context;
     private final LinearLayoutManager linearLayoutManager;
     private boolean infiniteScrollingEnabled = true;
+    protected OnRecyclerItemClickListener<T> onClickListener;
+    protected OnRecyclerItemLongClickListener<T> onLongClickListener;
 
     /**
      * Create a new InfiniteScrollingAdapter
@@ -176,7 +179,14 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      */
     protected abstract int getListItemCount();
 
-    public abstract void setOnItemClickListener(OnRecyclerItemClickListener<T> listener);
+    public void setOnItemClickListener(OnRecyclerItemClickListener<T> listener) {
+        this.onClickListener = listener;
+    }
+
+    public void setOnItemLongClickListener(OnRecyclerItemLongClickListener<T> listener) {
+        this.onLongClickListener = listener;
+    }
+
 
     /**
      * The protected method to indicate loading new items has been completed.
