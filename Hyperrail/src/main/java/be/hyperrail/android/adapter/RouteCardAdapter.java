@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 import be.hyperrail.android.LiveboardActivity;
 import be.hyperrail.android.R;
-import be.hyperrail.android.RouteDetailActivity;
 import be.hyperrail.android.TrainActivity;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
@@ -56,7 +55,6 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private Route[] routes;
     private final Context context;
-    private OnRecyclerItemClickListener<Route> listener;
 
     private Object[] displayList;
 
@@ -249,8 +247,8 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(RouteCardAdapter.this, route);
+                if (onClickListener != null) {
+                    onClickListener.onRecyclerItemClick(RouteCardAdapter.this, route);
                 }
 
                 if (holder.vDetailContainer.getVisibility() == View.GONE) {
@@ -264,9 +262,9 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                // TODO: cleaner way to detect clicked route, likely to break when inserting date headers!
-                Intent i = RouteDetailActivity.createIntent(context, RouteCardAdapter.this.routes[holder.getAdapterPosition()]);
-                context.startActivity(i);
+                if (onLongClickListener != null) {
+                    onLongClickListener.onRecyclerItemLongClick(RouteCardAdapter.this, route);
+                }
                 return false;
             }
         });
@@ -278,10 +276,6 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             return 0;
         }
         return displayList.length;
-    }
-
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Route> listener) {
-        this.listener = listener;
     }
 
     private class RouteViewHolder extends RecyclerView.ViewHolder {

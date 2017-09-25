@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
@@ -48,7 +49,7 @@ import be.hyperrail.android.util.OnDateTimeSetListener;
 /**
  * Activity to show a liveboard
  */
-public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements OnRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource {
+public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implements OnRecyclerItemClickListener<TrainStop>, OnDateTimeSetListener, InfiniteScrollingDataSource, OnRecyclerItemLongClickListener<TrainStop> {
 
     private LiveBoard mCurrentLiveboard;
     private Station mCurrentStation;
@@ -138,6 +139,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     protected InfiniteScrollingAdapter<TrainStop> getAdapter() {
         LiveboardCardAdapter adapter = new LiveboardCardAdapter(this, vRecyclerView, this);
         adapter.setOnItemClickListener(this);
+        adapter.setOnItemLongClickListener(this);
         return adapter;
     }
 
@@ -285,5 +287,10 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         // If it's not loaded, it's not a favorite
         return mCurrentStation != null && mPersistentQuaryProvider.isFavoriteStation(mCurrentStation);
 
+    }
+
+    @Override
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop stop) {
+        (new OccupancyDialog(LiveboardActivity.this, stop)).show();
     }
 }

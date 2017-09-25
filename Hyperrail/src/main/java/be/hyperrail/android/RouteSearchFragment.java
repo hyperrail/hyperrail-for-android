@@ -38,8 +38,8 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import be.hyperrail.android.adapter.OnLongRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
+import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteHistoryCardAdapter;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
@@ -56,7 +56,7 @@ import be.hyperrail.android.util.SwipeDetector;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable, OnLongRecyclerItemClickListener<RouteQuery> {
+public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable, OnRecyclerItemLongClickListener<RouteQuery> {
 
     private AutoCompleteTextView vFromText;
     private AutoCompleteTextView vToText;
@@ -246,7 +246,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onLongRecyclerItemClick(RecyclerView.Adapter sender, RouteQuery object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, RouteQuery object) {
         mLastSelectedQuery = object;
     }
 

@@ -28,10 +28,10 @@ import android.widget.TextView;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import be.hyperrail.android.OccupancyDialog;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.Train;
+import be.hyperrail.android.irail.implementation.TrainStop;
 
 /**
  * Recyclerview adapter which shows stops of a train
@@ -40,7 +40,8 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
 
     private final Train train;
     private final Context context;
-    private OnRecyclerItemClickListener<be.hyperrail.android.irail.implementation.TrainStop> listener;
+    private OnRecyclerItemClickListener<TrainStop> clickListener;
+    private OnRecyclerItemLongClickListener<TrainStop> longClickListener;
 
     public TrainStopCardAdapter(Context context, Train train) {
         this.context = context;
@@ -61,7 +62,7 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
 
     @Override
     public void onBindViewHolder(TrainStopViewHolder holder, int position) {
-        final be.hyperrail.android.irail.implementation.TrainStop stop = train.getStops()[position];
+        final TrainStop stop = train.getStops()[position];
 
         holder.vDestination.setText(stop.getStation().getLocalizedName());
 
@@ -123,20 +124,21 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(TrainStopCardAdapter.this, stop);
+                if (clickListener != null) {
+                    clickListener.onRecyclerItemClick(TrainStopCardAdapter.this, stop);
                 }
             }
         });
 
-        holder.itemView.setOnLongClickListener(
-                new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        (new OccupancyDialog(TrainStopCardAdapter.this.context, stop)).show();
-                        return false;
-                    }
-                });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (longClickListener != null) {
+                    longClickListener.onRecyclerItemLongClick(TrainStopCardAdapter.this, stop);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -147,12 +149,12 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
         return train.getStops().length;
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<be.hyperrail.android.irail.implementation.TrainStop> listener) {
-        this.listener = listener;
+    public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
+        this.clickListener = listener;
     }
 
-    public void clearOnItemClickListener() {
-        this.listener = null;
+    public void setOnItemLongClickListener(OnRecyclerItemLongClickListener<TrainStop> listener) {
+        this.longClickListener = listener;
     }
 
     /**

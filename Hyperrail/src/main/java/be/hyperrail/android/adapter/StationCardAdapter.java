@@ -36,7 +36,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
     private Station[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
-    private OnLongRecyclerItemClickListener<Object> longClickListener;
+    private OnRecyclerItemLongClickListener<Object> longClickListener;
     private OnRecyclerItemClickListener<Station> listener;
 
     private stationType currentDisplayType = stationType.UNDEFINED;
@@ -129,7 +129,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, station);
+                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, station);
                 }
                 return false;
             }
@@ -172,7 +172,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onLongRecyclerItemClick(StationCardAdapter.this, q);
+                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, q);
                 }
                 return false;
             }
@@ -203,7 +203,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnLongRecyclerItemClickListener<Object> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Object> listener) {
         this.longClickListener = listener;
     }
 
