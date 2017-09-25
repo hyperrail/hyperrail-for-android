@@ -92,7 +92,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
         adapter.setOnItemClickListener(this);
         vRecyclerView.setAdapter(adapter);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("updated")) {
             this.disturbances = (Disturbance[]) savedInstanceState.getSerializable("disturbances");
             this.lastUpdate = new DateTime(savedInstanceState.getLong("updated"));
             this.setData(this.disturbances);
@@ -104,8 +104,10 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("disturbances", disturbances);
-        outState.putLong("updated", lastUpdate.getMillis());
+        if (lastUpdate != null) {
+            outState.putSerializable("disturbances", disturbances);
+            outState.putLong("updated", lastUpdate.getMillis());
+        }
     }
 
     private void loadDisturbances() {

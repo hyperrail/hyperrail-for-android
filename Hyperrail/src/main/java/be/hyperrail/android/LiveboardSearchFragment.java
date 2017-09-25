@@ -120,7 +120,6 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         registerForContextMenu(stationRecyclerView);
 
         mStationAdapter = new StationCardAdapter(this.getActivity(), null);
-
         mStationAdapter.setOnItemClickListener(this);
         mStationAdapter.setOnLongItemClickListener(this);
         stationRecyclerView.setAdapter(mStationAdapter);
@@ -197,7 +196,6 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onStart() {
         super.onStart();
-        setSuggestedStations();
         mGoogleApiClient.connect();
     }
 
