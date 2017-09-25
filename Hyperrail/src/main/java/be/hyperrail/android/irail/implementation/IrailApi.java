@@ -348,7 +348,7 @@ public class IrailApi implements IrailDataProvider {
 
             payload.put("connection", departureConnection);
             payload.put("from", vehicleSemanticId);
-            payload.put("date", DateTimeFormat.forPattern("Ymd").print(date));
+            payload.put("date", DateTimeFormat.forPattern("YYYYMMdd").print(date));
             payload.put("vehicle", vehicleSemanticId);
             payload.put("occupancy", "http://api.irail.be/terms/" + occupancy.name().toLowerCase());
 
