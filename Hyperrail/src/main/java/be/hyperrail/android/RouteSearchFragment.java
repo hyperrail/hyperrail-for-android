@@ -81,7 +81,26 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_route_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_route_search, container, false);
+
+        vFromText = view.findViewById(R.id.input_from);
+        vToText = view.findViewById(R.id.input_to);
+
+        vDatetime = view.findViewById(R.id.input_datetime);
+        vArriveDepart = view.findViewById(R.id.input_arrivedepart);
+
+        persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
+
+        mSuggestionsRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
+        mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        registerForContextMenu(mSuggestionsRecyclerView);
+
+        mSuggestionsAdapter = new RouteHistoryCardAdapter(this.getActivity(), null);
+        mSuggestionsAdapter.setOnItemClickListener(this);
+        mSuggestionsAdapter.setOnLongItemClickListener(this);
+        mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
+
+        return view;
     }
 
     @Override
@@ -94,9 +113,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(this.getActivity(),
                 android.R.layout.simple_dropdown_item_1line, names);
-        vFromText = (AutoCompleteTextView)
-                view.findViewById(R.id.input_from);
-        vToText = (AutoCompleteTextView) view.findViewById(R.id.input_to);
+
         vFromText.setAdapter(autocompleteAdapter);
         vToText.setAdapter(autocompleteAdapter);
 
@@ -148,7 +165,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         });
 
         // Initialize search button
-        final Button searchButton = (Button) view.findViewById(R.id.button_search);
+        final Button searchButton = view.findViewById(R.id.button_search);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,7 +174,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         });
 
         // Initialize swap button
-        Button swapButton = (Button) view.findViewById(R.id.button_swap);
+        Button swapButton = view.findViewById(R.id.button_swap);
         swapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,10 +192,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             }
         });
 
-        vDatetime = (TextView) view.findViewById(R.id.input_datetime);
-        vArriveDepart = (Spinner) view.findViewById(R.id.input_arrivedepart);
-
-        Button vPickDateTime = (Button) view.findViewById(R.id.button_pickdatetime);
+        Button vPickDateTime = view.findViewById(R.id.button_pickdatetime);
         View.OnClickListener l = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,7 +207,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         // Use a normal swipe detector, since we don't need flings or velocity
         SwipeDetector accentSearchSwipeDetector = new SwipeDetector(getActivity(), this, TAG_ACCENT_SEARCH);
 
-        vArriveDepartContainer = (LinearLayout) view.findViewById(R.id.container_arrivedepart);
+        vArriveDepartContainer = view.findViewById(R.id.container_arrivedepart);
 
         // Register all controls in accent search area for swipes
         view.findViewById(R.id.accentSearchContainer).setOnTouchListener(accentSearchSwipeDetector);
@@ -208,18 +222,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         if (!PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getBoolean("routes_always_datetime", true)) {
             hideDateTimeRow();
         }
-
-        persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
-
-        mSuggestionsRecyclerView = (RecyclerView) this.getActivity().findViewById(R.id.recyclerview_primary);
-        mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        registerForContextMenu(mSuggestionsRecyclerView);
-
-        mSuggestionsAdapter = new RouteHistoryCardAdapter(this.getActivity(), persistentQueryProvider.getAllRoutes());
-        mSuggestionsAdapter.setOnItemClickListener(this);
-        mSuggestionsAdapter.setOnLongItemClickListener(this);
-        mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
-        mSuggestionsAdapter.notifyDataSetChanged();
 
         if (this.getArguments() != null && (this.getArguments().containsKey("from") || this.getArguments().containsKey("to"))) {
             vFromText.setText(this.getArguments().getString("from", ""), false);
@@ -282,7 +284,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     private void setSuggestions() {
-        RecyclerView suggestions = (RecyclerView) this.getActivity().findViewById(R.id.recyclerview_primary);
+        RecyclerView suggestions = this.getActivity().findViewById(R.id.recyclerview_primary);
 
         RouteHistoryCardAdapter suggestionAdapter = (RouteHistoryCardAdapter) suggestions.getAdapter();
         suggestionAdapter.updateHistory(persistentQueryProvider.getAllRoutes());

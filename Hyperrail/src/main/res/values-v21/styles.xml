@@ -61,7 +61,7 @@
     </style>
 
     <style name="HyperrailAccentSearchText" parent="android:Widget.Material.EditText">
-
+        <item name="android:elevation">0dp</item>
         <item name="android:padding">0dp</item>
 
         <item name="android:textColor">@color/colorTextLight</item>

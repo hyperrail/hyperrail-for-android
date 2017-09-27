@@ -213,7 +213,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
         LoadingViewHolder(View itemView) {
             super(itemView);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+            progressBar = itemView.findViewById(R.id.progressBar);
         }
     }
 }

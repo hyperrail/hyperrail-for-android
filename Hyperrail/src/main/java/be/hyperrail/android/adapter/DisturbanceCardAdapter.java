@@ -127,9 +127,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         DisturbanceViewHolder(View view) {
             super(view);
-            vTitle = (TextView) view.findViewById(be.hyperrail.android.R.id.text_title);
-            vDescription = ((TextView) view.findViewById(be.hyperrail.android.R.id.text_description));
-            vDate = ((TextView) view.findViewById(be.hyperrail.android.R.id.text_date));
+            vTitle = view.findViewById(R.id.text_title);
+            vDescription = view.findViewById(R.id.text_description);
+            vDate = view.findViewById(R.id.text_date);
         }
     }
 

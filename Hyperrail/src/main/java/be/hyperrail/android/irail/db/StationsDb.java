@@ -433,7 +433,6 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 return getStationByName(newname);
             } else {
                 FirebaseCrash.logcat(SEVERE.intValue(), "SQLiteStationProvider", "Station not found: " + name + ", cleaned search " + wcName);
-                FirebaseCrash.report(new Exception("Station wasn't found in the database!"));
                 return null;
             }
         }

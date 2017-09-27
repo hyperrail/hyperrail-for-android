@@ -38,9 +38,9 @@ public class Train extends TrainStub implements Serializable {
         this.latitude = latitude;
         this.stops = stops;
 
-        for (int i = 0; i < stops.length; i++){
-            if (stops[i].hasLeft()){
-                lastHaltedStop = stops[i];
+        for (TrainStop stop : stops) {
+            if (stop.hasLeft()) {
+                lastHaltedStop = stop;
             }
         }
     }

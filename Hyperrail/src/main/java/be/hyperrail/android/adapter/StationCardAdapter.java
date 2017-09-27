@@ -231,8 +231,8 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         StationViewHolder(View v) {
             super(v);
 
-            vStation = (TextView) v.findViewById(R.id.text_station);
-            vIcon = (ImageView) v.findViewById(R.id.image_right);
+            vStation = v.findViewById(R.id.text_station);
+            vIcon = v.findViewById(R.id.image_right);
         }
     }
 }

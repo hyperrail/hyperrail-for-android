@@ -40,7 +40,7 @@ public class FeedbackFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final EditText vFeedbackText = ((EditText) view.findViewById(R.id.input_text));
+        final EditText vFeedbackText = view.findViewById(R.id.input_text);
 
         view.findViewById(R.id.button_send).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -111,7 +111,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         vLayoutRoot = findViewById(R.id.activity);
 
         // Get and set the toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize history & favorites, preferences
@@ -119,7 +119,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
         // Initialize pull to refresh
-        vRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        vRefreshLayout = findViewById(R.id.swiperefresh);
         vRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -140,7 +140,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         }
 
         // Set-up recyclerview
-        vRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_primary);
+        vRecyclerView = findViewById(R.id.recyclerview_primary);
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
         vRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -155,9 +155,9 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         vRecyclerView.setAdapter(adapter);
 
         // Initialize the realtime warning
-        vWarningNotRealtime = (LinearLayout) findViewById(R.id.warning_not_realtime);
-        vWarningNotRealtimeText = (TextView) findViewById(R.id.warning_not_realtime_text);
-        Button vWarningNotRealtimeButton = (Button) findViewById(R.id.warning_not_realtime_close);
+        vWarningNotRealtime = findViewById(R.id.warning_not_realtime);
+        vWarningNotRealtimeText = findViewById(R.id.warning_not_realtime_text);
+        Button vWarningNotRealtimeButton = findViewById(R.id.warning_not_realtime_close);
 
         // Set a listener to reset the datetime when the realtime warning is closed
         if (vWarningNotRealtimeButton != null) {

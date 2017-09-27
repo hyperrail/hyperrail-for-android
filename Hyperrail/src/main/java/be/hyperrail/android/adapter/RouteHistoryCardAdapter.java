@@ -115,9 +115,9 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
         public RouteHistoryViewHolder(View v) {
             super(v);
 
-            vFrom = (TextView) v.findViewById(be.hyperrail.android.R.id.text_from);
-            vTo = (TextView) v.findViewById(be.hyperrail.android.R.id.text_to);
-            vIcon = (ImageView) v.findViewById(be.hyperrail.android.R.id.image_right);
+            vFrom = v.findViewById(be.hyperrail.android.R.id.text_from);
+            vTo = v.findViewById(be.hyperrail.android.R.id.text_to);
+            vIcon = v.findViewById(be.hyperrail.android.R.id.image_right);
         }
     }
 }

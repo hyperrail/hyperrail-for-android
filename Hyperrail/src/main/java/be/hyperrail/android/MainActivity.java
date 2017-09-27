@@ -90,14 +90,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         setTitle(R.string.app_name);
         mDualPane = (findViewById(R.id.drawer) == null);
 
         if (!mDualPane) {
-            vDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+            vDrawerLayout = findViewById(R.id.drawer);
 
             mDrawerToggle = new ActionBarDrawerToggle(
                     this,
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.drawer_navigation);
+        NavigationView navigationView = findViewById(R.id.drawer_navigation);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param args The parameters for the fragment
      */
     private void setView(int i, Bundle args) {
-        Fragment frg = null;
+        Fragment frg;
         switch (i) {
             default:
             case VIEW_TYPE_LIVEBOARD:

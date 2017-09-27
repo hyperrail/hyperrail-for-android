@@ -388,7 +388,6 @@ public class IrailApi implements IrailDataProvider {
 
     private static String postJsonRequest(String uri, String json) {
         HttpURLConnection urlConnection;
-        String url;
         String result = null;
         try {
             //Connect
@@ -409,7 +408,7 @@ public class IrailApi implements IrailDataProvider {
             //Read
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
 
-            String line = null;
+            String line;
             StringBuilder sb = new StringBuilder();
 
             while ((line = bufferedReader.readLine()) != null) {

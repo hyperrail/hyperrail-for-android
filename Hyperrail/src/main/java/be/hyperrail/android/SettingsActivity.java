@@ -37,7 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_preferences);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
