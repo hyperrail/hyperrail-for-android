@@ -27,7 +27,7 @@ import be.hyperrail.android.persistence.RouteQuery;
 /**
  * An adapter to show RouteQueries (recent/favorite routes) in a recyclerview
  */
-public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCardAdapter.RouteHistoryViewHolder> {
+public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSuggestionsCardAdapter.RouteHistoryViewHolder> {
 
     private final Context context;
     private RouteQuery[] queries;
@@ -35,7 +35,7 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
     private OnRecyclerItemClickListener<RouteQuery> listener;
     private OnRecyclerItemLongClickListener<RouteQuery> longClickListener;
 
-    public RouteHistoryCardAdapter(Context context, RouteQuery[] queries) {
+    public RouteSuggestionsCardAdapter(Context context, RouteQuery[] queries) {
         this.queries = queries;
         this.context = context;
     }
@@ -54,7 +54,7 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(be.hyperrail.android.R.layout.cardview_route_history, parent, false);
         }
-        return new RouteHistoryCardAdapter.RouteHistoryViewHolder(itemView);
+        return new RouteSuggestionsCardAdapter.RouteHistoryViewHolder(itemView);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(RouteHistoryCardAdapter.this, query);
+                    listener.onRecyclerItemClick(RouteSuggestionsCardAdapter.this, query);
                 }
             }
         });
@@ -86,7 +86,7 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(RouteHistoryCardAdapter.this, query);
+                    longClickListener.onRecyclerItemLongClick(RouteSuggestionsCardAdapter.this, query);
                 }
                 return false;
             }
@@ -103,6 +103,9 @@ public class RouteHistoryCardAdapter extends RecyclerView.Adapter<RouteHistoryCa
 
     @Override
     public int getItemCount() {
+        if (queries == null){
+            return 0;
+        }
         return queries.length;
     }
 

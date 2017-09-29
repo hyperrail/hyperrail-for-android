@@ -40,7 +40,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
-import be.hyperrail.android.adapter.RouteHistoryCardAdapter;
+import be.hyperrail.android.adapter.RouteSuggestionsCardAdapter;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
@@ -71,7 +71,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     private final int TAG_ACCENT_SEARCH = 1;
     private RouteQuery mLastSelectedQuery;
     private RecyclerView mSuggestionsRecyclerView;
-    private RouteHistoryCardAdapter mSuggestionsAdapter;
+    private RouteSuggestionsCardAdapter mSuggestionsAdapter;
 
     public RouteSearchFragment() {
         // Required empty public constructor
@@ -101,7 +101,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         registerForContextMenu(mSuggestionsRecyclerView);
 
-        mSuggestionsAdapter = new RouteHistoryCardAdapter(this.getActivity(), null);
+        mSuggestionsAdapter = new RouteSuggestionsCardAdapter(this.getActivity(), null);
         mSuggestionsAdapter.setOnItemClickListener(this);
         mSuggestionsAdapter.setOnLongItemClickListener(this);
         mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
@@ -284,9 +284,9 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
     private void setSuggestions() {
         RecyclerView suggestions = this.getActivity().findViewById(R.id.recyclerview_primary);
-
-        if (suggestions != null && suggestions.getAdapter() != null) {
-            RouteHistoryCardAdapter suggestionAdapter = (RouteHistoryCardAdapter) suggestions.getAdapter();
+        // TODO pixel on Android O requires this much validation. There should be a better way for this.
+        if (suggestions != null && suggestions.getAdapter() != null && suggestions.getAdapter() instanceof RouteSuggestionsCardAdapter) {
+            RouteSuggestionsCardAdapter suggestionAdapter = (RouteSuggestionsCardAdapter) suggestions.getAdapter();
             suggestionAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
         }
     }
