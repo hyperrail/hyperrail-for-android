@@ -299,26 +299,26 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         RouteViewHolder(View view) {
             super(view);
 
-            vDepartureTime = ((TextView) view.findViewById(R.id.text_departure_time));
-            vDepartureDelay = ((TextView) view.findViewById(R.id.text_departure_delay));
+            vDepartureTime = view.findViewById(R.id.text_departure_time);
+            vDepartureDelay = view.findViewById(R.id.text_departure_delay);
 
-            vArrivalTime = ((TextView) view.findViewById(R.id.text_arrival_time));
-            vArrivalDelay = ((TextView) view.findViewById(R.id.text_arrival_delay));
+            vArrivalTime = view.findViewById(R.id.text_arrival_time);
+            vArrivalDelay = view.findViewById(R.id.text_arrival_delay);
 
-            vDirection = ((TextView) view.findViewById(R.id.text_destination));
-            vDuration = ((TextView) view.findViewById(R.id.text_duration));
-            vDurationIcon = ((ImageView) view.findViewById(R.id.image_duration));
-            vTrainCount = ((TextView) view.findViewById(R.id.text_train_count));
+            vDirection = view.findViewById(R.id.text_destination);
+            vDuration = view.findViewById(R.id.text_duration);
+            vDurationIcon = view.findViewById(R.id.image_duration);
+            vTrainCount = view.findViewById(R.id.text_train_count);
 
-            vPlatform = ((TextView) view.findViewById(R.id.text_platform));
-            vPlatformContainer = ((LinearLayout) view.findViewById(R.id.layout_platform_container));
+            vPlatform = view.findViewById(R.id.text_platform);
+            vPlatformContainer = view.findViewById(R.id.layout_platform_container);
 
-            vRecyclerView = ((RecyclerView) view.findViewById(R.id.recyclerview_primary));
-            vHeaderContainer = ((LinearLayout) view.findViewById(R.id.cardview_collapsed));
-            vDetailContainer = ((LinearLayout) view.findViewById(R.id.cardview_expanded));
+            vRecyclerView = view.findViewById(R.id.recyclerview_primary);
+            vHeaderContainer = view.findViewById(R.id.cardview_collapsed);
+            vDetailContainer = view.findViewById(R.id.cardview_expanded);
 
-            vStatusContainer = (LinearLayout) view.findViewById(R.id.layout_train_status_container);
-            vStatusText = (TextView) view.findViewById(R.id.text_train_status);
+            vStatusContainer = view.findViewById(R.id.layout_train_status_container);
+            vStatusText = view.findViewById(R.id.text_train_status);
         }
 
     }

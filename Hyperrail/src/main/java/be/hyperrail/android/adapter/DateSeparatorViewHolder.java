@@ -18,6 +18,6 @@ public class DateSeparatorViewHolder extends RecyclerView.ViewHolder {
 
     DateSeparatorViewHolder(View view) {
         super(view);
-        vDateText = (TextView) view.findViewById(R.id.text_date);
+        vDateText = view.findViewById(R.id.text_date);
     }
 }

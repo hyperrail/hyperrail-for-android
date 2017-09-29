@@ -92,15 +92,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
@@ -113,7 +105,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
         persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
 
-        stationRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_primary);
+        stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
 
         stationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         stationRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -124,7 +116,15 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         mStationAdapter.setOnLongItemClickListener(this);
         stationRecyclerView.setAdapter(mStationAdapter);
 
-        vStationSearchField = ((EditText) view.findViewById(R.id.input_station));
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        vStationSearchField = view.findViewById(R.id.input_station);
 
         if (savedInstanceState != null) {
             // Restore the search field and results
@@ -151,11 +151,14 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
             }
         });
+        setSuggestedStations();
     }
 
     private void setSuggestedStations() {
-        stationRecyclerView = (RecyclerView) this.getActivity().findViewById(R.id.recyclerview_primary);
-        ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
+        stationRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
+        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null) {
+            ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
+        }
     }
 
     @Override
@@ -196,6 +199,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onStart() {
         super.onStart();
+        setSuggestedStations();
         mGoogleApiClient.connect();
     }
 

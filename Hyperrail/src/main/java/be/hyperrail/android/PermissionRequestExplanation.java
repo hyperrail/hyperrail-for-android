@@ -42,7 +42,7 @@ public class PermissionRequestExplanation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission_request_explanation);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         setTitle(R.string.app_name);
@@ -55,7 +55,7 @@ public class PermissionRequestExplanation extends AppCompatActivity {
         ((ImageView) findViewById(R.id.icon)).setImageDrawable(ContextCompat.getDrawable(this, getIntent().getIntExtra("icon", R.drawable.ic_location_on_48)));
         ((TextView) findViewById(R.id.text_description)).setText(getIntent().getStringExtra("description"));
 
-        Button button_continue = (Button) findViewById(R.id.button_continue);
+        Button button_continue = findViewById(R.id.button_continue);
         button_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

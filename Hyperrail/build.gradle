@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.firebase-crash'
 
-def VERSION_CODE = 11
-def VERSION_NAME = '0.9.9'
+def VERSION_CODE = 12
+def VERSION_NAME = '0.9.10'
 
 android {
     signingConfigs {
@@ -62,10 +62,10 @@ dependencies {
     compile 'com.android.support:cardview-v7:26.0.0'
     compile 'com.android.support:recyclerview-v7:26.0.0'
     compile 'com.android.support:design:26.0.0'
-    compile 'com.google.android.gms:play-services-location:10.2.6'
-    compile 'com.google.firebase:firebase-crash:10.2.6'
-    compile 'com.google.firebase:firebase-perf:10.2.6'
-    compile 'com.google.firebase:firebase-core:10.2.6'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
+    compile 'com.google.firebase:firebase-crash:11.0.4'
+    compile 'com.google.firebase:firebase-perf:11.0.4'
+    compile 'com.google.firebase:firebase-core:11.0.4'
     testCompile 'junit:junit:4.12'
 }
 
