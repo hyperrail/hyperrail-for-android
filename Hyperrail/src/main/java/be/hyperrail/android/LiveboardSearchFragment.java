@@ -86,7 +86,13 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_liveboard_search, container, false);
+        return inflater.inflate(R.layout.fragment_liveboard_search, container, false);
+    }
+
+    @Override
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Create an instance of GoogleAPIClient.
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
@@ -110,13 +116,6 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         mStationAdapter.setOnLongItemClickListener(this);
         stationRecyclerView.setAdapter(mStationAdapter);
 
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addConnectionCallbacks(this)
@@ -152,12 +151,14 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
             }
         });
-
+        setSuggestedStations();
     }
 
     private void setSuggestedStations() {
         stationRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
-        ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
+        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null) {
+            ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
+        }
     }
 
     @Override

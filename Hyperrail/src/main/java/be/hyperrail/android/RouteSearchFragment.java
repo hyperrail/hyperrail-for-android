@@ -81,7 +81,13 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_route_search, container, false);
+
+        return inflater.inflate(R.layout.fragment_route_search, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         vFromText = view.findViewById(R.id.input_from);
         vToText = view.findViewById(R.id.input_to);
@@ -91,7 +97,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
 
-        mSuggestionsRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
+        mSuggestionsRecyclerView = view.findViewById(R.id.recyclerview_primary);
         mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         registerForContextMenu(mSuggestionsRecyclerView);
 
@@ -99,13 +105,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         mSuggestionsAdapter.setOnItemClickListener(this);
         mSuggestionsAdapter.setOnLongItemClickListener(this);
         mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         // Initialize autocomplete
         IrailStationProvider stationProvider = IrailFactory.getStationsProviderInstance();
@@ -236,7 +235,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             vFromText.setText(savedInstanceState.getString("from", ""), false);
             vToText.setText(savedInstanceState.getString("to", ""), false);
         }
-
+        setSuggestions();
     }
 
     private void showDateTimeRow() {
@@ -286,9 +285,10 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     private void setSuggestions() {
         RecyclerView suggestions = this.getActivity().findViewById(R.id.recyclerview_primary);
 
-        RouteHistoryCardAdapter suggestionAdapter = (RouteHistoryCardAdapter) suggestions.getAdapter();
-        suggestionAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
-
+        if (suggestions != null && suggestions.getAdapter() != null) {
+            RouteHistoryCardAdapter suggestionAdapter = (RouteHistoryCardAdapter) suggestions.getAdapter();
+            suggestionAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
+        }
     }
 
     @Override
