@@ -156,7 +156,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     private void setSuggestedStations() {
         stationRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
-        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null) {
+        // TODO pixel on Android O requires this much validation. There should be a better way for this.
+        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null && stationRecyclerView.getAdapter() instanceof  StationCardAdapter) {
             ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
         }
     }
