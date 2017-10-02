@@ -67,7 +67,7 @@ public class Station implements Serializable {
 
     public String getSemanticId() {
         Log.i("Station", "Semantic id: " + id);
-        return "http://irail.be/stations/NMBS/" + id;
+        return "http://irail.be/stations/NMBS/" + id.substring(8);
     }
 
     public String getAlternativeNl() {

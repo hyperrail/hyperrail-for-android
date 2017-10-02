@@ -339,26 +339,40 @@ public class IrailApi implements IrailDataProvider {
     }
 
     @Override
-    public void postOccupancy(String departureConnection, String stationSemanticId, String vehicleSemanticId, DateTime date,  OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener,
-                              IRailErrorResponseListener<Boolean> errorListener, Object tag) {
+    public void postOccupancy(String departureConnection, String stationSemanticId, String vehicleSemanticId, DateTime date, OccupancyLevel occupancy, final IRailSuccessResponseListener<Boolean> successListener,
+                              final IRailErrorResponseListener<Boolean> errorListener, final Object tag) {
         final String url = "https://api.irail.be/feedback/occupancy.php";
 
         try {
-            JSONObject payload = new JSONObject();
+            final JSONObject payload = new JSONObject();
 
             payload.put("connection", departureConnection);
-            payload.put("from", vehicleSemanticId);
+            payload.put("from", stationSemanticId);
             payload.put("date", DateTimeFormat.forPattern("YYYYMMdd").print(date));
             payload.put("vehicle", vehicleSemanticId);
             payload.put("occupancy", "http://api.irail.be/terms/" + occupancy.name().toLowerCase());
 
             Log.d(LOGTAG, "Posting feedback: " + url + " : " + payload);
 
-            AsyncTask<String, Void, Void> t = new AsyncTask<String, Void, Void>() {
+            final AsyncTask<String, Void, String> t = new AsyncTask<String, Void, String>() {
                 @Override
-                protected Void doInBackground(String... payload) {
-                    postJsonRequest(url, payload[0]);
-                    return null;
+                protected String doInBackground(String... payload) {
+                    return postJsonRequest(url, payload[0]);
+                }
+
+                @Override
+                protected void onPostExecute(String result) {
+                    super.onPostExecute(result);
+
+                    if (result != null) {
+                        if (successListener != null) {
+                            successListener.onSuccessResponse(true, tag);
+                        }
+                    } else {
+                        if (errorListener != null) {
+                            errorListener.onErrorResponse(null, tag);
+                        }
+                    }
                 }
             };
             t.execute(payload.toString());
@@ -366,10 +380,6 @@ public class IrailApi implements IrailDataProvider {
             if (errorListener != null) {
                 errorListener.onErrorResponse(e, tag);
             }
-            return;
-        }
-        if (successListener != null) {
-            successListener.onSuccessResponse(true, tag);
         }
     }
 
@@ -420,6 +430,7 @@ public class IrailApi implements IrailDataProvider {
 
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
         return result;
     }

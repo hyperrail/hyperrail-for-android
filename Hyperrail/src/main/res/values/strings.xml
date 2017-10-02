@@ -73,6 +73,8 @@
     <string name="low_occupancy">Low occupancy</string>
     <string name="medium_occupancy">Medium occupancy</string>
     <string name="occupancy_question">How crowded is your train?</string>
+    <string name="spitsgids_feedback_sent">Your feedback has been sent!</string>
+    <string name="spitsgids_feedback_error">Feedback couldn\'t be saved. Try again later.</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

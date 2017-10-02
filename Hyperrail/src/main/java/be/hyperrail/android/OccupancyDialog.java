@@ -6,13 +6,17 @@
 
 package be.hyperrail.android;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import org.joda.time.DateTime;
 
+import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.factories.IrailFactory;
@@ -23,6 +27,7 @@ import be.hyperrail.android.irail.implementation.TrainStop;
  */
 public class OccupancyDialog {
 
+    private final View view;
     private Context context;
     private final String departureConnection;
     private final String stationSemanticId;
@@ -35,6 +40,7 @@ public class OccupancyDialog {
 
     public OccupancyDialog(Context context, String departureConnection, String stationSemanticId, String vehicleSemanticId, DateTime date) {
         this.context = context;
+        this.view = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
         this.departureConnection = departureConnection;
         this.stationSemanticId = stationSemanticId;
         this.vehicleSemanticId = vehicleSemanticId;
@@ -61,7 +67,17 @@ public class OccupancyDialog {
                         OccupancyDialog.this.vehicleSemanticId,
                         OccupancyDialog.this.date,
                         OccupancyLevel.LOW,
-                        null, null, null);
+                        new IRailSuccessResponseListener<Boolean>() {
+                            @Override
+                            public void onSuccessResponse(Boolean data, Object tag) {
+                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                            }
+                        }, new IRailErrorResponseListener<Boolean>() {
+                            @Override
+                            public void onErrorResponse(Exception data, Object tag) {
+                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                            }
+                        }, null);
                 dialog.dismiss();
             }
         });
@@ -75,7 +91,17 @@ public class OccupancyDialog {
                         OccupancyDialog.this.vehicleSemanticId,
                         OccupancyDialog.this.date,
                         OccupancyLevel.MEDIUM,
-                        null, null, null);
+                        new IRailSuccessResponseListener<Boolean>() {
+                            @Override
+                            public void onSuccessResponse(Boolean data, Object tag) {
+                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                            }
+                        }, new IRailErrorResponseListener<Boolean>() {
+                            @Override
+                            public void onErrorResponse(Exception data, Object tag) {
+                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                            }
+                        }, null);
                 dialog.dismiss();
             }
         });
@@ -89,7 +115,17 @@ public class OccupancyDialog {
                         OccupancyDialog.this.vehicleSemanticId,
                         OccupancyDialog.this.date,
                         OccupancyLevel.HIGH,
-                        null, null, null);
+                        new IRailSuccessResponseListener<Boolean>() {
+                            @Override
+                            public void onSuccessResponse(Boolean data, Object tag) {
+                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                            }
+                        }, new IRailErrorResponseListener<Boolean>() {
+                            @Override
+                            public void onErrorResponse(Exception data, Object tag) {
+                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                            }
+                        }, null);
                 dialog.dismiss();
             }
         });
