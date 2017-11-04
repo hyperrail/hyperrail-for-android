@@ -29,8 +29,11 @@ import android.widget.TextView;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.Objects;
+
 import be.hyperrail.android.OccupancyDialog;
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.implementation.Message;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
@@ -60,7 +63,6 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private final int VIEW_TYPE_TRAIN = 1;
 
     public RouteDetailCardAdapter(Context context, Route route, boolean embedded) {
-
         this.context = context;
         this.route = route;
         this.embedded = embedded;
@@ -244,9 +246,17 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             final Transfer transferAfter = route.getTransfers()[(position + 1) / 2];
             final TrainStub train = route.getTrains()[(position - 1) / 2];
 
-            routeTrainViewHolder.vTrainNumber.setText(train.getNumber());
-            routeTrainViewHolder.vTrainType.setText(train.getType());
-            routeTrainViewHolder.vDirection.setText(train.getDirection().getLocalizedName());
+            boolean isWalking = Objects.equals(train.getId(), "WALK");
+
+            if (isWalking) {
+                routeTrainViewHolder.vTrainNumber.setText("Walk to the next station");
+                routeTrainViewHolder.vTrainType.setText("Walk");
+                routeTrainViewHolder.vDirection.setText("Walk");
+            } else {
+                routeTrainViewHolder.vTrainNumber.setText(train.getNumber());
+                routeTrainViewHolder.vTrainType.setText(train.getType());
+                routeTrainViewHolder.vDirection.setText(train.getDirection().getLocalizedName());
+            }
 
             routeTrainViewHolder.vDuration.setText(DurationFormatter.formatDuration(transferBefore.getDepartureTime(), transferBefore.getDepartureDelay(), transferAfter.getArrivalTime(), transferAfter.getArrivalDelay()));
 
@@ -256,26 +266,45 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 routeTrainViewHolder.vStatusContainer.setVisibility(View.GONE);
             }
 
-            routeTrainViewHolder.vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+            Message[] trainAlerts = route.getTrainalerts()[(position-1)/2];
+            if (trainAlerts != null &&trainAlerts.length > 0) {
+                routeTrainViewHolder.vAlertContainer.setVisibility(View.VISIBLE);
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("train", train);
-                    // Get the departure date (day) of this train
-                    bundle.putSerializable("date", transferBefore.getDepartureTime());
-                    bundle.putSerializable("from", transferBefore.getStation());
-                    bundle.putSerializable("to", transferAfter.getStation());
-
-                    if (listener != null) {
-                        listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
+                StringBuilder text = new StringBuilder();
+                int n = trainAlerts.length;
+                for (int i = 0; i < n; i++) {
+                    text.append(trainAlerts[i].getHeader());
+                    if (i < n - 1) {
+                        text.append("\n");
                     }
                 }
-            });
 
-            holder.itemView.setOnLongClickListener(
-                    new View.OnLongClickListener() {
+                routeTrainViewHolder.vAlertText.setText(text.toString());
+            } else {
+                routeTrainViewHolder.vAlertContainer.setVisibility(View.GONE);
+            }
+
+            routeTrainViewHolder.vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+
+            if (!isWalking) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("train", train);
+                        // Get the departure date (day) of this train
+                        bundle.putSerializable("date", transferBefore.getDepartureTime());
+                        bundle.putSerializable("from", transferBefore.getStation());
+                        bundle.putSerializable("to", transferAfter.getStation());
+
+                        if (listener != null) {
+                            listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
+                        }
+                    }
+                });
+
+                holder.itemView.setOnLongClickListener(
+                        new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
                                 (new OccupancyDialog(RouteDetailCardAdapter.this.context,
@@ -287,9 +316,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                                 return false;
                             }
 
-                    }
-            );
-
+                        }
+                );
+            }
         }
 
     }
@@ -328,6 +357,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         final ImageView vOccupancy;
 
+        final LinearLayout vAlertContainer;
+        final TextView vAlertText;
+
         RouteTrainViewHolder(View view) {
             super(view);
 
@@ -341,6 +373,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             vStatusText = view.findViewById(R.id.text_train_status);
 
             vOccupancy = view.findViewById(R.id.image_occupancy);
+
+            vAlertContainer = view.findViewById(R.id.alert_container);
+            vAlertText = view.findViewById(R.id.alert_message);
         }
 
     }

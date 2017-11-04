@@ -8,8 +8,6 @@
               android:focusable="true"
               android:gravity="center"
               android:paddingBottom="@dimen/activity_small_margin"
-              android:paddingLeft="@dimen/activity_small_margin"
-              android:paddingRight="@dimen/activity_small_margin"
               android:paddingTop="@dimen/activity_small_margin">
 
     <include layout="@layout/item_route"/>

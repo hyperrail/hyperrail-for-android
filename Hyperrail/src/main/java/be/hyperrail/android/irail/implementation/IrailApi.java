@@ -114,11 +114,18 @@ public class IrailApi implements IrailDataProvider {
             return;
         }
 
+        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+        if (locale.isEmpty()) {
+            // Only get locale when needed
+            locale = Locale.getDefault().getISO3Language();
+        }
+
         String url = "https://api.irail.be/connections/?format=json"
                 + "&to=" + to.getId()
                 + "&from=" + from.getId()
                 + "&date=" + dateformat.print(timeFilter)
-                + "&time=" + timeformat.print(timeFilter);
+                + "&time=" + timeformat.print(timeFilter)
+                + "&lang=" + locale.substring(0,2);
 
         if (timeFilterType == RouteTimeDefinition.DEPART) {
             url += "&timeSel=depart";

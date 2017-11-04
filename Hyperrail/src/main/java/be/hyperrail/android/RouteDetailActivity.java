@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -40,6 +41,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
      * The route to show
      */
     private Route route;
+    private TextView vAlertsText;
 
     public static Intent createIntent(Context c, Route r) {
         Intent i = new Intent(c, RouteDetailActivity.class);
@@ -64,6 +66,24 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
         this.vRefreshLayout.setEnabled(false);
 
         this.vWarningNotRealtime.setVisibility(View.GONE);
+
+        vAlertsText=findViewById(R.id.alert_message);
+        if (route.getAlerts() != null && route.getAlerts().length > 0) {
+            vAlertsText.setVisibility(View.VISIBLE);
+
+            StringBuilder text = new StringBuilder();
+            int n = route.getAlerts().length;
+            for (int i = 0; i < n; i++) {
+                text.append(route.getAlerts()[i].getDescription());
+                if (i < n - 1) {
+                    text.append("\n");
+                }
+            }
+
+            vAlertsText.setText(text.toString());
+        } else {
+            vAlertsText.setVisibility(View.GONE);
+        }
     }
 
     @Override

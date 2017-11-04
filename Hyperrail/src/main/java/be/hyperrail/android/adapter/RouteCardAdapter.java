@@ -219,6 +219,23 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
         }
 
+        if (route.getAlerts() != null && route.getAlerts().length > 0) {
+            holder.vAlertsText.setVisibility(View.VISIBLE);
+
+            StringBuilder text = new StringBuilder();
+            int n = route.getAlerts().length;
+            for (int i = 0; i < n; i++) {
+                text.append(route.getAlerts()[i].getHeader());
+                if (i < n - 1) {
+                    text.append("\n");
+                }
+            }
+
+            holder.vAlertsText.setText(text.toString());
+        } else {
+            holder.vAlertsText.setVisibility(View.GONE);
+        }
+
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);
 
         // Launch intents to view details / click through
@@ -295,6 +312,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         protected final LinearLayout vDetailContainer;
         protected final TextView vStatusText;
         protected final LinearLayout vStatusContainer;
+        protected final TextView vAlertsText;
 
         RouteViewHolder(View view) {
             super(view);
@@ -319,6 +337,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
             vStatusContainer = view.findViewById(R.id.layout_train_status_container);
             vStatusText = view.findViewById(R.id.text_train_status);
+            vAlertsText = view.findViewById(R.id.alert_message);
         }
 
     }

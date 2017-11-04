@@ -124,10 +124,15 @@ public class IrailApiParser implements IrailParser {
                 JSONObject viaArrival = via.getJSONObject("arrival");
 
                 // first train is already set
-                if (i > 0) {
-                    trains[i] = new TrainStub(
-                            via.getString("vehicle"),
-                            stationProvider.getStationByName(via.getJSONObject("direction").getString("name")));
+                // Walking should only be between 2 journeys, so only in a via
+                if (viaDeparture.getInt("walking") == 0) {
+                    trains[i + 1] = new TrainStub(
+                            viaDeparture.getString("vehicle"),
+                            stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")));
+                } else {
+                    trains[i + 1] = new TrainStub(
+                            "WALK",
+                            null);
                 }
 
                 OccupancyLevel viaOccupancyLevel = OccupancyLevel.UNKNOWN;
@@ -164,6 +169,42 @@ public class IrailApiParser implements IrailParser {
             transfers[1] = arrivalTransfer;
         }
 
+        Message[][] trainalerts = new Message[trains.length][];
+        for (int t = 0; t < trains.length; t++){
+            if (t == 0){
+                if (departure.has("alerts")){
+                    JSONArray alerts = departure.getJSONObject("alerts").getJSONArray("alert");
+                    trainalerts[t] = new Message[alerts.length()];
+                    for (int i =0; i < alerts.length(); i++){
+                        trainalerts[t][i] = new Message(alerts.getJSONObject(t));
+                    }
+                } else {
+                    trainalerts[t] = null;
+                }
+            } else {
+                JSONObject viaDeparture = routeObject.getJSONObject("vias").getJSONArray("via").getJSONObject(t-1).getJSONObject("departure") ;
+
+                if (viaDeparture.has("alerts")){
+                    JSONArray alerts = viaDeparture.getJSONObject("alerts").getJSONArray("alert");
+                    trainalerts[t] = new Message[alerts.length()];
+                    for (int i =0; i < alerts.length(); i++){
+                        trainalerts[t][i] = new Message(alerts.getJSONObject(i));
+                    }
+                } else {
+                    trainalerts[t] = null;
+                }
+            }
+        }
+
+        Message[] alerts = null;
+        if (routeObject.has("alerts")) {
+            JSONArray alertsArray = routeObject.getJSONObject("alerts").getJSONArray("alert");
+            alerts = new Message[alertsArray.length()];
+            for (int i = 0; i < alertsArray.length(); i++) {
+                alerts[i] = new Message(alertsArray.getJSONObject(i));
+            }
+        }
+
         return new Route(
                 departureStation,
                 arrivalStation,
@@ -176,7 +217,7 @@ public class IrailApiParser implements IrailParser {
                 arrival.getString("platform"),
                 arrival.getJSONObject("platforminfo").getInt("normal") == 1,
                 trains,
-                transfers);
+                transfers, alerts, trainalerts, null);
     }
 
     @Override
