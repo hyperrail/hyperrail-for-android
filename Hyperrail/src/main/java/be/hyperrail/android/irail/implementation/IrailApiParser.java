@@ -176,7 +176,7 @@ public class IrailApiParser implements IrailParser {
                     JSONArray alerts = departure.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
                     for (int i =0; i < alerts.length(); i++){
-                        trainalerts[t][i] = new Message(alerts.getJSONObject(t));
+                        trainalerts[t][i] = new Message(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
