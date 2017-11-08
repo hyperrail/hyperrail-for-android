@@ -40,13 +40,18 @@ public class Transfer implements Serializable {
     private final Duration departureDelay;
     private final boolean departureCanceled;
 
+    private final boolean left;
+    private final boolean arrived;
+
     private final OccupancyLevel departureOccupancy;
     private final String departureConnectionSemanticId;
 
-    public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, String departurePlatform, boolean departureNormal, DateTime arrivalTime, DateTime departureTime, Duration arrivalDelay, boolean arrivalCanceled, Duration departureDelay, boolean departureCanceled, String departureConnectionSemanticId, OccupancyLevel departureOccupancy) {
+    public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, boolean arrived, boolean departureNormal, boolean left, String departurePlatform, Duration arrivalDelay, boolean arrivalCanceled, Duration departureDelay, boolean departureCanceled, DateTime arrivalTime, DateTime departureTime, String departureConnectionSemanticId, OccupancyLevel departureOccupancy) {
         this.station = station;
         this.arrivingTrain = arrivingTrain;
         this.departingTrain = departingTrain;
+        this.arrived = arrived;
+        this.left = left;
         this.arrivalTime = arrivalTime;
         this.departureTime = departureTime;
         this.departurePlatform = departurePlatform;
@@ -119,5 +124,13 @@ public class Transfer implements Serializable {
 
     public String getDepartureConnectionSemanticId() {
         return departureConnectionSemanticId;
+    }
+
+    public boolean hasLeft() {
+        return left;
+    }
+
+    public boolean hasArrived() {
+        return arrived;
     }
 }

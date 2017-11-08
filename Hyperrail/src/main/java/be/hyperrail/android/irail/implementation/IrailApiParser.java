@@ -62,20 +62,22 @@ public class IrailApiParser implements IrailParser {
         if (departure.has("occupancy")) {
             departureOccupancyLevel = OccupancyLevel.valueOf(departure.getJSONObject("occupancy").getString("name").toUpperCase());
         }
+
+        boolean hasLastTrainArrived = (arrival.has("arrived") && arrival.getInt("arrived") == 1);
+        boolean hasFirstTrainLeft = (departure.has("left") && departure.getInt("left") == 1);
+
         Transfer departureTransfer = new Transfer(
                 stationProvider.getStationById(departure.getJSONObject("stationinfo").getString("id")),
                 null,
                 firstTrain,
                 null,
                 true,
-                departure.getString("platform"),
+                hasFirstTrainLeft,
                 departure.getJSONObject("platforminfo").getInt("normal") == 1,
-                null,
+                hasFirstTrainLeft,
+                departure.getString("platform"),
+                new Duration(0), false, new Duration(departure.getInt("delay") * 1000), departure.getInt("canceled") != 0, null,
                 timestamp2date(departure.getString("time")),
-                new Duration(0),
-                false,
-                new Duration(departure.getInt("delay") * 1000),
-                departure.getInt("canceled") != 0,
                 departure.getString("departureConnection"),
                 departureOccupancyLevel
         );
@@ -87,13 +89,12 @@ public class IrailApiParser implements IrailParser {
                 null,
                 arrival.getString("platform"),
                 arrival.getJSONObject("platforminfo").getInt("normal") == 1,
-                null,
+                hasLastTrainArrived,
                 true,
-                timestamp2date(arrival.getString("time")),
+                hasLastTrainArrived,
                 null,
-                new Duration(arrival.getInt("delay") * 1000),
-                arrival.getInt("canceled") != 0,
-                new Duration(0), false,
+                new Duration(arrival.getInt("delay") * 1000), arrival.getInt("canceled") != 0, new Duration(0), false, timestamp2date(arrival.getString("time")),
+                null,
                 null,
                 OccupancyLevel.UNKNOWN
         );
@@ -140,6 +141,9 @@ public class IrailApiParser implements IrailParser {
                     viaOccupancyLevel = OccupancyLevel.valueOf(viaDeparture.getJSONObject("occupancy").getString("name").toUpperCase());
                 }
 
+                boolean hasArrived = (viaArrival.has("arrived") && viaArrival.getInt("arrived") == 1);
+                boolean hasLeft = (viaDeparture.has("left") && viaDeparture.getInt("left") == 1);
+
                 // don't use parseStop function, we have to combine data!
                 Transfer s = new Transfer(
                         stationProvider.getStationById(via.getJSONObject("stationinfo").getString("id")),
@@ -147,14 +151,11 @@ public class IrailApiParser implements IrailParser {
                         trains[i + 1],
                         viaArrival.getString("platform"),
                         viaArrival.getJSONObject("platforminfo").getInt("normal") == 1,
-                        viaDeparture.getString("platform"),
+                        hasArrived,
                         viaDeparture.getJSONObject("platforminfo").getInt("normal") == 1,
-                        timestamp2date(viaArrival.getString("time")),
+                        hasLeft, viaDeparture.getString("platform"),
+                        new Duration(viaArrival.getInt("delay") * 1000), viaArrival.getInt("canceled") != 0, new Duration(viaDeparture.getInt("delay") * 1000), viaDeparture.getInt("canceled") != 0, timestamp2date(viaArrival.getString("time")),
                         timestamp2date(viaDeparture.getString("time")),
-                        new Duration(viaArrival.getInt("delay") * 1000),
-                        viaArrival.getInt("canceled") != 0,
-                        new Duration(viaDeparture.getInt("delay") * 1000),
-                        viaDeparture.getInt("canceled") != 0,
                         viaDeparture.getString("departureConnection"),
                         viaOccupancyLevel
                 );

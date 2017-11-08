@@ -221,11 +221,27 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
 
             if (position == 0) {
-                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
+                if (transfer.hasLeft()){
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
+                } else {
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
+                }
             } else if (position == this.getItemCount() - 1) {
-                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
+                if (transfer.hasArrived()){
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
+                } else {
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
+                }
             } else {
-                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+                if (transfer.hasArrived()){
+                    if (transfer.hasLeft()) {
+                        routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+                    } else {
+                        routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_inprogress));
+                    }
+                } else {
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
+                }
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -249,13 +265,31 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             boolean isWalking = Objects.equals(train.getId(), "WALK");
 
             if (isWalking) {
-                routeTrainViewHolder.vTrainNumber.setText("Walk to the next station");
-                routeTrainViewHolder.vTrainType.setText("Walk");
                 routeTrainViewHolder.vDirection.setText("Walk");
+                routeTrainViewHolder.vTrainType.setVisibility(View.GONE);
+                routeTrainViewHolder.vTrainNumber.setText("Walk to the next station");
+                routeTrainViewHolder.vOccupancy.setVisibility(View.GONE);
+                if (transferBefore.hasArrived()){
+                    routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_filled));
+                } else {
+                    routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_hollow));
+                }
             } else {
                 routeTrainViewHolder.vTrainNumber.setText(train.getNumber());
                 routeTrainViewHolder.vTrainType.setText(train.getType());
+                routeTrainViewHolder.vOccupancy.setVisibility(View.VISIBLE);
+                routeTrainViewHolder.vTrainType.setVisibility(View.VISIBLE);
                 routeTrainViewHolder.vDirection.setText(train.getDirection().getLocalizedName());
+
+                if (transferBefore.hasLeft()){
+                    if (transferAfter.hasArrived()){
+                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
+                    } else {
+                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                    }
+                } else {
+                    routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
+                }
             }
 
             routeTrainViewHolder.vDuration.setText(DurationFormatter.formatDuration(transferBefore.getDepartureTime(), transferBefore.getDepartureDelay(), transferAfter.getArrivalTime(), transferAfter.getArrivalDelay()));
@@ -356,7 +390,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         final TextView vStatusText;
 
         final ImageView vOccupancy;
-
+final ImageView vTimeline;
         final LinearLayout vAlertContainer;
         final TextView vAlertText;
 
@@ -376,6 +410,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             vAlertContainer = view.findViewById(R.id.alert_container);
             vAlertText = view.findViewById(R.id.alert_message);
+
+            vTimeline = view.findViewById(R.id.image_timeline);
         }
 
     }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#C72929</color>
-    <color name="colorPrimaryDark">#b22525</color>
+    <color name="colorPrimary">#c62828</color><!-- Material red 800 -->
+    <color name="colorPrimaryDark">#8e0000</color>
+    <color name="colorPrimaryLight">#f05545</color>
     <color name="colorAccent">#FFF</color>
 
     <color name="colorWhite">#FFF</color>
@@ -12,10 +13,10 @@
     <color name="colorWarningNotRealtime">#1860d8</color>
 
     <!-- History list -->
-    <color name="colorStar">#C72929</color>
-    <color name="colorHistory">#C72929</color>
+    <color name="colorStar">@color/colorPrimary</color>
+    <color name="colorHistory">@color/colorPrimary</color>
 
-    <color name="colorDelay">#b22525</color>
+    <color name="colorDelay">#b71c1c</color> <!-- Material red 900 -->
     <color name="colorMuted">#999999</color>
     <color name="colorFaster">#1b5e20</color>
 

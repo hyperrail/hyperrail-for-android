@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 30dp wide -->
+    <item
+        android:bottom="42dp"
+        android:left="14dp"
+        android:right="14dp"
+        android:top="-16dp">
+
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorMuted" />
+        </shape>
+    </item>
+    <item
+        android:bottom="20dp"
+        android:left="6dp"
+        android:right="6dp"
+        android:top="20dp">
+        <bitmap
+            android:src="@drawable/ic_directions_walk"
+            android:tint="@color/colorMuted" />
+    </item>
+    <item
+        android:bottom="-16dp"
+        android:left="14dp"
+        android:right="14dp"
+        android:top="42dp">
+
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorMuted" />
+        </shape>
+    </item>
+
+</layer-list>

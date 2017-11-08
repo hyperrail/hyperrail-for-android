@@ -17,7 +17,7 @@
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/contentdescription_timeline_icon"
-            android:src="@drawable/timeline_train"/>
+            android:src="@drawable/timeline_train_hollow"/>
 
         <!-- 76dp margin to the left side, to make up for missing linearlayout compared with transfers (no times are displayed) -->
         <!-- Margin top and bottom, lets timeline fill the height while keeping whitespace around the text -->
