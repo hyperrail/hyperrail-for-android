@@ -41,7 +41,10 @@ public class Route implements Serializable {
     private final TrainStub[] trains;
     private final Transfer[] transfers;
 
-    Route(Station departureStation, Station arrivalStation, DateTime departureTime, Duration departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, DateTime arrivalTime, Duration arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, TrainStub[] trains, Transfer[] transfers) {
+    private final Message[] alerts;
+    private final Message[][] trainalerts;
+    private final Message[] remarks;
+    Route(Station departureStation, Station arrivalStation, DateTime departureTime, Duration departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, DateTime arrivalTime, Duration arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, TrainStub[] trains, Transfer[] transfers, Message[] alerts, Message[][] trainalerts, Message[] remarks) {
         this.departureStation = departureStation;
         this.arrivalStation = arrivalStation;
 
@@ -57,6 +60,9 @@ public class Route implements Serializable {
         this.isArrivalDeparturePlatformNormal = isArrivalDeparturePlatformNormal;
         this.trains = trains;
         this.transfers = transfers;
+        this.alerts = alerts;
+        this.trainalerts = trainalerts;
+        this.remarks = remarks;
     }
 
     public Duration getDuration() {
@@ -130,5 +136,27 @@ public class Route implements Serializable {
 
     public Station getArrivalStation() {
         return arrivalStation;
+    }
+
+    public Message[] getRemarks() {
+        return remarks;
+    }
+
+    public Message[] getAlerts() {
+        return alerts;
+    }
+
+    public Message[][] getTrainalerts() {
+        return trainalerts;
+    }
+
+    public boolean isPartiallyCanceled() {
+        for (Transfer t :
+                getTransfers()) {
+            if (t.isDepartureCanceled()){
+                return true;
+            }
+        }
+        return false;
     }
 }

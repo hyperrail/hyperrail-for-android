@@ -9,6 +9,8 @@
         android:id="@+id/cardview_collapsed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_small_margin"
+        android:paddingRight="@dimen/activity_small_margin"
         android:layout_margin="@dimen/cardlist_content_margin"
         android:baselineAligned="false"
         android:gravity="center"
@@ -179,11 +181,26 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/alert_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="none"
+        android:maxLines="3"
+        android:minHeight="@dimen/cardlist_textrow_primary_textsizea"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:scrollHorizontally="false"
+        android:text="Tijdens de weekends van 4-5,18-19,25-26 november werken wij aan het spoor in de regio van Gent."
+        android:textColor="@color/colorPrimary"/>
+
     <LinearLayout
         android:id="@+id/cardview_expanded"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/cardlist_content_margin"
+        android:paddingLeft="@dimen/activity_small_margin"
+        android:paddingRight="@dimen/activity_small_margin"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">

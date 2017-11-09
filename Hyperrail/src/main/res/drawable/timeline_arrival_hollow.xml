@@ -8,12 +8,12 @@
         android:top="-16dp">
 
         <shape android:shape="rectangle">
-            <solid android:color="@color/colorPrimary" />
+            <solid android:color="@color/colorMuted" />
         </shape>
     </item>
     <item
         android:bottom="15dp"
-        android:drawable="@drawable/timeline_dot_empty"
+        android:drawable="@drawable/timeline_dot_empty_muted"
         android:left="6dp"
         android:right="6dp"
         android:top="15dp">

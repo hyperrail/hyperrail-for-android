@@ -29,8 +29,11 @@ import android.widget.TextView;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.Objects;
+
 import be.hyperrail.android.OccupancyDialog;
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.implementation.Message;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
@@ -60,7 +63,6 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private final int VIEW_TYPE_TRAIN = 1;
 
     public RouteDetailCardAdapter(Context context, Route route, boolean embedded) {
-
         this.context = context;
         this.route = route;
         this.embedded = embedded;
@@ -219,11 +221,27 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
 
             if (position == 0) {
-                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
+                if (transfer.hasLeft()){
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
+                } else {
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
+                }
             } else if (position == this.getItemCount() - 1) {
-                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
+                if (transfer.hasArrived()){
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
+                } else {
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
+                }
             } else {
-                routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+                if (transfer.hasArrived()){
+                    if (transfer.hasLeft()) {
+                        routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+                    } else {
+                        routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_inprogress));
+                    }
+                } else {
+                    routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
+                }
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -244,38 +262,86 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             final Transfer transferAfter = route.getTransfers()[(position + 1) / 2];
             final TrainStub train = route.getTrains()[(position - 1) / 2];
 
-            routeTrainViewHolder.vTrainNumber.setText(train.getNumber());
-            routeTrainViewHolder.vTrainType.setText(train.getType());
-            routeTrainViewHolder.vDirection.setText(train.getDirection().getLocalizedName());
+            boolean isWalking = Objects.equals(train.getId(), "WALK");
+
+            if (isWalking) {
+                routeTrainViewHolder.vDirection.setText("Walk");
+                routeTrainViewHolder.vTrainType.setVisibility(View.GONE);
+                routeTrainViewHolder.vTrainNumber.setText("Walk to the next station");
+                routeTrainViewHolder.vOccupancy.setVisibility(View.GONE);
+                if (transferBefore.hasArrived()){
+                    routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_filled));
+                } else {
+                    routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_hollow));
+                }
+            } else {
+                routeTrainViewHolder.vTrainNumber.setText(train.getNumber());
+                routeTrainViewHolder.vTrainType.setText(train.getType());
+                routeTrainViewHolder.vOccupancy.setVisibility(View.VISIBLE);
+                routeTrainViewHolder.vTrainType.setVisibility(View.VISIBLE);
+                routeTrainViewHolder.vDirection.setText(train.getDirection().getLocalizedName());
+
+                if (transferBefore.hasLeft()){
+                    if (transferAfter.hasArrived()){
+                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
+                    } else {
+                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                    }
+                } else {
+                    routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
+                }
+            }
 
             routeTrainViewHolder.vDuration.setText(DurationFormatter.formatDuration(transferBefore.getDepartureTime(), transferBefore.getDepartureDelay(), transferAfter.getArrivalTime(), transferAfter.getArrivalDelay()));
 
             if (transferBefore.isDepartureCanceled()) {
                 routeTrainViewHolder.vStatusText.setText(R.string.status_cancelled);
+                routeTrainViewHolder.vStatusContainer.setVisibility(View.VISIBLE);
+                routeTrainViewHolder.vOccupancy.setVisibility(View.GONE);
             } else {
+                routeTrainViewHolder.vOccupancy.setVisibility(View.VISIBLE);
                 routeTrainViewHolder.vStatusContainer.setVisibility(View.GONE);
+            }
+
+            Message[] trainAlerts = route.getTrainalerts()[(position-1)/2];
+            if (trainAlerts != null &&trainAlerts.length > 0) {
+                routeTrainViewHolder.vAlertContainer.setVisibility(View.VISIBLE);
+
+                StringBuilder text = new StringBuilder();
+                int n = trainAlerts.length;
+                for (int i = 0; i < n; i++) {
+                    text.append(trainAlerts[i].getHeader());
+                    if (i < n - 1) {
+                        text.append("\n");
+                    }
+                }
+
+                routeTrainViewHolder.vAlertText.setText(text.toString());
+            } else {
+                routeTrainViewHolder.vAlertContainer.setVisibility(View.GONE);
             }
 
             routeTrainViewHolder.vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("train", train);
-                    // Get the departure date (day) of this train
-                    bundle.putSerializable("date", transferBefore.getDepartureTime());
-                    bundle.putSerializable("from", transferBefore.getStation());
-                    bundle.putSerializable("to", transferAfter.getStation());
+            if (!isWalking) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("train", train);
+                        // Get the departure date (day) of this train
+                        bundle.putSerializable("date", transferBefore.getDepartureTime());
+                        bundle.putSerializable("from", transferBefore.getStation());
+                        bundle.putSerializable("to", transferAfter.getStation());
 
-                    if (listener != null) {
-                        listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
+                        if (listener != null) {
+                            listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
+                        }
                     }
-                }
-            });
+                });
 
-            holder.itemView.setOnLongClickListener(
-                    new View.OnLongClickListener() {
+                holder.itemView.setOnLongClickListener(
+                        new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
                                 (new OccupancyDialog(RouteDetailCardAdapter.this.context,
@@ -287,9 +353,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                                 return false;
                             }
 
-                    }
-            );
-
+                        }
+                );
+            }
         }
 
     }
@@ -327,6 +393,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         final TextView vStatusText;
 
         final ImageView vOccupancy;
+final ImageView vTimeline;
+        final LinearLayout vAlertContainer;
+        final TextView vAlertText;
 
         RouteTrainViewHolder(View view) {
             super(view);
@@ -341,6 +410,11 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             vStatusText = view.findViewById(R.id.text_train_status);
 
             vOccupancy = view.findViewById(R.id.image_occupancy);
+
+            vAlertContainer = view.findViewById(R.id.alert_container);
+            vAlertText = view.findViewById(R.id.alert_message);
+
+            vTimeline = view.findViewById(R.id.image_timeline);
         }
 
     }

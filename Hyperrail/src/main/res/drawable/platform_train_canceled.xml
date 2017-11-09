@@ -15,9 +15,12 @@
 
     <item
         android:bottom="8dp"
-        android:drawable="@drawable/ic_close_white"
         android:left="8dp"
         android:right="8dp"
-        android:top="8dp" />
+        android:top="8dp">
+        <bitmap
+            android:src="@drawable/ic_close"
+            android:tint="@color/colorWhite"/>
+    </item>
 
 </layer-list>

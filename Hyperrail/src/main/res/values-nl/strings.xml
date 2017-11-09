@@ -81,4 +81,7 @@
     <string name="medium_occupancy">Gemiddeld</string>
     <string name="low_occupancy">Rustig</string>
     <string name="occupancy_question">Hoe druk is deze trein?</string>
+    <string name="status_partially_cancelled">Deels afgeschaft</string>
+    <string name="spitsgids_feedback_error">Uw feedback kon niet worden opgeslagen.\\nProbeer later opnieuw.</string>
+    <string name="spitsgids_feedback_sent">Uw feedback is verzonden!\\nBedankt voor het inzenden!</string>
 </resources>

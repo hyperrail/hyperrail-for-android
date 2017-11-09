@@ -22,7 +22,8 @@
     <string name="action_search">Search</string>
     <string name="action_close">Close</string>
 
-    <string name="status_cancelled">Cancelled</string>
+    <string name="status_cancelled">Canceled</string>
+    <string name="status_partially_cancelled">Partially Canceled</string>
     <string name="contentdescription_timeline_icon" translatable="false">timeline_icon</string>
 
     <string name="marked_route_favorite">Marked route as favorite</string>
@@ -73,6 +74,8 @@
     <string name="low_occupancy">Low occupancy</string>
     <string name="medium_occupancy">Medium occupancy</string>
     <string name="occupancy_question">How crowded is your train?</string>
+    <string name="spitsgids_feedback_sent">Your feedback has been sent!</string>
+    <string name="spitsgids_feedback_error">Feedback couldn\'t be saved. Try again later.</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

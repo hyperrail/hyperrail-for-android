@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int VIEW_TYPE_FEEDBACK = 4;
 
     private boolean mDualPane = false;
+
+    private final Handler mDrawerNavigationHandler = new Handler();
 
     /**
      * Create a new intent to open the main activity on the route page, with the 'to' field filled in.
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param args The parameters for the fragment
      */
     private void setView(int i, Bundle args) {
-        Fragment frg;
+        final Fragment frg;
         switch (i) {
             default:
             case VIEW_TYPE_LIVEBOARD:
@@ -194,7 +197,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         mCurrentFragment = frg;
         mCurrentView = i;
-        getFragmentManager().beginTransaction().replace(R.id.activity_main_fragment_container, frg).commit();
+
+        mDrawerNavigationHandler.removeCallbacksAndMessages(null);
+        mDrawerNavigationHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getFragmentManager().beginTransaction().replace(R.id.activity_main_fragment_container, frg).commit();
+            }
+        },50);
+
     }
 
     @Override

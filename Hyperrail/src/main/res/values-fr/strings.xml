@@ -70,5 +70,8 @@
     <string name="low_occupancy">Calme</string>
     <string name="medium_occupancy">Moyen</string>
     <string name="occupancy_question">Est-ce occupé dans ce train?</string>
+    <string name="spitsgids_feedback_sent">Votre information a été envoyé!</string>
+    <string name="spitsgids_feedback_error">L\'information n\'a pas pu être enregistrée. Réessayez plus tard.</string>
+    <string name="status_partially_cancelled">Partiellement annulé</string>
 
 </resources>
