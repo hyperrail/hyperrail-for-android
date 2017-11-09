@@ -405,7 +405,7 @@ public class IrailApi implements IrailDataProvider {
 
     private static String postJsonRequest(String uri, String json) {
         HttpURLConnection urlConnection;
-        String result = null;
+        String result;
         try {
             //Connect
             urlConnection = (HttpURLConnection) ((new URL(uri).openConnection()));

@@ -208,6 +208,11 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             holder.vPlatform.setText("");
             holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
             holder.vStatusText.setText(R.string.status_cancelled);
+            holder.vStatusContainer.setVisibility(View.VISIBLE);
+        } else if (route.isPartiallyCanceled()){
+            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
+            holder.vStatusText.setText(R.string.status_partially_cancelled);
+            holder.vStatusContainer.setVisibility(View.VISIBLE);
         } else {
             holder.vStatusContainer.setVisibility(View.GONE);
             holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));

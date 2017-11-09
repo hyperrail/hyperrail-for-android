@@ -22,7 +22,8 @@
     <string name="action_search">Search</string>
     <string name="action_close">Close</string>
 
-    <string name="status_cancelled">Cancelled</string>
+    <string name="status_cancelled">Canceled</string>
+    <string name="status_partially_cancelled">Partially Canceled</string>
     <string name="contentdescription_timeline_icon" translatable="false">timeline_icon</string>
 
     <string name="marked_route_favorite">Marked route as favorite</string>

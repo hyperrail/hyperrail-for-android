@@ -88,9 +88,12 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
             holder.vPlatform.setText("");
             holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
             holder.vStatusText.setText(R.string.status_cancelled);
+            holder.vStatusContainer.setVisibility(View.VISIBLE);
+            holder.vOccupancy.setVisibility(View.GONE);
         } else {
 
             holder.vStatusContainer.setVisibility(View.GONE);
+            holder.vOccupancy.setVisibility(View.VISIBLE);
             holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
 
             if (!stop.isPlatformNormal()) {

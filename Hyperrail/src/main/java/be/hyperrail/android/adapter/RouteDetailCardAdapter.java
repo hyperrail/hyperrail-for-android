@@ -296,7 +296,10 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             if (transferBefore.isDepartureCanceled()) {
                 routeTrainViewHolder.vStatusText.setText(R.string.status_cancelled);
+                routeTrainViewHolder.vStatusContainer.setVisibility(View.VISIBLE);
+                routeTrainViewHolder.vOccupancy.setVisibility(View.GONE);
             } else {
+                routeTrainViewHolder.vOccupancy.setVisibility(View.VISIBLE);
                 routeTrainViewHolder.vStatusContainer.setVisibility(View.GONE);
             }
 

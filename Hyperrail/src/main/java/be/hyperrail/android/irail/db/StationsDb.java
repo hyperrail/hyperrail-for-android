@@ -114,9 +114,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     values.put(_ID, id);
                     // Replace special characters (for search purposes)
                     values.put(COLUMN_NAME_NAME, fields.next()
-                            .replaceAll("(é|É|è|È|ê|Ê|ë|Ë)", "e")
-                            .replaceAll("(â|Â|å|ä|Ä)", "a")
-                            .replaceAll("(ö|Ö)", "o")
+                            .replaceAll("[éÉèÈêÊëË]", "e")
+                            .replaceAll("[âÂåäÄ]", "a")
+                            .replaceAll("[öÖ]", "o")
                     );
                     values.put(COLUMN_NAME_ALTERNATIVE_FR, fields.next());
                     values.put(COLUMN_NAME_ALTERNATIVE_NL, fields.next());

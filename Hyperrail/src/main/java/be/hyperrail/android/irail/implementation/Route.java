@@ -149,4 +149,14 @@ public class Route implements Serializable {
     public Message[][] getTrainalerts() {
         return trainalerts;
     }
+
+    public boolean isPartiallyCanceled() {
+        for (Transfer t :
+                getTransfers()) {
+            if (t.isDepartureCanceled()){
+                return true;
+            }
+        }
+        return false;
+    }
 }
