@@ -100,7 +100,6 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
                 Drawable drawable = holder.vPlatformContainer.getBackground();
                 drawable.mutate();
                 drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
-
             }
         }
 

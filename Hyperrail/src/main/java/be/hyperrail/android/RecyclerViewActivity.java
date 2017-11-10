@@ -255,11 +255,6 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     }
 
     /**
-     * Get the next data items
-     */
-    protected abstract void getNextData();
-
-    /**
      * Show data
      *
      * @param data the data to show
@@ -270,11 +265,6 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     public void onDateTimePicked(DateTime date) {
         mSearchDate = date;
         getData();
-    }
-
-    @Override
-    public void loadMoreRecyclerviewItems() {
-        getNextData();
     }
 
     /**

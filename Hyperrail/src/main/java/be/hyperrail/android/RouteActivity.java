@@ -175,13 +175,42 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                 null);
     }
 
-    protected void getNextData() {
+    public void loadNextRecyclerviewItems() {
         if (!initialLoadCompleted) {
             return;
         }
 
         RouteAppendHelper appendHelper = new RouteAppendHelper();
         appendHelper.appendRouteResult(mRoutes, new IRailSuccessResponseListener<RouteResult>() {
+                    @Override
+                    public void onSuccessResponse(RouteResult data, Object tag) {
+                        // data consists of both old and new routes
+                        if (data.getRoutes().length == mRoutes.getRoutes().length) {
+                            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                        }
+
+                        mRoutes = data;
+                        showData(mRoutes);
+                    }
+                }, new IRailErrorResponseListener<RouteResult>() {
+                    @Override
+                    public void onErrorResponse(Exception e, Object tag) {
+                        ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+                    }
+                },
+                null);
+    }
+
+    public void loadPreviousRecyclerviewItems() {
+        if (!initialLoadCompleted) {
+            return;
+        }
+
+        RouteAppendHelper appendHelper = new RouteAppendHelper();
+        appendHelper.prependRouteResult(mRoutes, new IRailSuccessResponseListener<RouteResult>() {
                     @Override
                     public void onSuccessResponse(RouteResult data, Object tag) {
                         // data consists of both old and new routes
@@ -272,11 +301,6 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
         // load the route list again for the new date
         getData();
-    }
-
-    @Override
-    public void loadMoreRecyclerviewItems() {
-        getNextData();
     }
 
     public void markFavorite(boolean favorite) {

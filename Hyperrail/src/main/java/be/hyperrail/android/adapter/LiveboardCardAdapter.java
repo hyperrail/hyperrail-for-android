@@ -109,7 +109,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             displayList = null;
         }
 
-        super.setLoaded();
+        super.setNextLoaded();
         super.notifyDataSetChanged();
     }
 
@@ -194,8 +194,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onClickListener != null) {
-                    onClickListener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
+                if (mOnClickListener != null) {
+                    mOnClickListener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
                 }
             }
         });
@@ -203,8 +203,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (onLongClickListener != null){
-                    onLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this,stop);
+                if (mOnLongClickListener != null){
+                    mOnLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this,stop);
                 }
                 return false;
             }

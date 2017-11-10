@@ -18,5 +18,11 @@ public interface InfiniteScrollingDataSource {
      * This method is called when an InfiniteScrollingAdapter reached the end of the available data.
      * More items should be retrieved, after which the adapter should be updated with the enlarged data set.
      */
-    void loadMoreRecyclerviewItems();
+    void loadNextRecyclerviewItems();
+
+    /**
+     * This method is called when a user clicks the "load earlier" item.
+     * More items should be retrieved, after which the adapter should be updated with the enlarged data set.
+     */
+    void loadPreviousRecyclerviewItems();
 }

@@ -182,7 +182,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
                 // If we didn't get a result, try the next data
                 if (data.getStops().length == 0) {
-                    LiveboardActivity.this.getNextData();
+                    LiveboardActivity.this.loadNextRecyclerviewItems();
                 } else {
                     // Enable infinite scrolling again
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
@@ -201,13 +201,43 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     }
 
     @Override
-    protected void getNextData() {
+    public void loadNextRecyclerviewItems() {
         if (mCurrentLiveboard == null) {
             return;
         }
 
         LiveboardAppendHelper helper = new LiveboardAppendHelper();
         helper.appendLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
+            @Override
+            public void onSuccessResponse(LiveBoard data, Object tag) {
+                // Compare the new one with the old one to check if stops have been added
+                if (data.getStops().length == mCurrentLiveboard.getStops().length) {
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                    if (mCurrentLiveboard == null) {
+                        ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
+                    }
+                }
+                mCurrentLiveboard = data;
+                showData(mCurrentLiveboard);
+            }
+        }, new IRailErrorResponseListener<LiveBoard>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
+                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+            }
+        }, null);
+    }
+
+
+    @Override
+    public void loadPreviousRecyclerviewItems() {
+        if (mCurrentLiveboard == null) {
+            return;
+        }
+
+        LiveboardAppendHelper helper = new LiveboardAppendHelper();
+        helper.prependLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
