@@ -166,6 +166,8 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                         vRefreshLayout.setRefreshing(false);
                         mRoutes = data;
                         showData(mRoutes);
+                        // Scroll past the load earlier item
+                        vRecyclerView.scrollToPosition(1);
                         initialLoadCompleted = true;
                     }
                 }, new IRailErrorResponseListener<RouteResult>() {
@@ -181,6 +183,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
     public void loadNextRecyclerviewItems() {
         if (!initialLoadCompleted) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             return;
         }
 
@@ -189,7 +192,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                     @Override
                     public void onSuccessResponse(RouteResult data, Object tag) {
                         // data consists of both old and new routes
-                        ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+
                         if (data.getRoutes().length == mRoutes.getRoutes().length) {((
                                 InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
                             // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
@@ -197,6 +200,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
                         mRoutes = data;
                         showData(mRoutes);
+                        ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
                     }
                 }, new IRailErrorResponseListener<RouteResult>() {
                     @Override
@@ -210,6 +214,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
     public void loadPreviousRecyclerviewItems() {
         if (!initialLoadCompleted) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             return;
         }
 
@@ -218,7 +223,6 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                     @Override
                     public void onSuccessResponse(RouteResult data, Object tag) {
                         // data consists of both old and new routes
-                        ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
                         if (data.getRoutes().length == mRoutes.getRoutes().length) {
                             // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
                             ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
@@ -226,6 +230,10 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
                         mRoutes = data;
                         showData(mRoutes);
+
+                        // Scroll past the load earlier item
+                        vRecyclerView.scrollToPosition(1);
+                        ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
                     }
                 }, new IRailErrorResponseListener<RouteResult>() {
                     @Override

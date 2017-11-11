@@ -14,7 +14,6 @@ package be.hyperrail.android;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -57,7 +56,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     private LiveBoard mCurrentLiveboard;
     private Station mCurrentStation;
 
-    private AsyncTask runningTask;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     public static Intent createIntent(Context context, Station station) {
@@ -105,14 +103,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     protected LiveBoard getRestoredInstanceStateItems() {
         return mCurrentLiveboard;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED) {
-            runningTask.cancel(true);
-        }
     }
 
     @Override
@@ -190,6 +180,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     // Enable infinite scrolling again
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
                 }
+
+                // Scroll past the load earlier item
+                vRecyclerView.scrollToPosition(1);
             }
 
         }, new IRailErrorResponseListener<LiveBoard>() {
@@ -206,6 +199,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public void loadNextRecyclerviewItems() {
         if (mCurrentLiveboard == null) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             return;
         }
 
@@ -214,8 +208,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             @Override
             public void onSuccessResponse(LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
-
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                     if (mCurrentLiveboard == null) {
@@ -225,6 +217,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             }
         }, new IRailErrorResponseListener<LiveBoard>() {
             @Override
@@ -238,6 +231,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public void loadPreviousRecyclerviewItems() {
         if (mCurrentLiveboard == null) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             return;
         }
 
@@ -245,7 +239,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         helper.prependLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(LiveBoard data, Object tag) {
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     if (mCurrentLiveboard == null) {
@@ -255,6 +248,11 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
+
+                // Scroll past the load earlier item
+                vRecyclerView.scrollToPosition(1);
+
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
         }, new IRailErrorResponseListener<LiveBoard>() {
             @Override
