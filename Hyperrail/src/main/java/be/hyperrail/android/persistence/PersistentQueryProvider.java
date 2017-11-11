@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.persistence;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -93,10 +95,18 @@ public class PersistentQueryProvider {
 
     private final IrailStationProvider stationProvider;
 
+    @SuppressLint("ApplySharedPref")
     public PersistentQueryProvider(Context context) {
-        this.context = context;
+            this.context = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.stationProvider = IrailFactory.getStationsProviderInstance();
+        if (sharedPreferences.contains("migrated1.9.1")) {
+            AlertDialog builder = (new AlertDialog.Builder(context)).create();
+            builder.setTitle("Your settings have been reset");
+            builder.setMessage("In order to complete the update to this version of hyperrail, we had to reset your settings and history. We're sorry for the inconvenience.");
+            builder.show();
+            sharedPreferences.edit().clear().commit();
+        }
     }
 
     /**
