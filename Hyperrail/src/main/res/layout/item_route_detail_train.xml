@@ -88,10 +88,11 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/image_timeline_2"
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/contentdescription_timeline_icon"
-            android:src="@drawable/timeline_continuous"/>
+            android:src="@drawable/timeline_continuous_filled"/>
 
         <!-- 76dp margin to the left side, to make up for missing linearlayout compared with transfers (no times are displayed) -->
         <!-- Margin top and bottom, lets timeline fill the height while keeping whitespace around the text -->

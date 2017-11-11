@@ -66,24 +66,6 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
         this.vRefreshLayout.setEnabled(false);
 
         this.vWarningNotRealtime.setVisibility(View.GONE);
-
-        vAlertsText=findViewById(R.id.alert_message);
-        if (route.getAlerts() != null && route.getAlerts().length > 0) {
-            vAlertsText.setVisibility(View.VISIBLE);
-
-            StringBuilder text = new StringBuilder();
-            int n = route.getAlerts().length;
-            for (int i = 0; i < n; i++) {
-                text.append(route.getAlerts()[i].getDescription());
-                if (i < n - 1) {
-                    text.append("\n");
-                }
-            }
-
-            vAlertsText.setText(text.toString());
-        } else {
-            vAlertsText.setVisibility(View.GONE);
-        }
     }
 
     @Override

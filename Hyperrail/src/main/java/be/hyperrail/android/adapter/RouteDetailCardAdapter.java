@@ -221,19 +221,19 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
 
             if (position == 0) {
-                if (transfer.hasLeft()){
+                if (transfer.hasLeft()) {
                     routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
                 } else {
                     routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
                 }
             } else if (position == this.getItemCount() - 1) {
-                if (transfer.hasArrived()){
+                if (transfer.hasArrived()) {
                     routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
                 } else {
                     routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
                 }
             } else {
-                if (transfer.hasArrived()){
+                if (transfer.hasArrived()) {
                     if (transfer.hasLeft()) {
                         routeTransferViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
                     } else {
@@ -269,7 +269,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 routeTrainViewHolder.vTrainType.setVisibility(View.GONE);
                 routeTrainViewHolder.vTrainNumber.setText("Walk to the next station");
                 routeTrainViewHolder.vOccupancy.setVisibility(View.GONE);
-                if (transferBefore.hasArrived()){
+                if (transferBefore.hasArrived()) {
                     routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_filled));
                 } else {
                     routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_hollow));
@@ -281,13 +281,16 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 routeTrainViewHolder.vTrainType.setVisibility(View.VISIBLE);
                 routeTrainViewHolder.vDirection.setText(train.getDirection().getLocalizedName());
 
-                if (transferBefore.hasLeft()){
-                    if (transferAfter.hasArrived()){
+                if (transferBefore.hasLeft()) {
+                    if (transferAfter.hasArrived()) {
                         routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
+                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_filled));
                     } else {
-                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_filled));
                     }
                 } else {
+                    routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_hollow));
                     routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
                 }
             }
@@ -303,8 +306,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 routeTrainViewHolder.vStatusContainer.setVisibility(View.GONE);
             }
 
-            Message[] trainAlerts = route.getTrainalerts()[(position-1)/2];
-            if (trainAlerts != null &&trainAlerts.length > 0) {
+            Message[] trainAlerts = route.getTrainalerts()[(position - 1) / 2];
+            if (trainAlerts != null && trainAlerts.length > 0) {
                 routeTrainViewHolder.vAlertContainer.setVisibility(View.VISIBLE);
 
                 StringBuilder text = new StringBuilder();
@@ -393,7 +396,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         final TextView vStatusText;
 
         final ImageView vOccupancy;
-final ImageView vTimeline;
+        final ImageView vTimeline;
+        final ImageView vTimeline2;
         final LinearLayout vAlertContainer;
         final TextView vAlertText;
 
@@ -415,6 +419,7 @@ final ImageView vTimeline;
             vAlertText = view.findViewById(R.id.alert_message);
 
             vTimeline = view.findViewById(R.id.image_timeline);
+            vTimeline2 = view.findViewById(R.id.image_timeline_2);
         }
 
     }
