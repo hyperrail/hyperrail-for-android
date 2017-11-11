@@ -174,7 +174,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     @Override
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQuaryProvider.store(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.store(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -184,7 +184,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
                     })
                     .show();
         } else {
-            mPersistentQuaryProvider.delete(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.delete(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -199,7 +199,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     public boolean isFavorite() {
-        return mPersistentQuaryProvider.isFavorite(new TrainSuggestion(this.mTrain));
+        return mPersistentQueryProvider.isFavorite(new TrainSuggestion(this.mTrain));
     }
 
     @Override

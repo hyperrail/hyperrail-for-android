@@ -43,6 +43,9 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.LiveboardAppendHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.persistence.StationSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 
@@ -232,7 +235,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         });
     }
 
-
     @Override
     public void loadPreviousRecyclerviewItems() {
         if (mCurrentLiveboard == null) {
@@ -293,7 +295,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         }
 
         if (favorite) {
-            mPersistentQuaryProvider.addFavoriteStation(mCurrentStation);
+            mPersistentQueryProvider.store(new Suggestion<>(new StationSuggestion(mCurrentStation), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -303,7 +305,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     })
                     .show();
         } else {
-            mPersistentQuaryProvider.removeFavoriteStation(mCurrentStation);
+            mPersistentQueryProvider.delete(new Suggestion<>(new StationSuggestion(mCurrentStation), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -319,7 +321,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public boolean isFavorite() {
         // If it's not loaded, it's not a favorite
-        return mCurrentStation != null && mPersistentQuaryProvider.isFavoriteStation(mCurrentStation);
+        return mCurrentStation != null && mPersistentQueryProvider.isFavorite(new StationSuggestion(mCurrentStation));
 
     }
 

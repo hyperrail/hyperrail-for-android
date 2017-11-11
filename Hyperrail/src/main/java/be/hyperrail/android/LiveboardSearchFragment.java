@@ -54,6 +54,7 @@ import be.hyperrail.android.persistence.StationSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
+import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
 import static java.util.logging.Level.INFO;
 
 /**
@@ -221,7 +222,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param station The station which liveboard should be loaded
      */
     private void openLiveboard(Station station) {
-        persistentQueryProvider.addRecentStation(station);
+        persistentQueryProvider.store(new Suggestion<>(new StationSuggestion(station),HISTORY));
         Intent i = LiveboardActivity.createIntent(getActivity(), station);
         startActivity(i);
     }
@@ -295,10 +296,10 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
             if (mLastSelectedQuery.getType() == SuggestionType.FAVORITE) {
-                persistentQueryProvider.removeFavoriteStation(mLastSelectedQuery.getData());
+                persistentQueryProvider.delete(mLastSelectedQuery);
                 Snackbar.make(stationRecyclerView, R.string.unmarked_station_favorite, Snackbar.LENGTH_LONG).show();
             } else {
-                persistentQueryProvider.removeRecentStation(mLastSelectedQuery.getData());
+                persistentQueryProvider.delete(mLastSelectedQuery);
             }
             mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
         }

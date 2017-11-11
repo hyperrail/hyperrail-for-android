@@ -42,8 +42,12 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteAppendHelper;
 import be.hyperrail.android.irail.implementation.RouteResult;
+import be.hyperrail.android.persistence.RouteSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
+
+import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 
 public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener, OnRecyclerItemClickListener<Route>,OnRecyclerItemLongClickListener<Route> {
 
@@ -305,7 +309,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQuaryProvider.addFavoriteRoute(mSearchFrom, mSearchTo);
+            mPersistentQueryProvider.store(new Suggestion<>(new RouteSuggestion(mSearchFrom,mSearchTo),FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -315,7 +319,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                     })
                     .show();
         } else {
-            mPersistentQuaryProvider.removeFavoriteRoute(mSearchFrom, mSearchTo);
+            mPersistentQueryProvider.delete(new Suggestion<>(new RouteSuggestion(mSearchFrom,mSearchTo),FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -329,7 +333,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
     }
 
     public boolean isFavorite() {
-        return mPersistentQuaryProvider.isFavoriteRoute(mSearchFrom, mSearchTo);
+        return mPersistentQueryProvider.isFavorite(new RouteSuggestion(mSearchFrom,mSearchTo));
     }
 
     @Override

@@ -76,7 +76,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * History & favorites provider
      */
-    PersistentQueryProvider mPersistentQuaryProvider;
+    PersistentQueryProvider mPersistentQueryProvider;
 
     /**
      * Favorite button in menu
@@ -115,7 +115,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         setSupportActionBar(toolbar);
 
         // Initialize history & favorites, preferences
-        mPersistentQuaryProvider = new PersistentQueryProvider(this.getApplicationContext());
+        mPersistentQueryProvider = new PersistentQueryProvider(this.getApplicationContext());
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
         // Initialize pull to refresh
