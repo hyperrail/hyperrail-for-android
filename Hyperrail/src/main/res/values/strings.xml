@@ -76,6 +76,7 @@
     <string name="occupancy_question">How crowded is your train?</string>
     <string name="spitsgids_feedback_sent">Your feedback has been sent!</string>
     <string name="spitsgids_feedback_error">Feedback couldn\'t be saved. Try again later.</string>
+    <string name="load_previous_results">Load previous results</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

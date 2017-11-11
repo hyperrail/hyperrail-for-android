@@ -47,7 +47,8 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     private boolean mIsLoadingPrevious;
     private final Context context;
     private final LinearLayoutManager mRecyclerViewLayoutMgr;
-    private boolean mInfiniteScrollingEnabled = true;
+    private boolean mInfiniteNextScrolling = true;
+    private boolean mInfinitePrevScrolling = true;
     protected OnRecyclerItemClickListener<T> mOnClickListener;
     protected OnRecyclerItemLongClickListener<T> mOnLongClickListener;
 
@@ -81,7 +82,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param dy           The scroll distance along the y axis
      */
     private void checkInfiniteScrolling(RecyclerView recyclerView, int dx, int dy) {
-        if (mInfiniteScrollingEnabled && !mIsLoadingNext && mInfiniteScrollingDataSource != null && dy >= 0 && mRecyclerViewLayoutMgr.findLastVisibleItemPosition() == InfiniteScrollingAdapter.this.getItemCount() - 1) {
+        if (mInfiniteNextScrolling && !mIsLoadingNext && mInfiniteScrollingDataSource != null && dy >= 0 && mRecyclerViewLayoutMgr.findLastVisibleItemPosition() == InfiniteScrollingAdapter.this.getItemCount() - 1) {
             // Load more ...
             mIsLoadingNext = true;
             (InfiniteScrollingAdapter.this).mInfiniteScrollingDataSource.loadNextRecyclerviewItems();
@@ -94,22 +95,28 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param enabled true to enable infinite scrolling
      */
     public void setInfiniteScrolling(boolean enabled) {
-        this.mInfiniteScrollingEnabled = enabled;
+        this.mInfiniteNextScrolling = enabled;
+        this.mInfinitePrevScrolling = enabled;
         notifyDataSetChanged();
     }
 
     @Override
     public final int getItemViewType(int position) {
-        if (mInfiniteScrollingEnabled && position == 0) {
+        if (mInfinitePrevScrolling && position == 0) {
             if (mIsLoadingPrevious) {
                 return VIEW_TYPE_LOADING;
             } else {
                 return VIEW_TYPE_LOAD_EARLIER;
             }
-        } else if (mInfiniteScrollingEnabled && position == InfiniteScrollingAdapter.this.getItemCount() - 1) {
+        } else if (mInfiniteNextScrolling && position == InfiniteScrollingAdapter.this.getItemCount() - 1) {
             return VIEW_TYPE_LOADING;
         } else {
-            return onGetItemViewType(position);
+            if (mInfinitePrevScrolling) {
+                // Take into account the load earlier button
+                return onGetItemViewType(position - 1);
+            } else {
+                return onGetItemViewType(position);
+            }
         }
     }
 
@@ -166,7 +173,12 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
                 }
             });
         } else {
-            onBindItemViewHolder(holder, position);
+            if (mInfinitePrevScrolling) {
+                // Take into account the load earlier button
+                onBindItemViewHolder(holder, position - 1);
+            } else {
+                onBindItemViewHolder(holder, position);
+            }
         }
     }
 
@@ -185,11 +197,16 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      */
     @Override
     public final int getItemCount() {
-        if (mInfiniteScrollingEnabled) {
-            return getListItemCount() + 2;
-        } else {
-            return getListItemCount();
+        int extra = 0;
+        if (mInfiniteNextScrolling) {
+            extra++;
         }
+        if (mInfinitePrevScrolling) {
+            extra++;
+        }
+
+        return getListItemCount() + extra;
+
     }
 
     /**
@@ -211,23 +228,23 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * The protected method to indicate loading new items has been completed.
      * For use in adapters.
      */
-    protected void setNextLoaded() {
+    public void setNextLoaded() {
         mIsLoadingNext = false;
     }
 
-    protected void setPrevLoaded() {
+    public void setPrevLoaded() {
         mIsLoadingPrevious = false;
     }
 
-    /**
-     * A public method for resetting the scrolling state, for use by code everywhere except adapters.
-     * This can be used when loading more data failed, thus meaning the adapter can't add more data & call setLoaded.
-     */
-    public void resetInfiniteScrollingState() {
-        setNextLoaded();
-        setPrevLoaded();
+    public void disableInfinitePrevious(){
+        mInfinitePrevScrolling = false;
+        notifyDataSetChanged();
     }
 
+    public void disableInfiniteNext(){
+        mInfiniteNextScrolling = false;
+        notifyDataSetChanged();
+    }
     /**
      * A ViewHolder for the spinner
      */

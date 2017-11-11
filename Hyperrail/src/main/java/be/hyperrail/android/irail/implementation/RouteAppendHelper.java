@@ -52,14 +52,14 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
     }
 
     public void prependRouteResult(final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
-                                   final IRailErrorResponseListener<RouteResult> errorResponseListener, final Object tag) {
+                                   final IRailErrorResponseListener<RouteResult> errorResponseListener) {
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
 
         this.originalRouteResult = routes;
 
         if (routes.getRoutes().length > 0) {
-            lastSearchTime = routes.getRoutes()[0].getDepartureTime();
+            lastSearchTime = routes.getRoutes()[0].getArrivalTime().minusMinutes(1);
         } else {
             lastSearchTime = routes.getSearchTime();
         }

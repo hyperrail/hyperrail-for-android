@@ -54,12 +54,12 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         this.originalLiveboard = liveBoard;
 
         if (liveBoard.getStops().length > 0) {
-            this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime();
+            this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime().minusHours(1);
         } else {
-            this.lastSearchTime = liveBoard.getSearchTime();
+            this.lastSearchTime = liveBoard.getSearchTime().minusHours(1);
         }
 
-        api.getLiveboard(liveBoard, lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, TAG_PREPEND);
+        api.getLiveboard(liveBoard, lastSearchTime, RouteTimeDefinition.DEPART, this, this, TAG_PREPEND);
     }
 
     @Override
@@ -85,6 +85,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                 break;
             case TAG_PREPEND:
                 if (data.getStops().length > 0) {
+                    // TODO: prevent duplicates by checking arrival time
                     TrainStop[] mergedStops = ArrayUtils.concatenate(data.getStops(), originalLiveboard.getStops());
                     LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime());
                     this.successResponseListener.onSuccessResponse(merged, tag);
@@ -93,7 +94,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                     lastSearchTime = lastSearchTime.minusHours(1);
 
                     if (attempt < 12) {
-                        api.getLiveboard(originalLiveboard, lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, tag);
+                        api.getLiveboard(originalLiveboard, lastSearchTime, RouteTimeDefinition.DEPART, this, this, tag);
                     } else {
                         if (this.successResponseListener != null) {
                             this.successResponseListener.onSuccessResponse(originalLiveboard, this);

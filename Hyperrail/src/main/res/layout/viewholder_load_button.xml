@@ -8,15 +8,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/cardview"
               android:layout_width="match_parent"
-              android:layout_height="64dp"
-              android:layout_marginLeft="@dimen/activity_horizontal_margin"
-              android:layout_marginRight="@dimen/activity_horizontal_margin"
-              android:layout_marginTop="@dimen/cardlist_vertical_spacing"
+              android:layout_height="80dp"
+              android:padding="@dimen/activity_vertical_margin"
               android:gravity="center">
 
     <TextView
+        android:textColor="@color/colorTextDark"
+        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Load previous"/>
+        android:text="@string/load_previous_results"/>
 </LinearLayout>

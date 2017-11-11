@@ -156,17 +156,19 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
 
         // Initialize the realtime warning
         vWarningNotRealtime = findViewById(R.id.warning_not_realtime);
-        vWarningNotRealtimeText = findViewById(R.id.warning_not_realtime_text);
-        Button vWarningNotRealtimeButton = findViewById(R.id.warning_not_realtime_close);
+        if (vWarningNotRealtime != null) {
+            vWarningNotRealtimeText = findViewById(R.id.warning_not_realtime_text);
+            Button vWarningNotRealtimeButton = findViewById(R.id.warning_not_realtime_close);
 
-        // Set a listener to reset the datetime when the realtime warning is closed
-        if (vWarningNotRealtimeButton != null) {
-            vWarningNotRealtimeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDateTimePicked(null);
-                }
-            });
+            // Set a listener to reset the datetime when the realtime warning is closed
+            if (vWarningNotRealtimeButton != null) {
+                vWarningNotRealtimeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onDateTimePicked(null);
+                    }
+                });
+            }
         }
 
         // Restore a previous instance state
@@ -193,6 +195,16 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      * @return recyclerview adapter
      */
     abstract protected RecyclerView.Adapter getAdapter();
+
+    @Override
+    public void loadNextRecyclerviewItems() {
+
+    }
+
+    @Override
+    public void loadPreviousRecyclerviewItems() {
+
+    }
 
     /**
      * Get items from the previous instance state

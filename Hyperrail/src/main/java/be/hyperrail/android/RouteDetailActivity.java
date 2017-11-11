@@ -133,11 +133,6 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
     }
 
     @Override
-    protected void getNextData() {
-        // Not supported
-    }
-
-    @Override
     protected void showData(Route data) {
         // Not supported, already showing data by setting route on create
     }

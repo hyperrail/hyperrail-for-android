@@ -211,11 +211,14 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             @Override
             public void onSuccessResponse(LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
+
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                     if (mCurrentLiveboard == null) {
                         ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
                     }
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
@@ -224,9 +227,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             @Override
             public void onErrorResponse(Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             }
-        }, null);
+        });
     }
 
 
@@ -240,12 +243,13 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         helper.prependLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(LiveBoard data, Object tag) {
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                     if (mCurrentLiveboard == null) {
                         ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
                     }
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
@@ -254,9 +258,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             @Override
             public void onErrorResponse(Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
-        }, null);
+        });
     }
 
     @Override

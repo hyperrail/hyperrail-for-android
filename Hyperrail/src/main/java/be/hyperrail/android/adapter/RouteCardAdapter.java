@@ -123,7 +123,6 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             displayList = null;
         }
 
-        super.setNextLoaded();
         this.notifyDataSetChanged();
     }
 

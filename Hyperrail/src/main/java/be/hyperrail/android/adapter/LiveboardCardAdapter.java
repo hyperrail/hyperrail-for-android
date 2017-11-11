@@ -109,7 +109,6 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             displayList = null;
         }
 
-        super.setNextLoaded();
         super.notifyDataSetChanged();
     }
 
