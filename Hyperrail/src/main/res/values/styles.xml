@@ -75,4 +75,9 @@
 
         <item name="android:textColor">@color/colorTextDark</item>
     </style>
+
+    <style name="TrainLongClickDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
 </resources>

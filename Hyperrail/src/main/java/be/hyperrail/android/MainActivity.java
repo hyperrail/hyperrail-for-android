@@ -49,11 +49,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int mCurrentView;
 
     private static final int VIEW_TYPE_LIVEBOARD = 0;
-    private static final int VIEW_TYPE_ROUTE = 1;
-    private static final int VIEW_TYPE_DISTURBANCE = 2;
-    private static final int VIEW_TYPE_TRAIN = 3;
-    private static final int VIEW_TYPE_SETTINGS = 4;
-    private static final int VIEW_TYPE_FEEDBACK = 5;
+    private static final int VIEW_TYPE_ROUTE = 10;
+    private static final int VIEW_TYPE_DISTURBANCE = 20;
+    private static final int VIEW_TYPE_TRAIN = 30;
+    private static final int VIEW_TYPE_SETTINGS = 40;
+    private static final int VIEW_TYPE_FEEDBACK = 50;
 
     private boolean mDualPane = false;
 

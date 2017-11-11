@@ -48,7 +48,7 @@ public class OccupancyDialog {
     }
 
     public void show() {
-        final Dialog dialog = new Dialog(this.context);
+        final Dialog dialog = new Dialog(this.context, R.style.TrainLongClickDialog);
         final IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
         dialog.setContentView(R.layout.dialog_spitsgids);
