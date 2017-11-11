@@ -142,6 +142,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         // Set-up recyclerview
         vRecyclerView = findViewById(R.id.recyclerview_primary);
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mLayoutManager.setSmoothScrollbarEnabled(true);
         vRecyclerView.setLayoutManager(mLayoutManager);
 
         // Show dividers in case wanted & not using the card layout

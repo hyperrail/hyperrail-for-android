@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
@@ -166,8 +167,10 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                         vRefreshLayout.setRefreshing(false);
                         mRoutes = data;
                         showData(mRoutes);
+
                         // Scroll past the load earlier item
-                        vRecyclerView.scrollToPosition(1);
+                        ((LinearLayoutManager)vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1,0);
+
                         initialLoadCompleted = true;
                     }
                 }, new IRailErrorResponseListener<RouteResult>() {
@@ -200,7 +203,15 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
                         mRoutes = data;
                         showData(mRoutes);
+
                         ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+
+                        // Scroll past the "load earlier"
+                        LinearLayoutManager mgr = ((LinearLayoutManager)vRecyclerView.getLayoutManager());
+                        if (mgr.findFirstVisibleItemPosition() == 0){
+                            mgr.scrollToPositionWithOffset(1,0);
+                        }
+
                     }
                 }, new IRailErrorResponseListener<RouteResult>() {
                     @Override
@@ -232,7 +243,8 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                         showData(mRoutes);
 
                         // Scroll past the load earlier item
-                        vRecyclerView.scrollToPosition(1);
+                        ((LinearLayoutManager)vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1,0);
+
                         ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
                     }
                 }, new IRailErrorResponseListener<RouteResult>() {

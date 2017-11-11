@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
@@ -182,7 +183,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 }
 
                 // Scroll past the load earlier item
-                vRecyclerView.scrollToPosition(1);
+                ((LinearLayoutManager)vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1,0);
             }
 
         }, new IRailErrorResponseListener<LiveBoard>() {
@@ -217,7 +218,15 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
+
                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+
+                // Scroll past the "load earlier"
+                LinearLayoutManager mgr = ((LinearLayoutManager)vRecyclerView.getLayoutManager());
+                if (mgr.findFirstVisibleItemPosition() == 0){
+                    mgr.scrollToPositionWithOffset(1,0);
+                }
+
             }
         }, new IRailErrorResponseListener<LiveBoard>() {
             @Override
@@ -250,7 +259,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 showData(mCurrentLiveboard);
 
                 // Scroll past the load earlier item
-                vRecyclerView.scrollToPosition(1);
+                ((LinearLayoutManager)vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1,0);
 
                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
