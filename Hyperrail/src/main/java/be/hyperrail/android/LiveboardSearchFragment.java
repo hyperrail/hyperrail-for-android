@@ -50,14 +50,16 @@ import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
-import be.hyperrail.android.persistence.RouteQuery;
+import be.hyperrail.android.persistence.StationSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
 
 import static java.util.logging.Level.INFO;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Object> {
+public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<StationSuggestion>>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Suggestion<StationSuggestion>> {
 
     private static final String LogTag = "LiveboardSearch";
     private static final int COARSE_LOCATION_REQUEST = 1;
@@ -70,7 +72,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     private PersistentQueryProvider persistentQueryProvider;
     private boolean mNearbyOnTop;
-    private RouteQuery mLastSelectedQuery;
+    private Suggestion<StationSuggestion> mLastSelectedQuery;
     private StationCardAdapter mStationAdapter;
 
     public LiveboardSearchFragment() {
@@ -271,17 +273,13 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Station object) {
-        openLiveboard(object);
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
+        openLiveboard(object.getData());
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Object object) {
-        if (object instanceof RouteQuery) {
-            mLastSelectedQuery = (RouteQuery) object;
-        } else {
-            mLastSelectedQuery = null;
-        }
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
+            mLastSelectedQuery = object;
     }
 
     @Override
@@ -289,18 +287,18 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         super.onCreateContextMenu(menu, v, menuInfo);
         if (mLastSelectedQuery != null) {
             getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
-            menu.setHeaderTitle(mLastSelectedQuery.fromName);
+            menu.setHeaderTitle(mLastSelectedQuery.getData().getLocalizedName());
         }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
-            if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
-                persistentQueryProvider.removeFavoriteStation(mLastSelectedQuery.from);
+            if (mLastSelectedQuery.getType() == SuggestionType.FAVORITE) {
+                persistentQueryProvider.removeFavoriteStation(mLastSelectedQuery.getData());
                 Snackbar.make(stationRecyclerView, R.string.unmarked_station_favorite, Snackbar.LENGTH_LONG).show();
             } else {
-                persistentQueryProvider.removeRecentStation(mLastSelectedQuery.from);
+                persistentQueryProvider.removeRecentStation(mLastSelectedQuery.getData());
             }
             mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
         }

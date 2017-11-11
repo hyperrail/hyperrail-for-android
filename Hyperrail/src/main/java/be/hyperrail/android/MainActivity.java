@@ -51,8 +51,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int VIEW_TYPE_LIVEBOARD = 0;
     private static final int VIEW_TYPE_ROUTE = 1;
     private static final int VIEW_TYPE_DISTURBANCE = 2;
-    private static final int VIEW_TYPE_SETTINGS = 3;
-    private static final int VIEW_TYPE_FEEDBACK = 4;
+    private static final int VIEW_TYPE_TRAIN = 3;
+    private static final int VIEW_TYPE_SETTINGS = 4;
+    private static final int VIEW_TYPE_FEEDBACK = 5;
 
     private boolean mDualPane = false;
 
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Based on intent
             Log.d("MainAct", "Setting view type to " + this.getIntent().getIntExtra("view", defaultView) + " from intent");
             setView(this.getIntent().getIntExtra("view", defaultView), this.getIntent().getExtras());
-           // mCurrentFragment.setParameters(this.getIntent().getExtras());
+            // mCurrentFragment.setParameters(this.getIntent().getExtras());
 
         } else if (savedInstanceState == null) {
             // Default
@@ -168,7 +169,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Set the view to a certain fragment. Changes the subtitle as well.
-     * @param i The view type constant
+     *
+     * @param i    The view type constant
      * @param args The parameters for the fragment
      */
     private void setView(int i, Bundle args) {
@@ -183,6 +185,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 frg = RouteSearchFragment.newInstance();
                 setSubTitle(R.string.title_route);
                 break;
+            case VIEW_TYPE_TRAIN:
+                frg = TrainSearchFragment.newInstance();
+                setSubTitle(R.string.title_train);
+                break;
             case VIEW_TYPE_DISTURBANCE:
                 frg = DisturbanceListFragment.newInstance();
                 setSubTitle(R.string.title_disturbances);
@@ -192,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 setSubTitle(R.string.title_feedback);
                 break;
         }
-        if (args != null){
+        if (args != null) {
             frg.setArguments(args);
         }
         mCurrentFragment = frg;
@@ -202,9 +208,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerNavigationHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                getFragmentManager().beginTransaction().replace(R.id.activity_main_fragment_container, frg).commit();
+                getFragmentManager().beginTransaction().replace(R.id.activity_main_fragment_container, frg).commitAllowingStateLoss();
             }
-        },50);
+        }, 50);
 
     }
 
@@ -221,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Required for drawer toggle to work. Other options can be handled here as well
+     *
      * @inheritDoc
      */
     @Override
@@ -232,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * On navigation through drawer
+     *
      * @inheritDoc
      */
     @Override
@@ -243,6 +251,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.action_route:
                 setView(VIEW_TYPE_ROUTE, null);
                 break;
+            case R.id.action_train:
+                setView(VIEW_TYPE_TRAIN, null);
+                break;
             case R.id.action_disturbances:
                 setView(VIEW_TYPE_DISTURBANCE, null);
                 break;
@@ -251,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(i);
                 break;
             case R.id.action_feedback:
-                setView(VIEW_TYPE_FEEDBACK,null);
+                setView(VIEW_TYPE_FEEDBACK, null);
                 break;
         }
         if (!mDualPane) {
@@ -262,10 +273,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Set the activity's subtitle
+     *
      * @param s Sring resource to use as subtitle
      */
-    private void setSubTitle(@StringRes int s){
-        if (getSupportActionBar() != null){
+    private void setSubTitle(@StringRes int s) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setSubtitle(s);
         }
     }

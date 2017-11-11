@@ -47,6 +47,7 @@
     <string name="error_departure_not_found_title">Invalid departure station</string>
     <string name="error_destination_not_found_title">Invalid destination station</string>
     <string name="search_station_name">Station name</string>
+    <string name="search_train_name">Train id</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="warning_not_realtime_datetime">EEE yyyy/MM/dd HH:mm</string>
@@ -77,6 +78,7 @@
     <string name="spitsgids_feedback_sent">Your feedback has been sent!</string>
     <string name="spitsgids_feedback_error">Feedback couldn\'t be saved. Try again later.</string>
     <string name="load_previous_results">Load previous results</string>
+    <string name="error_train_id_invalid">This is not a valid train id. Example: IC537.</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

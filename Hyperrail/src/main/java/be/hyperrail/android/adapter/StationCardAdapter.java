@@ -22,9 +22,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.persistence.RouteQuery;
+import be.hyperrail.android.persistence.StationSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -32,12 +36,12 @@ import be.hyperrail.android.persistence.RouteQuery;
 public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.StationViewHolder> {
 
     private final Context context;
-    private RouteQuery[] suggestedStations;
+    private List<Suggestion<StationSuggestion>> suggestedStations;
     private Station[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
-    private OnRecyclerItemLongClickListener<Object> longClickListener;
-    private OnRecyclerItemClickListener<Station> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<StationSuggestion>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<StationSuggestion>> listener;
 
     private stationType currentDisplayType = stationType.UNDEFINED;
 
@@ -81,7 +85,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         int suggestedStationsLength = 0;
 
         if (showSuggestions && suggestedStations != null) {
-            suggestedStationsLength = suggestedStations.length;
+            suggestedStationsLength = suggestedStations.size();
         }
 
         if ((showSuggestions && suggestedStations != null && position < suggestedStationsLength && !nearbyOnTop) ||
@@ -120,7 +124,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationCardAdapter.this, station);
+                    listener.onRecyclerItemClick(StationCardAdapter.this, new Suggestion<StationSuggestion>(new StationSuggestion(station), SuggestionType.LIST));
                 }
             }
         });
@@ -129,7 +133,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, station);
+                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, new Suggestion<StationSuggestion>(new StationSuggestion(station), SuggestionType.LIST));
                 }
                 return false;
             }
@@ -141,16 +145,16 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             position = position - stations.length;
         }
 
-        final RouteQuery q = suggestedStations[position];
+        final Suggestion<StationSuggestion> q = suggestedStations.get(position);
 
-        holder.vStation.setText(q.fromName);
+        holder.vStation.setText(q.getData().getLocalizedName());
 
-        switch (q.type) {
-            case FAVORITE_STATION:
+        switch (q.getType()) {
+            case FAVORITE:
                 holder.vIcon.setVisibility(View.VISIBLE);
                 holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star));
                 break;
-            case RECENT_STATION:
+            case HISTORY:
                 holder.vIcon.setVisibility(View.VISIBLE);
                 holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_history));
                 break;
@@ -163,7 +167,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationCardAdapter.this, q.from);
+                    listener.onRecyclerItemClick(StationCardAdapter.this, q);
                 }
             }
         });
@@ -179,7 +183,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         });
     }
 
-    public void setSuggestedStations(RouteQuery[] suggestedStations) {
+    public void setSuggestedStations(List<Suggestion<StationSuggestion>> suggestedStations) {
         this.suggestedStations = suggestedStations;
         this.notifyDataSetChanged();
     }
@@ -199,11 +203,11 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Station> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<StationSuggestion>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Object> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<StationSuggestion>> listener) {
         this.longClickListener = listener;
     }
 
@@ -215,7 +219,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             result += stations.length;
         }
         if (showSuggestions && suggestedStations != null) {
-            result += suggestedStations.length;
+            result += suggestedStations.size();
         }
         return result;
     }

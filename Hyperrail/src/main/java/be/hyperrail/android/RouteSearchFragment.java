@@ -46,17 +46,17 @@ import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
-import be.hyperrail.android.persistence.RouteQuery;
+import be.hyperrail.android.persistence.RouteSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.DateTimePicker;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
-import be.hyperrail.android.util.Swipable;
-import be.hyperrail.android.util.SwipeDetector;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<RouteQuery>, OnDateTimeSetListener, Swipable, OnRecyclerItemLongClickListener<RouteQuery> {
+public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<RouteSuggestion>>, OnDateTimeSetListener, OnRecyclerItemLongClickListener<Suggestion<RouteSuggestion>> {
 
     private AutoCompleteTextView vFromText;
     private AutoCompleteTextView vToText;
@@ -69,7 +69,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     private PersistentQueryProvider persistentQueryProvider;
 
     private final int TAG_ACCENT_SEARCH = 1;
-    private RouteQuery mLastSelectedQuery;
+    private Suggestion<RouteSuggestion> mLastSelectedQuery;
     private RecyclerView mSuggestionsRecyclerView;
     private RouteSuggestionsCardAdapter mSuggestionsAdapter;
 
@@ -203,20 +203,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vDatetime.setOnClickListener(l);
         vPickDateTime.setOnClickListener(l);
 
-        // Use a normal swipe detector, since we don't need flings or velocity
-        SwipeDetector accentSearchSwipeDetector = new SwipeDetector(getActivity(), this, TAG_ACCENT_SEARCH);
-
         vArriveDepartContainer = view.findViewById(R.id.container_arrivedepart);
-
-        // Register all controls in accent search area for swipes
-        view.findViewById(R.id.accentSearchContainer).setOnTouchListener(accentSearchSwipeDetector);
-        vArriveDepartContainer.setOnTouchListener(accentSearchSwipeDetector);
-        view.findViewById(R.id.container_to).setOnTouchListener(accentSearchSwipeDetector);
-        view.findViewById(R.id.container_from).setOnTouchListener(accentSearchSwipeDetector);
-        vToText.setOnTouchListener(accentSearchSwipeDetector);
-        vFromText.setOnTouchListener(accentSearchSwipeDetector);
-        vArriveDepart.setOnTouchListener(accentSearchSwipeDetector);
-        vDatetime.setOnTouchListener(accentSearchSwipeDetector);
 
         if (!PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getBoolean("routes_always_datetime", true)) {
             hideDateTimeRow();
@@ -247,7 +234,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, RouteQuery object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<RouteSuggestion> object) {
         mLastSelectedQuery = object;
     }
 
@@ -256,18 +243,18 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         super.onCreateContextMenu(menu, v, menuInfo);
         getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
         if (mLastSelectedQuery != null) {
-            menu.setHeaderTitle(mLastSelectedQuery.fromName + " - " + mLastSelectedQuery.toName);
+            menu.setHeaderTitle(mLastSelectedQuery.getData().from.getLocalizedName() + " - " + mLastSelectedQuery.getData().to.getLocalizedName());
         }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
-            if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
-                persistentQueryProvider.removeFavoriteRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
+            if (mLastSelectedQuery.getType() == SuggestionType.FAVORITE) {
+                persistentQueryProvider.delete(mLastSelectedQuery);
                 Snackbar.make(mSuggestionsRecyclerView, R.string.unmarked_route_favorite, Snackbar.LENGTH_LONG).show();
             } else {
-                persistentQueryProvider.removeRecentRoute(mLastSelectedQuery.from, mLastSelectedQuery.to);
+                persistentQueryProvider.delete(mLastSelectedQuery);
             }
             mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
         }
@@ -361,25 +348,25 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             return;
         }
 
-        persistentQueryProvider.addRecentRoute(from, to);
-        RouteTimeDefinition arrivedepart;
+        persistentQueryProvider.store(new Suggestion<>(new RouteSuggestion(from, to), SuggestionType.HISTORY));
+        RouteTimeDefinition timedef;
         if (vArriveDepart.getSelectedItemPosition() == 0) {
-            arrivedepart = RouteTimeDefinition.DEPART;
+            timedef = RouteTimeDefinition.DEPART;
         } else {
-            arrivedepart = RouteTimeDefinition.ARRIVE;
+            timedef = RouteTimeDefinition.ARRIVE;
         }
 
         DateTime d = null;
         if (searchDateTime != null) {
             d = searchDateTime;
         }
-        Intent i = RouteActivity.createIntent(getActivity(), from, to, d, arrivedepart);
+        Intent i = RouteActivity.createIntent(getActivity(), from, to, d, timedef);
         startActivity(i);
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, RouteQuery object) {
-        doSearch(object.from, object.to);
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<RouteSuggestion> object) {
+        doSearch(object.getData().from, object.getData().to);
     }
 
     @Override
@@ -404,30 +391,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
                 }
         }
         vDatetime.setText(day + " " + at + " " + time);
-    }
-
-    @Override
-    public void swipedBottomToTop(View v, int tag) {
-        if (tag == TAG_ACCENT_SEARCH) {
-            hideDateTimeRow();
-        }
-    }
-
-    @Override
-    public void swipedLeftToRight(View v, int tag) {
-
-    }
-
-    @Override
-    public void swipedRightToLeft(View v, int tag) {
-
-    }
-
-    @Override
-    public void swipedTopToBottom(View v, int tag) {
-        if (tag == TAG_ACCENT_SEARCH) {
-            showDateTimeRow();
-        }
     }
 
 }

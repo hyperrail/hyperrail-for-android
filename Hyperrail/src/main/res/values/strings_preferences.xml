@@ -6,9 +6,11 @@
     <string name="pref_header_general">General</string>
     <string name="pref_header_stations">Stations</string>
     <string name="pref_header_routes">Routes</string>
+    <string name="pref_header_trains">Trains</string>
     <string name="pref_number_recent_searches">Number of recent searches to show</string>
     <string name="order_of_routes">Order of routes</string>
     <string name="order_of_stations">Order of stations</string>
+    <string name="order_of_trains">Order of trains</string>
     <string name="number_nearby_stations">Number of nearby stations to show</string>
     <string name="show_nearby_stations">Show stations around me</string>
     <string name="number_recent_searches">Amount of recent searches to show</string>
@@ -59,12 +61,12 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="pref_list_route_order_values">
+    <string-array name="pref_list_history_favorites_order_values">
         <item>Recent searches / Favorites</item>
         <item>Favorites / Recent searches</item>
     </string-array>
 
-    <string-array name="pref_list_route_order_keys" translatable="false">
+    <string-array name="pref_list_history_favorites_order_keys" translatable="false">
         <item>0</item>
         <item>1</item>
     </string-array>

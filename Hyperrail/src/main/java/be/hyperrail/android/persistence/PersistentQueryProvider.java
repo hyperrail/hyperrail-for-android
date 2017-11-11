@@ -15,7 +15,6 @@ package be.hyperrail.android.persistence;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 
@@ -23,25 +22,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.util.ArrayUtils;
+
+import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
+import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
+import static be.hyperrail.android.persistence.SuggestionType.LIST;
 
 /**
  * Store data about recent and favorite searches as json object in preferences.
- * For code-duplication reasons, all data is stored as a RouteQuery. Stations are stored as a query from the station, with an empty string as destination.
+ * For code-duplication reasons, all data is stored as a RouteSuggestion. Stations are stored as a query from the station, with an empty string as destination.
  */
 public class PersistentQueryProvider {
 
@@ -61,6 +60,11 @@ public class PersistentQueryProvider {
     private static final String TAG_RECENT_STATIONS = "recent_stations";
 
     /**
+     * Tag under which recent stations are stored
+     */
+    private static final String TAG_RECENT_TRAINS = "recent_trains";
+
+    /**
      * Tag under which favorite routes are stored
      */
     private static final String TAG_FAV_ROUTES = "fav_routes";
@@ -69,6 +73,11 @@ public class PersistentQueryProvider {
      * Tag under which favorite routes are stored
      */
     private static final String TAG_FAV_STATIONS = "fav_stations";
+
+    /**
+     * Tag under which favorite trains are stored
+     */
+    private static final String TAG_FAV_TRAINS = "fav_trains";
 
     private final Context context;
 
@@ -88,57 +97,17 @@ public class PersistentQueryProvider {
         this.context = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.stationProvider = IrailFactory.getStationsProviderInstance();
-
-        // Update from older (name based) versions
-        // This migration is required for pre 22-06-2017 installs
-        if (sharedPreferences.getBoolean("migrated1.9.1", false)) {
-
-            for (String tag : new String[]{TAG_FAV_ROUTES, TAG_FAV_STATIONS, TAG_RECENT_ROUTES, TAG_RECENT_STATIONS}) {
-                Log.d("PersistentMigration", "Tag " + tag);
-                Set<String> oldValue = context.getSharedPreferences(PREFERENCES_NAME, 0).getStringSet(tag, new HashSet<String>());
-
-                ArrayList<RouteQuery> newValue = new ArrayList<>();
-
-                for (String entry : oldValue) {
-                    try {
-                        JSONObject object = new JSONObject(entry);
-                        Station from = stationProvider.getStationByName(object.getString("from"));
-                        Station to;
-                        if (!object.getString("to").equals("")) {
-                            to = stationProvider.getStationByName(object.getString("to"));
-                        } else {
-                            to = null;
-                        }
-                        Log.d("PersistentMigration", "FROM " + object.getString("from") + " - " + from.getId());
-                        if (to != null) {
-                            Log.d("PersistentMigration", "TO " + object.getString("to") + " - " + to.getId());
-                        } else {
-                            Log.d("PersistentMigration", "TO " + object.getString("to") + " - NULL");
-                        }
-                        RouteQuery query = new RouteQuery(from, to);
-                        newValue.add(query);
-                    } catch (JSONException exception) {
-                        // ignored
-                    }
-                }
-
-                clear(tag);
-
-                for (RouteQuery q : newValue) {
-                    store(tag, q);
-                }
-            }
-            sharedPreferences.edit().putBoolean("migrated1.9.1", true).apply();
-        }
     }
 
     /**
      * Get the favorite routes
      *
      * @return The list of favorite routes
+     * @deprecated
      */
-    public List<RouteQuery> getFavoriteRoutes() {
-        List<RouteQuery> results = load(TAG_FAV_ROUTES, RouteQuery.RouteQueryType.FAVORITE_ROUTE);
+    public List<Suggestion<RouteSuggestion>> getFavoriteRoutes() {
+
+        List<Suggestion<RouteSuggestion>> results = load(TAG_FAV_ROUTES, SuggestionType.FAVORITE, RouteSuggestion.class);
         results = sortByName(results);
         return results;
     }
@@ -148,9 +117,10 @@ public class PersistentQueryProvider {
      *
      * @param from The origin station name
      * @param to   The destination station name
+     * @deprecated
      */
     public void addFavoriteRoute(Station from, Station to) {
-        store(TAG_FAV_ROUTES, new RouteQuery(from, to));
+        store(TAG_FAV_ROUTES, new RouteSuggestion(from, to), RouteSuggestion.class);
     }
 
     /**
@@ -158,10 +128,11 @@ public class PersistentQueryProvider {
      *
      * @param from The origin station
      * @param to   The destination station
+     * @deprecated
      */
     public boolean isFavoriteRoute(Station from, Station to) {
-        for (RouteQuery q : getFavoriteRoutes()) {
-            if (q.from.getId().equals(from.getId()) && q.to.getId().equals(to.getId())) {
+        for (Suggestion<RouteSuggestion> q : getFavoriteRoutes()) {
+            if (q.getData().from.getId().equals(from.getId()) && q.getData().to.getId().equals(to.getId())) {
                 return true;
             }
         }
@@ -175,11 +146,22 @@ public class PersistentQueryProvider {
      * @param to   The destination station name
      */
     public void removeFavoriteRoute(Station from, Station to) {
-        remove(TAG_FAV_ROUTES, new RouteQuery(from, to));
+        remove(TAG_FAV_ROUTES, new RouteSuggestion(from, to));
+    }
+
+    /**
+     * Unmark a route as favorite
+     *
+     * @deprecated
+     */
+    public void removeFavoriteRoute(RouteSuggestion suggestion) {
+        remove(TAG_FAV_ROUTES, suggestion);
     }
 
     /**
      * Clear favorite routes
+     *
+     * @deprecated
      */
     public void clearFavoriteRoutes() {
         clear(TAG_FAV_ROUTES);
@@ -189,8 +171,9 @@ public class PersistentQueryProvider {
      * Get recent routes
      *
      * @return List of recent routes
+     * @deprecated
      */
-    public List<RouteQuery> getRecentRoutes() {
+    public List<Suggestion<RouteSuggestion>> getRecentRoutes() {
         return getRecentRoutes(sharedPreferences.getInt("routes_history_count", 3));
     }
 
@@ -199,9 +182,10 @@ public class PersistentQueryProvider {
      *
      * @param limit the number of recent routes to retrieve
      * @return The list of the last recent routes
+     * @deprecated
      */
-    public List<RouteQuery> getRecentRoutes(int limit) {
-        return load(TAG_RECENT_ROUTES, limit, true, RouteQuery.RouteQueryType.RECENT_ROUTE);
+    public List<Suggestion<RouteSuggestion>> getRecentRoutes(int limit) {
+        return load(TAG_RECENT_ROUTES, limit, true, SuggestionType.HISTORY, RouteSuggestion.class);
     }
 
     /**
@@ -209,9 +193,10 @@ public class PersistentQueryProvider {
      *
      * @param from The origin station name
      * @param to   The destination station name
+     * @deprecated
      */
     public void addRecentRoute(Station from, Station to) {
-        store(TAG_RECENT_ROUTES, new RouteQuery(from, to));
+        store(TAG_RECENT_ROUTES, new RouteSuggestion(from, to), RouteSuggestion.class);
     }
 
     /**
@@ -219,26 +204,25 @@ public class PersistentQueryProvider {
      *
      * @param from The origin station name
      * @param to   The destination station name
+     * @deprecated
      */
     public void removeRecentRoute(Station from, Station to) {
-        RouteQuery q = new RouteQuery(from, to);
+        RouteSuggestion q = new RouteSuggestion(from, to);
         remove(TAG_RECENT_ROUTES, q);
     }
 
-    /**
-     * Clear the recent routes
-     */
-    public void clearRecentRoutes() {
-        clear(TAG_RECENT_ROUTES);
+    public void removeRecentRoute(RouteSuggestion route) {
+        remove(TAG_RECENT_ROUTES, route);
     }
 
     /**
      * Get favorite stations
      *
      * @return List of favorite stations
+     * @deprecated
      */
-    public List<RouteQuery> getFavoriteStations() {
-        List<RouteQuery> results = load(TAG_FAV_STATIONS, RouteQuery.RouteQueryType.FAVORITE_STATION);
+    public List<Suggestion<StationSuggestion>> getFavoriteStations() {
+        List<Suggestion<StationSuggestion>> results = load(TAG_FAV_STATIONS, FAVORITE, StationSuggestion.class);
         results = sortByName(results);
         return results;
     }
@@ -247,20 +231,22 @@ public class PersistentQueryProvider {
      * Add a station as favorite
      *
      * @param station The station
+     * @deprecated
      */
     public void addFavoriteStation(Station station) {
         // Store as a routeQuery without a destination
-        store(TAG_FAV_STATIONS, new RouteQuery(station, null));
+        store(TAG_FAV_STATIONS, new StationSuggestion(station), StationSuggestion.class);
     }
 
     /**
      * Check if a station is a favorite
      *
      * @param station The station
+     * @deprecated
      */
     public boolean isFavoriteStation(Station station) {
-        for (RouteQuery q : getFavoriteStations()) {
-            if (q.from.getId().equals(station.getId())) {
+        for (Suggestion<StationSuggestion> q : getFavoriteStations()) {
+            if (q.getData().equals(station)) {
                 return true;
             }
         }
@@ -271,24 +257,19 @@ public class PersistentQueryProvider {
      * Unmark a station as favorite
      *
      * @param station The station
+     * @deprecated
      */
     public void removeFavoriteStation(Station station) {
-        remove(TAG_FAV_STATIONS, new RouteQuery(station, null));
-    }
-
-    /**
-     * Clear favorite stations
-     */
-    public void clearFavoriteStations() {
-        clear(TAG_FAV_STATIONS);
+        remove(TAG_FAV_STATIONS, new StationSuggestion(station));
     }
 
     /**
      * Get recent stations
      *
      * @return The list of recent stations
+     * @deprecated
      */
-    public List<RouteQuery> getRecentStations() {
+    public List<Suggestion<StationSuggestion>> getRecentStations() {
         return getRecentStations(sharedPreferences.getInt("stations_history_count", 3));
     }
 
@@ -297,35 +278,31 @@ public class PersistentQueryProvider {
      *
      * @param limit the number of recent searches to return
      * @return the most recent searches
+     * @deprecated
      */
-    public List<RouteQuery> getRecentStations(int limit) {
-        return load(TAG_RECENT_STATIONS, limit, true, RouteQuery.RouteQueryType.RECENT_STATION);
+    public List<Suggestion<StationSuggestion>> getRecentStations(int limit) {
+        return load(TAG_RECENT_STATIONS, limit, true, SuggestionType.HISTORY, StationSuggestion.class);
     }
 
     /**
      * Add a station to recents
      *
      * @param station The station
+     * @deprecated
      */
     public void addRecentStation(Station station) {
-        store(TAG_RECENT_STATIONS, new RouteQuery(station, null));
+        store(TAG_RECENT_STATIONS, new StationSuggestion(station), StationSuggestion.class);
     }
 
     /**
      * Remove a station from recents
      *
      * @param station The station
+     * @deprecated
      */
     public void removeRecentStation(Station station) {
-        RouteQuery q = new RouteQuery(station, null);
+        StationSuggestion q = new StationSuggestion(station);
         remove(TAG_RECENT_STATIONS, q);
-    }
-
-    /**
-     * Clear recent stations
-     */
-    public void clearRecentStations() {
-        clear(TAG_RECENT_STATIONS);
     }
 
     /**
@@ -333,36 +310,35 @@ public class PersistentQueryProvider {
      *
      * @return Sorted array with favorite and recent route queries (from, to)
      */
-    public RouteQuery[] getAllRoutes() {
+    public List<Suggestion<RouteSuggestion>> getAllRoutes() {
 
         int recentLimit = Integer.valueOf(sharedPreferences.getString("routes_history_count", "3"));
         int order = Integer.valueOf(sharedPreferences.getString("routes_order", "0"));
         // 0: recents before favorites
         // 1: favorites before recents
 
-        List<RouteQuery> favorites = getFavoriteRoutes();
+        List<Suggestion<RouteSuggestion>> favorites = getRoutes(FAVORITE);
 
         if (recentLimit == 0) {
-            return Arrays.copyOf(favorites.toArray(), favorites.size(), RouteQuery[].class);
+            return favorites;
         }
 
         // Keep some margin to ensure that we will always show the number of recents set by the user
-        List<RouteQuery> recents = getRecentRoutes(recentLimit + favorites.size());
+        List<Suggestion<RouteSuggestion>> recents = getRoutes(HISTORY,recentLimit + favorites.size());
 
-        recents = (List<RouteQuery>) removeFromCollection(recents, favorites);
+        recents = (List<Suggestion<RouteSuggestion>>) removeFromCollection(recents, favorites);
 
         if (recents.size() > recentLimit) {
             recents = recents.subList(0, recentLimit);
         }
 
-        Object[] concat;
         if (order == 0) {
-            concat = ArrayUtils.concatenate(recents.toArray(), favorites.toArray());
+            recents.addAll(favorites);
+            return recents;
         } else {
-            concat = ArrayUtils.concatenate(favorites.toArray(), recents.toArray());
+            favorites.addAll(recents);
+            return favorites;
         }
-
-        return Arrays.copyOf(concat, concat.length, RouteQuery[].class);
     }
 
     /**
@@ -370,36 +346,152 @@ public class PersistentQueryProvider {
      *
      * @return Sorted array with favorite and recent station names
      */
-    public RouteQuery[] getAllStations() {
+    public List<Suggestion<StationSuggestion>> getAllStations() {
         int recentLimit = Integer.valueOf(sharedPreferences.getString("stations_history_count", "3"));
         int order = Integer.valueOf(sharedPreferences.getString("stations_order", "0"));
         // 0 || 2: recents before favorites
         // 1 || 3: favorites before recents
 
-        List<RouteQuery> favorites = getFavoriteStations();
+        List<Suggestion<StationSuggestion>> favorites = getStations(FAVORITE);
 
         if (recentLimit == 0) {
-            return Arrays.copyOf(favorites.toArray(), favorites.size(), RouteQuery[].class);
+            return favorites;
         }
 
         // Keep some margin to ensure that we will always show the number of recents set by the user
-        List<RouteQuery> recents = getRecentStations(recentLimit + favorites.size());
+        List<Suggestion<StationSuggestion>> recents = getStations(HISTORY, recentLimit + favorites.size());
 
-        recents = (List<RouteQuery>) removeFromCollection(recents, favorites);
+        recents = (List<Suggestion<StationSuggestion>>) removeFromCollection(recents, favorites);
 
         if (recents.size() > recentLimit) {
             recents = recents.subList(0, recentLimit);
         }
 
-        Object[] concat;
-
         if (order == 0 || order == 2) {
-            concat = ArrayUtils.concatenate(recents.toArray(), favorites.toArray());
+            recents.addAll(favorites);
+            return recents;
         } else {
-            concat = ArrayUtils.concatenate(favorites.toArray(), recents.toArray());
+            favorites.addAll(recents);
+            return favorites;
+        }
+    }
+
+    /**
+     * Get favorite and recent stations, and apply user preferences (order, count)
+     *
+     * @return Sorted array with favorite and recent station names
+     */
+    public List<Suggestion<TrainSuggestion>> getAllTrains() {
+        int recentLimit = Integer.valueOf(sharedPreferences.getString("stations_history_count", "3"));
+        int order = Integer.valueOf(sharedPreferences.getString("routes_order", "0"));
+        // 0 || 2: recents before favorites
+        // 1 || 3: favorites before recents
+
+        List<Suggestion<TrainSuggestion>> favorites = getTrains(FAVORITE);
+
+        if (recentLimit == 0) {
+            return favorites;
         }
 
-        return Arrays.copyOf(concat, concat.length, RouteQuery[].class);
+        // Keep some margin to ensure that we will always show the number of recents set by the user
+        List<Suggestion<TrainSuggestion>> recents = getTrains(HISTORY, recentLimit + favorites.size());
+
+        recents = (List<Suggestion<TrainSuggestion>>) removeFromCollection(recents, favorites);
+
+        if (recents.size() > recentLimit) {
+            recents = recents.subList(0, recentLimit);
+        }
+
+        if (order == 0) {
+            recents.addAll(favorites);
+            return recents;
+        } else {
+            favorites.addAll(recents);
+            return favorites;
+        }
+    }
+
+    public List<Suggestion<RouteSuggestion>> getRoutes(SuggestionType type) {
+        return getRoutes(type, MAX_STORED);
+    }
+
+    public List<Suggestion<RouteSuggestion>> getRoutes(SuggestionType type, int limit) {
+        if (type == FAVORITE) {
+            return load(TAG_FAV_ROUTES, limit, type, RouteSuggestion.class);
+        } else if (type == HISTORY) {
+            return load(TAG_RECENT_ROUTES, limit, type, RouteSuggestion.class);
+        }
+        return null;
+    }
+
+    public List<Suggestion<StationSuggestion>> getStations(SuggestionType type) {
+        return getStations(type, MAX_STORED);
+    }
+
+    public List<Suggestion<StationSuggestion>> getStations(SuggestionType type, int limit) {
+        if (type == FAVORITE) {
+            return load(TAG_FAV_STATIONS, limit, type, StationSuggestion.class);
+        } else if (type == HISTORY) {
+            return load(TAG_RECENT_STATIONS, limit, type, StationSuggestion.class);
+        }
+        return null;
+    }
+
+    public List<Suggestion<TrainSuggestion>> getTrains(SuggestionType type) {
+        return getTrains(type, MAX_STORED);
+    }
+
+    public List<Suggestion<TrainSuggestion>> getTrains(SuggestionType type, int limit) {
+        if (type == FAVORITE) {
+            return load(TAG_FAV_TRAINS, limit, type, TrainSuggestion.class);
+        } else if (type == HISTORY) {
+            return load(TAG_RECENT_TRAINS, limit, type, TrainSuggestion.class);
+        }
+        return null;
+    }
+
+    public <T extends Suggestable> void store(Suggestion<T> query) {
+        if (query.getData().getClass() == RouteSuggestion.class) {
+            if (query.getType() == FAVORITE) {
+                store(TAG_FAV_ROUTES, (RouteSuggestion) query.getData(), RouteSuggestion.class);
+            } else if (query.getType() == HISTORY) {
+                store(TAG_RECENT_ROUTES, (RouteSuggestion) query.getData(), RouteSuggestion.class);
+            }
+        } else if (query.getData().getClass() == StationSuggestion.class) {
+            if (query.getType() == FAVORITE) {
+                store(TAG_FAV_STATIONS, (StationSuggestion) query.getData(), StationSuggestion.class);
+            } else if (query.getType() == HISTORY) {
+                store(TAG_RECENT_STATIONS, (StationSuggestion) query.getData(), StationSuggestion.class);
+            }
+        } else if (query.getData().getClass() == TrainSuggestion.class) {
+            if (query.getType() == FAVORITE) {
+                store(TAG_FAV_TRAINS, (TrainSuggestion) query.getData(), TrainSuggestion.class);
+            } else if (query.getType() == HISTORY) {
+                store(TAG_RECENT_TRAINS, (TrainSuggestion) query.getData(), TrainSuggestion.class);
+            }
+        }
+    }
+
+    public <T extends Suggestable> void delete(Suggestion<T> query) {
+        if (query.getData().getClass() == RouteSuggestion.class) {
+            if (query.getType() == FAVORITE) {
+                remove(TAG_FAV_ROUTES, query.getData());
+            } else if (query.getType() == HISTORY) {
+                remove(TAG_RECENT_ROUTES, query.getData());
+            }
+        } else if (query.getData().getClass() == StationSuggestion.class) {
+            if (query.getType() == FAVORITE) {
+                remove(TAG_FAV_STATIONS, query.getData());
+            } else if (query.getType() == HISTORY) {
+                remove(TAG_RECENT_STATIONS, query.getData());
+            }
+        } else if (query.getData().getClass() == TrainSuggestion.class) {
+            if (query.getType() == FAVORITE) {
+                remove(TAG_FAV_TRAINS, query.getData());
+            } else if (query.getType() == HISTORY) {
+                remove(TAG_RECENT_TRAINS, query.getData());
+            }
+        }
     }
 
     /**
@@ -408,46 +500,36 @@ public class PersistentQueryProvider {
      * @param tag   The tag under which the query will be stored
      * @param query The query to store
      */
-    private void store(String tag, RouteQuery query) {
-        store(tag, query, MAX_STORED);
+    private <T extends Suggestable> void store(String tag, T query, Class<T> classInstance) {
+        store(tag, query, MAX_STORED, classInstance);
     }
 
     /**
      * Store a query under a tag
      *
-     * @param tag   The tag under which the query will be stored
-     * @param query The query to store
-     * @param limit The maximum number of items to store. If exceeded, oldest will be removed
+     * @param tag    The tag under which the query will be stored
+     * @param object The query to store
+     * @param limit  The maximum number of items to store. If exceeded, oldest will be removed
      */
-    private void store(String tag, RouteQuery query, int limit) {
+    private <T extends Suggestable> void store(String tag, T object, int limit, Class<T> classInstance) {
         SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
         Set<String> items = new HashSet<>(settings.getStringSet(tag, new HashSet<String>()));
 
         // If this query is already in the recents list, remove it (so we can update it)
-        items = removeFromPersistentSet(items, query);
+        items = removeFromPersistentSet(items, object);
 
         // Keep the amount of items under the set threshold
         while (items.size() >= limit) {
-            ArrayList<RouteQuery> queries = setToList(items, RouteQuery.RouteQueryType.UNSET);
+            ArrayList<Suggestion<T>> queries = setToList(items, LIST, classInstance);
             queries = sortByTime(queries);
             // Remove latest query
-            items = removeFromPersistentSet(items, queries.get(queries.size() - 1));
+            items = removeFromPersistentSet(items, queries.get(queries.size() - 1).getData());
         }
 
         // Store as JSON
         try {
-            JSONObject object = new JSONObject();
-            object.put("from", query.from.getId());
-
-            if (query.to == null) {
-                object.put("to", "");
-            } else {
-                object.put("to", query.to.getId());
-            }
-
-            object.put("created_at", new Date().getTime());
-
-            items.add(object.toString());
+            JSONObject json = object.serialize();
+            items.add(json.toString());
 
             SharedPreferences.Editor editor = settings.edit();
             editor.putStringSet(tag, items);
@@ -466,8 +548,8 @@ public class PersistentQueryProvider {
      * @param type The type which should be applied to the loaded results (for use in other parts of the application, e.g. recent or favorite)
      * @return List or routeQueries
      */
-    private ArrayList<RouteQuery> load(String tag, RouteQuery.RouteQueryType type) {
-        return load(tag, Integer.MAX_VALUE, type);
+    private <T extends Suggestable> ArrayList<Suggestion<T>> load(String tag, SuggestionType type, Class<T> classInstance) {
+        return load(tag, Integer.MAX_VALUE, type, classInstance);
     }
 
     /**
@@ -478,8 +560,8 @@ public class PersistentQueryProvider {
      * @param type  The type which should be applied to the loaded results (for use in other parts of the application, e.g. recent or favorite)
      * @return List or routeQueries
      */
-    private ArrayList<RouteQuery> load(String tag, int limit, RouteQuery.RouteQueryType type) {
-        return load(tag, limit, false, type);
+    private <T extends Suggestable> ArrayList<Suggestion<T>> load(String tag, int limit, SuggestionType type, Class<T> classInstance) {
+        return load(tag, limit, false, type, classInstance);
     }
 
     /**
@@ -491,7 +573,7 @@ public class PersistentQueryProvider {
      * @param type          The type which should be applied to the loaded results (for use in other parts of the application, e.g. recent or favorite)
      * @return List or routeQueries
      */
-    private ArrayList<RouteQuery> load(String tag, int limit, boolean timeSensitive, RouteQuery.RouteQueryType type) {
+    private <T extends Suggestable> ArrayList<Suggestion<T>> load(String tag, int limit, boolean timeSensitive, SuggestionType type, Class<T> classInstance) {
 
         if (limit <= 0) {
             return new ArrayList<>(0);
@@ -504,7 +586,7 @@ public class PersistentQueryProvider {
             return new ArrayList<>(0);
         }
 
-        ArrayList<RouteQuery> results = setToList(items, type);
+        ArrayList<Suggestion<T>> results = setToList(items, type, classInstance);
 
         // apply time sort
         if (timeSensitive) {
@@ -525,7 +607,7 @@ public class PersistentQueryProvider {
      * @param tag   The tag to remove from
      * @param query The query to remove
      */
-    private void remove(String tag, RouteQuery query) {
+    private void remove(String tag, Suggestable query) {
         SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
         Set<String> items = new HashSet<>(settings.getStringSet(tag, new HashSet<String>()));
 
@@ -555,14 +637,11 @@ public class PersistentQueryProvider {
      * @param items the routeQueries
      * @return The sorted items
      */
-    private List<RouteQuery> sortByName(List<RouteQuery> items) {
-        Collections.sort(items, new Comparator<RouteQuery>() {
+    private <T extends Suggestable> List<Suggestion<T>> sortByName(List<Suggestion<T>> items) {
+        Collections.sort(items, new Comparator<Suggestion<T>>() {
             @Override
-            public int compare(RouteQuery o1, RouteQuery o2) {
-                if (!o1.from.getLocalizedName().equals(o2.from.getLocalizedName())) {
-                    return o1.from.getLocalizedName().compareTo(o2.from.getLocalizedName());
-                }
-                return o1.to.getLocalizedName().compareTo(o2.to.getLocalizedName());
+            public int compare(Suggestion<T> o1, Suggestion<T> o2) {
+                return o1.getData().getSortingName().compareTo(o2.getData().getSortingName());
             }
         });
         return items;
@@ -574,12 +653,12 @@ public class PersistentQueryProvider {
      * @param items the routeQueries
      * @return The sorted items
      */
-    private ArrayList<RouteQuery> sortByTime(ArrayList<RouteQuery> items) {
+    private <T extends Suggestable> ArrayList<Suggestion<T>> sortByTime(ArrayList<Suggestion<T>> items) {
 
-        Collections.sort(items, new Comparator<RouteQuery>() {
+        Collections.sort(items, new Comparator<Suggestion<T>>() {
             @Override
-            public int compare(RouteQuery o1, RouteQuery o2) {
-                return o2.created_at.compareTo(o1.created_at);
+            public int compare(Suggestion<T> o1, Suggestion<T> o2) {
+                return o2.getData().getSortingDate().compareTo(o1.getData().getSortingDate());
             }
         });
 
@@ -593,33 +672,24 @@ public class PersistentQueryProvider {
      * @param type The type which should be assigned to these queries
      * @return List of queries
      */
-    private ArrayList<RouteQuery> setToList(Set<String> set, RouteQuery.RouteQueryType type) {
-        ArrayList<RouteQuery> results = new ArrayList<>(set.size());
+    private <T extends Suggestable> ArrayList<Suggestion<T>> setToList(Set<String> set, SuggestionType type, Class<T> objectClass) {
+        ArrayList<Suggestion<T>> results = new ArrayList<>(set.size());
 
         for (String entry : set) {
             try {
                 JSONObject object = new JSONObject(entry);
 
-                Station from = stationProvider.getStationById(object.getString("from"));
-                Station to = null;
+                T suggestionData = objectClass.newInstance();
+                suggestionData.deserialize(object);
 
-                if (from == null) {
-                    FirebaseCrash.logcat(Level.SEVERE.intValue(), "PersistentQuery", "Loaded invalid routeQuery: " + object.getString("from") + " could not be decoded! Type is " + type.toString());
-                }
+                Suggestion<T> s = new Suggestion<>(suggestionData, type);
+                results.add(s);
 
-                if (!object.getString("to").equals("")) {
-                    to = stationProvider.getStationById(object.getString("to"));
-                }
-                if (from != null) {
-                    RouteQuery query = new RouteQuery(from, to);
-                    query.created_at = new Date(object.getLong("created_at"));
-                    query.type = type;
-
-                    results.add(query);
-                }
             } catch (JSONException exception) {
                 FirebaseCrash.logcat(Level.WARNING.intValue(), "PersistentQuery", "Failed to load routequery for type " + type.toString() + ": " + exception.getMessage());
                 // ignored
+            } catch (IllegalAccessException | InstantiationException e) {
+                e.printStackTrace();
             }
         }
 
@@ -633,17 +703,12 @@ public class PersistentQueryProvider {
      * @param remove     The item to remove
      * @return The filtered collection
      */
-    private Set<String> removeFromPersistentSet(Set<String> collection, RouteQuery remove) {
+    private <T extends Suggestable> Set<String> removeFromPersistentSet(Set<String> collection, T remove) {
         Set<String> toBeRemoved = new HashSet<>();
         for (String entry : collection) {
             try {
                 JSONObject object = new JSONObject(entry);
-                if (object.getString("from").equals(remove.from.getId()) &&
-                        (
-                                (remove.to == null && Objects.equals(object.getString("to"), "")) ||
-                                        (remove.to != null && Objects.equals(object.getString("to"), remove.to.getId()))
-                        )
-                        ) {
+                if (remove.equals(object)) {
                     toBeRemoved.add(entry);
                 }
             } catch (JSONException exception) {
@@ -662,12 +727,12 @@ public class PersistentQueryProvider {
      * @param remove     The items to remove
      * @return The filtered collection
      */
-    private Collection<RouteQuery> removeFromCollection(Collection<RouteQuery> collection, Collection<RouteQuery> remove) {
+    private <T extends Suggestable> Collection<Suggestion<T>> removeFromCollection(Collection<Suggestion<T>> collection, Collection<Suggestion<T>> remove) {
 
-        Set<RouteQuery> toBeRemoved = new HashSet<>();
-        for (RouteQuery entry : collection) {
-            for (RouteQuery removalEntry : remove) {
-                if (entry.from.getId().equals(removalEntry.from.getId()) && ((entry.to != null && removalEntry.to != null && entry.to.getId().equals(removalEntry.to.getId())) || (entry.to == null && removalEntry.to == null))) {
+        Set<Suggestion<T>> toBeRemoved = new HashSet<>();
+        for (Suggestion<T> entry : collection) {
+            for (Suggestion<T> removalEntry : remove) {
+                if (entry.getData().equals(removalEntry.getData())) {
                     toBeRemoved.add(entry);
                 }
             }
