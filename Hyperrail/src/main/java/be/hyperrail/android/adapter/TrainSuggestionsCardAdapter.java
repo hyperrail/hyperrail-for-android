@@ -54,8 +54,11 @@ public class TrainSuggestionsCardAdapter extends RecyclerView.Adapter<TrainSugge
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
         final Suggestion<TrainSuggestion> t = suggestedTrains.get(position);
-
-        holder.vStation.setText(t.getData().getName());
+        String title = t.getData().getName();
+        if (t.getData().getDirection() != null) {
+            title += " - " + t.getData().getDirection().getLocalizedName();
+        }
+        holder.vStation.setText(title);
 
         switch (t.getType()) {
             case FAVORITE:

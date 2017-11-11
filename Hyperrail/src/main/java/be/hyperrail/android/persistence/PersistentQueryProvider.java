@@ -97,7 +97,7 @@ public class PersistentQueryProvider {
 
     @SuppressLint("ApplySharedPref")
     public PersistentQueryProvider(Context context) {
-            this.context = context;
+        this.context = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.stationProvider = IrailFactory.getStationsProviderInstance();
         if (sharedPreferences.contains("migrated1.9.1")) {
@@ -334,7 +334,7 @@ public class PersistentQueryProvider {
         }
 
         // Keep some margin to ensure that we will always show the number of recents set by the user
-        List<Suggestion<RouteSuggestion>> recents = getRoutes(HISTORY,recentLimit + favorites.size());
+        List<Suggestion<RouteSuggestion>> recents = getRoutes(HISTORY, recentLimit + favorites.size());
 
         recents = (List<Suggestion<RouteSuggestion>>) removeFromCollection(recents, favorites);
 
@@ -510,18 +510,7 @@ public class PersistentQueryProvider {
      * @param tag   The tag under which the query will be stored
      * @param query The query to store
      */
-    private <T extends Suggestable> void store(String tag, T query, Class<T> classInstance) {
-        store(tag, query, MAX_STORED, classInstance);
-    }
-
-    /**
-     * Store a query under a tag
-     *
-     * @param tag    The tag under which the query will be stored
-     * @param object The query to store
-     * @param limit  The maximum number of items to store. If exceeded, oldest will be removed
-     */
-    private <T extends Suggestable> void store(String tag, T object, int limit, Class<T> classInstance) {
+    private <T extends Suggestable> void store(String tag, T object, Class<T> classInstance) {
         SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
         Set<String> items = new HashSet<>(settings.getStringSet(tag, new HashSet<String>()));
 
@@ -529,7 +518,7 @@ public class PersistentQueryProvider {
         items = removeFromPersistentSet(items, object);
 
         // Keep the amount of items under the set threshold
-        while (items.size() >= limit) {
+        while (items.size() >= MAX_STORED) {
             ArrayList<Suggestion<T>> queries = setToList(items, LIST, classInstance);
             queries = sortByTime(queries);
             // Remove latest query
@@ -548,7 +537,31 @@ public class PersistentQueryProvider {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
+    public <T extends Suggestable> boolean isFavorite(T toCheck) {
+
+        if (toCheck.getClass() == RouteSuggestion.class) {
+            for (Suggestion<RouteSuggestion> favorite : getRoutes(FAVORITE)) {
+                if (toCheck.equals(favorite.getData())) {
+                    return true;
+                }
+            }
+        } else if (toCheck.getClass() == StationSuggestion.class) {
+            for (Suggestion<StationSuggestion> favorite : getStations(FAVORITE)) {
+                if (toCheck.equals(favorite.getData())) {
+                    return true;
+                }
+            }
+        } else if (toCheck.getClass() == TrainSuggestion.class) {
+            for (Suggestion<TrainSuggestion> favorite : getTrains(FAVORITE)) {
+                if (toCheck.equals(favorite.getData())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

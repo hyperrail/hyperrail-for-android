@@ -58,6 +58,9 @@ public class StationSuggestion extends Station implements Suggestable {
     }
 
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         if (o instanceof Station) {
             return (((Station) o).getId().equals(this.getId()));
         }

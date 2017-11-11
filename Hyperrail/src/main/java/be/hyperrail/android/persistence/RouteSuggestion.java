@@ -60,6 +60,9 @@ public class RouteSuggestion implements Suggestable {
     }
 
     public boolean equals(Object other){
+        if (other == null){
+        return false;
+    }
         if (other instanceof  RouteSuggestion){
             return ((RouteSuggestion) other).from.getId().equals(this.from.getId()) && ((RouteSuggestion) other).to.getId().equals(this.to.getId());
         }

@@ -15,7 +15,9 @@ package be.hyperrail.android;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import org.joda.time.DateTime;
 
@@ -29,6 +31,9 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
+import be.hyperrail.android.persistence.TrainSuggestion;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
@@ -88,13 +93,14 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     protected int getMenuLayout() {
-        return R.menu.actionbar_main;
+        return R.menu.actionbar_searchresult_train;
     }
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
         return new TrainStopCardAdapter(this, null);
     }
+
 
     protected void getData() {
         vRefreshLayout.setRefreshing(true);
@@ -167,12 +173,33 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     public void markFavorite(boolean favorite) {
-
+        if (favorite) {
+            mPersistentQuaryProvider.store(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TrainActivity.this.markFavorite(false);
+                        }
+                    })
+                    .show();
+        } else {
+            mPersistentQuaryProvider.delete(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            Snackbar.make(vLayoutRoot, R.string.unmarked_train_favorite, Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TrainActivity.this.markFavorite(true);
+                        }
+                    })
+                    .show();
+        }
+        setFavoriteDisplayState(favorite);
     }
 
     @Override
     public boolean isFavorite() {
-        return false;
+        return mPersistentQuaryProvider.isFavorite(new TrainSuggestion(this.mTrain));
     }
 
     @Override

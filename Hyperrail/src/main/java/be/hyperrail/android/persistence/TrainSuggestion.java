@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.TrainStub;
 
 public class TrainSuggestion extends TrainStub implements Suggestable {
@@ -18,27 +19,36 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
     Date created_at;
 
     TrainSuggestion() {
-        super(null,null);
-        created_at = new Date();
+        super(null, null);
     }
 
     public TrainSuggestion(TrainStub trainStub) {
-        super(trainStub.getId(),null);
+        super(null, null);
+        if (trainStub != null) {
+            this.id = trainStub.getId();
+            this.direction = trainStub.getDirection();
+        }
         this.created_at = new Date();
     }
 
     @Override
     public JSONObject serialize() throws JSONException {
-        JSONObject json= new JSONObject();
-        json.put("id",this.id);
-        json.put("created_at",created_at.getTime());
-                return json;
+        JSONObject json = new JSONObject();
+        json.put("id", this.id);
+        json.put("created_at", created_at.getTime());
+        if (direction != null) {
+            json.put("direction", direction.getId());
+        }
+        return json;
     }
 
     @Override
     public void deserialize(JSONObject json) throws JSONException {
         this.created_at = new Date(json.getLong("created_at"));
         this.id = json.getString("id");
+        if (json.has("direction")) {
+            this.direction = IrailFactory.getStationsProviderInstance().getStationById(json.getString("direction"));
+        }
     }
 
     @Override
@@ -56,8 +66,11 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
         return (json.getString("id").equals(this.id));
     }
 
-    public boolean equals(Object o){
-        if (o instanceof TrainStub){
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o instanceof TrainStub) {
             return ((TrainStub) o).getId().equals(this.getId());
         }
         return false;

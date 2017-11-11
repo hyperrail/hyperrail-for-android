@@ -238,7 +238,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     protected
     @MenuRes
     int getMenuLayout() {
-        return R.menu.actionbar_searchresult;
+        return R.menu.actionbar_main;
     }
 
     @Override
