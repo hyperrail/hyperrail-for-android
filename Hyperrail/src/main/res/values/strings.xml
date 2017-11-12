@@ -9,7 +9,7 @@
     <string name="title_route">Route</string>
     <string name="title_feedback">Feedback</string>
 
-    <string name="permission_description_location_description">In order to show you which stations are nearby, we need to know where you are (approximately). We will ask you to make a choice to either allow or deny us access to your location. The app will work fine either way.\n\n You can enable or disable this feature at any time, by going to settings > show stations around me</string>
+    <string name="permission_description_location_description">The app can show which stations are nearby if you provide your coarse location. Your location is never sent over the internet. You can change this in settings. Do you want to enable this functionality now?</string>
     <string name="permission_description_location_title">Locating nearby stations</string>
     <string name="permission_continue">Continue</string>
 
@@ -49,7 +49,7 @@
     <string name="error_departure_not_found_title">Invalid departure station</string>
     <string name="error_destination_not_found_title">Invalid destination station</string>
     <string name="search_station_name">Station name</string>
-    <string name="search_train_name">Train id</string>
+    <string name="search_train_name">Train id (e.g. IC 537)</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="warning_not_realtime_datetime">EEE yyyy/MM/dd HH:mm</string>
@@ -81,6 +81,8 @@
     <string name="spitsgids_feedback_error">Feedback couldn\'t be saved. Try again later.</string>
     <string name="load_previous_results">Load previous results</string>
     <string name="error_train_id_invalid">This is not a valid train id. Example: IC537.</string>
+    <string name="No">No</string>
+    <string name="Yes">Yes</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

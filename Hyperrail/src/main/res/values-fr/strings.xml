@@ -35,7 +35,7 @@
     <string name="marked_station_favorite">Station marquée comme favori</string>
     <string name="time_now">immédiatement</string>
     <string name="permission_continue">Continuer</string>
-    <string name="permission_description_location_description">Afin de vous montrer quelles stations sont situées à proximité, nous devons savoir où vous êtes (approximativement). Nous vous demanderons de choisir de nous autoriser ou de nous refuser l\'accès à votre emplacement. L\'application fonctionnera bien d\'une manière ou d\'une autre. Vous pouvez activer ou désactiver cette fonction à tout moment, en allant dans les paramètres> Afficher les stations autour de moi.</string>
+    <string name="permission_description_location_description">L’app peut montrer quelles stations soient trouvent à proximité si vous indiquez votre endroit grossier. Votre position n’est jamais envoyée sur internet. Vous voulez montrer à proximité de stations? Vous pouvez changer cela dans les paramètres.</string>
     <string name="to">Destination</string>
     <string name="time_today">aujourd\'hui</string>
     <string name="time_tomorrow">demain</string>
@@ -73,5 +73,14 @@
     <string name="spitsgids_feedback_sent">Votre information a été envoyé!</string>
     <string name="spitsgids_feedback_error">L\'information n\'a pas pu être enregistrée. Réessayez plus tard.</string>
     <string name="status_partially_cancelled">Partiellement annulé</string>
+    <string name="pref_header_trains">Trains</string>
+    <string name="marked_train_favorite">Train ajouté aux favoris</string>
+    <string name="unmarked_train_favorite">Train retiré des favoris</string>
+    <string name="search_train_name">Identification du train (par exemple IC 537)</string>
+    <string name="load_previous_results">Charger les résultats passés</string>
+    <string name="error_train_id_invalid">Ce n\'est pas un identifiant de train valide</string>
+    <string name="order_of_trains">Séquence de trains</string>
+    <string name="No">Non</string>
+    <string name="Yes">Oui</string>
 
 </resources>
