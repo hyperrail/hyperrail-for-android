@@ -54,12 +54,12 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         this.originalLiveboard = liveBoard;
 
         if (liveBoard.getStops().length > 0) {
-            this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime().minusHours(1);
+            this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime();
         } else {
-            this.lastSearchTime = liveBoard.getSearchTime().minusHours(1);
+            this.lastSearchTime = liveBoard.getSearchTime();
         }
 
-        api.getLiveboard(liveBoard, lastSearchTime, RouteTimeDefinition.DEPART, this, this, TAG_PREPEND);
+        api.getLiveboardBefore(liveBoard, lastSearchTime, RouteTimeDefinition.DEPART, this, this, TAG_PREPEND);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                     lastSearchTime = lastSearchTime.minusHours(1);
 
                     if (attempt < 12) {
-                        api.getLiveboard(originalLiveboard, lastSearchTime, RouteTimeDefinition.DEPART, this, this, tag);
+                        api.getLiveboardBefore(originalLiveboard, lastSearchTime, RouteTimeDefinition.DEPART, this, this, tag);
                     } else {
                         if (this.successResponseListener != null) {
                             this.successResponseListener.onSuccessResponse(originalLiveboard, this);
