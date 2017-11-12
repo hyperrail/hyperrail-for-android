@@ -93,4 +93,6 @@
     <string name="order_of_trains">Volgorde van treinen</string>
     <string name="No">Nee</string>
     <string name="Yes">Ja</string>
+    <string name="action_shortcut">Snelkoppeling maken</string>
+    <string name="shortcut_created">Een snelkoppeling is toegevoegd aan je startscherm</string>
 </resources>

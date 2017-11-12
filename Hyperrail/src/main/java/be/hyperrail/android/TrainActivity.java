@@ -103,6 +103,9 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
             addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
             addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
             getApplicationContext().sendBroadcast(addIntent);
+
+            Snackbar.make(vLayoutRoot, R.string.shortcut_created,Snackbar.LENGTH_LONG).show();
+
             return true;
         }
         return super.onOptionsItemSelected(item);

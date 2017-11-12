@@ -82,5 +82,7 @@
     <string name="order_of_trains">Séquence de trains</string>
     <string name="No">Non</string>
     <string name="Yes">Oui</string>
+    <string name="action_shortcut">Créer un raccourci</string>
+    <string name="shortcut_created">Un raccourci a été ajouté à votre écran d\'accueil</string>
 
 </resources>

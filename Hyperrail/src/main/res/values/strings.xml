@@ -84,6 +84,7 @@
     <string name="No">No</string>
     <string name="Yes">Yes</string>
     <string name="action_shortcut">Create shortcut</string>
+    <string name="shortcut_created">A shortcut has been added to your homescreen</string>
 
     <string-array name="departarrive">
         <item>Leave</item>
