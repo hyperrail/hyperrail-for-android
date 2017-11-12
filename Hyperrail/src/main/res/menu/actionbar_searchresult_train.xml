@@ -7,4 +7,8 @@
         android:title="@string/action_mark_as_favorite"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_shortcut"
+        android:title="@string/action_shortcut"
+        app:showAsAction="never" />
 </menu>

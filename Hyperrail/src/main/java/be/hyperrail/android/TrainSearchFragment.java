@@ -154,8 +154,11 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     private void doSearch() {
+        String searchQuery = vTrainSearchField.getText().toString();
+        // Remove spaces
+        searchQuery = searchQuery.replace(" ","");
         Pattern p = Pattern.compile("\\w{1,3}\\d{2,6}");
-        Matcher m = p.matcher(vTrainSearchField.getText());
+        Matcher m = p.matcher(searchQuery);
         if (m.matches()) {
             openTrain(new TrainStub(vTrainSearchField.getText().toString().toUpperCase(), null));
             return;

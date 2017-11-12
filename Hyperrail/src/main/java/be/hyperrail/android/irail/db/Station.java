@@ -53,6 +53,10 @@ public class Station implements Serializable {
         this.avgStopTimes = avgStopTimes;
     }
 
+    public Station(Station s){
+        copy(s);
+    }
+
     protected void copy(Station copy){
         this.id = copy.id;
         this.name = copy.name;

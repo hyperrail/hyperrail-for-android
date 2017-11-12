@@ -286,12 +286,12 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
                         routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_filled));
                     } else {
-                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_filled));
+                        routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_hollow));
                     }
                 } else {
-                    routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_hollow));
                     routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
+                    routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_hollow));
                 }
             }
 

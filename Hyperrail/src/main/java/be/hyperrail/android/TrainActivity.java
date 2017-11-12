@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 
 import org.joda.time.DateTime;
@@ -76,7 +77,22 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         if (mTrain == null) {
             setSubTitle(mCurrentSearchQuery.getName());
         }
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_shortcut){
+            Intent shortcutIntent = createIntent(this.getApplicationContext(),mCurrentSearchQuery,null);
+
+            Intent addIntent = new Intent();
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentSearchQuery.getName());
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+            addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+            getApplicationContext().sendBroadcast(addIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

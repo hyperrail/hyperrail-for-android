@@ -129,6 +129,17 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             case R.id.action_to:
                 startActivity(MainActivity.createRouteToIntent(getApplicationContext(), mCurrentStation.getName()));
                 return true;
+            case R.id.action_shortcut:
+                Intent shortcutIntent = createIntent(this.getApplicationContext(), new Station(mCurrentStation));
+
+                Intent addIntent = new Intent();
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentStation.getLocalizedName());
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                getApplicationContext().sendBroadcast(addIntent);
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

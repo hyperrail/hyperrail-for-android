@@ -83,6 +83,7 @@
     <string name="error_train_id_invalid">This is not a valid train id. Example: IC537.</string>
     <string name="No">No</string>
     <string name="Yes">Yes</string>
+    <string name="action_shortcut">Create shortcut</string>
 
     <string-array name="departarrive">
         <item>Leave</item>
