@@ -84,6 +84,14 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         return i;
     }
 
+    private Intent createShortcutIntent() {
+        Intent i = new Intent(this, RouteActivity.class);
+        i.putExtra("shortcut", true);
+        i.putExtra("from", mSearchFrom.getId());
+        i.putExtra("to", mSearchTo.getId());
+        return i;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("routes")) {
@@ -91,17 +99,26 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         }
 
         Bundle mSearchArgs = getIntent().getExtras();
-
-        mSearchFrom = (Station) mSearchArgs.getSerializable("from");
-        mSearchTo = (Station) mSearchArgs.getSerializable("to");
-        mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
-
-        if (mSearchArgs.containsKey("date")) {
-            mSearchDate = (DateTime) mSearchArgs.getSerializable("date");
-        } else {
-            mSearchDate = null;
+        if (mSearchArgs == null) {
+            throw new IllegalStateException("A RouteActivity requires extra parameters to be created");
         }
 
+        if (mSearchArgs.containsKey("shortcut")) {
+            mSearchFrom = IrailFactory.getStationsProviderInstance().getStationById(mSearchArgs.getString("from"));
+            mSearchTo = IrailFactory.getStationsProviderInstance().getStationById(mSearchArgs.getString("to"));
+            mSearchTimeType = RouteTimeDefinition.DEPART;
+            mSearchDate = null;
+        } else {
+            mSearchFrom = (Station) mSearchArgs.getSerializable("from");
+            mSearchTo = (Station) mSearchArgs.getSerializable("to");
+            mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
+
+            if (mSearchArgs.containsKey("date")) {
+                mSearchDate = (DateTime) mSearchArgs.getSerializable("date");
+            } else {
+                mSearchDate = null;
+            }
+        }
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -299,7 +316,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
                 return true;
             case R.id.action_shortcut:
-                Intent shortcutIntent = createIntent(this.getApplicationContext(), mSearchFrom, mSearchTo, null, mSearchTimeType);
+                Intent shortcutIntent = createShortcutIntent();
 
                 Intent addIntent = new Intent();
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);

@@ -66,10 +66,23 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         return i;
     }
 
+    public Intent createShortcutIntent() {
+        Intent i = new Intent(this, TrainActivity.class);
+        i.putExtra("shortcut", true);
+        i.putExtra("stub", mCurrentSearchQuery.getId());
+        return i;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("train")) {
             this.mTrain = (Train) savedInstanceState.get("train");
+        }
+
+        if (getIntent().hasExtra("shortcut")) {
+            mCurrentSearchQuery = new TrainStub(getIntent().getStringExtra("stub"), null);
+        } else {
+            mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
         }
 
         super.onCreate(savedInstanceState);
@@ -81,8 +94,8 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_shortcut){
-            Intent shortcutIntent = createIntent(this.getApplicationContext(),mCurrentSearchQuery,null);
+        if (item.getItemId() == R.id.action_shortcut) {
+            Intent shortcutIntent = this.createShortcutIntent();
 
             Intent addIntent = new Intent();
             addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
@@ -121,6 +134,23 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         return new TrainStopCardAdapter(this, null);
     }
 
+    @Override
+    protected void getInitialData() {
+        // which station should we scroll to?
+        mScrollToStation = null;
+        if (getIntent().hasExtra("currentStation")) {
+            mScrollToStation = (Station) getIntent().getSerializableExtra("currentStation");
+        }
+
+        if (getIntent().hasExtra("date")) {
+            mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
+        } else {
+            mTrainDate = new DateTime();
+        }
+
+        getData();
+    }
+
     protected void getData() {
         vRefreshLayout.setRefreshing(true);
 
@@ -129,7 +159,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
             @Override
             public void onSuccessResponse(Train data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
-
                 mTrain = data;
                 showData(mTrain);
             }
@@ -142,24 +171,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
                 ErrorDialogFactory.showErrorDialog(e, TrainActivity.this, mTrain == null);
             }
         }, null);
-    }
-
-    @Override
-    protected void getInitialData() {
-        // which station should we scroll to?
-        mScrollToStation = null;
-        if (getIntent().hasExtra("currentStation")) {
-            mScrollToStation = (Station) getIntent().getSerializableExtra("currentStation");
-        }
-
-        mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
-        if (getIntent().hasExtra("date")) {
-            mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
-        } else {
-            mTrainDate = new DateTime();
-        }
-
-        getData();
     }
 
     protected void getNextData() {
@@ -193,7 +204,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     @Override
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQueryProvider.store(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain, this.mTrain.getStops()[0].getStation(), this.mTrain.getStops()[0].getDepartureTime()), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.store(new Suggestion<>(new TrainSuggestion(this.mTrain, this.mTrain.getStops()[0].getStation(), this.mTrain.getStops()[0].getDepartureTime()), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -203,7 +214,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
                     })
                     .show();
         } else {
-            mPersistentQueryProvider.delete(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.delete(new Suggestion<>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override

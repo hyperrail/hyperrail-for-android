@@ -24,16 +24,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:exported="true"
             android:name="be.hyperrail.android.LiveboardActivity"
             android:parentActivityName="be.hyperrail.android.MainActivity"/>
         <activity
+            android:exported="true"
             android:name="be.hyperrail.android.RouteActivity"
             android:parentActivityName="be.hyperrail.android.MainActivity"/>
         <activity
+            android:exported="true"
             android:name="be.hyperrail.android.TrainActivity"
-            android:parentActivityName="be.hyperrail.android.MainActivity"/>
-        <activity
-            android:name="be.hyperrail.android.PermissionRequestExplanation"
             android:parentActivityName="be.hyperrail.android.MainActivity"/>
         <activity
             android:name="be.hyperrail.android.SettingsActivity"

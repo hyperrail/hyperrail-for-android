@@ -160,7 +160,7 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
         Pattern p = Pattern.compile("\\w{1,3}\\d{2,6}");
         Matcher m = p.matcher(searchQuery);
         if (m.matches()) {
-            openTrain(new TrainStub(vTrainSearchField.getText().toString().toUpperCase(), null));
+            openTrain(new TrainStub(searchQuery.toUpperCase(), null));
             return;
         }
 

@@ -72,9 +72,21 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         return i;
     }
 
+    private Intent createShortcutIntent() {
+        Intent i = new Intent(this, LiveboardActivity.class);
+        i.putExtra("shortcut", true);
+        i.putExtra("station", mCurrentStation.getId());
+        return i;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        this.mCurrentStation = (Station) getIntent().getSerializableExtra("station");
+
+        if (getIntent().hasExtra("shortcut")) {
+            this.mCurrentStation = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("station"));
+        } else {
+            this.mCurrentStation = (Station) getIntent().getSerializableExtra("station");
+        }
 
         if (getIntent().hasExtra("datetime")) {
             this.mSearchDate = (DateTime) getIntent().getSerializableExtra("datetime");
@@ -130,7 +142,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 startActivity(MainActivity.createRouteToIntent(getApplicationContext(), mCurrentStation.getName()));
                 return true;
             case R.id.action_shortcut:
-                Intent shortcutIntent = createIntent(this.getApplicationContext(), new Station(mCurrentStation));
+                Intent shortcutIntent = createShortcutIntent();
 
                 Intent addIntent = new Intent();
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
