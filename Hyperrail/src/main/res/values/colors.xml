@@ -17,6 +17,7 @@
     <color name="colorHistory">@color/colorPrimary</color>
 
     <color name="colorDelay">#b71c1c</color> <!-- Material red 900 -->
+    <color name="colorCanceledBackground">#22b71c1c</color> <!-- Material red 900 -->
     <color name="colorMuted">#999999</color>
     <color name="colorFaster">#1b5e20</color>
 

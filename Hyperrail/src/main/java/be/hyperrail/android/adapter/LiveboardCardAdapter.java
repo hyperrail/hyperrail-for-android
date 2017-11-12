@@ -177,7 +177,9 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             holder.vStatusText.setText(be.hyperrail.android.R.string.status_cancelled);
             holder.vStatusContainer.setVisibility(View.VISIBLE);
             holder.vOccupancy.setVisibility(View.GONE);
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
         } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
             holder.vOccupancy.setVisibility(View.VISIBLE);
             holder.vStatusContainer.setVisibility(View.GONE);
             holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.platform_train));
