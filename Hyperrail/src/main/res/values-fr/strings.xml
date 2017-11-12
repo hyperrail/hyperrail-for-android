@@ -81,5 +81,7 @@
     <string name="Yes">Oui</string>
     <string name="action_shortcut">Créer un raccourci</string>
     <string name="shortcut_created">Un raccourci a été ajouté à votre écran d\'accueil</string>
+    <string name="walk_heading">A pied</string>
+    <string name="walk_description">Promenez-vous à la station suivante</string>
 
 </resources>
