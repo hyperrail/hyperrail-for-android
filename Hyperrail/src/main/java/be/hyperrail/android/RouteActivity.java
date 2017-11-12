@@ -14,9 +14,9 @@ package be.hyperrail.android;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
@@ -42,10 +42,14 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteAppendHelper;
 import be.hyperrail.android.irail.implementation.RouteResult;
+import be.hyperrail.android.persistence.RouteSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 
-public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener, OnRecyclerItemClickListener<Route>,OnRecyclerItemLongClickListener<Route> {
+import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
+
+public class RouteActivity extends RecyclerViewActivity<RouteResult> implements InfiniteScrollingDataSource, OnDateTimeSetListener, OnRecyclerItemClickListener<Route>, OnRecyclerItemLongClickListener<Route> {
 
     private RouteResult mRoutes;
 
@@ -54,7 +58,6 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
     private RouteTimeDefinition mSearchTimeType = RouteTimeDefinition.DEPART;
     private DateTime mSearchDate;
 
-    private AsyncTask runningTask;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private boolean initialLoadCompleted = false;
@@ -81,6 +84,14 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         return i;
     }
 
+    private Intent createShortcutIntent() {
+        Intent i = new Intent(this, RouteActivity.class);
+        i.putExtra("shortcut", true);
+        i.putExtra("from", mSearchFrom.getId());
+        i.putExtra("to", mSearchTo.getId());
+        return i;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("routes")) {
@@ -88,17 +99,26 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         }
 
         Bundle mSearchArgs = getIntent().getExtras();
-
-        mSearchFrom = (Station) mSearchArgs.getSerializable("from");
-        mSearchTo = (Station) mSearchArgs.getSerializable("to");
-        mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
-
-        if (mSearchArgs.containsKey("date")) {
-            mSearchDate = (DateTime) mSearchArgs.getSerializable("date");
-        } else {
-            mSearchDate = null;
+        if (mSearchArgs == null) {
+            throw new IllegalStateException("A RouteActivity requires extra parameters to be created");
         }
 
+        if (mSearchArgs.containsKey("shortcut")) {
+            mSearchFrom = IrailFactory.getStationsProviderInstance().getStationById(mSearchArgs.getString("from"));
+            mSearchTo = IrailFactory.getStationsProviderInstance().getStationById(mSearchArgs.getString("to"));
+            mSearchTimeType = RouteTimeDefinition.DEPART;
+            mSearchDate = null;
+        } else {
+            mSearchFrom = (Station) mSearchArgs.getSerializable("from");
+            mSearchTo = (Station) mSearchArgs.getSerializable("to");
+            mSearchTimeType = RouteTimeDefinition.valueOf(mSearchArgs.getString("arrivedepart"));
+
+            if (mSearchArgs.containsKey("date")) {
+                mSearchDate = (DateTime) mSearchArgs.getSerializable("date");
+            } else {
+                mSearchDate = null;
+            }
+        }
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -162,6 +182,10 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                         vRefreshLayout.setRefreshing(false);
                         mRoutes = data;
                         showData(mRoutes);
+
+                        // Scroll past the load earlier item
+                        ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+
                         initialLoadCompleted = true;
                     }
                 }, new IRailErrorResponseListener<RouteResult>() {
@@ -175,41 +199,78 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                 null);
     }
 
-    protected void getNextData() {
+    public void loadNextRecyclerviewItems() {
         if (!initialLoadCompleted) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             return;
         }
 
         RouteAppendHelper appendHelper = new RouteAppendHelper();
         appendHelper.appendRouteResult(mRoutes, new IRailSuccessResponseListener<RouteResult>() {
-                    @Override
-                    public void onSuccessResponse(RouteResult data, Object tag) {
-                        // data consists of both old and new routes
-                        if (data.getRoutes().length == mRoutes.getRoutes().length) {
-                            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
-                        }
+            @Override
+            public void onSuccessResponse(RouteResult data, Object tag) {
+                // data consists of both old and new routes
 
-                        mRoutes = data;
-                        showData(mRoutes);
-                    }
-                }, new IRailErrorResponseListener<RouteResult>() {
-                    @Override
-                    public void onErrorResponse(Exception e, Object tag) {
-                        ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
-                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                        ((RouteCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
-                    }
-                },
-                null);
+                if (data.getRoutes().length == mRoutes.getRoutes().length) {
+                    ((
+                            InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
+                    // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                }
+
+                mRoutes = data;
+                showData(mRoutes);
+
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+
+                // Scroll past the "load earlier"
+                LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
+                if (mgr.findFirstVisibleItemPosition() == 0) {
+                    mgr.scrollToPositionWithOffset(1, 0);
+                }
+
+            }
+        }, new IRailErrorResponseListener<RouteResult>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
+                ((RouteCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+            }
+        });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED) {
-            runningTask.cancel(true);
+    public void loadPreviousRecyclerviewItems() {
+        if (!initialLoadCompleted) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            return;
         }
+
+        RouteAppendHelper appendHelper = new RouteAppendHelper();
+        appendHelper.prependRouteResult(mRoutes, new IRailSuccessResponseListener<RouteResult>() {
+            @Override
+            public void onSuccessResponse(RouteResult data, Object tag) {
+                // data consists of both old and new routes
+                if (data.getRoutes().length == mRoutes.getRoutes().length) {
+                    // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
+                }
+
+                mRoutes = data;
+                showData(mRoutes);
+
+                // Scroll past the load earlier item
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            }
+        }, new IRailErrorResponseListener<RouteResult>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
+                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                ((RouteCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            }
+        });
     }
 
     protected void showData(RouteResult routeList) {
@@ -249,6 +310,20 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                 this.getData();
 
                 return true;
+            case R.id.action_shortcut:
+                Intent shortcutIntent = createShortcutIntent();
+
+                Intent addIntent = new Intent();
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSearchFrom.getLocalizedName() + " - " + mSearchTo.getLocalizedName());
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                getApplicationContext().sendBroadcast(addIntent);
+
+                Snackbar.make(vLayoutRoot, R.string.shortcut_created, Snackbar.LENGTH_LONG).show();
+
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -274,14 +349,9 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         getData();
     }
 
-    @Override
-    public void loadMoreRecyclerviewItems() {
-        getNextData();
-    }
-
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQuaryProvider.addFavoriteRoute(mSearchFrom, mSearchTo);
+            mPersistentQueryProvider.store(new Suggestion<>(new RouteSuggestion(mSearchFrom, mSearchTo), FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -291,7 +361,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                     })
                     .show();
         } else {
-            mPersistentQuaryProvider.removeFavoriteRoute(mSearchFrom, mSearchTo);
+            mPersistentQueryProvider.delete(new Suggestion<>(new RouteSuggestion(mSearchFrom, mSearchTo), FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -305,7 +375,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
     }
 
     public boolean isFavorite() {
-        return mPersistentQuaryProvider.isFavoriteRoute(mSearchFrom, mSearchTo);
+        return mPersistentQueryProvider.isFavorite(new RouteSuggestion(mSearchFrom, mSearchTo));
     }
 
     @Override

@@ -109,7 +109,6 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             displayList = null;
         }
 
-        super.setLoaded();
         super.notifyDataSetChanged();
     }
 
@@ -178,7 +177,9 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             holder.vStatusText.setText(be.hyperrail.android.R.string.status_cancelled);
             holder.vStatusContainer.setVisibility(View.VISIBLE);
             holder.vOccupancy.setVisibility(View.GONE);
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
         } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
             holder.vOccupancy.setVisibility(View.VISIBLE);
             holder.vStatusContainer.setVisibility(View.GONE);
             holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.platform_train));
@@ -194,8 +195,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onClickListener != null) {
-                    onClickListener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
+                if (mOnClickListener != null) {
+                    mOnClickListener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
                 }
             }
         });
@@ -203,8 +204,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (onLongClickListener != null){
-                    onLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this,stop);
+                if (mOnLongClickListener != null){
+                    mOnLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this,stop);
                 }
                 return false;
             }

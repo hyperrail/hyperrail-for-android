@@ -15,7 +15,10 @@ package be.hyperrail.android;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
+import android.view.View;
 
 import org.joda.time.DateTime;
 
@@ -29,6 +32,9 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
+import be.hyperrail.android.persistence.TrainSuggestion;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
@@ -60,14 +66,49 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         return i;
     }
 
+    public Intent createShortcutIntent() {
+        Intent i = new Intent(this, TrainActivity.class);
+        i.putExtra("shortcut", true);
+        i.putExtra("stub", mCurrentSearchQuery.getId());
+        return i;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("train")) {
             this.mTrain = (Train) savedInstanceState.get("train");
         }
 
+        if (getIntent().hasExtra("shortcut")) {
+            mCurrentSearchQuery = new TrainStub(getIntent().getStringExtra("stub"), null);
+        } else {
+            mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
+        }
+
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_train);
+        if (mTrain == null) {
+            setSubTitle(mCurrentSearchQuery.getName());
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_shortcut) {
+            Intent shortcutIntent = this.createShortcutIntent();
+
+            Intent addIntent = new Intent();
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentSearchQuery.getName());
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+            addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+            getApplicationContext().sendBroadcast(addIntent);
+
+            Snackbar.make(vLayoutRoot, R.string.shortcut_created,Snackbar.LENGTH_LONG).show();
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -88,12 +129,29 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     protected int getMenuLayout() {
-        return R.menu.actionbar_main;
+        return R.menu.actionbar_searchresult_train;
     }
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
         return new TrainStopCardAdapter(this, null);
+    }
+
+    @Override
+    protected void getInitialData() {
+        // which station should we scroll to?
+        mScrollToStation = null;
+        if (getIntent().hasExtra("currentStation")) {
+            mScrollToStation = (Station) getIntent().getSerializableExtra("currentStation");
+        }
+
+        if (getIntent().hasExtra("date")) {
+            mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
+        } else {
+            mTrainDate = new DateTime();
+        }
+
+        getData();
     }
 
     protected void getData() {
@@ -104,7 +162,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
             @Override
             public void onSuccessResponse(Train data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
-
                 mTrain = data;
                 showData(mTrain);
             }
@@ -117,28 +174,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
                 ErrorDialogFactory.showErrorDialog(e, TrainActivity.this, mTrain == null);
             }
         }, null);
-    }
-
-    @Override
-    protected void getInitialData() {
-        // which station should we scroll to?
-        mScrollToStation = null;
-        if (getIntent().hasExtra("currentStation")) {
-            mScrollToStation = (Station) getIntent().getSerializableExtra("currentStation");
-        }
-
-        mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
-        if (getIntent().hasExtra("date")) {
-            mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
-        } else {
-            mTrainDate = new DateTime();
-        }
-
-        getData();
-    }
-
-    protected void getNextData() {
-        // No next data
     }
 
     protected void showData(Train train) {
@@ -167,12 +202,33 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     public void markFavorite(boolean favorite) {
-
+        if (favorite) {
+            mPersistentQueryProvider.store(new Suggestion<>(new TrainSuggestion(this.mTrain, this.mTrain.getStops()[0].getStation(), this.mTrain.getStops()[0].getDepartureTime()), SuggestionType.FAVORITE));
+            Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TrainActivity.this.markFavorite(false);
+                        }
+                    })
+                    .show();
+        } else {
+            mPersistentQueryProvider.delete(new Suggestion<>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            Snackbar.make(vLayoutRoot, R.string.unmarked_train_favorite, Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TrainActivity.this.markFavorite(true);
+                        }
+                    })
+                    .show();
+        }
+        setFavoriteDisplayState(favorite);
     }
 
     @Override
     public boolean isFavorite() {
-        return false;
+        return mPersistentQueryProvider.isFavorite(new TrainSuggestion(this.mCurrentSearchQuery));
     }
 
     @Override

@@ -23,4 +23,9 @@
         android:id="@+id/action_to"
         android:title="@string/action_to"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_shortcut"
+        android:title="@string/action_shortcut"
+        app:showAsAction="never" />
 </menu>

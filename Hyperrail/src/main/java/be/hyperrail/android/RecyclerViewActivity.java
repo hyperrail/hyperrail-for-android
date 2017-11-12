@@ -76,7 +76,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * History & favorites provider
      */
-    PersistentQueryProvider mPersistentQuaryProvider;
+    PersistentQueryProvider mPersistentQueryProvider;
 
     /**
      * Favorite button in menu
@@ -115,7 +115,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         setSupportActionBar(toolbar);
 
         // Initialize history & favorites, preferences
-        mPersistentQuaryProvider = new PersistentQueryProvider(this.getApplicationContext());
+        mPersistentQueryProvider = new PersistentQueryProvider(this.getApplicationContext());
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
         // Initialize pull to refresh
@@ -142,6 +142,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         // Set-up recyclerview
         vRecyclerView = findViewById(R.id.recyclerview_primary);
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mLayoutManager.setSmoothScrollbarEnabled(true);
         vRecyclerView.setLayoutManager(mLayoutManager);
 
         // Show dividers in case wanted & not using the card layout
@@ -156,17 +157,19 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
 
         // Initialize the realtime warning
         vWarningNotRealtime = findViewById(R.id.warning_not_realtime);
-        vWarningNotRealtimeText = findViewById(R.id.warning_not_realtime_text);
-        Button vWarningNotRealtimeButton = findViewById(R.id.warning_not_realtime_close);
+        if (vWarningNotRealtime != null) {
+            vWarningNotRealtimeText = findViewById(R.id.warning_not_realtime_text);
+            Button vWarningNotRealtimeButton = findViewById(R.id.warning_not_realtime_close);
 
-        // Set a listener to reset the datetime when the realtime warning is closed
-        if (vWarningNotRealtimeButton != null) {
-            vWarningNotRealtimeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDateTimePicked(null);
-                }
-            });
+            // Set a listener to reset the datetime when the realtime warning is closed
+            if (vWarningNotRealtimeButton != null) {
+                vWarningNotRealtimeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onDateTimePicked(null);
+                    }
+                });
+            }
         }
 
         // Restore a previous instance state
@@ -193,6 +196,16 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      * @return recyclerview adapter
      */
     abstract protected RecyclerView.Adapter getAdapter();
+
+    @Override
+    public void loadNextRecyclerviewItems() {
+
+    }
+
+    @Override
+    public void loadPreviousRecyclerviewItems() {
+
+    }
 
     /**
      * Get items from the previous instance state
@@ -226,7 +239,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     protected
     @MenuRes
     int getMenuLayout() {
-        return R.menu.actionbar_searchresult;
+        return R.menu.actionbar_main;
     }
 
     @Override
@@ -255,11 +268,6 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     }
 
     /**
-     * Get the next data items
-     */
-    protected abstract void getNextData();
-
-    /**
      * Show data
      *
      * @param data the data to show
@@ -270,11 +278,6 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     public void onDateTimePicked(DateTime date) {
         mSearchDate = date;
         getData();
-    }
-
-    @Override
-    public void loadMoreRecyclerviewItems() {
-        getNextData();
     }
 
     /**

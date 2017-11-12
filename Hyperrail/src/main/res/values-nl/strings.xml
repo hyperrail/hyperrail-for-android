@@ -10,10 +10,8 @@
     <string name="title_activity_settings">Instellingen</string>
     <string name="title_feedback">Feedback</string>
 
-    <string name="permission_request_title">Deze functie vereist je toestemming</string>
-    <string name="permission_description_location_description">Om nabije stations te tonen, hebben we je locatie nodig. Dit verbruikt geen energie, en je locatie wordt nooit over internet verstuurd. Je zal de keuze krijgen deze toestemming te verlenen. Wanneer je geen toestemming verleent, zullen geen nabije stations getoond worden.\n\n Deze functie kan op elk moment in of uitgeschakeld worden via instellingen > Toon stations rondom me</string>
-    <string name="permission_description_location_title">Locating nearby stations</string>
-    <string name="permission_continue">Verder</string>
+    <string name="permission_description_location_description">De app kan stations in de buurt tonen als je toegang tot je geschatte locatie geeft. Je locatie wordt nooit verzonden over het internet. Je kan dit wijzigen in instellingen. Wil je deze functie nu inschakelen? </string>
+    <string name="permission_description_location_title">Nabije stations zoeken</string>
 
     <string name="action_share">Deel…</string>
     <string name="action_time">Tijd wijzigen</string>
@@ -82,6 +80,19 @@
     <string name="low_occupancy">Rustig</string>
     <string name="occupancy_question">Hoe druk is deze trein?</string>
     <string name="status_partially_cancelled">Deels afgeschaft</string>
-    <string name="spitsgids_feedback_error">Uw feedback kon niet worden opgeslagen.\\nProbeer later opnieuw.</string>
-    <string name="spitsgids_feedback_sent">Uw feedback is verzonden!\\nBedankt voor het inzenden!</string>
+    <string name="spitsgids_feedback_error">Uw feedback kon niet worden opgeslagen. Probeer later opnieuw.</string>
+    <string name="spitsgids_feedback_sent">Uw feedback is verzonden!</string>
+    <string name="marked_train_favorite">Trein toegevoegd aan favorieten</string>
+    <string name="unmarked_train_favorite">Trein verwijderd uit favorieten</string>
+    <string name="search_train_name">Trein ID (vb. IC 537)</string>
+    <string name="load_previous_results">Laad vroegere resultaten</string>
+    <string name="error_train_id_invalid">Dit is geen geldig trein ID</string>
+    <string name="pref_header_trains">Trein</string>
+    <string name="order_of_trains">Volgorde van treinen</string>
+    <string name="No">Nee</string>
+    <string name="Yes">Ja</string>
+    <string name="action_shortcut">Snelkoppeling maken</string>
+    <string name="shortcut_created">Een snelkoppeling is toegevoegd aan je startscherm</string>
+    <string name="walk_description">Wandel naar het volgend station</string>
+    <string name="walk_heading">Wandelen</string>
 </resources>

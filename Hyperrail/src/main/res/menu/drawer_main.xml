@@ -5,7 +5,7 @@
 
     <item android:id="@+id/action_liveboard"
         android:title="@string/title_liveboard"
-        android:icon="@drawable/ic_directions_railway_white"
+        android:icon="@drawable/ic_format_list_bulleted"
         app:showAsAction="ifRoom|collapseActionView"/>
 
     <item android:id="@+id/action_route"
@@ -13,6 +13,10 @@
         android:icon="@drawable/ic_swap_vert"
         app:showAsAction="ifRoom|collapseActionView" />
 
+    <item android:id="@+id/action_train"
+          android:title="@string/title_train"
+          android:icon="@drawable/ic_directions_railway_white"
+          app:showAsAction="ifRoom|collapseActionView"/>
 
     <item android:id="@+id/action_disturbances"
         android:title="@string/title_disturbances"

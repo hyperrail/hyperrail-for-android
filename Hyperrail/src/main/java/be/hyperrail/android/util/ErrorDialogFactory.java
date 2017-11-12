@@ -17,10 +17,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.annotation.StringRes;
 
+import com.android.volley.NoConnectionError;
+import com.android.volley.ServerError;
+
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.exception.InvalidResponseException;
-import be.hyperrail.android.irail.exception.NetworkDisconnectedException;
-import be.hyperrail.android.irail.exception.NotFoundException;
 
 /**
  * This class groups error dialogs for API results, to ensure consistent errors
@@ -35,15 +35,23 @@ public class ErrorDialogFactory {
      * @param finish    Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showErrorDialog(final Exception exception, final Activity context, final boolean finish) {
-        if (exception instanceof NetworkDisconnectedException) {
-            return showNetworkErrorDialog(context, finish);
-        } else if (exception instanceof InvalidResponseException) {
-            return showServerErrorDialog(context, finish);
-        } else if (exception instanceof NotFoundException || exception instanceof java.io.FileNotFoundException) {
-            return showNotFoundErrorDialog(context, finish);
+    public static void showErrorDialog(final Exception exception, final Activity context, final boolean finish) {
+        if (exception instanceof ServerError) {
+            if (((ServerError) exception).networkResponse != null) {
+                if (((ServerError) exception).networkResponse.statusCode == 404) {
+                    showNotFoundErrorDialog(context, finish);
+                } else if (((ServerError) exception).networkResponse.statusCode == 500) {
+                    showServerErrorDialog(context, finish);
+                } else {
+                    showServerErrorDialog(context, finish);
+                }
+            } else {
+                showGeneralErrorDialog(context, finish);
+            }
+        } else if (exception instanceof NoConnectionError){
+            showNetworkErrorDialog(context, finish);
         } else {
-            return showGeneralErrorDialog(context, finish);
+            showGeneralErrorDialog(context, finish);
         }
     }
 
@@ -54,6 +62,7 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
+
     private static AlertDialog showGeneralErrorDialog(final Activity context, final boolean finish) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_general_title)
@@ -146,8 +155,8 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showInvalidDepartureStationError(final Activity context, final boolean finish) {
-        return ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_not_found_title, R.string.error_departure_not_found_message, finish);
+    public static void showInvalidDepartureStationError(final Activity context, final boolean finish) {
+        ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_not_found_title, R.string.error_departure_not_found_message, finish);
     }
 
     /**
@@ -157,8 +166,8 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showInvalidDestinationStationError(final Activity context, final boolean finish) {
-        return ErrorDialogFactory.showCustomDialog(context, R.string.error_destination_not_found_title, R.string.error_destination_not_found_message, finish);
+    public static void showInvalidDestinationStationError(final Activity context, final boolean finish) {
+        ErrorDialogFactory.showCustomDialog(context, R.string.error_destination_not_found_title, R.string.error_destination_not_found_message, finish);
     }
 
     /**
@@ -168,8 +177,8 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showDepartureEqualsArrivalStationError(final Activity context, final boolean finish) {
-        return ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_equals_destination, R.string.error_departure_equals_destination_message, finish);
+    public static void showDepartureEqualsArrivalStationError(final Activity context, final boolean finish) {
+        ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_equals_destination, R.string.error_departure_equals_destination_message, finish);
     }
 
     /**

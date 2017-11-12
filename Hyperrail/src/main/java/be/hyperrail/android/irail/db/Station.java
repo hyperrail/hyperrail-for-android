@@ -23,17 +23,21 @@ import java.io.Serializable;
  */
 public class Station implements Serializable {
 
-    private final String id;
-    private final String name;
-    private final String alternative_nl;
-    private final String alternative_fr;
-    private final String alternative_de;
-    private final String alternative_en;
-    private final String localizedName;
-    private final String country_code;
-    private final double latitude;
-    private final double longitude;
-    private final float avgStopTimes;
+    protected String id;
+    protected String name;
+    protected String alternative_nl;
+    protected String alternative_fr;
+    protected String alternative_de;
+    protected String alternative_en;
+    protected String localizedName;
+    protected String country_code;
+    protected double latitude;
+    protected double longitude;
+    protected float avgStopTimes;
+
+    protected Station(){
+
+    }
 
     public Station(String id, String name, String nl, String fr, String de, String en, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
         this.id = id;
@@ -47,6 +51,24 @@ public class Station implements Serializable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.avgStopTimes = avgStopTimes;
+    }
+
+    public Station(Station s){
+        copy(s);
+    }
+
+    protected void copy(Station copy){
+        this.id = copy.id;
+        this.name = copy.name;
+        this.alternative_nl = copy.alternative_nl;
+        this.alternative_fr = copy.alternative_fr;
+        this.alternative_en = copy.alternative_en;
+        this.alternative_de = copy.alternative_de;
+        this.localizedName = copy.localizedName;
+        this.country_code = copy.country_code;
+        this.latitude = copy.latitude;
+        this.longitude = copy.longitude;
+        this.avgStopTimes = copy.avgStopTimes;
     }
 
     public String getName() {

@@ -42,7 +42,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -125,7 +127,7 @@ public class IrailApi implements IrailDataProvider {
                 + "&from=" + from.getId()
                 + "&date=" + dateformat.print(timeFilter)
                 + "&time=" + timeformat.print(timeFilter)
-                + "&lang=" + locale.substring(0,2);
+                + "&lang=" + locale.substring(0, 2);
 
         if (timeFilterType == RouteTimeDefinition.DEPART) {
             url += "&timeSel=depart";
@@ -238,6 +240,32 @@ public class IrailApi implements IrailDataProvider {
         jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
         requestQueue.add(jsObjRequest);
+    }
+
+    public void getLiveboardBefore(Station station, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
+                                   final IRailSuccessResponseListener<LiveBoard> successListener, final IRailErrorResponseListener<LiveBoard> errorListener,
+                                   final Object tag) {
+        if (timeFilter == null) {
+            timeFilter = new DateTime();
+        }
+        final DateTime finalTimeFilter = timeFilter;
+        getLiveboard(station, timeFilter.minusHours(1), timeFilterType, new IRailSuccessResponseListener<LiveBoard>() {
+            @Override
+            public void onSuccessResponse(LiveBoard data, Object tag) {
+                List<TrainStop> stops = new ArrayList<>();
+                for (TrainStop s : data.getStops()) {
+                    if (s.getDepartureTime().isBefore(finalTimeFilter)) {
+                        stops.add(s);
+                    }
+                }
+                successListener.onSuccessResponse(new LiveBoard(data, stops.toArray(new TrainStop[]{}), data.getSearchTime()), tag);
+            }
+        }, new IRailErrorResponseListener<LiveBoard>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                errorListener.onErrorResponse(e, tag);
+            }
+        }, tag);
     }
 
     @Override

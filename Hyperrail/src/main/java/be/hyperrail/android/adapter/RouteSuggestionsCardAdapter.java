@@ -22,7 +22,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import be.hyperrail.android.persistence.RouteQuery;
+import java.util.List;
+
+import be.hyperrail.android.persistence.RouteSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
 
 /**
  * An adapter to show RouteQueries (recent/favorite routes) in a recyclerview
@@ -30,17 +33,17 @@ import be.hyperrail.android.persistence.RouteQuery;
 public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSuggestionsCardAdapter.RouteHistoryViewHolder> {
 
     private final Context context;
-    private RouteQuery[] queries;
+    private List<Suggestion<RouteSuggestion>> queries;
 
-    private OnRecyclerItemClickListener<RouteQuery> listener;
-    private OnRecyclerItemLongClickListener<RouteQuery> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<RouteSuggestion>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<RouteSuggestion>> longClickListener;
 
-    public RouteSuggestionsCardAdapter(Context context, RouteQuery[] queries) {
+    public RouteSuggestionsCardAdapter(Context context, List<Suggestion<RouteSuggestion>> queries) {
         this.queries = queries;
         this.context = context;
     }
 
-    public void updateHistory(RouteQuery[] queries) {
+    public void updateHistory(List<Suggestion<RouteSuggestion>> queries) {
         this.queries = queries;
         this.notifyDataSetChanged();
     }
@@ -59,16 +62,16 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
 
     @Override
     public void onBindViewHolder(RouteHistoryViewHolder holder, int position) {
-        final RouteQuery query = queries[position];
+        final Suggestion<RouteSuggestion> query = queries.get(position);
 
-        holder.vFrom.setText(query.fromName);
-        holder.vTo.setText(query.toName);
+        holder.vFrom.setText(query.getData().from.getLocalizedName());
+        holder.vTo.setText(query.getData().to.getLocalizedName());
 
-        switch (query.type) {
-            case RECENT_ROUTE:
+        switch (query.getType()) {
+            case HISTORY:
                 holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.ic_history));
                 break;
-            case FAVORITE_ROUTE:
+            case FAVORITE:
                 holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.ic_star));
                 break;
         }
@@ -93,11 +96,11 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
         });
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<RouteQuery> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<RouteSuggestion>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<RouteQuery> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<RouteSuggestion>> listener) {
         this.longClickListener = listener;
     }
 
@@ -106,7 +109,7 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
         if (queries == null){
             return 0;
         }
-        return queries.length;
+        return queries.size();
     }
 
     class RouteHistoryViewHolder extends RecyclerView.ViewHolder {

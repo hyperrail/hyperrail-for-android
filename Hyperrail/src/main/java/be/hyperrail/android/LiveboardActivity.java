@@ -14,9 +14,9 @@ package be.hyperrail.android;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +43,9 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.LiveboardAppendHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.persistence.StationSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 
@@ -54,7 +57,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     private LiveBoard mCurrentLiveboard;
     private Station mCurrentStation;
 
-    private AsyncTask runningTask;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     public static Intent createIntent(Context context, Station station) {
@@ -70,9 +72,21 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         return i;
     }
 
+    private Intent createShortcutIntent() {
+        Intent i = new Intent(this, LiveboardActivity.class);
+        i.putExtra("shortcut", true);
+        i.putExtra("station", mCurrentStation.getId());
+        return i;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        this.mCurrentStation = (Station) getIntent().getSerializableExtra("station");
+
+        if (getIntent().hasExtra("shortcut")) {
+            this.mCurrentStation = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("station"));
+        } else {
+            this.mCurrentStation = (Station) getIntent().getSerializableExtra("station");
+        }
 
         if (getIntent().hasExtra("datetime")) {
             this.mSearchDate = (DateTime) getIntent().getSerializableExtra("datetime");
@@ -84,6 +98,10 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
         super.onCreate(savedInstanceState);
         setTitle(getString(R.string.title_departures));
+
+        if (this.mCurrentStation != null) {
+            setSubTitle(this.mCurrentStation.getLocalizedName());
+        }
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Bundle bundle = new Bundle();
@@ -105,14 +123,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (runningTask != null && runningTask.getStatus() != AsyncTask.Status.FINISHED) {
-            runningTask.cancel(true);
-        }
-    }
-
-    @Override
     protected int getLayout() {
         return R.layout.activity_liveboard;
     }
@@ -131,6 +141,20 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             case R.id.action_to:
                 startActivity(MainActivity.createRouteToIntent(getApplicationContext(), mCurrentStation.getName()));
                 return true;
+            case R.id.action_shortcut:
+                Intent shortcutIntent = createShortcutIntent();
+
+                Intent addIntent = new Intent();
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentStation.getLocalizedName());
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                getApplicationContext().sendBroadcast(addIntent);
+
+                Snackbar.make(vLayoutRoot, R.string.shortcut_created,Snackbar.LENGTH_LONG).show();
+
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -182,11 +206,14 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
                 // If we didn't get a result, try the next data
                 if (data.getStops().length == 0) {
-                    LiveboardActivity.this.getNextData();
+                    LiveboardActivity.this.loadNextRecyclerviewItems();
                 } else {
                     // Enable infinite scrolling again
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
                 }
+
+                // Scroll past the load earlier item
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
             }
 
         }, new IRailErrorResponseListener<LiveBoard>() {
@@ -201,8 +228,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     }
 
     @Override
-    protected void getNextData() {
+    public void loadNextRecyclerviewItems() {
         if (mCurrentLiveboard == null) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             return;
         }
 
@@ -216,17 +244,62 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     if (mCurrentLiveboard == null) {
                         ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
                     }
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
+
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+
+                // Scroll past the "load earlier"
+                LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
+                if (mgr.findFirstVisibleItemPosition() == 0) {
+                    mgr.scrollToPositionWithOffset(1, 0);
+                }
+
             }
         }, new IRailErrorResponseListener<LiveBoard>() {
             @Override
             public void onErrorResponse(Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).resetInfiniteScrollingState();
+                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             }
-        }, null);
+        });
+    }
+
+    @Override
+    public void loadPreviousRecyclerviewItems() {
+        if (mCurrentLiveboard == null) {
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            return;
+        }
+
+        LiveboardAppendHelper helper = new LiveboardAppendHelper();
+        helper.prependLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
+            @Override
+            public void onSuccessResponse(LiveBoard data, Object tag) {
+                // Compare the new one with the old one to check if stops have been added
+                if (data.getStops().length == mCurrentLiveboard.getStops().length) {
+                    if (mCurrentLiveboard == null) {
+                        ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), LiveboardActivity.this, (mSearchDate == null));
+                    }
+                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
+                }
+                mCurrentLiveboard = data;
+                showData(mCurrentLiveboard);
+
+                // Scroll past the load earlier item
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+
+                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            }
+        }, new IRailErrorResponseListener<LiveBoard>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+                ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
+                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            }
+        });
     }
 
     @Override
@@ -254,12 +327,12 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public void markFavorite(boolean favorite) {
         // Don't favorite stuff before it's loaded
-        if (mCurrentLiveboard == null) {
+        if (mCurrentStation == null) {
             return;
         }
 
         if (favorite) {
-            mPersistentQuaryProvider.addFavoriteStation(mCurrentStation);
+            mPersistentQueryProvider.store(new Suggestion<>(new StationSuggestion(mCurrentStation), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -269,7 +342,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     })
                     .show();
         } else {
-            mPersistentQuaryProvider.removeFavoriteStation(mCurrentStation);
+            mPersistentQueryProvider.delete(new Suggestion<>(new StationSuggestion(mCurrentStation), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -285,7 +358,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public boolean isFavorite() {
         // If it's not loaded, it's not a favorite
-        return mCurrentStation != null && mPersistentQuaryProvider.isFavoriteStation(mCurrentStation);
+        return mCurrentStation != null && mPersistentQueryProvider.isFavorite(new StationSuggestion(mCurrentStation));
 
     }
 

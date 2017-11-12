@@ -37,31 +37,34 @@ import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
  */
 public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    protected final int VIEW_TYPE_ITEM = 601;
-    protected final int VIEW_TYPE_LOADING = 600;
+    protected final int VIEW_TYPE_ITEM = 600;
+    protected final int VIEW_TYPE_LOADING = 601;
+    protected final int VIEW_TYPE_LOAD_EARLIER = 602;
 
-    private final InfiniteScrollingDataSource mOnLoadMoreListener;
-    private boolean isLoading;
+    private final InfiniteScrollingDataSource mInfiniteScrollingDataSource;
+
+    private boolean mIsLoadingNext;
+    private boolean mIsLoadingPrevious;
     private final Context context;
-    private final LinearLayoutManager linearLayoutManager;
-    private boolean infiniteScrollingEnabled = true;
-    protected OnRecyclerItemClickListener<T> onClickListener;
-    protected OnRecyclerItemLongClickListener<T> onLongClickListener;
+    private final LinearLayoutManager mRecyclerViewLayoutMgr;
+    private boolean mInfiniteNextScrolling = true;
+    private boolean mInfinitePrevScrolling = true;
+    protected OnRecyclerItemClickListener<T> mOnClickListener;
+    protected OnRecyclerItemLongClickListener<T> mOnLongClickListener;
 
     /**
      * Create a new InfiniteScrollingAdapter
      *
-     * @param context                      The context
-     * @param recyclerView                 The recyclerview in which this adapter will be used
-     * @param mInfiniteScrollingDataSource The listener which should be notified when the end of the list is reached
+     * @param context                     The context
+     * @param recyclerView                The recyclerview in which this adapter will be used
+     * @param infiniteScrollingDataSource The listener which should be notified when new data should be loaded
      */
-    protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, final InfiniteScrollingDataSource mInfiniteScrollingDataSource) {
+    protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, final InfiniteScrollingDataSource infiniteScrollingDataSource) {
 
         this.context = context;
 
-        this.mOnLoadMoreListener = mInfiniteScrollingDataSource;
-        this.linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
+        this.mInfiniteScrollingDataSource = infiniteScrollingDataSource;
+        this.mRecyclerViewLayoutMgr = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -79,10 +82,10 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param dy           The scroll distance along the y axis
      */
     private void checkInfiniteScrolling(RecyclerView recyclerView, int dx, int dy) {
-        if (infiniteScrollingEnabled && !isLoading && mOnLoadMoreListener != null && dy >= 0 && linearLayoutManager.findLastVisibleItemPosition() == InfiniteScrollingAdapter.this.getItemCount() - 1) {
+        if (mInfiniteNextScrolling && !mIsLoadingNext && mInfiniteScrollingDataSource != null && dy >= 0 && mRecyclerViewLayoutMgr.findLastVisibleItemPosition() == InfiniteScrollingAdapter.this.getItemCount() - 1) {
             // Load more ...
-            isLoading = true;
-            (InfiniteScrollingAdapter.this).mOnLoadMoreListener.loadMoreRecyclerviewItems();
+            mIsLoadingNext = true;
+            (InfiniteScrollingAdapter.this).mInfiniteScrollingDataSource.loadNextRecyclerviewItems();
         }
     }
 
@@ -92,16 +95,28 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param enabled true to enable infinite scrolling
      */
     public void setInfiniteScrolling(boolean enabled) {
-        this.infiniteScrollingEnabled = enabled;
+        this.mInfiniteNextScrolling = enabled;
+        this.mInfinitePrevScrolling = enabled;
         notifyDataSetChanged();
     }
 
     @Override
     public final int getItemViewType(int position) {
-        if (infiniteScrollingEnabled && position == InfiniteScrollingAdapter.this.getItemCount() - 1) {
+        if (mInfinitePrevScrolling && position == 0) {
+            if (mIsLoadingPrevious) {
+                return VIEW_TYPE_LOADING;
+            } else {
+                return VIEW_TYPE_LOAD_EARLIER;
+            }
+        } else if (mInfiniteNextScrolling && position == InfiniteScrollingAdapter.this.getItemCount() - 1) {
             return VIEW_TYPE_LOADING;
         } else {
-            return onGetItemViewType(position);
+            if (mInfinitePrevScrolling) {
+                // Take into account the load earlier button
+                return onGetItemViewType(position - 1);
+            } else {
+                return onGetItemViewType(position);
+            }
         }
     }
 
@@ -119,6 +134,9 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
         if (viewType == VIEW_TYPE_LOADING) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_loading, parent, false);
             return new LoadingViewHolder(view);
+        } else if (viewType == VIEW_TYPE_LOAD_EARLIER) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_load_button, parent, false);
+            return new LoadMoreButtonViewHolder(view);
         } else {
             return onCreateItemViewHolder(parent, viewType);
         }
@@ -145,8 +163,22 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
             loadingViewHolder.progressBar.getIndeterminateDrawable().setColorFilter(
                     ContextCompat.getColor(context, R.color.colorPrimary),
                     PorterDuff.Mode.SRC_ATOP);
+        } else if (holder instanceof LoadMoreButtonViewHolder) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    InfiniteScrollingAdapter.this.mIsLoadingPrevious = true;
+                    InfiniteScrollingAdapter.this.notifyDataSetChanged();
+                    InfiniteScrollingAdapter.this.mInfiniteScrollingDataSource.loadPreviousRecyclerviewItems();
+                }
+            });
         } else {
-            onBindItemViewHolder(holder, position);
+            if (mInfinitePrevScrolling) {
+                // Take into account the load earlier button
+                onBindItemViewHolder(holder, position - 1);
+            } else {
+                onBindItemViewHolder(holder, position);
+            }
         }
     }
 
@@ -159,17 +191,22 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     protected abstract void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position);
 
     /**
-     * The number of data items + the progress bar
+     * The number of data items + the progress bar and load earlier button, if needed
      *
-     * @return The number of data items + 1
+     * @return The number of items in the list
      */
     @Override
     public final int getItemCount() {
-        if (infiniteScrollingEnabled) {
-            return getListItemCount() + 1;
-        } else {
-            return getListItemCount();
+        int extra = 0;
+        if (mInfiniteNextScrolling) {
+            extra++;
         }
+        if (mInfinitePrevScrolling) {
+            extra++;
+        }
+
+        return getListItemCount() + extra;
+
     }
 
     /**
@@ -180,28 +217,33 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     protected abstract int getListItemCount();
 
     public void setOnItemClickListener(OnRecyclerItemClickListener<T> listener) {
-        this.onClickListener = listener;
+        this.mOnClickListener = listener;
     }
 
     public void setOnItemLongClickListener(OnRecyclerItemLongClickListener<T> listener) {
-        this.onLongClickListener = listener;
+        this.mOnLongClickListener = listener;
     }
-
 
     /**
      * The protected method to indicate loading new items has been completed.
      * For use in adapters.
      */
-    protected void setLoaded() {
-        isLoading = false;
+    public void setNextLoaded() {
+        mIsLoadingNext = false;
     }
 
-    /**
-     * A public method for resetting the scrolling state, for use by code everywhere except adapters.
-     * This can be used when loading more data failed, thus meaning the adapter can't add more data & call setLoaded.
-     */
-    public void resetInfiniteScrollingState() {
-        setLoaded();
+    public void setPrevLoaded() {
+        mIsLoadingPrevious = false;
+    }
+
+    public void disableInfinitePrevious(){
+        mInfinitePrevScrolling = false;
+        notifyDataSetChanged();
+    }
+
+    public void disableInfiniteNext(){
+        mInfiniteNextScrolling = false;
+        notifyDataSetChanged();
     }
 
     /**
@@ -214,6 +256,16 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
         LoadingViewHolder(View itemView) {
             super(itemView);
             progressBar = itemView.findViewById(R.id.progressBar);
+        }
+    }
+
+    /**
+     * A ViewHolder for the spinner
+     */
+    private static class LoadMoreButtonViewHolder extends RecyclerView.ViewHolder {
+
+        LoadMoreButtonViewHolder(View itemView) {
+            super(itemView);
         }
     }
 }

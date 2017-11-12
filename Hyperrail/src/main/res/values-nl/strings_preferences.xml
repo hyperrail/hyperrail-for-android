@@ -14,8 +14,6 @@
     <string name="show_nearby_stations">Toon stations rondom me</string>
     <string name="pref_title_cards">Card view gebruiken</string>
     <string name="pref_description_cards">Toon material design kaarten in plaats van een normale lijst</string>
-    <string name="pref_always_show_time">Altijd datum/tijd keuze tonen bij route</string>
-    <string name="pref_always_show_time_summary">Indien niet getoond kan je deze open swipen</string>
     <string name="pref_short_tap_route_detail">Kort op route tikken voor nieuw venster</string>
     <string name="pref_short_tap_route_detail_summary">Kort op route tikken voor nieuw venster, lang tikken om uit te klappen</string>
     <string name="pref_github">Bekijk op github</string>
@@ -29,7 +27,7 @@
         <item>Kortbij / Favorieten / Recenten</item>
     </string-array>
 
-    <string-array name="pref_list_route_order_values">
+    <string-array name="pref_list_history_favorites_order_values">
         <item>Recenten / Favorieten</item>
         <item>Favorieten / Recenten</item>
     </string-array>

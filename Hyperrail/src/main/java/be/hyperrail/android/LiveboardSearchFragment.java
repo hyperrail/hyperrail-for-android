@@ -13,7 +13,9 @@
 package be.hyperrail.android;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,7 +26,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,14 +51,17 @@ import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
-import be.hyperrail.android.persistence.RouteQuery;
+import be.hyperrail.android.persistence.StationSuggestion;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
 
+import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
 import static java.util.logging.Level.INFO;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Station>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Object> {
+public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<StationSuggestion>>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Suggestion<StationSuggestion>> {
 
     private static final String LogTag = "LiveboardSearch";
     private static final int COARSE_LOCATION_REQUEST = 1;
@@ -70,7 +74,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     private PersistentQueryProvider persistentQueryProvider;
     private boolean mNearbyOnTop;
-    private RouteQuery mLastSelectedQuery;
+    private Suggestion<StationSuggestion> mLastSelectedQuery;
     private StationCardAdapter mStationAdapter;
 
     public LiveboardSearchFragment() {
@@ -157,7 +161,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     private void setSuggestedStations() {
         stationRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
         // TODO pixel on Android O requires this much validation. There should be a better way for this.
-        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null && stationRecyclerView.getAdapter() instanceof  StationCardAdapter) {
+        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null && stationRecyclerView.getAdapter() instanceof StationCardAdapter) {
             ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
         }
     }
@@ -219,7 +223,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param station The station which liveboard should be loaded
      */
     private void openLiveboard(Station station) {
-        persistentQueryProvider.addRecentStation(station);
+        persistentQueryProvider.store(new Suggestion<>(new StationSuggestion(station), HISTORY));
         Intent i = LiveboardActivity.createIntent(getActivity(), station);
         startActivity(i);
     }
@@ -271,17 +275,13 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Station object) {
-        openLiveboard(object);
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
+        openLiveboard(object.getData());
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Object object) {
-        if (object instanceof RouteQuery) {
-            mLastSelectedQuery = (RouteQuery) object;
-        } else {
-            mLastSelectedQuery = null;
-        }
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
+        mLastSelectedQuery = object;
     }
 
     @Override
@@ -289,18 +289,18 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         super.onCreateContextMenu(menu, v, menuInfo);
         if (mLastSelectedQuery != null) {
             getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
-            menu.setHeaderTitle(mLastSelectedQuery.fromName);
+            menu.setHeaderTitle(mLastSelectedQuery.getData().getLocalizedName());
         }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete && mLastSelectedQuery != null) {
-            if (mLastSelectedQuery.type == RouteQuery.RouteQueryType.FAVORITE_ROUTE) {
-                persistentQueryProvider.removeFavoriteStation(mLastSelectedQuery.from);
+            if (mLastSelectedQuery.getType() == SuggestionType.FAVORITE) {
+                persistentQueryProvider.delete(mLastSelectedQuery);
                 Snackbar.make(stationRecyclerView, R.string.unmarked_station_favorite, Snackbar.LENGTH_LONG).show();
             } else {
-                persistentQueryProvider.removeRecentStation(mLastSelectedQuery.from);
+                persistentQueryProvider.delete(mLastSelectedQuery);
             }
             mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
         }
@@ -314,41 +314,45 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * Checks for setting, permission, and if both are set, get the last known location of the device (coarse precision / city level)
      */
     private void getLastLocation() {
-        if (!PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getBoolean("stations_enable_nearby", true)) {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        if (preferences.contains("stations_enable_nearby") && !preferences.getBoolean("stations_enable_nearby", true)) {
             // Don't use this feature if it's disabled in settings
             return;
         }
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED || !preferences.contains("stations_enable_nearby")) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            // Explain anywau
+            /*if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) */
 
-                Intent i = new Intent(getActivity(), PermissionRequestExplanation.class);
-                i.putExtra("title", getResources().getString(R.string.permission_description_location_title));
-                i.putExtra("description", getResources().getString(R.string.permission_description_location_description));
-                i.putExtra("icon", R.drawable.ic_location_on_48);
-                i.putExtra("permission", Manifest.permission.ACCESS_COARSE_LOCATION);
-                i.putExtra("preference", "stations_enable_nearby");
-                startActivity(i);
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestPermissions(
-                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                            COARSE_LOCATION_REQUEST);
+            AlertDialog explanation = (new AlertDialog.Builder(this.getActivity())).create();
+            explanation.setTitle(R.string.permission_description_location_title);
+            explanation.setMessage(getResources().getString(R.string.permission_description_location_description));
+            explanation.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    preferences.edit().putBoolean("stations_enable_nearby", true).apply();
+                    // Ask
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        LiveboardSearchFragment.this.requestPermissions(
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                COARSE_LOCATION_REQUEST);
+                    }
                 }
+            });
+            explanation.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // Disable
+                    preferences.edit().putBoolean("stations_enable_nearby", false).apply();
+                }
+            });
 
-            }
+            explanation.show();
         } else {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mGoogleApiClient);

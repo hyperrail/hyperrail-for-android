@@ -123,7 +123,6 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             displayList = null;
         }
 
-        super.setLoaded();
         this.notifyDataSetChanged();
     }
 
@@ -269,8 +268,8 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onClickListener != null) {
-                    onClickListener.onRecyclerItemClick(RouteCardAdapter.this, route);
+                if (mOnClickListener != null) {
+                    mOnClickListener.onRecyclerItemClick(RouteCardAdapter.this, route);
                 }
 
                 if (holder.vDetailContainer.getVisibility() == View.GONE) {
@@ -284,8 +283,8 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (onLongClickListener != null) {
-                    onLongClickListener.onRecyclerItemLongClick(RouteCardAdapter.this, route);
+                if (mOnLongClickListener != null) {
+                    mOnLongClickListener.onRecyclerItemLongClick(RouteCardAdapter.this, route);
                 }
                 return false;
             }

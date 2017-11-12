@@ -24,11 +24,14 @@ import be.hyperrail.android.irail.db.Station;
  */
 public class TrainStub implements Serializable {
 
-    protected final String id;
-    private final Station direction;
+    protected  String id;
+    protected  Station direction;
 
     // Direction is required, since we need to display something
-    TrainStub(String id, Station direction) {
+    public TrainStub(String id, Station direction) {
+        if (id != null && !id.startsWith("BE.NMBS.")){
+            id = "BE.NMBS." + id;
+        }
         this.id = id;
         this.direction = direction;
     }
