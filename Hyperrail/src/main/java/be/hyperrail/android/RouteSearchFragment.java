@@ -286,12 +286,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         outState.putString("to", vToText.getText().toString());
     }
 
-    @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-
-    }
-
     public static RouteSearchFragment newInstance() {
         RouteSearchFragment fragment = new RouteSearchFragment();
         Bundle args = new Bundle();

@@ -7,9 +7,9 @@
 package be.hyperrail.android.persistence;
 
 /**
- * Created by Bert on 11-11-2017.
+ * A suggestion wraps a suggestable object together with the reason why it was suggested
+ * @param <T>
  */
-
 public class Suggestion<T extends Suggestable> {
 
     private final T data;

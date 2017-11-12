@@ -265,9 +265,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             boolean isWalking = Objects.equals(train.getId(), "WALK");
 
             if (isWalking) {
-                routeTrainViewHolder.vDirection.setText("Walk");
+                routeTrainViewHolder.vDirection.setText(R.string.walk_heading);
                 routeTrainViewHolder.vTrainType.setVisibility(View.GONE);
-                routeTrainViewHolder.vTrainNumber.setText("Walk to the next station");
+                routeTrainViewHolder.vTrainNumber.setText(R.string.walk_description);
                 routeTrainViewHolder.vOccupancy.setVisibility(View.GONE);
                 if (transferBefore.hasArrived()) {
                     routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_filled));

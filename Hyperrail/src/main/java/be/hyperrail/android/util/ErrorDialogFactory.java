@@ -35,23 +35,23 @@ public class ErrorDialogFactory {
      * @param finish    Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showErrorDialog(final Exception exception, final Activity context, final boolean finish) {
+    public static void showErrorDialog(final Exception exception, final Activity context, final boolean finish) {
         if (exception instanceof ServerError) {
             if (((ServerError) exception).networkResponse != null) {
                 if (((ServerError) exception).networkResponse.statusCode == 404) {
-                    return showNotFoundErrorDialog(context, finish);
+                    showNotFoundErrorDialog(context, finish);
                 } else if (((ServerError) exception).networkResponse.statusCode == 500) {
-                    return showServerErrorDialog(context, finish);
+                    showServerErrorDialog(context, finish);
                 } else {
-                    return showServerErrorDialog(context, finish);
+                    showServerErrorDialog(context, finish);
                 }
             } else {
-                return showGeneralErrorDialog(context, finish);
+                showGeneralErrorDialog(context, finish);
             }
         } else if (exception instanceof NoConnectionError){
-            return showNetworkErrorDialog(context,finish);
+            showNetworkErrorDialog(context, finish);
         } else {
-            return showGeneralErrorDialog(context, finish);
+            showGeneralErrorDialog(context, finish);
         }
     }
 
@@ -155,8 +155,8 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showInvalidDepartureStationError(final Activity context, final boolean finish) {
-        return ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_not_found_title, R.string.error_departure_not_found_message, finish);
+    public static void showInvalidDepartureStationError(final Activity context, final boolean finish) {
+        ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_not_found_title, R.string.error_departure_not_found_message, finish);
     }
 
     /**
@@ -166,8 +166,8 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showInvalidDestinationStationError(final Activity context, final boolean finish) {
-        return ErrorDialogFactory.showCustomDialog(context, R.string.error_destination_not_found_title, R.string.error_destination_not_found_message, finish);
+    public static void showInvalidDestinationStationError(final Activity context, final boolean finish) {
+        ErrorDialogFactory.showCustomDialog(context, R.string.error_destination_not_found_title, R.string.error_destination_not_found_message, finish);
     }
 
     /**
@@ -177,8 +177,8 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
-    public static AlertDialog showDepartureEqualsArrivalStationError(final Activity context, final boolean finish) {
-        return ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_equals_destination, R.string.error_departure_equals_destination_message, finish);
+    public static void showDepartureEqualsArrivalStationError(final Activity context, final boolean finish) {
+        ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_equals_destination, R.string.error_departure_equals_destination_message, finish);
     }
 
     /**

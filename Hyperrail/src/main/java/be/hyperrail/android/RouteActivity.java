@@ -273,11 +273,6 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     protected void showData(RouteResult routeList) {
         if (mSearchDate == null) {
             vWarningNotRealtime.setVisibility(View.GONE);

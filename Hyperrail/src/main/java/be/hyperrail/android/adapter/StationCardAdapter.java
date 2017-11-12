@@ -124,7 +124,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationCardAdapter.this, new Suggestion<StationSuggestion>(new StationSuggestion(station), SuggestionType.LIST));
+                    listener.onRecyclerItemClick(StationCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
                 }
             }
         });
@@ -133,7 +133,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, new Suggestion<StationSuggestion>(new StationSuggestion(station), SuggestionType.LIST));
+                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
                 }
                 return false;
             }

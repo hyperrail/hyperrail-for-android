@@ -54,7 +54,6 @@ import be.hyperrail.android.persistence.TrainSuggestion;
  */
 public class TrainSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<TrainSuggestion>>, OnRecyclerItemLongClickListener<Suggestion<TrainSuggestion>> {
 
-    private static final String LogTag = "TrainSearch";
     private RecyclerView recentTrainsRecyclerView;
     private EditText vTrainSearchField;
 
@@ -105,9 +104,7 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
 
                     //noinspection StatementWithEmptyBody
-                    if (vTrainSearchField.getText().length() == 0) {
-                        // keep focus on From text
-                    } else {
+                    if (vTrainSearchField.getText().length() != 0) {
                         doSearch();
                     }
                     return true;
@@ -135,11 +132,6 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
             TrainSuggestionsCardAdapter suggestionAdapter = (TrainSuggestionsCardAdapter) recentTrainsRecyclerView.getAdapter();
             suggestionAdapter.setTrains(persistentQueryProvider.getAllTrains());
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     /**

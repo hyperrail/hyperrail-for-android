@@ -14,7 +14,7 @@
     <string name="action_time">Modifier l\'heure</string>
     <string name="action_to">Nouvelle route vers ici</string>
     <string name="action_unmark_as_favorite">Désélectionner comme favori</string>
-    <string name="action_close">Fermer</string>
+    <string name="action_close">Ferme</string>
     <string name="delay">%1$d\'</string>
     <string name="error_departure_not_found_message">La station de départ n\'a pas pu être trouvée</string>
     <string name="error_departure_not_found_title">Station de départ invalide</string>
@@ -34,7 +34,6 @@
     <string name="marked_route_favorite">Route marquée comme favori</string>
     <string name="marked_station_favorite">Station marquée comme favori</string>
     <string name="time_now">immédiatement</string>
-    <string name="permission_continue">Continuer</string>
     <string name="permission_description_location_description">L’app peut montrer quelles stations soient trouvent à proximité si vous indiquez votre endroit grossier. Votre position n’est jamais envoyée sur internet. Vous voulez montrer à proximité de stations? Vous pouvez changer cela dans les paramètres.</string>
     <string name="to">Destination</string>
     <string name="time_today">aujourd\'hui</string>
@@ -53,10 +52,8 @@
     <string name="warning_not_realtime">Vous voyez les résultats pour</string>
     <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy HH:mm</string>
     <string name="permission_description_location_title">Localisation des stations à proximité</string>
-    <string name="permission_request_title">Cette fonction nécessite votre permission</string>
     <string name="powered_by_irail_be">Propulsé par irail.be</string>
-
-    <string name="action_search">Chercher</string>
+    <string name="action_search">Cherche</string>
     <string name="search_station_name">Nom de la station</string>
     <string name="status_cancelled">Annulé</string>
     <string name="error_departure_equals_destination_message">La gare d\'arrivée doit être différente de la gare de départ</string>

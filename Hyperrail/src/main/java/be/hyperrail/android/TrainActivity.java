@@ -176,10 +176,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         }, null);
     }
 
-    protected void getNextData() {
-        // No next data
-    }
-
     protected void showData(Train train) {
         setSubTitle(train.getName() + " " + train.getDirection().getLocalizedName());
 

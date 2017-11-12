@@ -11,7 +11,6 @@
 
     <string name="permission_description_location_description">The app can show which stations are nearby if you provide your coarse location. Your location is never sent over the internet. You can change this in settings. Do you want to enable this functionality now?</string>
     <string name="permission_description_location_title">Locating nearby stations</string>
-    <string name="permission_continue">Continue</string>
 
     <string name="action_share">Share this search</string>
     <string name="action_time">Change time</string>
@@ -35,7 +34,6 @@
     <string name="undo">Undo</string>
 
     <string name="title_activity_settings">Settings</string>
-    <string name="permission_request_title">This function requires your permission</string>
     <string name="error_notfound_message">Your search returned no results.</string>
     <string name="error_notfound_title">No results</string>
     <string name="error_servererror_title">Server error</string>
@@ -85,6 +83,8 @@
     <string name="Yes">Yes</string>
     <string name="action_shortcut">Create shortcut</string>
     <string name="shortcut_created">A shortcut has been added to your homescreen</string>
+    <string name="walk_description">Walk to the next station</string>
+    <string name="walk_heading">Walk</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

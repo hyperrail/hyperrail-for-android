@@ -10,10 +10,8 @@
     <string name="title_activity_settings">Instellingen</string>
     <string name="title_feedback">Feedback</string>
 
-    <string name="permission_request_title">Deze functie vereist je toestemming</string>
     <string name="permission_description_location_description">De app kan stations in de buurt tonen als je toegang tot je geschatte locatie geeft. Je locatie wordt nooit verzonden over het internet. Je kan dit wijzigen in instellingen. Wil je deze functie nu inschakelen? </string>
     <string name="permission_description_location_title">Nabije stations zoeken</string>
-    <string name="permission_continue">Verder</string>
 
     <string name="action_share">Deel…</string>
     <string name="action_time">Tijd wijzigen</string>
