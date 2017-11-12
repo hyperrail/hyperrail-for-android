@@ -73,6 +73,10 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_train);
+        if (mTrain == null) {
+            setSubTitle(mCurrentSearchQuery.getName());
+        }
+
     }
 
     @Override
@@ -100,7 +104,6 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     protected RecyclerView.Adapter getAdapter() {
         return new TrainStopCardAdapter(this, null);
     }
-
 
     protected void getData() {
         vRefreshLayout.setRefreshing(true);
@@ -174,7 +177,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     @Override
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQueryProvider.store(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.store(new Suggestion<TrainSuggestion>(new TrainSuggestion(this.mTrain, this.mTrain.getStops()[0].getStation(), this.mTrain.getStops()[0].getDepartureTime()), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -199,7 +202,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     public boolean isFavorite() {
-        return mPersistentQueryProvider.isFavorite(new TrainSuggestion(this.mTrain));
+        return mPersistentQueryProvider.isFavorite(new TrainSuggestion(this.mCurrentSearchQuery));
     }
 
     @Override

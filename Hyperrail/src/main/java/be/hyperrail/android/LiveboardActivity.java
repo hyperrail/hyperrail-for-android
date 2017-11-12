@@ -87,6 +87,10 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         super.onCreate(savedInstanceState);
         setTitle(getString(R.string.title_departures));
 
+        if (this.mCurrentStation != null) {
+            setSubTitle(this.mCurrentStation.getLocalizedName());
+        }
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mCurrentStation.getId());
@@ -183,7 +187,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 }
 
                 // Scroll past the load earlier item
-                ((LinearLayoutManager)vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1,0);
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
             }
 
         }, new IRailErrorResponseListener<LiveBoard>() {
@@ -222,9 +226,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
 
                 // Scroll past the "load earlier"
-                LinearLayoutManager mgr = ((LinearLayoutManager)vRecyclerView.getLayoutManager());
-                if (mgr.findFirstVisibleItemPosition() == 0){
-                    mgr.scrollToPositionWithOffset(1,0);
+                LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
+                if (mgr.findFirstVisibleItemPosition() == 0) {
+                    mgr.scrollToPositionWithOffset(1, 0);
                 }
 
             }
@@ -259,7 +263,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 showData(mCurrentLiveboard);
 
                 // Scroll past the load earlier item
-                ((LinearLayoutManager)vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1,0);
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
 
                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
@@ -297,7 +301,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     @Override
     public void markFavorite(boolean favorite) {
         // Don't favorite stuff before it's loaded
-        if (mCurrentLiveboard == null) {
+        if (mCurrentStation == null) {
             return;
         }
 

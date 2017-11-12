@@ -185,10 +185,10 @@ public class PersistentQueryProvider {
      * @return Sorted array with favorite and recent station names
      */
     public List<Suggestion<TrainSuggestion>> getAllTrains() {
-        int recentLimit = Integer.valueOf(sharedPreferences.getString("stations_history_count", "3"));
-        int order = Integer.valueOf(sharedPreferences.getString("routes_order", "0"));
-        // 0 || 2: recents before favorites
-        // 1 || 3: favorites before recents
+        int recentLimit = Integer.valueOf(sharedPreferences.getString("trains_history_count", "3"));
+        int order = Integer.valueOf(sharedPreferences.getString("trains_order", "0"));
+        // 0: recents before favorites
+        // 1: favorites before recents
 
         List<Suggestion<TrainSuggestion>> favorites = getTrains(FAVORITE);
 

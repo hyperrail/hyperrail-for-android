@@ -30,8 +30,8 @@
     <string name="unmarked_route_favorite">Unmarked route as favorite</string>
     <string name="marked_station_favorite">Marked station as favorite</string>
     <string name="unmarked_station_favorite">Unmarked station as favorite</string>
-    <string name="marked_train_favorite">Marked route as favorite</string>
-    <string name="unmarked_train_favorite">Unmarked route as favorite</string>
+    <string name="marked_train_favorite">Marked train as favorite</string>
+    <string name="unmarked_train_favorite">Unmarked train as favorite</string>
     <string name="undo">Undo</string>
 
     <string name="title_activity_settings">Settings</string>

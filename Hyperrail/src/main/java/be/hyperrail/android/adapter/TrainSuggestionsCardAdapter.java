@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.List;
 
 import be.hyperrail.android.R;
@@ -55,6 +58,13 @@ public class TrainSuggestionsCardAdapter extends RecyclerView.Adapter<TrainSugge
 
         final Suggestion<TrainSuggestion> t = suggestedTrains.get(position);
         String title = t.getData().getName();
+        if (t.getData().getDepartureDate() != null) {
+            DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
+            title += " - " + df.print(t.getData().getDepartureDate());
+        }
+        if (t.getData().getOrigin() != null) {
+            title += " - " + t.getData().getOrigin().getLocalizedName();
+        }
         if (t.getData().getDirection() != null) {
             title += " - " + t.getData().getDirection().getLocalizedName();
         }

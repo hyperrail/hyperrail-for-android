@@ -6,18 +6,24 @@
 
 package be.hyperrail.android.persistence;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
 
+import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.TrainStub;
 
 public class TrainSuggestion extends TrainStub implements Suggestable {
 
     Date created_at;
+    Station origin;
+    DateTime departure;
 
+    // This method is required for creation through reflection
+    @SuppressWarnings("unused")
     TrainSuggestion() {
         super(null, null);
     }
@@ -31,6 +37,17 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
         this.created_at = new Date();
     }
 
+    public TrainSuggestion(TrainStub trainStub, Station origin, DateTime departure) {
+        super(null, null);
+        if (trainStub != null) {
+            this.id = trainStub.getId();
+            this.direction = trainStub.getDirection();
+        }
+        this.created_at = new Date();
+        this.origin = origin;
+        this.departure = departure;
+    }
+
     @Override
     public JSONObject serialize() throws JSONException {
         JSONObject json = new JSONObject();
@@ -38,6 +55,12 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
         json.put("created_at", created_at.getTime());
         if (direction != null) {
             json.put("direction", direction.getId());
+        }
+        if (this.departure != null) {
+            json.put("departure", departure.getMillis());
+        }
+        if (this.origin != null) {
+            json.put("origin", origin.getId());
         }
         return json;
     }
@@ -49,16 +72,30 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
         if (json.has("direction")) {
             this.direction = IrailFactory.getStationsProviderInstance().getStationById(json.getString("direction"));
         }
+        if (json.has("departure")) {
+            this.departure = new DateTime(json.getLong("departure"));
+        }
+        if (json.has("origin")) {
+            this.origin = IrailFactory.getStationsProviderInstance().getStationById(json.getString("origin"));
+        }
     }
 
     @Override
     public String getSortingName() {
-        return getId();
+        return this.id;
     }
 
     @Override
     public Date getSortingDate() {
         return created_at;
+    }
+
+    public Station getOrigin() {
+        return origin;
+    }
+
+    public DateTime getDepartureDate() {
+        return departure;
     }
 
     @Override
