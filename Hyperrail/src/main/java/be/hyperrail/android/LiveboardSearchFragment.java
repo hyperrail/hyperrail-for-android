@@ -161,7 +161,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     private void setSuggestedStations() {
         stationRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
         // TODO pixel on Android O requires this much validation. There should be a better way for this.
-        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null && stationRecyclerView.getAdapter() instanceof  StationCardAdapter) {
+        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null && stationRecyclerView.getAdapter() instanceof StationCardAdapter) {
             ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
         }
     }
@@ -223,7 +223,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param station The station which liveboard should be loaded
      */
     private void openLiveboard(Station station) {
-        persistentQueryProvider.store(new Suggestion<>(new StationSuggestion(station),HISTORY));
+        persistentQueryProvider.store(new Suggestion<>(new StationSuggestion(station), HISTORY));
         Intent i = LiveboardActivity.createIntent(getActivity(), station);
         startActivity(i);
     }
@@ -281,7 +281,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     @Override
     public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
-            mLastSelectedQuery = object;
+        mLastSelectedQuery = object;
     }
 
     @Override
@@ -314,14 +314,15 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * Checks for setting, permission, and if both are set, get the last known location of the device (coarse precision / city level)
      */
     private void getLastLocation() {
-        if (!PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getBoolean("stations_enable_nearby", true)) {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        if (preferences.contains("stations_enable_nearby") && !preferences.getBoolean("stations_enable_nearby", true)) {
             // Don't use this feature if it's disabled in settings
             return;
         }
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED || !preferences.contains("stations_enable_nearby")) {
 
             // Should we show an explanation?
             // Explain anywau
@@ -334,9 +335,10 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
             explanation.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    preferences.edit().putBoolean("stations_enable_nearby", true).apply();
                     // Ask
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                       LiveboardSearchFragment.this.requestPermissions(
+                        LiveboardSearchFragment.this.requestPermissions(
                                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                                 COARSE_LOCATION_REQUEST);
                     }
@@ -346,7 +348,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Disable
-                    PreferenceManager.getDefaultSharedPreferences(LiveboardSearchFragment.this.getActivity()).edit().putBoolean("stations_enable_nearby", false).apply();
+                    preferences.edit().putBoolean("stations_enable_nearby", false).apply();
                 }
             });
 

@@ -18,6 +18,7 @@
 
 package be.hyperrail.android;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -91,6 +92,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        // migrate to 0.9.13 by checking if an old field still exists (this field will be removed by this migration)
+        // clearing is required for both history, favorites and settings due to major changes. Can be deleted by 27 november
+        // TODO: remove code for next production release
+        if (sharedPreferences.contains("migrated1.9.1")) {
+            AlertDialog builder = (new AlertDialog.Builder(this)).create();
+            builder.setTitle("Your settings have been reset");
+            builder.setMessage("In order to complete the update to this version of hyperrail, we had to reset your settings and history. We're sorry for the inconvenience.");
+            builder.show();
+            sharedPreferences.edit()
+                    .clear().commit();
+        }
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 

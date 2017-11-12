@@ -13,7 +13,6 @@
 package be.hyperrail.android.persistence;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -99,13 +98,6 @@ public class PersistentQueryProvider {
         this.context = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.stationProvider = IrailFactory.getStationsProviderInstance();
-        if (sharedPreferences.contains("migrated1.9.1")) {
-            AlertDialog builder = (new AlertDialog.Builder(context)).create();
-            builder.setTitle("Your settings have been reset");
-            builder.setMessage("In order to complete the update to this version of hyperrail, we had to reset your settings and history. We're sorry for the inconvenience.");
-            builder.show();
-            sharedPreferences.edit().clear().commit();
-        }
     }
 
     /**
@@ -304,8 +296,7 @@ public class PersistentQueryProvider {
      * @param object The query to store
      */
     private <T extends Suggestable> void store(String tag, T object, Class<T> classInstance) {
-        SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
-        Set<String> items = new HashSet<>(settings.getStringSet(tag, new HashSet<String>()));
+        Set<String> items = new HashSet<>(sharedPreferences.getStringSet(tag, new HashSet<String>()));
 
         // If this query is already in the recents list, remove it (so we can update it)
         items = removeFromPersistentSet(items, object);
@@ -323,7 +314,7 @@ public class PersistentQueryProvider {
             JSONObject json = object.serialize();
             items.add(json.toString());
 
-            SharedPreferences.Editor editor = settings.edit();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putStringSet(tag, items);
             editor.apply();
 
@@ -395,8 +386,7 @@ public class PersistentQueryProvider {
             return new ArrayList<>(0);
         }
 
-        SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
-        Set<String> items = settings.getStringSet(tag, null);
+        Set<String> items = sharedPreferences.getStringSet(tag, null);
 
         if (items == null) {
             return new ArrayList<>(0);
@@ -424,13 +414,12 @@ public class PersistentQueryProvider {
      * @param query The query to remove
      */
     private void remove(String tag, Suggestable query) {
-        SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
-        Set<String> items = new HashSet<>(settings.getStringSet(tag, new HashSet<String>()));
+        Set<String> items = new HashSet<>(sharedPreferences.getStringSet(tag, new HashSet<String>()));
 
         // If this query is already in the recents list, remove it (so we can update it)
         items = removeFromPersistentSet(items, query);
 
-        SharedPreferences.Editor editor = settings.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(tag, items);
         editor.apply();
     }
@@ -441,8 +430,7 @@ public class PersistentQueryProvider {
      * @param tag The tag for which all queries should be cleared
      */
     private void clear(String tag) {
-        SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(tag, new HashSet<String>());
         editor.apply();
     }
