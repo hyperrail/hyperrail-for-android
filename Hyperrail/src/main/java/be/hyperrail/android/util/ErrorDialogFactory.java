@@ -17,10 +17,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.annotation.StringRes;
 
+import com.android.volley.NoConnectionError;
+import com.android.volley.ServerError;
+
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.exception.InvalidResponseException;
-import be.hyperrail.android.irail.exception.NetworkDisconnectedException;
-import be.hyperrail.android.irail.exception.NotFoundException;
 
 /**
  * This class groups error dialogs for API results, to ensure consistent errors
@@ -36,12 +36,20 @@ public class ErrorDialogFactory {
      * @return The dialog which is shown
      */
     public static AlertDialog showErrorDialog(final Exception exception, final Activity context, final boolean finish) {
-        if (exception instanceof NetworkDisconnectedException) {
-            return showNetworkErrorDialog(context, finish);
-        } else if (exception instanceof InvalidResponseException) {
-            return showServerErrorDialog(context, finish);
-        } else if (exception instanceof NotFoundException || exception instanceof java.io.FileNotFoundException) {
-            return showNotFoundErrorDialog(context, finish);
+        if (exception instanceof ServerError) {
+            if (((ServerError) exception).networkResponse != null) {
+                if (((ServerError) exception).networkResponse.statusCode == 404) {
+                    return showNotFoundErrorDialog(context, finish);
+                } else if (((ServerError) exception).networkResponse.statusCode == 500) {
+                    return showServerErrorDialog(context, finish);
+                } else {
+                    return showServerErrorDialog(context, finish);
+                }
+            } else {
+                return showGeneralErrorDialog(context, finish);
+            }
+        } else if (exception instanceof NoConnectionError){
+            return showNetworkErrorDialog(context,finish);
         } else {
             return showGeneralErrorDialog(context, finish);
         }
@@ -54,6 +62,7 @@ public class ErrorDialogFactory {
      * @param finish  Whether or not to finish this activity
      * @return The dialog which is shown
      */
+
     private static AlertDialog showGeneralErrorDialog(final Activity context, final boolean finish) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_general_title)
