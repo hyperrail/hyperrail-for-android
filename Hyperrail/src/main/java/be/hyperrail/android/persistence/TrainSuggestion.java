@@ -25,11 +25,11 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
     // This method is required for creation through reflection
     @SuppressWarnings("unused")
     TrainSuggestion() {
-        super(null, null);
+        super(null, null, null);
     }
 
     public TrainSuggestion(TrainStub trainStub) {
-        super(null, null);
+        super(null, null, null);
         if (trainStub != null) {
             this.id = trainStub.getId();
             this.direction = trainStub.getDirection();
@@ -38,7 +38,7 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
     }
 
     public TrainSuggestion(TrainStub trainStub, Station origin, DateTime departure) {
-        super(null, null);
+        super(null, null, null);
         if (trainStub != null) {
             this.id = trainStub.getId();
             this.direction = trainStub.getDirection();

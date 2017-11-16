@@ -80,7 +80,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         }
 
         if (getIntent().hasExtra("shortcut")) {
-            mCurrentSearchQuery = new TrainStub(getIntent().getStringExtra("stub"), null);
+            mCurrentSearchQuery = new TrainStub(getIntent().getStringExtra("stub"), null, null);
         } else {
             mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
         }
@@ -104,7 +104,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
             addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
             getApplicationContext().sendBroadcast(addIntent);
 
-            Snackbar.make(vLayoutRoot, R.string.shortcut_created,Snackbar.LENGTH_LONG).show();
+            Snackbar.make(vLayoutRoot, R.string.shortcut_created, Snackbar.LENGTH_LONG).show();
 
             return true;
         }

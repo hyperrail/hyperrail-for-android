@@ -35,7 +35,7 @@ public class Station implements Serializable {
     protected double longitude;
     protected float avgStopTimes;
 
-    protected Station(){
+    protected Station() {
 
     }
 
@@ -53,11 +53,11 @@ public class Station implements Serializable {
         this.avgStopTimes = avgStopTimes;
     }
 
-    public Station(Station s){
+    public Station(Station s) {
         copy(s);
     }
 
-    protected void copy(Station copy){
+    protected void copy(Station copy) {
         this.id = copy.id;
         this.name = copy.name;
         this.alternative_nl = copy.alternative_nl;
@@ -127,4 +127,8 @@ public class Station implements Serializable {
         return avgStopTimes;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && obj instanceof Station && this.getId().equals(((Station) obj).getId());
+    }
 }
