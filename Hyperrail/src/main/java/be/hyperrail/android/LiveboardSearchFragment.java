@@ -90,7 +90,18 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_liveboard_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_liveboard_search, container, false);
+        stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
+
+        stationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        stationRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        registerForContextMenu(stationRecyclerView);
+
+        mStationAdapter = new StationCardAdapter(this.getActivity(), null);
+        mStationAdapter.setOnItemClickListener(this);
+        mStationAdapter.setOnLongItemClickListener(this);
+        stationRecyclerView.setAdapter(mStationAdapter);
+        return view;
     }
 
     @Override
@@ -108,17 +119,6 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         mNearbyOnTop = (order == 2 || order == 3);
 
         persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
-
-        stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
-
-        stationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        stationRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        registerForContextMenu(stationRecyclerView);
-
-        mStationAdapter = new StationCardAdapter(this.getActivity(), null);
-        mStationAdapter.setOnItemClickListener(this);
-        mStationAdapter.setOnLongItemClickListener(this);
-        stationRecyclerView.setAdapter(mStationAdapter);
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -240,8 +240,11 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
             FirebaseCrash.logcat(INFO.intValue(), LogTag, "Setting liveboard search list to 0 stations");
         }
 
-        StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-        adapter.setStations(stations);
+        // TODO: replace this crash workaround with a good solution. Nexus 6P, android O.
+        if (stationRecyclerView.getAdapter() instanceof StationCardAdapter) {
+            StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
+            adapter.setStations(stations);
+        }
     }
 
     /**
