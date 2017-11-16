@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.firebase-crash'
 
-def VERSION_CODE = 15
-def VERSION_NAME = '0.9.13'
+def VERSION_CODE = 16
+def VERSION_NAME = '0.9.14'
 
 android {
     signingConfigs {
