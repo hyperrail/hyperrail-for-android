@@ -8,6 +8,8 @@ package be.hyperrail.android.irail.implementation;
 
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
+
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
@@ -67,12 +69,26 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         switch ((int) tag) {
             case TAG_APPEND:
                 if (data.getStops().length > 0) {
-                    TrainStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), data.getStops());
+                    TrainStop[] newStops = data.getStops();
+
+                    // It can happen that a scheduled departure was before the search time.
+                    // In this case, prevent duplicates by searching the first stop which isn't before
+                    // the searchdate, and removing all earlier stops.
+                    int i = 0;
+                    while (i < newStops.length && newStops[i].getDepartureTime().isBefore(data.getSearchTime())) {
+                        i++;
+                    }
+                    if (i > 0) {
+                        newStops = Arrays.copyOfRange(data.getStops(), i, data.getStops().length - 1);
+                    }
+                    TrainStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), newStops);
                     LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime());
                     this.successResponseListener.onSuccessResponse(merged, tag);
                 } else {
+                    // No results, search two hours further in case this day doesn't have results.
+                    // Skip 2 hours at once, possible due to large API pages.
                     attempt++;
-                    lastSearchTime = lastSearchTime.plusHours(1);
+                    lastSearchTime = lastSearchTime.plusHours(2);
 
                     if (attempt < 12) {
                         api.getLiveboard(originalLiveboard, lastSearchTime, RouteTimeDefinition.DEPART, this, this, tag);
