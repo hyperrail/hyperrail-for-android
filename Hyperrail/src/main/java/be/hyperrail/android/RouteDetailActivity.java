@@ -81,7 +81,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(this.getApplicationContext(), route, false);
+        RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(this, route, false);
 
         // Launch intents to view details / click through
         adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {

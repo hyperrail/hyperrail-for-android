@@ -30,166 +30,222 @@ import be.hyperrail.android.irail.implementation.Transfer;
  */
 public class OccupancyDialog {
 
-    private final View view;
-    private TrainStop trainStop;
-    private Transfer transfer;
-    private Context context;
+    private final View mActivityView;
+    private Transfer mDepartureTransfer;
+    private TrainStop mTrainStop;
+    private Transfer mArrivalTransfer;
+    private Context mContext;
 
     public OccupancyDialog(Context context, TrainStop stop) {
         this(context);
-        this.trainStop = stop;
-        this.transfer = null;
+        this.mTrainStop = stop;
+        this.mArrivalTransfer = null;
+        this.mDepartureTransfer = null;
     }
 
     public OccupancyDialog(Context context, Transfer transfer) {
         this(context);
-        this.transfer = transfer;
-        this.trainStop = null;
+        this.mArrivalTransfer = transfer;
+        this.mDepartureTransfer = transfer;
+        this.mTrainStop = null;
+    }
+
+    public OccupancyDialog(Context context, Transfer departureTransfer, Transfer arrivalTransfer) {
+        this(context);
+        this.mArrivalTransfer = arrivalTransfer;
+        this.mDepartureTransfer = departureTransfer;
+        this.mTrainStop = null;
     }
 
     private OccupancyDialog(Context context) {
-        this.context = context;
-        this.view = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
+        this.mContext = context;
+        this.mActivityView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     public void show() {
-        final Dialog dialog = new Dialog(this.context, R.style.TrainLongClickDialog);
-        final IrailDataProvider api = IrailFactory.getDataProviderInstance();
+        final Dialog vDialog = new Dialog(this.mContext, R.style.TrainLongClickDialog);
+        final IrailDataProvider mApiInstance = IrailFactory.getDataProviderInstance();
 
-        dialog.setContentView(R.layout.contextmenu_spitsgids);
+        vDialog.setContentView(R.layout.contextmenu_spitsgids);
 
-        LinearLayout shareDepartureETA = dialog.findViewById(R.id.button_share_departure_ETA);
-        LinearLayout shareArrivalETA = dialog.findViewById(R.id.button_share_arrival_ETA);
-        LinearLayout setNotification = dialog.findViewById(R.id.button_notification);
+        final LinearLayout vShareDepartureEta = vDialog.findViewById(R.id.button_share_departure_ETA);
+        final LinearLayout vShareArrivalEta = vDialog.findViewById(R.id.button_share_arrival_ETA);
+        final LinearLayout vSetNotification = vDialog.findViewById(R.id.button_notification);
 
-        LinearLayout lowOccupancy = dialog.findViewById(R.id.button_low_occupancy);
-        LinearLayout mediumOccupancy = dialog.findViewById(R.id.button_medium_occupancy);
-        LinearLayout highOccupancy = dialog.findViewById(R.id.button_high_occupancy);
+        // Not supported/enabled yet
+        vSetNotification.setVisibility(View.GONE);
 
-        final String departureConnection;
-        final String stationSemanticId;
-        final String vehicleSemanticId;
-        final DateTime date;
-        final String ArrivalETAText;
-        final String DepartureETAText;
+        final LinearLayout vOccupancyContainer = vDialog.findViewById(R.id.container_occupancy);
+        final LinearLayout vLowOccupancy = vDialog.findViewById(R.id.button_low_occupancy);
+        final LinearLayout vMediumOccupancy = vDialog.findViewById(R.id.button_medium_occupancy);
+        final LinearLayout vHighOccupancy = vDialog.findViewById(R.id.button_high_occupancy);
 
-        if (this.trainStop != null) {
-            departureConnection = trainStop.getSemanticDepartureConnection();
-            stationSemanticId = trainStop.getStation().getSemanticId();
-            vehicleSemanticId = trainStop.getTrain().getSemanticId();
-            date = trainStop.getDepartureTime();
+        final String mDepartureConnection;
+        final String mStationSemanticId;
+        final String mVehicleSemanticId;
+        final DateTime mDateTime;
+        final String mArrivalEtaText;
+        final String mDepartureEtaText;
 
-            dialog.setTitle(trainStop.getTrain().getName() + " " +
-                    trainStop.getStation().getLocalizedName());
+        if (this.mTrainStop != null) {
+            mDepartureConnection = mTrainStop.getSemanticDepartureConnection();
+            mStationSemanticId = mTrainStop.getStation().getSemanticId();
+            mVehicleSemanticId = mTrainStop.getTrain().getSemanticId();
+            mDateTime = mTrainStop.getDepartureTime();
 
-            ArrivalETAText = "At " + DateTimeFormat.forPattern("hh:mm").print(trainStop.getDelayedArrivalTime()) + " I will arrive in " + trainStop.getStation().getLocalizedName() + " with " + trainStop.getTrain().getName();
-            DepartureETAText = "At " + DateTimeFormat.forPattern("hh:mm").print(trainStop.getDelayedDepartureTime()) + " I will leave from " + trainStop.getStation().getLocalizedName() + " with " + trainStop.getTrain().getName();
+            vDialog.setTitle(mTrainStop.getTrain().getName() + " " +
+                    mTrainStop.getStation().getLocalizedName());
 
-        } else if (this.transfer != null) {
-            departureConnection = transfer.getDepartureConnectionSemanticId();
-            stationSemanticId = transfer.getStation().getSemanticId();
-            vehicleSemanticId = transfer.getDepartingTrain().getSemanticId();
-            date = transfer.getDepartureTime();
-
-            dialog.setTitle(transfer.getDepartingTrain().getName() + " " + transfer.getStation().getLocalizedName());
-            ArrivalETAText = "At " + DateTimeFormat.forPattern("hh:mm").print(transfer.getDelayedArrivalTime()) + " I will arrive in " + transfer.getStation().getLocalizedName() + " with " + transfer.getArrivingTrain().getName();
-            DepartureETAText = "At " + DateTimeFormat.forPattern("hh:mm").print(transfer.getDelayedDepartureTime()) + " I will leave from " + transfer.getStation().getLocalizedName() + " with " + transfer.getDepartingTrain().getName();
+            mArrivalEtaText = String.format(mContext.getString(R.string.ETA_stop_arrival), DateTimeFormat.forPattern("hh:mm").print(mTrainStop.getDelayedArrivalTime()), mTrainStop.getStation().getLocalizedName(), mTrainStop.getTrain().getName());
+            mDepartureEtaText = String.format(mContext.getString(R.string.ETA_stop_departure), DateTimeFormat.forPattern("hh:mm").print(mTrainStop.getDelayedDepartureTime()), mTrainStop.getStation().getLocalizedName(), mTrainStop.getTrain().getName());
 
         } else {
-            throw new IllegalStateException("Contextmenu should either have a transfer or trainstop object");
+            if (mDepartureTransfer == null && mArrivalTransfer == null) {
+                throw new IllegalStateException("Contextmenu should either have a mArrivalTransfer or trainstop object");
+            }
+
+            // Occupancy + departure ETA
+            if (mDepartureTransfer != null && mDepartureTransfer.getDepartingTrain() != null && ! mDepartureTransfer.getDepartingTrain().getId().equals("WALK")) {
+                mDepartureConnection = mDepartureTransfer.getDepartureConnectionSemanticId();
+                mStationSemanticId = mDepartureTransfer.getStation().getSemanticId();
+                mVehicleSemanticId = mDepartureTransfer.getDepartingTrain().getSemanticId();
+                mDateTime = mDepartureTransfer.getDepartureTime();
+
+                mDepartureEtaText = String.format(mContext.getString(R.string.ETA_transfer_departure), DateTimeFormat.forPattern("hh:mm").print(mDepartureTransfer.getDelayedDepartureTime()), mDepartureTransfer.getStation().getLocalizedName(), mDepartureTransfer.getDepartingTrain().getName());
+            } else {
+                vOccupancyContainer.setVisibility(View.GONE);
+                mDepartureEtaText = null;
+
+                mDepartureConnection = null;
+                mStationSemanticId = null;
+                mVehicleSemanticId = null;
+                mDateTime = null;
+            }
+
+            if (this.mArrivalTransfer != null && mArrivalTransfer.getArrivingTrain() != null&& ! mArrivalTransfer.getArrivingTrain().getId().equals("WALK")) {
+                mArrivalEtaText = String.format(mContext.getString(R.string.ETA_transfer_arrival), DateTimeFormat.forPattern("hh:mm").print(mArrivalTransfer.getDelayedArrivalTime()), mArrivalTransfer.getStation().getLocalizedName(), mArrivalTransfer.getArrivingTrain().getName());
+            } else {
+                mArrivalEtaText = null;
+            }
+
+            if (mDepartureTransfer == mArrivalTransfer) {
+                vDialog.setTitle(mArrivalTransfer.getStation().getLocalizedName());
+            } else {
+                if (mDepartureTransfer != null && mArrivalTransfer != null){
+                    vDialog.setTitle(mDepartureTransfer.getDepartingTrain().getName() + " " +
+                            mDepartureTransfer.getStation().getLocalizedName() + "-" + mArrivalTransfer.getStation().getLocalizedName());
+                } else if (mDepartureTransfer != null){
+                    vDialog.setTitle(mDepartureTransfer.getDepartingTrain().getName() + " " +
+                            mDepartureTransfer.getStation().getLocalizedName());
+                } else {
+                    vDialog.setTitle(mArrivalTransfer.getArrivingTrain().getName() + " " +
+                            mArrivalTransfer.getStation().getLocalizedName());
+                }
+
+            }
         }
 
-        lowOccupancy.setOnClickListener(new View.OnClickListener() {
+        vLowOccupancy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                api.postOccupancy(
-                        departureConnection,
-                        stationSemanticId,
-                        vehicleSemanticId,
-                        date,
+                mApiInstance.postOccupancy(
+                        mDepartureConnection,
+                        mStationSemanticId,
+                        mVehicleSemanticId,
+                        mDateTime,
                         OccupancyLevel.LOW,
                         new IRailSuccessResponseListener<Boolean>() {
                             @Override
                             public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                             }
                         }, new IRailErrorResponseListener<Boolean>() {
                             @Override
                             public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                             }
                         }, null);
-                dialog.dismiss();
+                vDialog.dismiss();
             }
         });
 
-        mediumOccupancy.setOnClickListener(new View.OnClickListener() {
+        vMediumOccupancy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                api.postOccupancy(
-                        departureConnection,
-                        stationSemanticId,
-                        vehicleSemanticId,
-                        date,
+                mApiInstance.postOccupancy(
+                        mDepartureConnection,
+                        mStationSemanticId,
+                        mVehicleSemanticId,
+                        mDateTime,
                         OccupancyLevel.MEDIUM,
                         new IRailSuccessResponseListener<Boolean>() {
                             @Override
                             public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                             }
                         }, new IRailErrorResponseListener<Boolean>() {
                             @Override
                             public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                             }
                         }, null);
-                dialog.dismiss();
+                vDialog.dismiss();
             }
         });
 
-        highOccupancy.setOnClickListener(new View.OnClickListener() {
+        vHighOccupancy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                api.postOccupancy(
-                        departureConnection,
-                        stationSemanticId,
-                        vehicleSemanticId,
-                        date,
+                mApiInstance.postOccupancy(
+                        mDepartureConnection,
+                        mStationSemanticId,
+                        mVehicleSemanticId,
+                        mDateTime,
                         OccupancyLevel.HIGH,
                         new IRailSuccessResponseListener<Boolean>() {
                             @Override
                             public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                             }
                         }, new IRailErrorResponseListener<Boolean>() {
                             @Override
                             public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.view, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                             }
                         }, null);
-                dialog.dismiss();
+                vDialog.dismiss();
             }
         });
 
-        shareArrivalETA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, ArrivalETAText);
-                sendIntent.setType("text/plain");
-                context.startActivity(sendIntent);
-            }
-        });
+        if (mArrivalEtaText == null) {
+            vShareArrivalEta.setVisibility(View.GONE);
+        } else {
+            vShareArrivalEta.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, mArrivalEtaText);
+                    sendIntent.setType("text/plain");
+                    mContext.startActivity(sendIntent);
+                }
+            });
+        }
 
-        shareDepartureETA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, DepartureETAText);
-                sendIntent.setType("text/plain");
-                context.startActivity(sendIntent);
-            }
-        });
-        dialog.show();
+        if (mDepartureEtaText == null) {
+            vShareDepartureEta.setVisibility(View.GONE);
+        } else {
+
+            vShareDepartureEta.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, mDepartureEtaText);
+                    sendIntent.setType("text/plain");
+                    mContext.startActivity(sendIntent);
+                }
+            });
+        }
+
+        vDialog.show();
     }
 }

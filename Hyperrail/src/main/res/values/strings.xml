@@ -85,6 +85,10 @@
     <string name="shortcut_created">A shortcut has been added to your homescreen</string>
     <string name="walk_description">Walk to the next station</string>
     <string name="walk_heading">Walk</string>
+    <string name="ETA_stop_arrival">At %s I will arrive in %s with %s</string>
+    <string name="ETA_stop_departure">At %s I will leave from %s with %s</string>
+    <string name="ETA_transfer_arrival">At %s I will arrive in %s with %s</string>
+    <string name="ETA_transfer_departure">At %s I will leave from %s with %s</string>
 
     <string-array name="departarrive">
         <item>Leave</item>

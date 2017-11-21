@@ -253,6 +253,51 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 }
             });
 
+            if (transfer.getDepartingTrain() != null) {
+                if (transfer.getArrivingTrain() != null) {
+                    holder.itemView.setOnLongClickListener(
+                            new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View view) {
+                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                            transfer)
+                                    ).show();
+                                    return false;
+                                }
+
+                            }
+                    );
+                } else {
+                    holder.itemView.setOnLongClickListener(
+                            new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View view) {
+                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                            transfer, null)
+                                    ).show();
+                                    return false;
+                                }
+
+                            }
+                    );
+                }
+            } else {
+                if (transfer.getArrivingTrain() != null) {
+                    holder.itemView.setOnLongClickListener(
+                            new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View view) {
+                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                            null, transfer)
+                                    ).show();
+                                    return false;
+                                }
+
+                            }
+                    );
+                }
+            }
+
         } else if (holder instanceof RouteTrainViewHolder) {
             // Create a train ViewHolder
             RouteTrainViewHolder routeTrainViewHolder = (RouteTrainViewHolder) holder;
@@ -284,14 +329,14 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 if (transferBefore.hasLeft()) {
                     if (transferAfter.hasArrived()) {
                         routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
-                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_filled));
+                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
                     } else {
                         routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
-                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_hollow));
+                        routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
                     }
                 } else {
                     routeTrainViewHolder.vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
-                    routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.timeline_continuous_hollow));
+                    routeTrainViewHolder.vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
                 }
             }
 
@@ -348,7 +393,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             @Override
                             public boolean onLongClick(View view) {
                                 (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                        transferBefore)
+                                        transferBefore, transferAfter)
                                 ).show();
                                 return false;
                             }
