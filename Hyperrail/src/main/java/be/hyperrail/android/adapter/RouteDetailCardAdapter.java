@@ -348,10 +348,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             @Override
                             public boolean onLongClick(View view) {
                                 (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                        transferBefore.getDepartureConnectionSemanticId(),
-                                        transferBefore.getStation().getSemanticId(),
-                                        train.getSemanticId(),
-                                        transferBefore.getDepartureTime())
+                                        transferBefore)
                                 ).show();
                                 return false;
                             }

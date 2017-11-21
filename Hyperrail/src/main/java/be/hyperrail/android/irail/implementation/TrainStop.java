@@ -65,6 +65,12 @@ public class TrainStop implements Serializable {
         this.hasLeft = hasLeft;
         this.semanticDepartureConnection = semanticDepartureConnection;
         this.occupancyLevel = occupancyLevel;
+
+        // TODO: API should provide this information, so we don't have to fake it
+        // Fill in arrival information using departure information
+        this.arrivalTime = departureTime;
+        this.arrivalDelay = departureDelay;
+        this.arrivalCanceled = departureCanceled;
     }
 
     public TrainStub getTrain() {

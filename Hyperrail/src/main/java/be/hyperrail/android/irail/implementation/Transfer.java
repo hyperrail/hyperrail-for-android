@@ -82,6 +82,14 @@ public class Transfer implements Serializable {
         return departureTime;
     }
 
+    public DateTime getDelayedDepartureTime() {
+        return departureTime.plus(departureDelay);
+    }
+
+    public DateTime getDelayedArrivalTime() {
+        return arrivalTime.plus(arrivalDelay);
+    }
+
     public Station getStation() {
         return station;
     }
