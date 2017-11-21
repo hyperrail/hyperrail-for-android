@@ -43,7 +43,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/button_share_departure_ETA"
+            android:id="@+id/button_share_arrival_ETA"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="?android:selectableItemBackground"
@@ -69,7 +69,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/button_share_arrival_ETA"
+            android:id="@+id/button_share_departure_ETA"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="?android:selectableItemBackground"
