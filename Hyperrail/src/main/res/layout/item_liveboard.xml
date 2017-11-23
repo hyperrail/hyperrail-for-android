@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_margin="@dimen/cardlist_content_margin"
-              android:baselineAligned="false"
-              android:gravity="center"
-              android:orientation="horizontal">
+                                                       xmlns:tools="http://schemas.android.com/tools"
+                                                       android:layout_width="match_parent"
+                                                       android:layout_height="match_parent"
+                                                       android:layout_margin="@dimen/cardlist_content_margin"
+                                                       android:baselineAligned="false"
+                                                       android:gravity="center"
+                                                       android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -34,10 +34,10 @@
             <TextView
                 android:id="@+id/text_departure_delay"
                 android:layout_width="wrap_content"
-                android:minWidth="@dimen/card_delay_width"
                 android:layout_height="24dp"
                 android:layout_marginLeft="@dimen/activity_tiny_margin"
                 android:gravity="center_vertical|right"
+                android:minWidth="@dimen/card_delay_width"
                 android:padding="0dp"
                 android:text="51'"
                 android:textColor="@color/colorDelay"
