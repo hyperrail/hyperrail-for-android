@@ -21,10 +21,11 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
 
-public class LiveboardStopLayout extends LinearLayout implements ListDataViewGroup<TrainStop> {
+public class LiveboardStopLayout extends LinearLayout implements ListDataViewGroup<LiveBoard,TrainStop> {
   
     protected TextView vDestination;
     protected TextView vTrainType;
@@ -75,7 +76,7 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
     }
 
     @Override
-    public void bind(Context context, TrainStop stop) {
+    public void bind(final Context context,final TrainStop stop, final LiveBoard liveboard, final int position) {
 
         vDestination.setText(stop.getDestination().getLocalizedName());
 
@@ -115,7 +116,6 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
         }
 
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
-
     }
 
     

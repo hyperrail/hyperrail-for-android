@@ -21,8 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
@@ -94,10 +92,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
                 // Keep in mind that position shifts with the number of already placed date separators
                 if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                    DateSeparator separator = new DateSeparator();
-                    separator.separatorDate = liveBoard.getStops()[stopPosition].getDepartureTime();
-
-                    this.displayList[resultPosition] = separator;
+                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();;
 
                     dayPosition++;
                 } else {
@@ -116,7 +111,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     @Override
     protected int onGetItemViewType(int position) {
-        if (displayList[position] instanceof DateSeparator) {
+        if (displayList[position] instanceof DateTime) {
             return VIEW_TYPE_DATE;
         }
         return VIEW_TYPE_ITEM;
@@ -131,6 +126,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             itemView = LayoutInflater.from(parent.getContext()).inflate(be.hyperrail.android.R.layout.listview_separator_date, parent, false);
             return new DateSeparatorViewHolder(itemView);
         }
+
         if (style == STYLE_LIST) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(be.hyperrail.android.R.layout.listview_liveboard, parent, false);
         } else {
@@ -144,15 +140,13 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
     public void onBindItemViewHolder(RecyclerView.ViewHolder genericHolder, int position) {
         if (genericHolder instanceof DateSeparatorViewHolder) {
             DateSeparatorViewHolder holder = (DateSeparatorViewHolder) genericHolder;
-
-            DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd MMMMMMMM yyyy");
-            holder.vDateText.setText(df.print(((DateSeparator) displayList[position]).separatorDate));
+            holder.bind((DateTime) displayList[position]);
             return;
         }
 
         final TrainStop stop = (TrainStop) displayList[position];
         LiveboardStopViewHolder holder = (LiveboardStopViewHolder) genericHolder;
-        holder.liveboardStopView.bind(context, stop);
+        holder.liveboardStopView.bind(context, stop, liveboard, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,13 +182,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
         LiveboardStopViewHolder(View view) {
             super(view);
-            liveboardStopView = (LiveboardStopLayout) view.findViewById(R.id.binder);
+            liveboardStopView = view.findViewById(R.id.binder);
         }
-    }
-
-    private class DateSeparator {
-
-        DateTime separatorDate;
     }
 }
 

@@ -10,11 +10,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import be.hyperrail.android.R;
 
 public class DateSeparatorViewHolder extends RecyclerView.ViewHolder {
 
-    protected final TextView vDateText;
+    private final TextView vDateText;
+
+    public void bind(DateTime dateTime){
+        DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd MMMMMMMM yyyy");
+        vDateText.setText(df.print(dateTime));
+    }
 
     DateSeparatorViewHolder(View view) {
         super(view);

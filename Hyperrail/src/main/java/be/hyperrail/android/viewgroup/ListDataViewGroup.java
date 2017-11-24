@@ -12,11 +12,14 @@ import android.content.Context;
  * Created by Bert on 23-11-2017.
  */
 
-public interface ListDataViewGroup<T> {
+public interface ListDataViewGroup<C, T> {
 
     /**
      * Bind data to this view
-     * @param data
+     *
+     * @param itemData The data to show in this item
+     * @param listData Contextual data, giving information on the larger object of which data is part
+     * @param position The position of this item in the list
      */
-    void bind(Context context, T data);
+    void bind(final Context context,final T itemData,final C listData, final int position);
 }
