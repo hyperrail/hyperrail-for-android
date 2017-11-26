@@ -95,4 +95,5 @@
     <string name="shortcut_created">Een snelkoppeling is toegevoegd aan je startscherm</string>
     <string name="walk_description">Wandel naar het volgend station</string>
     <string name="walk_heading">Wandelen</string>
+    <string name="list_day_names">Maandag\nDinsdag\nWoensdag\nDonderdag\nVrijdag\nZaterdag\nZondag</string>
 </resources>

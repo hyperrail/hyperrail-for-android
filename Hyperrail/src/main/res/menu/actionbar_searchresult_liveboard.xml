@@ -1,5 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_details"
+        android:icon="@drawable/ic_info_outline"
+        android:title="@string/action_details"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_time"
@@ -12,7 +17,7 @@
         android:id="@+id/action_favorite"
         android:icon="@drawable/ic_star_border"
         android:title="@string/action_mark_as_favorite"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_from"

@@ -9,200 +9,208 @@
         android:id="@+id/cardview_collapsed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_small_margin"
-        android:paddingRight="@dimen/activity_small_margin"
         android:layout_margin="@dimen/cardlist_content_margin"
-        android:baselineAligned="false"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/activity_small_margin"
+        android:paddingRight="@dimen/activity_small_margin">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/cardlist_content_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:baselineAligned="false"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/text_departure_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/cardlist_textrow_height"
-                    android:gravity="center_vertical"
-                    android:text="00:00"
-                    android:textColor="@color/colorTextDark"
-                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
-                    tools:ignore="HardcodedText"/>
-
-                <TextView
-                    android:id="@+id/text_departure_delay"
-                    android:layout_width="wrap_content"
-                    android:minWidth="@dimen/card_delay_width"
-                    android:layout_height="@dimen/cardlist_textrow_height"
-                    android:layout_marginLeft="@dimen/activity_tiny_margin"
-                    android:gravity="center_vertical|right"
-                    android:text="6'"
-                    android:textColor="@color/colorDelay"
-                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
-                    tools:ignore="HardcodedText"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/cardlist_textrow_height"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/text_arrival_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/cardlist_textrow_height"
-                    android:gravity="center_vertical"
-                    android:text="00:00"
-                    android:textColor="@color/colorTextDark"
-                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
-                    tools:ignore="HardcodedText"/>
-
-                <TextView
-                    android:id="@+id/text_arrival_delay"
-                    android:layout_width="wrap_content"
-                    android:minWidth="@dimen/card_delay_width"
-                    android:layout_height="@dimen/cardlist_textrow_height"
-                    android:layout_marginLeft="@dimen/activity_tiny_margin"
-                    android:gravity="center_vertical|right"
-                    android:text="51'"
-                    android:textColor="@color/colorDelay"
-                    android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
-                    tools:ignore="HardcodedText"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="@dimen/cardlist_textrow_double_height"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_destination"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/cardlist_textrow_height"
-                android:gravity="center_vertical"
-                android:text="Brussel-Zuid"
-                android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
-                tools:ignore="HardcodedText"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/cardlist_textrow_height"
-                android:gravity="left"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="@dimen/activity_small_margin"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/image_duration"
-                        android:layout_width="@dimen/cardlist_textrow_height"
-                        android:layout_height="@dimen/cardlist_textrow_height"
-                        android:padding="2dp"
-                        android:src="@drawable/ic_query_builder"
-                        android:tint="@color/colorMuted"/>
-
-                    <TextView
-                        android:id="@+id/text_duration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="0:45"
-                        android:textColor="@color/colorMuted"
-                        tools:ignore="HardcodedText"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="@dimen/cardlist_content_margin"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="@dimen/cardlist_textrow_height"
-                        android:layout_height="@dimen/cardlist_textrow_height"
-                        android:padding="2dp"
-                        android:src="@drawable/ic_directions_railway_white"
-                        android:tint="@color/colorMuted"/>
-
-                    <TextView
-                        android:id="@+id/text_train_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="2"
-                        android:textColor="@color/colorMuted"
-                        tools:ignore="HardcodedText"/>
-                </LinearLayout>
-
-                <include layout="@layout/include_text_train_status"/>
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_platform_container"
-            android:layout_width="@dimen/cardlist_textrow_medium_height"
-            android:layout_height="@dimen/cardlist_textrow_medium_height"
-            android:layout_marginLeft="@dimen/cardlist_content_margin"
-            android:background="@drawable/platform_train"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_platform"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5"
-                android:textAlignment="center"
-                android:textColor="@color/colorTextLight"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
-                tools:ignore="HardcodedText"/>
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/cardlist_content_margin"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/text_departure_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:gravity="center_vertical"
+                        android:text="00:00"
+                        android:textColor="@color/colorTextDark"
+                        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                        tools:ignore="HardcodedText"/>
+
+                    <TextView
+                        android:id="@+id/text_departure_delay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:layout_marginLeft="@dimen/activity_tiny_margin"
+                        android:gravity="center_vertical|right"
+                        android:minWidth="@dimen/card_delay_width"
+                        android:text="6'"
+                        android:textColor="@color/colorDelay"
+                        android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+                        tools:ignore="HardcodedText"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/text_arrival_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:gravity="center_vertical"
+                        android:text="00:00"
+                        android:textColor="@color/colorTextDark"
+                        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                        tools:ignore="HardcodedText"/>
+
+                    <TextView
+                        android:id="@+id/text_arrival_delay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:layout_marginLeft="@dimen/activity_tiny_margin"
+                        android:gravity="center_vertical|right"
+                        android:minWidth="@dimen/card_delay_width"
+                        android:text="51'"
+                        android:textColor="@color/colorDelay"
+                        android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+                        tools:ignore="HardcodedText"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_destination"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:gravity="center_vertical"
+                    android:text="Brussel-Zuid"
+                    android:textColor="@color/colorTextDark"
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                    tools:ignore="HardcodedText"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:gravity="left"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="@dimen/activity_small_margin"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/image_duration"
+                            android:layout_width="@dimen/cardlist_textrow_height"
+                            android:layout_height="@dimen/cardlist_textrow_height"
+                            android:padding="2dp"
+                            android:src="@drawable/ic_query_builder"
+                            android:tint="@color/colorMuted"/>
+
+                        <TextView
+                            android:id="@+id/text_duration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:text="0:45"
+                            android:textColor="@color/colorMuted"
+                            tools:ignore="HardcodedText"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="@dimen/cardlist_content_margin"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="@dimen/cardlist_textrow_height"
+                            android:layout_height="@dimen/cardlist_textrow_height"
+                            android:padding="2dp"
+                            android:src="@drawable/ic_directions_railway_white"
+                            android:tint="@color/colorMuted"/>
+
+                        <TextView
+                            android:id="@+id/text_train_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:text="2"
+                            android:textColor="@color/colorMuted"
+                            tools:ignore="HardcodedText"/>
+                    </LinearLayout>
+
+                    <include layout="@layout/include_text_train_status"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_platform_container"
+                android:layout_width="@dimen/cardlist_textrow_medium_height"
+                android:layout_height="@dimen/cardlist_textrow_medium_height"
+                android:layout_marginLeft="@dimen/cardlist_content_margin"
+                android:background="@drawable/platform_train"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_platform"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorTextLight"
+                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                    tools:ignore="HardcodedText"/>
+            </LinearLayout>
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/alert_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="none"
+            android:maxLines="3"
+            android:minHeight="@dimen/cardlist_textrow_primary_textsizea"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:scrollHorizontally="false"
+            android:text="Tijdens de weekends van 4-5,18-19,25-26 november werken wij aan het spoor in de regio van Gent."
+            android:textColor="@color/colorPrimary"/>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/alert_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="none"
-        android:maxLines="3"
-        android:minHeight="@dimen/cardlist_textrow_primary_textsizea"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:scrollHorizontally="false"
-        android:text="Tijdens de weekends van 4-5,18-19,25-26 november werken wij aan het spoor in de regio van Gent."
-        android:textColor="@color/colorPrimary"/>
 
     <LinearLayout
         android:id="@+id/cardview_expanded"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/cardlist_content_margin"
-        android:paddingLeft="@dimen/activity_small_margin"
-        android:paddingRight="@dimen/activity_small_margin"
         android:gravity="center"
         android:orientation="vertical"
+        android:paddingLeft="@dimen/activity_small_margin"
+        android:paddingRight="@dimen/activity_small_margin"
         android:visibility="gone">
 
         <View

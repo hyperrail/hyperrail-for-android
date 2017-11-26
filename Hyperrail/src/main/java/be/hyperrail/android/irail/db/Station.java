@@ -14,7 +14,12 @@ package be.hyperrail.android.irail.db;
 
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import java.io.Serializable;
+
+import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.factories.IrailFactory;
 
 /**
  * This class represents a station, as found in irail/stationscsv
@@ -125,6 +130,26 @@ public class Station implements Serializable {
 
     public float getAvgStopTimes() {
         return avgStopTimes;
+    }
+
+    private StationFacilities stationFacilities;
+
+    /**
+     * Get the facilities available in this station.
+     * This data is loaded using lazy-loading, do not use this on a large amount of stations
+     *
+     * @return A StationFacilities object for this station
+     */
+    public StationFacilities getStationFacilities() {
+        if (stationFacilities == null) {
+            IrailStationProvider provider = IrailFactory.getStationsProviderInstance();
+            if (!(provider instanceof StationsDb)) {
+                FirebaseCrash.report(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
+                return null;
+            }
+            this.stationFacilities = ((StationsDb) provider).getStationFacilitiesById(this.id);
+        }
+        return stationFacilities;
     }
 
     @Override

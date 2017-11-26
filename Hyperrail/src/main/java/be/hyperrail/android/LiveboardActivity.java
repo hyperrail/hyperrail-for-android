@@ -129,7 +129,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
     @Override
     protected int getMenuLayout() {
-        return R.menu.actionbar_searchresult_station;
+        return R.menu.actionbar_searchresult_liveboard;
     }
 
     @Override
@@ -140,6 +140,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 return true;
             case R.id.action_to:
                 startActivity(MainActivity.createRouteToIntent(getApplicationContext(), mCurrentStation.getName()));
+                return true;
+            case R.id.action_details:
+                startActivity(StationActivity.createIntent(getApplicationContext(),mCurrentStation));
                 return true;
             case R.id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();

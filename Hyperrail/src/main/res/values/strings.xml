@@ -94,4 +94,8 @@
         <item>Leave</item>
         <item>Arrive</item>
     </string-array>
+    <string name="title_activity_station">Station</string>
+
+    <string name="list_day_names">Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday</string>
+    <string name="action_details">View details</string>
 </resources>
