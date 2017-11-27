@@ -114,7 +114,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             RouteTransferViewHolder routeTransferViewHolder = (RouteTransferViewHolder) holder;
             // even (0,2,4...) : stations
             final Transfer transfer = route.getTransfers()[position / 2];
-            routeTransferViewHolder.routeTransferItemLayout.bind(context, transfer, route, position);
+            routeTransferViewHolder.routeTransferItemLayout.bind(context, transfer, route, position / 2);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -178,7 +178,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             boolean isWalking = Objects.equals(train.getId(), "WALK");
 
-            ((RouteTrainViewHolder)holder).routeTrainItemLayout.bind(context,train,route,position);
+            ((RouteTrainViewHolder)holder).routeTrainItemLayout.bind(context,train,route,(position - 1) / 2);
 
             if (!isWalking) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -94,8 +94,8 @@ public class RouteTrainItemLayout extends LinearLayout implements ListDataViewGr
     @Override
     public void bind(final Context context, final TrainStub train, final Route route, final int position) {
 
-        final Transfer transferBefore = route.getTransfers()[(position - 1) / 2];
-        final Transfer transferAfter = route.getTransfers()[(position + 1) / 2];
+        final Transfer transferBefore = route.getTransfers()[position];
+        final Transfer transferAfter = route.getTransfers()[position+1];
         boolean isWalking = Objects.equals(train.getId(), "WALK");
 
         if (isWalking) {
@@ -140,7 +140,7 @@ public class RouteTrainItemLayout extends LinearLayout implements ListDataViewGr
             vStatusContainer.setVisibility(View.GONE);
         }
 
-        Message[] trainAlerts = route.getTrainalerts()[(position - 1) / 2];
+        Message[] trainAlerts = route.getTrainalerts()[position];
         if (trainAlerts != null && trainAlerts.length > 0) {
             vAlertContainer.setVisibility(View.VISIBLE);
 

@@ -8,7 +8,9 @@ package be.hyperrail.android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
@@ -80,7 +82,12 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         // Add a marker in Sydney, Australia, and move the camera.
         LatLng stationLocation = new LatLng(mStation.getLatitude(), mStation.getLongitude());
         mMap.addMarker(new MarkerOptions().position(stationLocation).title(mStation.getLocalizedName()));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(stationLocation,19));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(stationLocation, 15));
+        mMap.setBuildingsEnabled(true);
+        mMap.setTrafficEnabled(false);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
 
+        }
     }
 }
