@@ -69,6 +69,7 @@ dependencies {
     compile 'com.google.firebase:firebase-perf:11.6.0'
     compile 'com.google.firebase:firebase-core:11.6.0'
     testCompile 'junit:junit:4.12'
+    testCompile 'org.json:json:20160810' // org.json is included with Android, but Android.jar can not be used from unit tests
 }
 
 apply plugin: 'com.google.gms.google-services'

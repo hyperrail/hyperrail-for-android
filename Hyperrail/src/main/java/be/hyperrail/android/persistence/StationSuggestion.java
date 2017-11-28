@@ -18,6 +18,7 @@ public class StationSuggestion extends Station implements Suggestable {
 
     Date created_at;
 
+    // Empty constructor required!
     StationSuggestion() {
 
     }
