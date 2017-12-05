@@ -2,23 +2,24 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="activity_small_margin">8dp</dimen>
     <dimen name="activity_tiny_margin">4dp</dimen>
 
     <dimen name="inset_normal">8dp</dimen>
 
-    <dimen name="cardlist_content_margin">8dp</dimen>
-    <dimen name="cardlist_textrow_height">24dp</dimen>
-    <dimen name="cardlist_textrow_height_reduced_2dp">22dp</dimen>
-    <dimen name="cardlist_textrow_medium_height">36dp</dimen>
-    <dimen name="cardlist_textrow_double_height">48dp</dimen>
-    <dimen name="cardlist_textrow_primary_textsizea">16sp</dimen>
-    <dimen name="cardlist_textrow_secondary_textsizea">14sp</dimen>
-    <dimen name="cardlist_card_height">64dp</dimen>
-    <dimen name="card_time_width">42dp</dimen>
-    <dimen name="card_delay_width">22dp</dimen>
-    <dimen name="offset_time_delay_tinymargin">68dp</dimen>
-<dimen name="margin_include_item">8dp</dimen>
+    <dimen name="listitem_content_padding">8dp</dimen>
+    <dimen name="listitem_content_height_single">24dp</dimen>
+    <dimen name="listitem_content_height_onehalf">36dp</dimen>
+    <dimen name="listitem_content_height_double">48dp</dimen>
+    <dimen name="listitem_content_primary_textsize">16sp</dimen>
+    <dimen name="listitem_content_secondary_textsize">14sp</dimen>
+    <dimen name="carditem_height">64dp</dimen>
+    <dimen name="listitem_height">80dp</dimen>
+
+    <dimen name="listitem_horizontal_margin">8dp</dimen>
+    <dimen name="listitem_time_width">42dp</dimen>
+    <dimen name="listitem_delay_width">22dp</dimen>
+
+    <dimen name="margin_include_item">8dp</dimen>
 
     <dimen name="list_liveboard_item_height">120dp</dimen>
     <dimen name="cardlist_vertical_spacing">16dp</dimen>

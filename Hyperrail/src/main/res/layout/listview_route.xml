@@ -7,8 +7,14 @@
                                                     android:clickable="true"
                                                     android:focusable="true"
                                                     android:gravity="center"
-                                                    android:paddingBottom="@dimen/activity_small_margin"
-                                                    android:paddingTop="@dimen/activity_small_margin">
+    >
 
-    <include layout="@layout/item_route"/>
+    <include
+        layout="@layout/item_route"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listitem_height"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"/>
 </be.hyperrail.android.viewgroup.RouteListItemLayout>

@@ -8,9 +8,15 @@ package be.hyperrail.android;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -22,38 +28,47 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.viewgroup.NotificationLayoutBuilder;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Dialog to submit occupancy data
  */
 public class OccupancyDialog {
 
+    private static final String NOTIFICATION_CHANNEL_GLIMPSE = "glimpse";
     private final View mActivityView;
     private Transfer mDepartureTransfer;
+    private Route route;
     private TrainStop mTrainStop;
     private Transfer mArrivalTransfer;
     private Context mContext;
 
     public OccupancyDialog(Context context, TrainStop stop) {
         this(context);
+        this.route = null;
         this.mTrainStop = stop;
         this.mArrivalTransfer = null;
         this.mDepartureTransfer = null;
     }
 
-    public OccupancyDialog(Context context, Transfer transfer) {
+    public OccupancyDialog(Context context, Transfer transfer, Route route) {
         this(context);
         this.mArrivalTransfer = transfer;
         this.mDepartureTransfer = transfer;
+        this.route = route;
         this.mTrainStop = null;
     }
 
-    public OccupancyDialog(Context context, Transfer departureTransfer, Transfer arrivalTransfer) {
+    public OccupancyDialog(Context context, Transfer departureTransfer, Transfer arrivalTransfer, Route route) {
         this(context);
         this.mArrivalTransfer = arrivalTransfer;
         this.mDepartureTransfer = departureTransfer;
+        this.route = route;
         this.mTrainStop = null;
     }
 
@@ -71,9 +86,6 @@ public class OccupancyDialog {
         final LinearLayout vShareDepartureEta = vDialog.findViewById(R.id.button_share_departure_ETA);
         final LinearLayout vShareArrivalEta = vDialog.findViewById(R.id.button_share_arrival_ETA);
         final LinearLayout vSetNotification = vDialog.findViewById(R.id.button_notification);
-
-        // Not supported/enabled yet
-        vSetNotification.setVisibility(View.GONE);
 
         final LinearLayout vOccupancyContainer = vDialog.findViewById(R.id.container_occupancy);
         final LinearLayout vLowOccupancy = vDialog.findViewById(R.id.button_low_occupancy);
@@ -105,7 +117,7 @@ public class OccupancyDialog {
             }
 
             // Occupancy + departure ETA
-            if (mDepartureTransfer != null && mDepartureTransfer.getDepartingTrain() != null && ! mDepartureTransfer.getDepartingTrain().getId().equals("WALK")) {
+            if (mDepartureTransfer != null && mDepartureTransfer.getDepartingTrain() != null && !mDepartureTransfer.getDepartingTrain().getId().equals("WALK")) {
                 mDepartureConnection = mDepartureTransfer.getDepartureConnectionSemanticId();
                 mStationSemanticId = mDepartureTransfer.getStation().getSemanticId();
                 mVehicleSemanticId = mDepartureTransfer.getDepartingTrain().getSemanticId();
@@ -122,7 +134,7 @@ public class OccupancyDialog {
                 mDateTime = null;
             }
 
-            if (this.mArrivalTransfer != null && mArrivalTransfer.getArrivingTrain() != null&& ! mArrivalTransfer.getArrivingTrain().getId().equals("WALK")) {
+            if (this.mArrivalTransfer != null && mArrivalTransfer.getArrivingTrain() != null && !mArrivalTransfer.getArrivingTrain().getId().equals("WALK")) {
                 mArrivalEtaText = String.format(mContext.getString(R.string.ETA_transfer_arrival), DateTimeFormat.forPattern("hh:mm").print(mArrivalTransfer.getDelayedArrivalTime()), mArrivalTransfer.getStation().getLocalizedName(), mArrivalTransfer.getArrivingTrain().getName());
             } else {
                 mArrivalEtaText = null;
@@ -131,10 +143,10 @@ public class OccupancyDialog {
             if (mDepartureTransfer == mArrivalTransfer) {
                 vDialog.setTitle(mArrivalTransfer.getStation().getLocalizedName());
             } else {
-                if (mDepartureTransfer != null && mArrivalTransfer != null){
+                if (mDepartureTransfer != null && mArrivalTransfer != null) {
                     vDialog.setTitle(mDepartureTransfer.getDepartingTrain().getName() + " " +
                             mDepartureTransfer.getStation().getLocalizedName() + "-" + mArrivalTransfer.getStation().getLocalizedName());
-                } else if (mDepartureTransfer != null){
+                } else if (mDepartureTransfer != null) {
                     vDialog.setTitle(mDepartureTransfer.getDepartingTrain().getName() + " " +
                             mDepartureTransfer.getStation().getLocalizedName());
                 } else {
@@ -216,6 +228,63 @@ public class OccupancyDialog {
                 vDialog.dismiss();
             }
         });
+
+        if (mTrainStop != null) {
+            vSetNotification.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NotificationManager mNotifyMgr =
+                            (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
+
+                    if (mNotifyMgr == null) {
+                        return;
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_GLIMPSE,
+                                "Glimpse at pinned departures", NotificationManager.IMPORTANCE_DEFAULT);
+
+                        // Configure the notification channel.
+                        notificationChannel.setDescription("Glimpse at pinned departures");
+                        notificationChannel.enableLights(false);
+                        notificationChannel.setSound(null, null);
+                        notificationChannel.setLightColor(Color.RED);
+                        notificationChannel.setVibrationPattern(null);
+                        notificationChannel.enableVibration(false);
+                        mNotifyMgr.createNotificationChannel(notificationChannel);
+                    }
+
+                    NotificationCompat.Builder mBuilder =
+                            new NotificationCompat.Builder(mContext, NOTIFICATION_CHANNEL_GLIMPSE)
+                                    .setSmallIcon(R.drawable.hyperrail);
+
+                    Intent resultIntent = null;
+
+                    mBuilder.setContentTitle(mTrainStop.getTrain().getName() + " at " + mTrainStop.getStation().getLocalizedName());
+                    mBuilder.setCustomContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
+                    resultIntent = TrainActivity.createIntent(mContext, mTrainStop.getTrain(), mTrainStop.getStation(), mTrainStop.getDepartureTime());
+
+                    PendingIntent resultPendingIntent =
+                            PendingIntent.getActivity(
+                                    mContext,
+                                    0,
+                                    resultIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
+                            );
+                    mBuilder.setContentIntent(resultPendingIntent);
+
+                    // Sets an ID for the notification
+                    int mNotificationId = 1;
+                    // Gets an instance of the NotificationManager service
+
+                    // Builds the notification and issues it.
+                    mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
+                }
+            });
+        } else {
+            vSetNotification.setVisibility(View.GONE);
+        }
 
         if (mArrivalEtaText == null) {
             vShareArrivalEta.setVisibility(View.GONE);

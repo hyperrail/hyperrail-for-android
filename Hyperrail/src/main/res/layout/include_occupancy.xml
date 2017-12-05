@@ -2,8 +2,7 @@
 <ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/image_occupancy"
-    android:layout_width="@dimen/cardlist_textrow_height"
+    android:layout_width="@dimen/listitem_content_height_single"
     android:padding="4dp"
-    android:layout_height="@dimen/cardlist_textrow_height"
-    android:layout_marginRight="@dimen/activity_small_margin"
+    android:layout_height="@dimen/listitem_content_height_single"
     android:src="@drawable/ic_occupancy_unknown"/>

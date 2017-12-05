@@ -5,10 +5,9 @@
  */
 package be.hyperrail.android.persistence;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
 
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
@@ -16,16 +15,16 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 public class RouteSuggestion implements Suggestable {
 
     public Station from, to;
-    Date created_at;
+    DateTime created_at;
 
     RouteSuggestion() {
-        created_at = new Date();
+        created_at = new DateTime();
     }
 
     public RouteSuggestion(Station from, Station to) {
         this.from = from;
         this.to = to;
-        this.created_at = new Date();
+        this.created_at = new DateTime();
     }
 
     @Override
@@ -33,13 +32,13 @@ public class RouteSuggestion implements Suggestable {
         JSONObject json= new JSONObject();
         json.put("from",from.getId());
         json.put("to",to.getId());
-        json.put("created_at",created_at.getTime());
+        json.put("created_at",created_at.getMillis());
                 return json;
     }
 
     @Override
     public void deserialize(JSONObject json) throws JSONException {
-        this.created_at = new Date(json.getLong("created_at"));
+        this.created_at = new DateTime(json.getLong("created_at"));
         this.from = IrailFactory.getStationsProviderInstance().getStationById(json.getString("from"));
         this.to = IrailFactory.getStationsProviderInstance().getStationById(json.getString("to"));
     }
@@ -50,7 +49,7 @@ public class RouteSuggestion implements Suggestable {
     }
 
     @Override
-    public Date getSortingDate() {
+    public DateTime getSortingDate() {
         return created_at;
     }
 

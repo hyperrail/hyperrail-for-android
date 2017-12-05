@@ -1,8 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="wrap_content"
-    android:layout_height="@dimen/cardlist_textrow_height"
-    android:layout_marginRight="@dimen/activity_small_margin"
+    android:layout_height="@dimen/listitem_content_height_single"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -23,7 +22,7 @@
             android:text="IC"
             android:textAlignment="center"
             android:textColor="@color/colorTextLight"
-            android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+            android:textSize="@dimen/listitem_content_secondary_textsize"
             tools:ignore="HardcodedText"/>
     </LinearLayout>
 
@@ -35,6 +34,6 @@
         android:gravity="center_vertical"
         android:text="837"
         android:textColor="@color/colorMuted"
-        android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+        android:textSize="@dimen/listitem_content_secondary_textsize"
         tools:ignore="HardcodedText"/>
 </LinearLayout>

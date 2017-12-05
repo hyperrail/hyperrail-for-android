@@ -6,10 +6,9 @@
 
 package be.hyperrail.android.persistence;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
 
 public interface Suggestable {
 
@@ -19,7 +18,7 @@ public interface Suggestable {
 
     String getSortingName();
 
-    Date getSortingDate();
+    DateTime getSortingDate();
 
     boolean equals(JSONObject json) throws JSONException;
 }

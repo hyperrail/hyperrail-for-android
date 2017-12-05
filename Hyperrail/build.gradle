@@ -51,7 +51,7 @@ android {
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.google.android.gms:play-services-maps:11.6.0'
+    implementation 'com.google.android.gms:play-services-maps:11.4.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -64,12 +64,18 @@ dependencies {
     compile 'com.android.support:cardview-v7:26.1.0'
     compile 'com.android.support:recyclerview-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
-    compile 'com.google.android.gms:play-services-location:11.6.0'
-    compile 'com.google.firebase:firebase-crash:11.6.0'
-    compile 'com.google.firebase:firebase-perf:11.6.0'
-    compile 'com.google.firebase:firebase-core:11.6.0'
+    compile 'com.google.android.gms:play-services-location:11.4.2'
+    compile 'com.google.firebase:firebase-crash:11.4.2'
+    compile 'com.google.firebase:firebase-perf:11.4.2'
+    compile 'com.google.firebase:firebase-core:11.4.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.json:json:20160810' // org.json is included with Android, but Android.jar can not be used from unit tests
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

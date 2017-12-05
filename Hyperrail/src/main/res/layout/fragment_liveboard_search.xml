@@ -12,7 +12,7 @@
         <EditText
             android:id="@+id/input_station"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/cardlist_textrow_double_height"
+            android:layout_height="@dimen/listitem_content_height_double"
             android:hint="@string/search_station_name"
             android:inputType="textFilter"
             android:maxLines="1"

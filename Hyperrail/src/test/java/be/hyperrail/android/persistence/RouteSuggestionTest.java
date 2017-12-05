@@ -6,25 +6,24 @@
 
 package be.hyperrail.android.persistence;
 
+import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.junit.Test;
 
 import be.hyperrail.android.irail.db.Station;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Created by Bert on 28-11-2017.
- */
 public class RouteSuggestionTest {
     Station station1 = new Station("BE.NMBS.1", "Brussels-south", "Brussel-zuid", "fr", "de", "en", "Brussel-zuid", "BE", 1, 2, 3);
     Station station2 = new Station("BE.NMBS.2", "Ghent", "Gent", "Gand", "Gent", "Ghent", "Gent", "BE", 1, 2, 3);
+    RouteSuggestion s = new RouteSuggestion(station1,station2);
 
     @Test
     public void serialize() throws Exception {
-        RouteSuggestion s = new RouteSuggestion(station1,station2);
         JSONObject serial = new JSONObject();
-        serial.put("created_at", s.created_at.getTime());
+        serial.put("created_at", s.created_at.getMillis());
         serial.put("from", station1.getId());
         serial.put("to", station2.getId());
         assertEquals(serial.toString(), s.serialize().toString());
@@ -37,10 +36,13 @@ public class RouteSuggestionTest {
 
     @Test
     public void getSortingName() throws Exception {
+        // A sorting name isn't shown to the user, but is used for alphabetical sorting
+        assertEquals(station1.getLocalizedName() + station2.getLocalizedName(),s.getSortingName());
     }
 
     @Test
     public void getSortingDate() throws Exception {
+        assertTrue(DateTime.now().getMillis() - s.getSortingDate().getMillis() < 60000);
     }
 
     @Test

@@ -9,10 +9,10 @@
         android:id="@+id/cardview_collapsed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/cardlist_content_margin"
+        android:layout_margin="@dimen/listitem_content_padding"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/activity_small_margin"
-        android:paddingRight="@dimen/activity_small_margin">
+        android:paddingLeft="@dimen/listitem_horizontal_margin"
+        android:paddingRight="@dimen/listitem_horizontal_margin">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginRight="@dimen/cardlist_content_margin"
+                android:layout_marginRight="@dimen/listitem_content_padding"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -38,52 +38,52 @@
                     <TextView
                         android:id="@+id/text_departure_time"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:layout_height="@dimen/listitem_content_height_single"
                         android:gravity="center_vertical"
                         android:text="00:00"
                         android:textColor="@color/colorTextDark"
-                        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                        android:textSize="@dimen/listitem_content_primary_textsize"
                         tools:ignore="HardcodedText"/>
 
                     <TextView
                         android:id="@+id/text_departure_delay"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:layout_height="@dimen/listitem_content_height_single"
                         android:layout_marginLeft="@dimen/activity_tiny_margin"
                         android:gravity="center_vertical|right"
-                        android:minWidth="@dimen/card_delay_width"
+                        android:minWidth="@dimen/listitem_delay_width"
                         android:text="6'"
                         android:textColor="@color/colorDelay"
-                        android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+                        android:textSize="@dimen/listitem_content_secondary_textsize"
                         tools:ignore="HardcodedText"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:layout_height="@dimen/listitem_content_height_single"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/text_arrival_time"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:layout_height="@dimen/listitem_content_height_single"
                         android:gravity="center_vertical"
                         android:text="00:00"
                         android:textColor="@color/colorTextDark"
-                        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                        android:textSize="@dimen/listitem_content_primary_textsize"
                         tools:ignore="HardcodedText"/>
 
                     <TextView
                         android:id="@+id/text_arrival_delay"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:layout_height="@dimen/listitem_content_height_single"
                         android:layout_marginLeft="@dimen/activity_tiny_margin"
                         android:gravity="center_vertical|right"
-                        android:minWidth="@dimen/card_delay_width"
+                        android:minWidth="@dimen/listitem_delay_width"
                         android:text="51'"
                         android:textColor="@color/colorDelay"
-                        android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+                        android:textSize="@dimen/listitem_content_secondary_textsize"
                         tools:ignore="HardcodedText"/>
                 </LinearLayout>
 
@@ -92,7 +92,7 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_height="@dimen/listitem_content_height_double"
                 android:layout_weight="1"
                 android:gravity="left"
                 android:orientation="vertical">
@@ -100,29 +100,29 @@
                 <TextView
                     android:id="@+id/text_destination"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:layout_height="@dimen/listitem_content_height_single"
                     android:gravity="center_vertical"
                     android:text="Brussel-Zuid"
                     android:textColor="@color/colorTextDark"
-                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                    android:textSize="@dimen/listitem_content_primary_textsize"
                     tools:ignore="HardcodedText"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/cardlist_textrow_height"
+                    android:layout_height="@dimen/listitem_content_height_single"
                     android:gravity="left"
                     android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginRight="@dimen/activity_small_margin"
+                        android:layout_marginRight="@dimen/listitem_horizontal_margin"
                         android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/image_duration"
-                            android:layout_width="@dimen/cardlist_textrow_height"
-                            android:layout_height="@dimen/cardlist_textrow_height"
+                            android:layout_width="@dimen/listitem_content_height_single"
+                            android:layout_height="@dimen/listitem_content_height_single"
                             android:padding="2dp"
                             android:src="@drawable/ic_query_builder"
                             android:tint="@color/colorMuted"/>
@@ -140,12 +140,12 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginRight="@dimen/cardlist_content_margin"
+                        android:layout_marginRight="@dimen/listitem_content_padding"
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="@dimen/cardlist_textrow_height"
-                            android:layout_height="@dimen/cardlist_textrow_height"
+                            android:layout_width="@dimen/listitem_content_height_single"
+                            android:layout_height="@dimen/listitem_content_height_single"
                             android:padding="2dp"
                             android:src="@drawable/ic_directions_railway_white"
                             android:tint="@color/colorMuted"/>
@@ -167,9 +167,9 @@
 
             <LinearLayout
                 android:id="@+id/layout_platform_container"
-                android:layout_width="@dimen/cardlist_textrow_medium_height"
-                android:layout_height="@dimen/cardlist_textrow_medium_height"
-                android:layout_marginLeft="@dimen/cardlist_content_margin"
+                android:layout_width="@dimen/listitem_content_height_onehalf"
+                android:layout_height="@dimen/listitem_content_height_onehalf"
+                android:layout_marginLeft="@dimen/listitem_content_padding"
                 android:background="@drawable/platform_train"
                 android:gravity="center"
                 android:orientation="vertical">
@@ -181,7 +181,7 @@
                     android:text="5"
                     android:textAlignment="center"
                     android:textColor="@color/colorTextLight"
-                    android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                    android:textSize="@dimen/listitem_content_primary_textsize"
                     tools:ignore="HardcodedText"/>
             </LinearLayout>
 
@@ -193,7 +193,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="none"
             android:maxLines="3"
-            android:minHeight="@dimen/cardlist_textrow_primary_textsizea"
+            android:minHeight="@dimen/listitem_content_primary_textsize"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:scrollHorizontally="false"
@@ -206,11 +206,11 @@
         android:id="@+id/cardview_expanded"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/cardlist_content_margin"
+        android:layout_margin="@dimen/listitem_content_padding"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/activity_small_margin"
-        android:paddingRight="@dimen/activity_small_margin"
+        android:paddingLeft="@dimen/listitem_horizontal_margin"
+        android:paddingRight="@dimen/listitem_horizontal_margin"
         android:visibility="gone">
 
         <View

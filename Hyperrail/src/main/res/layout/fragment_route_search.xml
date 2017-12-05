@@ -26,7 +26,7 @@
             <AutoCompleteTextView
                 android:id="@+id/input_from"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_height="@dimen/listitem_content_height_double"
                 android:layout_weight="1"
                 android:completionThreshold="1"
                 android:hint="@string/from"
@@ -38,8 +38,8 @@
 
             <Button
                 android:id="@+id/button_swap"
-                android:layout_width="@dimen/cardlist_textrow_double_height"
-                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_width="@dimen/listitem_content_height_double"
+                android:layout_height="@dimen/listitem_content_height_double"
                 android:background="@drawable/inset_ic_swap_vertical_normal"/>
         </LinearLayout>
 
@@ -52,7 +52,7 @@
             <AutoCompleteTextView
                 android:id="@+id/input_to"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_height="@dimen/listitem_content_height_double"
                 android:layout_weight="1"
                 android:completionThreshold="1"
                 android:hint="@string/to"
@@ -63,8 +63,8 @@
 
             <Button
                 android:id="@+id/button_search"
-                android:layout_width="@dimen/cardlist_textrow_double_height"
-                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_width="@dimen/listitem_content_height_double"
+                android:layout_height="@dimen/listitem_content_height_double"
                 android:background="@drawable/inset_ic_action_search_normal"/>
         </LinearLayout>
 
@@ -80,7 +80,7 @@
                 android:id="@+id/input_arrivedepart"
                 style="@style/HyperrailAccentSearchField"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_height="@dimen/listitem_content_height_double"
                 android:dropDownWidth="match_parent"
                 android:entries="@array/departarrive"
                 android:gravity="center_vertical"
@@ -100,8 +100,8 @@
 
             <Button
                 android:id="@+id/button_pickdatetime"
-                android:layout_width="@dimen/cardlist_textrow_double_height"
-                android:layout_height="@dimen/cardlist_textrow_double_height"
+                android:layout_width="@dimen/listitem_content_height_double"
+                android:layout_height="@dimen/listitem_content_height_double"
                 android:background="@drawable/inset_ic_query_builder"/>
         </LinearLayout>
     </LinearLayout>

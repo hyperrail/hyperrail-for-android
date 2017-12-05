@@ -6,6 +6,7 @@
 
 package be.hyperrail.android.persistence;
 
+import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -13,20 +14,18 @@ import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.TrainStub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Created by Bert on 28-11-2017.
- */
 public class TrainSuggestionTest {
 
     Station station1 = new Station("BE.NMBS.1", "Brussels", "Brussel", "fr", "de", "en", "Brussel", "BE", 1, 2, 3);
     TrainStub train = new TrainStub("IC537",station1,"http://uri");
+    TrainSuggestion s = new TrainSuggestion(train);
 
     @Test
     public void serialize() throws Exception {
-        TrainSuggestion s = new TrainSuggestion(train);
         JSONObject serial = new JSONObject();
-        serial.put("created_at", s.created_at.getTime());
+        serial.put("created_at", s.created_at.getMillis());
         serial.put("id", train.getId());
         serial.put("direction", station1.getId());
         assertEquals(serial.toString(), s.serialize().toString());
@@ -43,6 +42,7 @@ public class TrainSuggestionTest {
 
     @Test
     public void getSortingDate() throws Exception {
+        assertTrue(DateTime.now().getMillis() - s.getSortingDate().getMillis() < 60000);
     }
 
     @Test

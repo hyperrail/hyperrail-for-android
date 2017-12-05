@@ -132,7 +132,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                                 @Override
                                 public boolean onLongClick(View view) {
                                     (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                            transfer)
+                                            transfer,route)
                                     ).show();
                                     return false;
                                 }
@@ -145,7 +145,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                                 @Override
                                 public boolean onLongClick(View view) {
                                     (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                            transfer, null)
+                                            transfer, null,route)
                                     ).show();
                                     return false;
                                 }
@@ -160,7 +160,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                                 @Override
                                 public boolean onLongClick(View view) {
                                     (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                            null, transfer)
+                                            null, transfer,route)
                                     ).show();
                                     return false;
                                 }
@@ -202,7 +202,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             @Override
                             public boolean onLongClick(View view) {
                                 (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                        transferBefore, transferAfter)
+                                        transferBefore, transferAfter,route)
                                 ).show();
                                 return false;
                             }

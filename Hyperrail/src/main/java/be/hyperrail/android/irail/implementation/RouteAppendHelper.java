@@ -48,7 +48,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
             lastSearchTime = routes.getSearchTime().plusHours(1);
         }
 
-        api.getRoute(routes.getOrigin(), routes.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, TAG_APPEND);
+        api.getRoutes(routes.getOrigin(), routes.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, TAG_APPEND);
     }
 
     public void prependRouteResult(final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
@@ -64,7 +64,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
             lastSearchTime = routes.getSearchTime();
         }
 
-        api.getRoute(routes.getOrigin(), routes.getDestination(), lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, TAG_PREPEND);
+        api.getRoutes(routes.getOrigin(), routes.getDestination(), lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, TAG_PREPEND);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
                     attempt++;
                     lastSearchTime = lastSearchTime.plusHours(2);
                     if (attempt < 12) {
-                        api.getRoute(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, tag);
+                        api.getRoutes(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, tag);
                     } else {
                         this.successResponseListener.onSuccessResponse(originalRouteResult, this);
                     }
@@ -94,7 +94,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
                     attempt++;
                     lastSearchTime = lastSearchTime.minusHours(2);
                     if (attempt < 12) {
-                        api.getRoute(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, tag);
+                        api.getRoutes(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, tag);
                     } else {
                         this.successResponseListener.onSuccessResponse(originalRouteResult, this);
                     }

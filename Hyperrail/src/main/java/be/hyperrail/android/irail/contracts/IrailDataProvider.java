@@ -17,6 +17,7 @@ import org.joda.time.DateTime;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Disturbance;
 import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.Train;
 
@@ -26,9 +27,11 @@ import be.hyperrail.android.irail.implementation.Train;
  */
 public interface IrailDataProvider {
 
-    void getRoute(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
+    void getRoutes(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
 
-    void getRoute(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
+    void getRoutes(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
+
+    void getRoute(final String semanticId, Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<Route> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
 
     void getLiveboard(String name, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<LiveBoard> successListener, IRailErrorResponseListener<LiveBoard> errorListener, Object tag);
 

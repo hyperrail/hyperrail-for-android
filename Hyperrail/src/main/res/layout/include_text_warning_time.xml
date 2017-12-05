@@ -17,7 +17,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:text="@string/warning_not_realtime"
         android:textColor="@color/colorTextLight"
-        android:textSize="@dimen/cardlist_textrow_secondary_textsizea" />
+        android:textSize="@dimen/listitem_content_secondary_textsize" />
 
         <Button
             android:id="@+id/warning_not_realtime_close"
