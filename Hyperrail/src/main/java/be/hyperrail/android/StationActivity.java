@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.joda.time.LocalTime;
@@ -101,9 +102,11 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(stationLocation, 15));
         mMap.setBuildingsEnabled(true);
         mMap.setTrafficEnabled(false);
+        mMap.setMinZoomPreference(10);
+        mMap.setMaxZoomPreference(18);
+        mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(stationLocation,stationLocation));
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-
         }
     }
 }

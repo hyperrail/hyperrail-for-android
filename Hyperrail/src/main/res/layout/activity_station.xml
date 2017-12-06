@@ -51,6 +51,7 @@
                 android:id="@+id/image_ticket"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_alignWithParentIfMissing="true"
                 android:layout_toLeftOf="@id/image_bus"
                 android:src="@drawable/ic_action_ticket"/>
 
@@ -58,6 +59,7 @@
                 android:id="@+id/image_bus"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_alignWithParentIfMissing="true"
                 android:layout_toLeftOf="@id/image_tram"
                 android:src="@drawable/ic_directions_bus"/>
 
@@ -65,8 +67,8 @@
                 android:id="@+id/image_tram"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_alignWithParentIfMissing="true"
                 android:layout_toLeftOf="@id/image_subway"
-
                 android:src="@drawable/ic_tram"/>
 
             <ImageView
@@ -116,9 +118,9 @@
         android:id="@+id/floating_action_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/listitem_content_padding"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:background="@color/colorPrimary"
+        android:padding="@dimen/listitem_content_padding"
         android:src="@drawable/ic_format_list_bulleted"
         app:layout_anchor="@id/map"
         app:layout_anchorGravity="bottom|right|end"/>
