@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
         android:theme="@style/HyperrailAccentSearchContainer"
+        android:padding="@dimen/activity_horizontal_margin"
         android:orientation="horizontal"
         android:gravity="left">
 

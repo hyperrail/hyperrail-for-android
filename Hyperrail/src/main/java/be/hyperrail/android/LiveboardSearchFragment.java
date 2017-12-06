@@ -77,6 +77,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     private Suggestion<StationSuggestion> mLastSelectedQuery;
     private StationCardAdapter mStationAdapter;
 
+    private OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeListener;
+
     public LiveboardSearchFragment() {
         // Required empty public constructor
     }
@@ -279,7 +281,11 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
-        openLiveboard(object.getData());
+        if (alternativeListener == null) {
+            openLiveboard(object.getData());
+        } else {
+            alternativeListener.onRecyclerItemClick(sender, object);
+        }
     }
 
     @Override
@@ -410,5 +416,9 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         getLastLocation();
+    }
+
+    public void setAlternativeListener(OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeListener) {
+        this.alternativeListener = alternativeListener;
     }
 }

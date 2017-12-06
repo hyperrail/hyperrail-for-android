@@ -14,10 +14,10 @@
         android:animateLayoutChanges="true"
         android:focusableInTouchMode="true"
         android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin"
         android:theme="@style/HyperrailAccentSearchField">
 
         <LinearLayout
-
             android:id="@+id/container_from"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

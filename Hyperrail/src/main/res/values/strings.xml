@@ -101,4 +101,5 @@
     <string name="show_as_notification">Pin as notification</string>
     <string name="action_share_arrival_eta">Share arrival ETA</string>
     <string name="action_share_departure_ETA">Share departure ETA</string>
+    <string name="title_pick_station">Pick a station</string>
 </resources>

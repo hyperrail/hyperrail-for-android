@@ -69,7 +69,8 @@ dependencies {
     compile 'com.google.firebase:firebase-perf:11.4.2'
     compile 'com.google.firebase:firebase-core:11.4.2'
     testCompile 'junit:junit:4.12'
-    testCompile 'org.json:json:20160810' // org.json is included with Android, but Android.jar can not be used from unit tests
+    testCompile 'org.json:json:20160810'
+    // org.json is included with Android, but Android.jar can not be used from unit tests
     androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-v4'

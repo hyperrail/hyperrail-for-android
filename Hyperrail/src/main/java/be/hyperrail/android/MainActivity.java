@@ -34,7 +34,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -164,13 +163,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Decide which view to show
         if (savedInstanceState == null && this.getIntent().hasExtra("view")) {
             // Based on intent
-            Log.d("MainAct", "Setting view type to " + this.getIntent().getIntExtra("view", defaultView) + " from intent");
             setView(this.getIntent().getIntExtra("view", defaultView), this.getIntent().getExtras());
             // mCurrentFragment.setParameters(this.getIntent().getExtras());
 
         } else if (savedInstanceState == null) {
             // Default
-            Log.d("MainAct", "Setting view type to " + defaultView + " from default");
             setView(defaultView, null);
         }
     }
@@ -222,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerNavigationHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                getFragmentManager().beginTransaction().replace(R.id.activity_main_fragment_container, frg).commitAllowingStateLoss();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg).commitAllowingStateLoss();
             }
         }, 50);
 
