@@ -7,7 +7,7 @@
               android:clickable="true"
               android:focusable="true"
               android:gravity="center"
-              android:minHeight="60dp"
+              android:minHeight="@dimen/listitem_height"
               android:paddingBottom="@dimen/listitem_horizontal_margin"
               android:paddingLeft="@dimen/listitem_horizontal_margin"
               android:paddingRight="@dimen/listitem_horizontal_margin"

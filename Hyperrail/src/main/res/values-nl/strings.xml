@@ -96,4 +96,13 @@
     <string name="walk_description">Wandel naar het volgend station</string>
     <string name="walk_heading">Wandelen</string>
     <string name="list_day_names">Maandag\nDinsdag\nWoensdag\nDonderdag\nVrijdag\nZaterdag\nZondag</string>
+    <string name="ETA_stop_arrival">Om %s zal ik aankomen in %s met %s</string>
+    <string name="ETA_stop_departure">Om %s zal ik vertrekken uit %s met %s</string>
+    <string name="ETA_transfer_arrival">Om %s zal ik aankomen in %s met %s</string>
+    <string name="ETA_transfer_departure">Om %s zal ik vertrekken uit %s met %s</string>
+    <string name="title_activity_station">Station</string>
+    <string name="action_details">Details weergeven</string>
+    <string name="action_share_departure_ETA">Deel verwachte aankomsttijd...</string>
+    <string name="action_share_arrival_eta">Deel verwachte vertrektijd</string>
+    <string name="show_as_notification">Pin als notificatie</string>
 </resources>

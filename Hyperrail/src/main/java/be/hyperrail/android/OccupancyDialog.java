@@ -256,7 +256,7 @@ public class OccupancyDialog {
 
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(mContext, NOTIFICATION_CHANNEL_GLIMPSE)
-                                    .setSmallIcon(R.drawable.hyperrail);
+                                    .setSmallIcon(R.drawable.ic_hyperrail_notification);
 
                     Intent resultIntent = null;
 

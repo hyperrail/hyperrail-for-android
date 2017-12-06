@@ -9,9 +9,9 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:gravity="center"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin">
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:gravity="center">
 
     <TextView
         android:id="@+id/text_time1"
@@ -74,22 +74,44 @@
         android:textSize="@dimen/listitem_content_primary_textsize"
         tools:ignore="HardcodedText"/>
 
-
-    <include
-        android:id="@+id/container_occupancy"
-        layout="@layout/include_occupancy"
+    <ImageView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/image_occupancy"
         android:layout_width="24dp"
         android:layout_height="@dimen/listitem_content_height_single"
         android:layout_below="@id/text_station"
         android:layout_marginLeft="@dimen/activity_tiny_margin"
-        android:layout_toRightOf="@id/text_delay2"/>
+        android:layout_toRightOf="@id/text_delay2"
+        android:padding="4dp"
+        android:src="@drawable/ic_occupancy_unknown"/>
 
-    <include
-        layout="@layout/include_text_train_status"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout_train_status_container"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/listitem_content_height_single"
         android:layout_below="@id/text_station"
-        android:layout_toRightOf="@id/container_occupancy"/>
+        android:layout_toRightOf="@id/image_occupancy"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/listitem_content_secondary_textsize"
+            android:src="@android:drawable/stat_sys_warning"
+            android:textAlignment="center"
+            android:tint="@color/colorDelay"/>
+
+        <TextView
+            android:id="@+id/text_train_status"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/status_cancelled"
+            android:textAlignment="center"
+            android:textColor="@color/colorDelay"
+            android:textSize="@dimen/listitem_content_secondary_textsize"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layout_platform_container"

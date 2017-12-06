@@ -98,4 +98,7 @@
 
     <string name="list_day_names">Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday</string>
     <string name="action_details">View details</string>
+    <string name="show_as_notification">Pin as notification</string>
+    <string name="action_share_arrival_eta">Share arrival ETA</string>
+    <string name="action_share_departure_ETA">Share departure ETA</string>
 </resources>

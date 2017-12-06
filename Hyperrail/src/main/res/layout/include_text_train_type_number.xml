@@ -2,6 +2,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="wrap_content"
     android:layout_height="@dimen/listitem_content_height_single"
+              android:id="@+id/container_train_number"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 

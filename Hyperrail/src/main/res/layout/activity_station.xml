@@ -5,101 +5,121 @@
   ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="be.hyperrail.android.StationActivity">
 
-    <include layout="@layout/toolbar_default"/>
-
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/map"
-              android:name="com.google.android.gms.maps.SupportMapFragment"
-              android:layout_width="match_parent"
-              android:layout_height="0dp"
-              android:layout_weight="4"
-              tools:context=".MapsActivity"/>
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:layout_weight="6">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/text_station"
-            style="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:gravity="center_vertical"
-            android:text="Brussel-Zuid"/>
+        <include layout="@layout/toolbar_default"/>
 
-        <ImageView
-            android:id="@+id/image_ticket"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_toLeftOf="@id/image_bus"
-            android:src="@drawable/ic_action_ticket"/>
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:id="@+id/map"
+                  android:name="com.google.android.gms.maps.SupportMapFragment"
+                  android:layout_width="match_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="4"
+                  tools:context=".MapsActivity"/>
 
-        <ImageView
-            android:id="@+id/image_bus"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_toLeftOf="@id/image_tram"
-            android:src="@drawable/ic_directions_bus"/>
-
-        <ImageView
-            android:id="@+id/image_tram"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_toLeftOf="@id/image_subway"
-
-            android:src="@drawable/ic_tram"/>
-
-        <ImageView
-            android:id="@+id/image_subway"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/ic_subway"/>
-
-        <TextView
-            android:id="@+id/text_address"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/text_station"
-            android:text="Fonsnylaan 1 1000 Brussel"/>
-
-        <TextView
-            android:id="@+id/title_opening_hours"
-            style="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_below="@+id/text_address"
-            android:gravity="center_vertical"
-            android:text="Openingsuren"/>
-
-        <TextView
-            android:id="@+id/text_days"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/title_opening_hours"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:text="@string/list_day_names"/>
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_weight="6">
 
-        <TextView
-            android:id="@+id/text_hours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/title_opening_hours"
-            android:layout_toRightOf="@+id/text_days"
-            android:text="07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n08:30-16:00\n08:30-16:00\n"/>
-    </RelativeLayout>
-</LinearLayout>
+            <TextView
+                android:id="@+id/text_station"
+                style="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:text="Brussel-Zuid"/>
+
+            <ImageView
+                android:id="@+id/image_ticket"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_toLeftOf="@id/image_bus"
+                android:src="@drawable/ic_action_ticket"/>
+
+            <ImageView
+                android:id="@+id/image_bus"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_toLeftOf="@id/image_tram"
+                android:src="@drawable/ic_directions_bus"/>
+
+            <ImageView
+                android:id="@+id/image_tram"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_toLeftOf="@id/image_subway"
+
+                android:src="@drawable/ic_tram"/>
+
+            <ImageView
+                android:id="@+id/image_subway"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_subway"/>
+
+            <TextView
+                android:id="@+id/text_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_station"
+                android:text="Fonsnylaan 1 1000 Brussel"/>
+
+            <TextView
+                android:id="@+id/title_opening_hours"
+                style="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/text_address"
+                android:gravity="center_vertical"
+                android:text="Openingsuren"/>
+
+            <TextView
+                android:id="@+id/text_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_opening_hours"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:text="@string/list_day_names"/>
+
+            <TextView
+                android:id="@+id/text_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_opening_hours"
+                android:layout_toRightOf="@+id/text_days"
+                android:text="07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n08:30-16:00\n08:30-16:00\n"/>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floating_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/listitem_content_padding"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:background="@color/colorPrimary"
+        android:src="@drawable/ic_format_list_bulleted"
+        app:layout_anchor="@id/map"
+        app:layout_anchorGravity="bottom|right|end"/>
+</android.support.design.widget.CoordinatorLayout>

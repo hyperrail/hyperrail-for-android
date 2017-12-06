@@ -12,7 +12,7 @@
               android:clickable="true"
               android:focusable="true"
               android:gravity="center"
-              android:minHeight="60dp">
+              android:minHeight="@dimen/listitem_height">
 
     <TextView
         android:layout_width="match_parent"

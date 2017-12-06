@@ -2,7 +2,7 @@
 <be.hyperrail.android.viewgroup.RouteTransferItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                         android:id="@+id/binder"
                                                         android:layout_width="match_parent"
-                                                        android:layout_height="80dp"
+                                                        android:layout_height="@dimen/listitem_height"
                                                         android:background="?android:attr/selectableItemBackground"
                                                         android:clickable="true"
                                                         android:focusable="true"
@@ -10,7 +10,7 @@
 
     <include layout="@layout/item_route_detail_transfer"
              android:layout_width="match_parent"
-             android:layout_height="@dimen/listitem_height"
+             android:layout_height="@dimen/item_height"
              android:layout_marginLeft="@dimen/activity_horizontal_margin"
              android:layout_marginRight="@dimen/activity_horizontal_margin"
         />

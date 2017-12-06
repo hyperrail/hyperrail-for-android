@@ -86,39 +86,39 @@ public class StationFacilities implements Serializable {
         return city;
     }
 
-    public boolean HasTicketVendingMachines() {
+    public boolean hasTicketVendingMachines() {
         return ticketVendingMachines;
     }
 
-    public boolean HasLuggageLockers() {
+    public boolean hasLuggageLockers() {
         return luggageLockers;
     }
 
-    public boolean HasFreeParking() {
+    public boolean hasFreeParking() {
         return freeParking;
     }
 
-    public boolean HasBlue_bike() {
+    public boolean hasBlue_bike() {
         return blue_bike;
     }
 
-    public boolean HasBike() {
+    public boolean hasBike() {
         return bike;
     }
 
-    public boolean HasTaxy() {
+    public boolean hasTaxy() {
         return taxy;
     }
 
-    public boolean HasBus() {
+    public boolean hasBus() {
         return bus;
     }
 
-    public boolean HasTram() {
+    public boolean hasTram() {
         return tram;
     }
 
-    public boolean HasMetro() {
+    public boolean hasMetro() {
         return metro;
     }
 
@@ -126,7 +126,7 @@ public class StationFacilities implements Serializable {
         return wheelchair_available;
     }
 
-    public boolean HasRamp() {
+    public boolean hasRamp() {
         return ramp;
     }
 
@@ -134,19 +134,19 @@ public class StationFacilities implements Serializable {
         return elevated_platform;
     }
 
-    public boolean HasEscalator_up() {
+    public boolean hasEscalator_up() {
         return escalator_up;
     }
 
-    public boolean HasEscalator_down() {
+    public boolean hasEscalator_down() {
         return escalator_down;
     }
 
-    public boolean HasElevator_platform() {
+    public boolean hasElevator_platform() {
         return elevator_platform;
     }
 
-    public boolean HasHearing_aid_signal() {
+    public boolean hasHearing_aid_signal() {
         return hearing_aid_signal;
     }
 

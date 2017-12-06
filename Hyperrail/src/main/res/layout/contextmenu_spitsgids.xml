@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:text="Show as notification"/>
+                android:text="@string/show_as_notification"/>
         </LinearLayout>
 
         <LinearLayout
@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:text="Share arrival ETA"
+                android:text="@string/action_share_arrival_eta"
                 android:tint="@color/colorTextDark"/>
         </LinearLayout>
 
@@ -90,7 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:text="Share departure ETA"
+                android:text="@string/action_share_departure_ETA"
                 android:tint="@color/colorTextDark"/>
         </LinearLayout>
     </LinearLayout>

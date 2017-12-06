@@ -2,7 +2,7 @@
 <be.hyperrail.android.viewgroup.TrainStopLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                 android:id="@+id/binder"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="80dp"
+                                                android:layout_height="@dimen/listitem_height"
                                                 android:background="?android:attr/selectableItemBackground"
                                                 android:clickable="true"
                                                 android:focusable="true"

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +51,15 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
 
         mStation = (Station) getIntent().getSerializableExtra("station");
 
+        findViewById(R.id.floating_action_button).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(LiveboardActivity.createIntent(StationActivity.this, mStation));
+                    }
+                }
+        );
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -73,6 +83,12 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         ((TextView) findViewById(R.id.text_hours)).setText(openingHoursString.toString());
         ((TextView) findViewById(R.id.text_station)).setText(station.getLocalizedName());
         ((TextView) findViewById(R.id.text_address)).setText(String.format("%s %s %s", facilities.getStreet(), facilities.getZip(), facilities.getCity()));
+
+        findViewById(R.id.image_tram).setVisibility(facilities.hasTram() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.image_bus).setVisibility(facilities.hasBus() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.image_subway).setVisibility(facilities.hasMetro() ? View.VISIBLE : View.GONE);
+
+        // TODO: display information on accessibility
     }
 
     @Override
