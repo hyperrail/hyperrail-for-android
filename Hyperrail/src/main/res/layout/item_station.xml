@@ -13,7 +13,7 @@
         android:layout_weight="1"
         android:text="Halle"
         android:textColor="@color/colorTextDark"
-        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+        android:textSize="@dimen/listitem_content_primary_textsize"
         tools:ignore="HardcodedText"/>
 
     <ImageView

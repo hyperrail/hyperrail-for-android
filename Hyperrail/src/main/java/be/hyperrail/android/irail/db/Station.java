@@ -12,9 +12,12 @@
 
 package be.hyperrail.android.irail.db;
 
-import android.util.Log;
+import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.Serializable;
+
+import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.factories.IrailFactory;
 
 /**
  * This class represents a station, as found in irail/stationscsv
@@ -35,11 +38,15 @@ public class Station implements Serializable {
     protected double longitude;
     protected float avgStopTimes;
 
-    protected Station(){
+    protected Station() {
 
     }
 
     public Station(String id, String name, String nl, String fr, String de, String en, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
+        if (!id.startsWith("BE.NMBS.")){
+            throw new IllegalArgumentException("Station IDs should start with BE.NMBS!");
+        }
+
         this.id = id;
         this.name = name;
         this.alternative_nl = nl;
@@ -53,11 +60,11 @@ public class Station implements Serializable {
         this.avgStopTimes = avgStopTimes;
     }
 
-    public Station(Station s){
+    public Station(Station s) {
         copy(s);
     }
 
-    protected void copy(Station copy){
+    public void copy(Station copy) {
         this.id = copy.id;
         this.name = copy.name;
         this.alternative_nl = copy.alternative_nl;
@@ -88,7 +95,6 @@ public class Station implements Serializable {
     }
 
     public String getSemanticId() {
-        Log.i("Station", "Semantic id: " + id);
         return "http://irail.be/stations/NMBS/" + id.substring(8);
     }
 
@@ -127,4 +133,28 @@ public class Station implements Serializable {
         return avgStopTimes;
     }
 
+    private StationFacilities stationFacilities;
+
+    /**
+     * Get the facilities available in this station.
+     * This data is loaded using lazy-loading, do not use this on a large amount of stations
+     *
+     * @return A StationFacilities object for this station
+     */
+    public StationFacilities getStationFacilities() {
+        if (stationFacilities == null) {
+            IrailStationProvider provider = IrailFactory.getStationsProviderInstance();
+            if (!(provider instanceof StationsDb)) {
+                FirebaseCrash.report(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
+                return null;
+            }
+            this.stationFacilities = ((StationsDb) provider).getStationFacilitiesById(this.id);
+        }
+        return stationFacilities;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && obj instanceof Station && this.getId().equals(((Station) obj).getId());
+    }
 }

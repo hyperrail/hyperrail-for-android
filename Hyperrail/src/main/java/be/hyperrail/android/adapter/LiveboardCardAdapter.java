@@ -13,22 +13,14 @@
 package be.hyperrail.android.adapter;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
@@ -36,8 +28,8 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.implementation.LiveBoard;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.viewgroup.LiveboardStopLayout;
 
 /**
  * Recyclerview adapter to show train departures in a station
@@ -46,7 +38,9 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     private LiveBoard liveboard;
     private final Context context;
-
+    private final static int STYLE_LIST = 0;
+    private final static int STYLE_CARD = 1;
+    private int style = STYLE_LIST;
     private Object[] displayList;
 
     protected final static int VIEW_TYPE_DATE = 1;
@@ -58,6 +52,12 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     public void updateLiveboard(LiveBoard liveBoard) {
         this.liveboard = liveBoard;
+
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
+            style = STYLE_CARD;
+        } else {
+            style = STYLE_LIST;
+        }
 
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
@@ -92,10 +92,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
                 // Keep in mind that position shifts with the number of already placed date separators
                 if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                    DateSeparator separator = new DateSeparator();
-                    separator.separatorDate = liveBoard.getStops()[stopPosition].getDepartureTime();
-
-                    this.displayList[resultPosition] = separator;
+                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();;
 
                     dayPosition++;
                 } else {
@@ -114,7 +111,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     @Override
     protected int onGetItemViewType(int position) {
-        if (displayList[position] instanceof DateSeparator) {
+        if (displayList[position] instanceof DateTime) {
             return VIEW_TYPE_DATE;
         }
         return VIEW_TYPE_ITEM;
@@ -130,7 +127,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             return new DateSeparatorViewHolder(itemView);
         }
 
-        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
+        if (style == STYLE_LIST) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(be.hyperrail.android.R.layout.listview_liveboard, parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(be.hyperrail.android.R.layout.cardview_liveboard, parent, false);
@@ -143,54 +140,13 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
     public void onBindItemViewHolder(RecyclerView.ViewHolder genericHolder, int position) {
         if (genericHolder instanceof DateSeparatorViewHolder) {
             DateSeparatorViewHolder holder = (DateSeparatorViewHolder) genericHolder;
-
-            DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd MMMMMMMM yyyy");
-            holder.vDateText.setText(df.print(((DateSeparator) displayList[position]).separatorDate));
+            holder.bind((DateTime) displayList[position]);
             return;
         }
 
-        LiveboardStopViewHolder holder = (LiveboardStopViewHolder) genericHolder;
-
         final TrainStop stop = (TrainStop) displayList[position];
-
-        holder.vDestination.setText(stop.getDestination().getLocalizedName());
-
-        holder.vTrainNumber.setText(stop.getTrain().getNumber());
-        holder.vTrainType.setText(stop.getTrain().getType());
-
-        DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-
-        holder.vDeparture.setText(df.print(stop.getDepartureTime()));
-        if (stop.getDepartureDelay().getStandardSeconds() > 0) {
-            holder.vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
-            holder.vDelayTime.setText(df.print(stop.getDelayedDepartureTime()));
-        } else {
-            holder.vDepartureDelay.setText("");
-            holder.vDelayTime.setText("");
-        }
-
-        holder.vPlatform.setText(String.valueOf(stop.getPlatform()));
-
-        if (stop.isDepartureCanceled()) {
-            holder.vPlatform.setText("");
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.platform_train_canceled));
-            holder.vStatusText.setText(be.hyperrail.android.R.string.status_cancelled);
-            holder.vStatusContainer.setVisibility(View.VISIBLE);
-            holder.vOccupancy.setVisibility(View.GONE);
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
-        } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
-            holder.vOccupancy.setVisibility(View.VISIBLE);
-            holder.vStatusContainer.setVisibility(View.GONE);
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.platform_train));
-            if (!stop.isPlatformNormal()) {
-                Drawable drawable = holder.vPlatformContainer.getBackground();
-                drawable.mutate();
-                drawable.setColorFilter(ContextCompat.getColor(context, be.hyperrail.android.R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
-            }
-        }
-
-        holder.vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
+        LiveboardStopViewHolder holder = (LiveboardStopViewHolder) genericHolder;
+        holder.liveboardStopView.bind(context, stop, liveboard, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,8 +160,8 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (mOnLongClickListener != null){
-                    mOnLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this,stop);
+                if (mOnLongClickListener != null) {
+                    mOnLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this, stop);
                 }
                 return false;
             }
@@ -222,40 +178,12 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
     private class LiveboardStopViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vDestination;
-        protected final TextView vTrainType;
-        protected final TextView vTrainNumber;
-        protected final TextView vDeparture;
-        protected final TextView vDepartureDelay;
-        protected final TextView vDelayTime;
-        protected final TextView vPlatform;
-        protected final LinearLayout vPlatformContainer;
-
-        protected final LinearLayout vStatusContainer;
-        protected final TextView vStatusText;
-
-        protected final ImageView vOccupancy;
+        LiveboardStopLayout liveboardStopView;
 
         LiveboardStopViewHolder(View view) {
             super(view);
-            vDestination = view.findViewById(be.hyperrail.android.R.id.text_destination);
-            vTrainNumber = view.findViewById(be.hyperrail.android.R.id.text_train_number);
-            vTrainType = view.findViewById(be.hyperrail.android.R.id.text_train_type);
-            vDeparture = view.findViewById(be.hyperrail.android.R.id.text_departure_time);
-            vDepartureDelay = view.findViewById(be.hyperrail.android.R.id.text_departure_delay);
-            vDelayTime = view.findViewById(be.hyperrail.android.R.id.text_delay_time);
-            vPlatform = view.findViewById(be.hyperrail.android.R.id.text_platform);
-            vPlatformContainer = view.findViewById(be.hyperrail.android.R.id.layout_platform_container);
-
-            vStatusContainer = view.findViewById(be.hyperrail.android.R.id.layout_train_status_container);
-            vStatusText = view.findViewById(be.hyperrail.android.R.id.text_train_status);
-            vOccupancy = view.findViewById(R.id.image_occupancy);
+            liveboardStopView = view.findViewById(R.id.binder);
         }
-    }
-
-    private class DateSeparator {
-
-        DateTime separatorDate;
     }
 }
 

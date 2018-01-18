@@ -3,108 +3,98 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:layout_margin="@dimen/cardlist_content_margin"
-              android:baselineAligned="false"
-              android:gravity="center"
+              android:layout_margin="@dimen/listitem_content_padding"
+              android:gravity="center_vertical"
               android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginRight="@dimen/activity_small_margin"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_departure_time"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:gravity="center_vertical|left"
-                android:text="00:00"
-                android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
-                tools:ignore="HardcodedText"/>
-
-            <TextView
-                android:id="@+id/text_departure_delay"
-                android:layout_width="wrap_content"
-                android:minWidth="@dimen/card_delay_width"
-                android:layout_height="24dp"
-                android:layout_marginLeft="@dimen/activity_tiny_margin"
-                android:gravity="center_vertical|right"
-                android:padding="0dp"
-                android:text="51'"
-                android:textColor="@color/colorDelay"
-                android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
-                tools:ignore="HardcodedText"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_delay_time"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/cardlist_textrow_height"
-                android:gravity="center_vertical|left"
-                android:text="00:51"
-                android:textColor="@color/colorDelay"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
-                tools:ignore="HardcodedText"/>
-        </LinearLayout>
-    </LinearLayout>
-
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="left|center_vertical"
-        android:orientation="vertical">
+        >
+
+
+        <TextView
+            android:id="@+id/text_departure_time"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:gravity="center_vertical|left"
+            android:text="00:00"
+            android:textColor="@color/colorTextDark"
+            android:textSize="@dimen/listitem_content_primary_textsize"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/text_departure_delay"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginLeft="@dimen/activity_tiny_margin"
+            android:layout_toRightOf="@id/text_departure_time"
+            android:gravity="center_vertical|right"
+            android:minWidth="@dimen/listitem_delay_width"
+            android:padding="0dp"
+            android:text="51'"
+            android:textColor="@color/colorDelay"
+            android:textSize="@dimen/listitem_content_secondary_textsize"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/text_delay_time"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_departure_time"
+            android:gravity="center_vertical|left"
+            android:text="00:51"
+            android:textColor="@color/colorDelay"
+            android:textSize="@dimen/listitem_content_primary_textsize"
+            tools:ignore="HardcodedText"/>
 
         <TextView
             android:id="@+id/text_destination"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/cardlist_textrow_height"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_marginLeft="@dimen/margin_include_item"
+            android:layout_toRightOf="@id/text_departure_delay"
             android:gravity="center_vertical"
             android:text="Brussel-Zuid"
             android:textAlignment="center"
             android:textColor="@color/colorTextDark"
-            android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+            android:textSize="@dimen/listitem_content_primary_textsize"
             tools:ignore="HardcodedText"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/cardlist_textrow_height"
-            android:gravity="left"
-            android:orientation="horizontal">
 
-            <include layout="@layout/include_text_train_type_number"/>
+        <include
+            android:id="@+id/container_train_number"
+            layout="@layout/include_text_train_type_number"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_departure_delay"
+            android:layout_marginLeft="@dimen/margin_include_item"
+            android:layout_toRightOf="@id/text_departure_delay"/>
 
-            <include layout="@layout/include_occupancy"/>
+        <include
+            android:id="@+id/image_occupancy"
+            layout="@layout/include_occupancy"
+            android:layout_width="@dimen/listitem_content_height_single"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_departure_delay"
+            android:layout_toRightOf="@id/container_train_number"/>
 
-            <include layout="@layout/include_text_train_status"/>
-
-        </LinearLayout>
-    </LinearLayout>
+        <include
+            layout="@layout/include_text_train_status"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_departure_delay"
+            android:layout_toRightOf="@id/image_occupancy"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/layout_platform_container"
-        android:layout_width="@dimen/cardlist_textrow_medium_height"
-        android:layout_height="@dimen/cardlist_textrow_medium_height"
-        android:layout_marginLeft="@dimen/cardlist_content_margin"
+        android:layout_width="@dimen/listitem_content_height_onehalf"
+        android:layout_height="@dimen/listitem_content_height_onehalf"
+        android:layout_alignParentRight="true"
         android:background="@drawable/platform_train"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:gravity="center">
 
         <TextView
             android:id="@+id/text_platform"
@@ -113,7 +103,7 @@
             android:text="5"
             android:textAlignment="center"
             android:textColor="@color/colorTextLight"
-            android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+            android:textSize="@dimen/listitem_content_primary_textsize"
             tools:ignore="HardcodedText"/>
 
     </LinearLayout>

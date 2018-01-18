@@ -2,22 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:orientation="vertical">
 
     <TextView
         android:id="@+id/text_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_small_margin"
+
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+
         android:text="Works Brussels-Nord - Brussels-Midi 29/04 - 01/05"
         android:textColor="@color/colorTextDark"
-        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+        android:textSize="@dimen/listitem_content_primary_textsize"
         tools:ignore="HardcodedText"/>
 
     <TextView
@@ -25,29 +25,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|right"
-        android:layout_marginBottom="@dimen/activity_small_margin"
+
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+
         android:text="From Saturday 29/04 to 1/05, trains will not stop at Brussels-Central station following works between Brussels-Nord and Brussels-Midi. There will be major changes to the train service. "
-        android:textSize="@dimen/cardlist_textrow_secondary_textsizea"
+        android:textSize="@dimen/listitem_content_secondary_textsize"
         tools:ignore="HardcodedText"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/cardlist_textrow_height"
+        android:layout_height="@dimen/listitem_content_height_single"
+
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/cardlist_textrow_height"
+            android:layout_height="@dimen/listitem_content_height_single"
             android:layout_gravity="center_vertical|right"
             android:src="@drawable/ic_query_builder"
-            android:tint="@color/colorMuted" />
+            android:tint="@color/colorMuted"/>
 
         <TextView
             android:id="@+id/text_date"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="@dimen/activity_small_margin"
-            android:layout_height="@dimen/cardlist_textrow_height"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_marginLeft="@dimen/listitem_horizontal_margin"
             android:gravity="center_vertical"
             android:text="19/04/2017 - 23:00"
             android:tint="@color/colorMuted"

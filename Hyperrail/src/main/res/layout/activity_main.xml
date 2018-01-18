@@ -17,7 +17,7 @@
                                             tools:context="be.hyperrail.android.MainActivity">
 
         <FrameLayout
-            android:id="@+id/activity_main_fragment_container"
+            android:id="@+id/fragment_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

@@ -7,19 +7,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
+        android:padding="@dimen/activity_horizontal_margin"
         android:theme="@style/HyperrailAccentSearchContainer">
 
         <EditText
             android:id="@+id/input_station"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/cardlist_textrow_double_height"
+            android:layout_height="@dimen/listitem_content_height_double"
             android:hint="@string/search_station_name"
             android:inputType="textFilter"
             android:maxLines="1"
-            android:paddingTop="@dimen/activity_vertical_margin"
             android:textColor="@color/colorTextLight"
-            android:theme="@style/HyperrailAccentSearchText"
-            />
+            android:theme="@style/HyperrailAccentSearchText"/>
 
     </LinearLayout>
 

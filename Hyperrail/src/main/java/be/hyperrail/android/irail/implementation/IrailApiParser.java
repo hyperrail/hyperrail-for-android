@@ -46,17 +46,19 @@ public class IrailApiParser implements IrailParser {
         return new RouteResult(origin, destination, searchTime, timeDefinition, routes);
     }
 
-    public Route parseRoute(JSONObject routeObject) throws JSONException {
+    private Route parseRoute(JSONObject routeObject) throws JSONException {
         JSONObject departure = routeObject.getJSONObject("departure");
         JSONObject arrival = routeObject.getJSONObject("arrival");
 
         TrainStub firstTrain = new TrainStub(
                 departure.getString("vehicle"),
-                stationProvider.getStationByName(departure.getJSONObject("direction").getString("name")));
+                stationProvider.getStationByName(departure.getJSONObject("direction").getString("name")),
+        null);
 
         TrainStub lastTrain = new TrainStub(
                 arrival.getString("vehicle"),
-                stationProvider.getStationByName(arrival.getJSONObject("direction").getString("name")));
+                stationProvider.getStationByName(arrival.getJSONObject("direction").getString("name")),
+                null);
 
         OccupancyLevel departureOccupancyLevel = OccupancyLevel.UNKNOWN;
         if (departure.has("occupancy")) {
@@ -129,11 +131,11 @@ public class IrailApiParser implements IrailParser {
                 if (viaDeparture.getInt("walking") == 0) {
                     trains[i + 1] = new TrainStub(
                             viaDeparture.getString("vehicle"),
-                            stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")));
+                            stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")), null);
                 } else {
                     trains[i + 1] = new TrainStub(
                             "WALK",
-                            null);
+                            null, null);
                 }
 
                 OccupancyLevel viaOccupancyLevel = OccupancyLevel.UNKNOWN;
@@ -280,10 +282,6 @@ public class IrailApiParser implements IrailParser {
                 searchDate);
     }
 
-    private TrainStop parseLiveboardStop(JSONObject item) throws JSONException {
-        return parseLiveboardStop(stationProvider.getStationByName(item.getString("station")), item);
-    }
-
     // allow providing station, so liveboards don't need to parse a station over and over
     private TrainStop parseLiveboardStop(Station stop, JSONObject item) throws JSONException {
         Station destination = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
@@ -296,7 +294,7 @@ public class IrailApiParser implements IrailParser {
         return new TrainStop(
                 stop,
                 destination,
-                new TrainStub(item.getString("vehicle"), destination),
+                new TrainStub(item.getString("vehicle"), destination, item.getJSONObject("vehicleinfo").getString("@id")),
                 item.getString("platform"),
                 item.getJSONObject("platforminfo").getInt("normal") == 1,
                 timestamp2date(item.getString("time")),
@@ -338,6 +336,7 @@ public class IrailApiParser implements IrailParser {
     public Train parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException {
 
         String id = jsonData.getString("vehicle");
+        String uri = jsonData.getJSONObject("vehicleinfo").getString("@id");
         double longitude = jsonData.getJSONObject("vehicleinfo").getDouble("locationX");
         double latitude = jsonData.getJSONObject("vehicleinfo").getDouble("locationY");
 
@@ -350,13 +349,13 @@ public class IrailApiParser implements IrailParser {
         );
 
         TrainStop[] stops = new TrainStop[jsonStops.length()];
-        TrainStub t = new TrainStub(id, destination);
+        TrainStub t = new TrainStub(id, destination, uri);
 
         for (int i = 0; i < jsonStops.length(); i++) {
             stops[i] = parseTrainStop(destination, t, jsonStops.getJSONObject(i));
         }
 
-        return new Train(id, destination, stops[0].getStation(), longitude, latitude, stops);
+        return new Train(id,uri, destination, stops[0].getStation(), longitude, latitude, stops);
     }
 
     private static DateTime timestamp2date(String time) {

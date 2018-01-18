@@ -22,6 +22,8 @@ import be.hyperrail.android.irail.contracts.IrailDataResponse;
 public class ApiResponse<T> implements IrailDataResponse<T> {
 
     private final T data;
+    private final boolean isCached;
+    private final boolean isOffline;
     private final Exception exception;
     private final DateTime time;
 
@@ -29,8 +31,19 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
         this(data, null);
     }
 
+    @Deprecated
     public ApiResponse(T data, Exception exception) {
         this.data = data;
+        this.exception = exception;
+        this.isCached = false;
+        this.isOffline = false;
+        this.time = new DateTime();
+    }
+
+    public ApiResponse(T data, boolean isCached, boolean isOffline, Exception exception) {
+        this.data = data;
+        this.isCached = isCached;
+        this.isOffline = isOffline;
         this.exception = exception;
         this.time = new DateTime();
     }
@@ -53,5 +66,13 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
     @Override
     public DateTime getTime() {
         return time;
+    }
+
+    public boolean isOffline() {
+        return isOffline;
+    }
+
+    public boolean isCached() {
+        return isCached;
     }
 }

@@ -89,17 +89,36 @@ public class IrailApi implements IrailDataProvider {
     private final int TAG_IRAIL_API_GET = 0;
 
     @Override
-    public void getRoute(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType,
-                         IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener,
-                         Object tag) {
-        getRoute(stationProvider.getStationByName(from), stationProvider.getStationByName(to), timeFilter, timeFilterType, successListener, errorListener, tag);
+    public void getRoutes(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType,
+                          IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener,
+                          Object tag) {
+        getRoutes(stationProvider.getStationByName(from), stationProvider.getStationByName(to), timeFilter, timeFilterType, successListener, errorListener, tag);
+    }
+
+    @Override
+    public void getRoute(final String semanticId, Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType, final IRailSuccessResponseListener<Route> successListener, final IRailErrorResponseListener<RouteResult> errorListener, Object tag) {
+        getRoutes(from, to, timeFilter, timeFilterType, new IRailSuccessResponseListener<RouteResult>() {
+            @Override
+            public void onSuccessResponse(RouteResult data, Object tag) {
+                for (Route r:data.getRoutes()                     ) {
+                    if (r.getTransfers()[0].getDepartureConnectionSemanticId().equals(semanticId)){
+                        successListener.onSuccessResponse(r,tag);
+                    }
+                }
+            }
+        }, new IRailErrorResponseListener<RouteResult>() {
+            @Override
+            public void onErrorResponse(Exception e, Object tag) {
+              errorListener.onErrorResponse(e,tag);
+            }
+        }, tag);
     }
 
     @Override
     @AddTrace(name = "iRailGetroute")
-    public void getRoute(final Station from, final Station to, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
-                         final IRailSuccessResponseListener<RouteResult> successListener, final IRailErrorResponseListener<RouteResult> errorListener,
-                         final Object tag) {
+    public void getRoutes(final Station from, final Station to, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
+                          final IRailSuccessResponseListener<RouteResult> successListener, final IRailErrorResponseListener<RouteResult> errorListener,
+                          final Object tag) {
 
         if (timeFilter == null) {
             timeFilter = new DateTime();

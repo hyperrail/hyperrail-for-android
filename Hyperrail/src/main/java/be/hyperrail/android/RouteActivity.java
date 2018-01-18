@@ -176,7 +176,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         api.abortAllQueries();
 
-        api.getRoute(mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType, new IRailSuccessResponseListener<RouteResult>() {
+        api.getRoutes(mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType, new IRailSuccessResponseListener<RouteResult>() {
                     @Override
                     public void onSuccessResponse(RouteResult data, Object tag) {
                         vRefreshLayout.setRefreshing(false);

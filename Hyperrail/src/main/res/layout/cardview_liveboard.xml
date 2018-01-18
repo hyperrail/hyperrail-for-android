@@ -14,10 +14,16 @@
                                     android:orientation="horizontal"
                                     card_view:cardCornerRadius="4dp">
 
-    <include
-        layout="@layout/item_liveboard"
+    <be.hyperrail.android.viewgroup.LiveboardStopLayout
+        android:id="@+id/binder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/margin_include_item"
-        />
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/item_liveboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_include_item"
+            />
+    </be.hyperrail.android.viewgroup.LiveboardStopLayout>
 </android.support.v7.widget.CardView>

@@ -7,11 +7,11 @@
               android:clickable="true"
               android:focusable="true"
               android:gravity="center"
-              android:minHeight="60dp"
-              android:paddingBottom="@dimen/activity_small_margin"
-              android:paddingLeft="@dimen/activity_small_margin"
-              android:paddingRight="@dimen/activity_small_margin"
-              android:paddingTop="@dimen/activity_small_margin">
+              android:minHeight="@dimen/listitem_height"
+              android:paddingBottom="@dimen/listitem_horizontal_margin"
+              android:paddingLeft="@dimen/listitem_horizontal_margin"
+              android:paddingRight="@dimen/listitem_horizontal_margin"
+              android:paddingTop="@dimen/listitem_horizontal_margin">
 
     <include layout="@layout/item_disturbance"/>
 </LinearLayout>

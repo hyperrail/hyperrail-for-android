@@ -14,7 +14,7 @@
 
     <TextView
         android:textColor="@color/colorTextDark"
-        android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+        android:textSize="@dimen/listitem_content_primary_textsize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

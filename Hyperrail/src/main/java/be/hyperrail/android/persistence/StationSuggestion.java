@@ -6,24 +6,24 @@
 
 package be.hyperrail.android.persistence;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
 
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 
 public class StationSuggestion extends Station implements Suggestable {
 
-    Date created_at;
+    DateTime created_at;
 
+    // Empty constructor required!
     StationSuggestion() {
 
     }
 
     public StationSuggestion(Station s) {
-        created_at = new Date();
+        created_at = new DateTime();
         copy(s);
     }
 
@@ -31,13 +31,13 @@ public class StationSuggestion extends Station implements Suggestable {
     public JSONObject serialize() throws JSONException {
         JSONObject json = new JSONObject();
         json.put("id", this.id);
-        json.put("created_at", this.created_at.getTime());
+        json.put("created_at", this.created_at.getMillis());
         return json;
     }
 
     @Override
     public void deserialize(JSONObject json) throws JSONException {
-        this.created_at = new Date(json.getLong("created_at"));
+        this.created_at = new DateTime(json.getLong("created_at"));
         Station s = IrailFactory.getStationsProviderInstance().getStationById(json.getString("id"));
         copy(s);
     }
@@ -48,7 +48,7 @@ public class StationSuggestion extends Station implements Suggestable {
     }
 
     @Override
-    public Date getSortingDate() {
+    public DateTime getSortingDate() {
         return created_at;
     }
 

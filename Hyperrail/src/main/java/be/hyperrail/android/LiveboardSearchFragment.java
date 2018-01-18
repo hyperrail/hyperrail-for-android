@@ -42,7 +42,7 @@ import android.widget.EditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
@@ -56,7 +56,6 @@ import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
 import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
-import static java.util.logging.Level.INFO;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
@@ -77,6 +76,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     private Suggestion<StationSuggestion> mLastSelectedQuery;
     private StationCardAdapter mStationAdapter;
 
+    private OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeListener;
+
     public LiveboardSearchFragment() {
         // Required empty public constructor
     }
@@ -86,12 +87,22 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
+    @AddTrace(name="LiveboardSearchFragment.onCreateView")
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_liveboard_search, container, false);
         stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
+
+        return view;
+    }
+
+    @Override
+    @AddTrace(name="LiveboardSearchFragment.onViewCreated")
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Create an instance of GoogleAPIClient.
 
         stationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         stationRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -101,13 +112,6 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         mStationAdapter.setOnItemClickListener(this);
         mStationAdapter.setOnLongItemClickListener(this);
         stationRecyclerView.setAdapter(mStationAdapter);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // Create an instance of GoogleAPIClient.
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
@@ -159,11 +163,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     private void setSuggestedStations() {
-        stationRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
-        // TODO pixel on Android O requires this much validation. There should be a better way for this.
-        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null && stationRecyclerView.getAdapter() instanceof StationCardAdapter) {
-            ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
-        }
+        mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
     }
 
     @Override
@@ -179,19 +179,16 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         s = s.trim();
 
         if (s.length() > 0) {
-            setStations(stationProvider.getStationsByNameOrderBySize(s));
-            setStationType(StationCardAdapter.stationType.SEARCHED);
+            setStations(stationProvider.getStationsByNameOrderBySize(s), StationCardAdapter.stationType.SEARCHED);
             setSuggestionsVisible(false);
 
         } else if (mLastLocation != null) {
-            setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations));
-            setStationType(StationCardAdapter.stationType.NEARBY);
+            setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations), StationCardAdapter.stationType.NEARBY);
             setNearbyOnTop(mNearbyOnTop);
             setSuggestionsVisible(true);
 
         } else {
-            setStations(stationProvider.getStationsOrderBySize());
-            setStationType(StationCardAdapter.stationType.UNDEFINED);
+            setStations(stationProvider.getStationsOrderBySize(), StationCardAdapter.stationType.UNDEFINED);
             setNearbyOnTop(false);
             setSuggestionsVisible(true);
 
@@ -233,28 +230,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      *
      * @param stations The new array of stations
      */
-    private void setStations(Station[] stations) {
-        if (stations != null) {
-            FirebaseCrash.logcat(INFO.intValue(), LogTag, "Setting liveboard search list to " + stations.length + " stations");
-        } else {
-            FirebaseCrash.logcat(INFO.intValue(), LogTag, "Setting liveboard search list to 0 stations");
-        }
-
-        // TODO: replace this crash workaround with a good solution. Nexus 6P, android O.
-        if (stationRecyclerView.getAdapter() instanceof StationCardAdapter) {
-            StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-            adapter.setStations(stations);
-        }
-    }
-
-    /**
-     * Set the type of stations (determines the icon). Does not apply to recents or favorites.
-     *
-     * @param type The type of the stations shown, determines the icon shown next to it.
-     */
-    private void setStationType(StationCardAdapter.stationType type) {
-        StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-        adapter.setStationIconType(type);
+    private void setStations(Station[] stations, StationCardAdapter.stationType type) {
+        mStationAdapter.setStations(stations);
     }
 
     /**
@@ -263,8 +240,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param visible True to show recents and favorites
      */
     private void setSuggestionsVisible(boolean visible) {
-        StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-        adapter.setSuggestionsVisible(visible);
+        mStationAdapter.setSuggestionsVisible(visible);
     }
 
     /**
@@ -273,13 +249,16 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param nearbyOnTop Whether or not to show nearby stations before the favorite and recent stations
      */
     private void setNearbyOnTop(boolean nearbyOnTop) {
-        StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-        adapter.setNearbyOnTop(nearbyOnTop);
+        mStationAdapter.setNearbyOnTop(nearbyOnTop);
     }
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
-        openLiveboard(object.getData());
+        if (alternativeListener == null) {
+            openLiveboard(object.getData());
+        } else {
+            alternativeListener.onRecyclerItemClick(sender, object);
+        }
     }
 
     @Override
@@ -410,5 +389,9 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         getLastLocation();
+    }
+
+    public void setAlternativeListener(OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeListener) {
+        this.alternativeListener = alternativeListener;
     }
 }

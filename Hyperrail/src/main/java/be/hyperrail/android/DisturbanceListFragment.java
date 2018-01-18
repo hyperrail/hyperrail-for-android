@@ -47,6 +47,8 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
     private Disturbance[] disturbances;
     private DateTime lastUpdate;
 
+    DisturbanceCardAdapter disturbanceCardAdapter;
+
     public DisturbanceListFragment() {
         // Required empty public constructor
     }
@@ -61,6 +63,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_disturbance_list, container, false);
     }
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -88,9 +91,9 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
             vRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         }
 
-        DisturbanceCardAdapter adapter = new DisturbanceCardAdapter(this.getActivity().getApplicationContext(), null);
-        adapter.setOnItemClickListener(this);
-        vRecyclerView.setAdapter(adapter);
+        disturbanceCardAdapter = new DisturbanceCardAdapter(this.getActivity().getApplicationContext(), null);
+        disturbanceCardAdapter.setOnItemClickListener(this);
+        vRecyclerView.setAdapter(disturbanceCardAdapter);
 
         if (savedInstanceState != null && savedInstanceState.containsKey("updated")) {
             this.disturbances = (Disturbance[]) savedInstanceState.getSerializable("disturbances");
@@ -137,7 +140,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
         }
 
         this.disturbances = disturbances;
-        ((DisturbanceCardAdapter) vRecyclerView.getAdapter()).updateDisturbances(disturbances);
+        disturbanceCardAdapter.updateDisturbances(disturbances);
     }
 
     @Override

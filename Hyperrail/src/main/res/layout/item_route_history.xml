@@ -3,7 +3,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/cardlist_content_margin"
+    android:layout_margin="@dimen/listitem_content_padding"
     android:gravity="center_vertical|left"
     android:orientation="horizontal">
 
@@ -16,7 +16,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/cardlist_textrow_height"
+            android:layout_height="@dimen/listitem_content_height_single"
             android:orientation="horizontal">
 
             <ImageView
@@ -28,16 +28,16 @@
             <TextView
                 android:id="@+id/text_from"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/cardlist_textrow_height"
+                android:layout_height="@dimen/listitem_content_height_single"
                 android:text="Gent"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                android:textSize="@dimen/listitem_content_primary_textsize"
                 tools:ignore="HardcodedText"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/cardlist_textrow_height"
+            android:layout_height="@dimen/listitem_content_height_single"
             android:orientation="horizontal">
 
             <ImageView
@@ -49,10 +49,10 @@
             <TextView
                 android:id="@+id/text_to"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/cardlist_textrow_height"
+                android:layout_height="@dimen/listitem_content_height_single"
                 android:text="Brussel"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                android:textSize="@dimen/listitem_content_primary_textsize"
                 tools:ignore="HardcodedText"/>
         </LinearLayout>
     </LinearLayout>
@@ -60,7 +60,7 @@
     <ImageView
         android:id="@+id/image_right"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/cardlist_textrow_double_height"
+        android:layout_height="@dimen/listitem_content_height_double"
         android:layout_gravity="center_vertical|right"
         android:src="@drawable/ic_history"
         android:tint="@color/colorStar" />

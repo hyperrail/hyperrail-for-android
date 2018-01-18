@@ -10,40 +10,38 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
-
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.TrainStub;
 
 public class TrainSuggestion extends TrainStub implements Suggestable {
 
-    Date created_at;
+    DateTime created_at;
     Station origin;
     DateTime departure;
 
     // This method is required for creation through reflection
     @SuppressWarnings("unused")
     TrainSuggestion() {
-        super(null, null);
+        super(null, null, null);
     }
 
     public TrainSuggestion(TrainStub trainStub) {
-        super(null, null);
+        super(null, null, null);
         if (trainStub != null) {
             this.id = trainStub.getId();
             this.direction = trainStub.getDirection();
         }
-        this.created_at = new Date();
+        this.created_at = new DateTime();
     }
 
     public TrainSuggestion(TrainStub trainStub, Station origin, DateTime departure) {
-        super(null, null);
+        super(null, null, null);
         if (trainStub != null) {
             this.id = trainStub.getId();
             this.direction = trainStub.getDirection();
         }
-        this.created_at = new Date();
+        this.created_at = new DateTime();
         this.origin = origin;
         this.departure = departure;
     }
@@ -52,7 +50,7 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
     public JSONObject serialize() throws JSONException {
         JSONObject json = new JSONObject();
         json.put("id", this.id);
-        json.put("created_at", created_at.getTime());
+        json.put("created_at", created_at.getMillis());
         if (direction != null) {
             json.put("direction", direction.getId());
         }
@@ -67,7 +65,7 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
 
     @Override
     public void deserialize(JSONObject json) throws JSONException {
-        this.created_at = new Date(json.getLong("created_at"));
+        this.created_at = new DateTime(json.getLong("created_at"));
         this.id = json.getString("id");
         if (json.has("direction")) {
             this.direction = IrailFactory.getStationsProviderInstance().getStationById(json.getString("direction"));
@@ -86,7 +84,7 @@ public class TrainSuggestion extends TrainStub implements Suggestable {
     }
 
     @Override
-    public Date getSortingDate() {
+    public DateTime getSortingDate() {
         return created_at;
     }
 

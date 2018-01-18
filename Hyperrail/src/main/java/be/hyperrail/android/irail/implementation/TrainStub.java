@@ -24,20 +24,27 @@ import be.hyperrail.android.irail.db.Station;
  */
 public class TrainStub implements Serializable {
 
-    protected  String id;
-    protected  Station direction;
+    private final String uri;
+    protected String id;
+    protected Station direction;
 
     // Direction is required, since we need to display something
-    public TrainStub(String id, Station direction) {
-        if (id != null && !id.startsWith("BE.NMBS.")){
+    public TrainStub(String id, Station direction, String uri) {
+        if (id != null && !id.startsWith("BE.NMBS.")) {
             id = "BE.NMBS." + id;
         }
-        this.id = id;
+
+        if (id != null) {
+            this.id = id.toUpperCase();
+        }
+
         this.direction = direction;
+        this.uri = uri;
     }
 
     /**
      * The ID, for example BE.NMBS.IC4516
+     *
      * @return ID, for example BE.NMBS.IC4516
      */
     public String getId() {
@@ -46,6 +53,7 @@ public class TrainStub implements Serializable {
 
     /**
      * The direction (final stop) of this train
+     *
      * @return direction (final stop) of this train
      */
     public Station getDirection() {
@@ -54,6 +62,7 @@ public class TrainStub implements Serializable {
 
     /**
      * Human-readable name, for example IC 4516
+     *
      * @return Human-readable name
      */
     public String getName() {
@@ -62,6 +71,7 @@ public class TrainStub implements Serializable {
 
     /**
      * ID without leading BE.NMBS, for example IC4516
+     *
      * @return ID without leading BE.NMBS
      */
     private String getReducedId() {
@@ -70,14 +80,20 @@ public class TrainStub implements Serializable {
 
     /**
      * Semantic ID, for example http://irail.be/vehicle/IC4516
+     *
      * @return Semantic ID
      */
     public String getSemanticId() {
+        if (uri != null) {
+            return uri;
+        }
+        // Calculate if unknown
         return "http://irail.be/vehicle/" + getReducedId();
     }
 
     /**
      * Train type, for example S, IC, L, P
+     *
      * @return The type of this train
      */
     public String getType() {
@@ -102,6 +118,7 @@ public class TrainStub implements Serializable {
 
     /**
      * Train number, for example 4516
+     *
      * @return The number of this train
      */
     public String getNumber() {

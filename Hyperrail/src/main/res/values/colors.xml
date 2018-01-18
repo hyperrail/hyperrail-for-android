@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#c62828</color><!-- Material red 800 -->
+    <color name="ic_launcher_background">#c62828</color><!-- Material red 800 -->
     <color name="colorPrimaryDark">#8e0000</color>
     <color name="colorPrimaryLight">#f05545</color>
     <color name="colorAccent">#FFF</color>

@@ -13,25 +13,16 @@
 package be.hyperrail.android.adapter;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.viewgroup.TrainStopLayout;
 
 /**
  * Recyclerview adapter which shows stops of a train
@@ -64,65 +55,7 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
     public void onBindViewHolder(TrainStopViewHolder holder, int position) {
         final TrainStop stop = train.getStops()[position];
 
-        holder.vDestination.setText(stop.getStation().getLocalizedName());
-
-        DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-
-        holder.vDepartureTime.setText(df.print(stop.getDepartureTime()));
-        if (stop.getDepartureDelay().getStandardSeconds() > 0) {
-            holder.vDepartureDelay.setText(context.getString(R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
-        } else {
-            holder.vDepartureDelay.setText("");
-        }
-
-        holder.vArrivalTime.setText(df.print(stop.getArrivalTime()));
-        if (stop.getArrivalDelay().getStandardSeconds() > 0) {
-            holder.vArrivalDelay.setText(context.getString(R.string.delay, stop.getArrivalDelay().getStandardMinutes()));
-        } else {
-            holder.vArrivalDelay.setText("");
-        }
-
-        holder.vPlatform.setText(String.valueOf(stop.getPlatform()));
-
-        if (stop.isDepartureCanceled()) {
-            holder.vPlatform.setText("");
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
-            holder.vStatusText.setText(R.string.status_cancelled);
-            holder.vStatusContainer.setVisibility(View.VISIBLE);
-            holder.vOccupancy.setVisibility(View.GONE);
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
-        } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
-            holder.vStatusContainer.setVisibility(View.GONE);
-            holder.vOccupancy.setVisibility(View.VISIBLE);
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
-
-            if (!stop.isPlatformNormal()) {
-                Drawable drawable = holder.vPlatformContainer.getBackground();
-                drawable.mutate();
-                drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
-            }
-        }
-
-        if (stop.hasLeft()) {
-            if (position == 0) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
-            } else if (position == this.getItemCount() - 1) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
-            } else {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
-            }
-        } else {
-            if (position == 0) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
-            } else if (position == this.getItemCount() - 1) {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
-            } else {
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
-            }
-        }
-
-        holder.vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
+        holder.trainStopLayout.bind(context, stop, train, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,48 +93,13 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
         this.longClickListener = listener;
     }
 
-    /**
-     * Viewholder to show a train stop:
-     * - Timeline
-     * - Arrival & departure
-     * - Delays
-     * - Station & platform
-     * - Whether or not the stop has been cancelled
-     */
     class TrainStopViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vDestination;
-        protected final TextView vDepartureTime;
-        protected final TextView vDepartureDelay;
-        protected final TextView vArrivalTime;
-        protected final TextView vArrivalDelay;
-        protected final TextView vPlatform;
-        protected final LinearLayout vPlatformContainer;
-        protected final ImageView vIcon;
+        TrainStopLayout trainStopLayout;
 
-        protected final LinearLayout vStatusContainer;
-        protected final TextView vStatusText;
-
-        protected final ImageView vOccupancy;
-
-        TrainStopViewHolder(View v) {
-            super(v);
-            vDestination = v.findViewById(R.id.text_station);
-
-            vDepartureTime = v.findViewById(R.id.text_departure_time);
-            vDepartureDelay = v.findViewById(R.id.text_departure_delay);
-
-            vArrivalTime = v.findViewById(R.id.text_arrival_time);
-            vArrivalDelay = v.findViewById(R.id.text_arrival_delay);
-
-            vPlatform = v.findViewById(R.id.text_platform);
-            vPlatformContainer = v.findViewById(R.id.layout_platform_container);
-
-            vStatusContainer = v.findViewById(R.id.layout_train_status_container);
-            vStatusText = v.findViewById(R.id.text_train_status);
-
-            vIcon = v.findViewById(R.id.image_timeline);
-            vOccupancy = v.findViewById(R.id.image_occupancy);
+        TrainStopViewHolder(View view) {
+            super(view);
+            trainStopLayout = view.findViewById(R.id.binder);
         }
     }
 }

@@ -23,7 +23,7 @@
         <!-- Margin top and bottom, lets timeline fill the height while keeping whitespace around the text -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="@dimen/cardlist_textrow_double_height"
+            android:layout_height="@dimen/listitem_content_height_double"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginLeft="76dp"
             android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -34,30 +34,30 @@
             <TextView
                 android:id="@+id/text_direction"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/cardlist_textrow_height"
+                android:layout_height="@dimen/listitem_content_height_single"
                 android:gravity="center_vertical"
                 android:text="Brussel-Zuid"
                 android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/cardlist_textrow_primary_textsizea"
+                android:textSize="@dimen/listitem_content_primary_textsize"
                 tools:ignore="HardcodedText"/>
 
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/cardlist_textrow_height"
+                android:layout_height="@dimen/listitem_content_height_single"
                 android:orientation="horizontal">
 
                 <include layout="@layout/include_text_train_type_number"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/cardlist_textrow_height"
-                    android:layout_marginRight="@dimen/activity_small_margin"
+                    android:layout_height="@dimen/listitem_content_height_single"
+                    android:layout_marginRight="@dimen/listitem_horizontal_margin"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="@dimen/cardlist_textrow_height"
-                        android:layout_height="@dimen/cardlist_textrow_height"
+                        android:layout_width="@dimen/listitem_content_height_single"
+                        android:layout_height="@dimen/listitem_content_height_single"
                         android:padding="2dp"
                         android:src="@drawable/ic_query_builder"
                         android:tint="@color/colorMuted"/>
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="none"
                 android:maxLines="3"
-                android:minHeight="@dimen/cardlist_textrow_double_height"
+                android:minHeight="@dimen/listitem_content_height_double"
                 android:scrollHorizontally="false"
                 android:text="Tijdens de weekends van 4-5,18-19,25-26 november werken wij aan het spoor in de regio van Gent."
                 android:textColor="@color/colorPrimary"/>

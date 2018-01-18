@@ -4,18 +4,24 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the 'MyLocation' functionality. 
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
-        android:name="be.hyperrail.android.Launcher"
+        android:name=".Launcher"
         android:allowBackup="true"
-        android:icon="@drawable/hyperrail"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false"
         android:theme="@style/Hyperrail">
-
         <activity
-            android:name="be.hyperrail.android.MainActivity"
+            android:name=".MainActivity"
             android:windowSoftInputMode="stateUnchanged">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -24,23 +30,52 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".LiveboardActivity"
             android:exported="true"
-            android:name="be.hyperrail.android.LiveboardActivity"
-            android:parentActivityName="be.hyperrail.android.MainActivity"/>
+            android:parentActivityName=".MainActivity"/>
         <activity
+            android:name=".RouteActivity"
             android:exported="true"
-            android:name="be.hyperrail.android.RouteActivity"
-            android:parentActivityName="be.hyperrail.android.MainActivity"/>
+            android:parentActivityName=".MainActivity"/>
         <activity
+            android:name=".TrainActivity"
             android:exported="true"
-            android:name="be.hyperrail.android.TrainActivity"
-            android:parentActivityName="be.hyperrail.android.MainActivity"/>
+            android:parentActivityName=".MainActivity"/>
         <activity
-            android:name="be.hyperrail.android.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="be.hyperrail.android.MainActivity"/>
-        <activity android:name="be.hyperrail.android.RouteDetailActivity"
-                  android:parentActivityName="be.hyperrail.android.MainActivity">
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".RouteDetailActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
+            android:name=".StationActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+
+        <receiver android:name=".NextDeparturesWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_provider"/>
+        </receiver>
+
+        <activity android:name=".StationPickerActivity">
         </activity>
     </application>
 

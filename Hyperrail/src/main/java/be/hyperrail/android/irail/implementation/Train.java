@@ -31,8 +31,8 @@ public class Train extends TrainStub implements Serializable {
     private final TrainStop[] stops;
     private TrainStop lastHaltedStop;
 
-    Train(String id, Station destination, Station origin, double longitude, double latitude, TrainStop[] stops) {
-        super(id, destination);
+    public Train(String id, String uri, Station destination, Station origin, double longitude, double latitude, TrainStop[] stops) {
+        super(id, destination, uri);
         this.origin = origin;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -70,6 +70,11 @@ public class Train extends TrainStub implements Serializable {
         return latitude;
     }
 
+    /**
+     * Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
+     * @param station The station to search for.
+     * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
+     */
     public int getStopNumberForStation(Station station) {
         for (int i = 0; i < stops.length; i++) {
             if (Objects.equals(stops[i].getStation().getId(), station.getId())) {

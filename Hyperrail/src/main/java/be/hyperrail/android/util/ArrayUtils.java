@@ -28,10 +28,10 @@ public class ArrayUtils {
      */
     public static <T> T[] concatenate(T[] firstArray, T[] secondArray){
         if (firstArray == null){
-            return secondArray;
+            return secondArray.clone();
         }
         if (secondArray == null){
-            return firstArray;
+            return firstArray.clone();
         }
 
         T[] result = Arrays.copyOf(firstArray, firstArray.length + secondArray.length);

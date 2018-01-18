@@ -17,6 +17,7 @@ import org.joda.time.DateTime;
 /**
  * A server response, containing a result (if any), an exception object (if any),
  * the time at which this data was retrieved and a boolean indicating its success
+ *
  * @param <T> The data type which is contained in this response
  */
 public interface IrailDataResponse<T> {
@@ -48,4 +49,8 @@ public interface IrailDataResponse<T> {
      * @return The time when the response was received
      */
     DateTime getTime();
+
+    boolean isOffline();
+
+    boolean isCached();
 }

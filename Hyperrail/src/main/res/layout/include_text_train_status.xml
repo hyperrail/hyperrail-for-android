@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:id="@+id/layout_train_status_container"
     android:layout_width="wrap_content"
-    android:layout_height="@dimen/cardlist_textrow_height"
+    android:layout_height="@dimen/listitem_content_height_single"
     android:orientation="horizontal"
     android:gravity="center"
-    android:layout_marginRight="@dimen/activity_small_margin"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/cardlist_textrow_secondary_textsizea"
+        android:layout_height="@dimen/listitem_content_secondary_textsize"
         android:textAlignment="center"
         android:src="@android:drawable/stat_sys_warning"
         android:tint="@color/colorDelay" />
@@ -22,5 +21,5 @@
         android:text="@string/status_cancelled"
         android:textAlignment="center"
         android:textColor="@color/colorDelay"
-        android:textSize="@dimen/cardlist_textrow_secondary_textsizea" />
+        android:textSize="@dimen/listitem_content_secondary_textsize" />
 </LinearLayout>

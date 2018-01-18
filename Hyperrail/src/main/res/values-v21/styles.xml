@@ -10,12 +10,9 @@
     <style name="Hyperrail" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-
         <item name="colorAccent">@color/colorPrimary</item>
-
         <item name="windowActionModeOverlay">true</item>
         <item name="android:actionMenuTextColor">@color/colorTextLight</item>
-
         <item name="actionModeBackground">@color/colorPrimaryDark</item>
         <item name="android:progressTint">@color/colorPrimary</item>
     </style>
@@ -38,8 +35,8 @@
 
     <style name="HyperrailAccentSearchContainer" parent="HyperrailAccentSearchField">
         <item name="android:background">@color/colorPrimary</item>
-        <item name="android:padding">16dp</item>
         <item name="android:elevation">4dp</item>
+        <item name="editTextStyle">@style/HyperrailAccentSearchText</item>
     </style>
 
     <style name="HyperrailAccentSearchField" parent="Hyperrail">
@@ -90,5 +87,12 @@
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:actionMenuTextColor">@color/colorTextDark</item>
+        <item name="android:windowTitleStyle">@style/TrainLongClickDialogTitle</item>
+    </style>
+
+    <style name="TrainLongClickDialogTitle" parent="@style/Base.DialogWindowTitle.AppCompat">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorTextLight</item>
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
     </style>
 </resources>

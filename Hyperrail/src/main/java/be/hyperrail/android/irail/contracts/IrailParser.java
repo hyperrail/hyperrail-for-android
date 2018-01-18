@@ -19,7 +19,6 @@ import org.json.JSONObject;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Disturbance;
 import be.hyperrail.android.irail.implementation.LiveBoard;
-import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.Train;
 
@@ -34,8 +33,6 @@ public interface IrailParser {
     LiveBoard parseLiveboard(JSONObject jsonData, DateTime searchDate) throws JSONException;
 
     RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, DateTime lastSearchTime, RouteTimeDefinition timeDefinition) throws JSONException;
-
-    Route parseRoute(JSONObject json) throws JSONException;
 
     Disturbance[] parseDisturbances(JSONObject jsonData) throws JSONException;
 }

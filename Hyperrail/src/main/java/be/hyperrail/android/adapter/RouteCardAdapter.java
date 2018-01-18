@@ -13,40 +13,22 @@
 package be.hyperrail.android.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
-import be.hyperrail.android.LiveboardActivity;
 import be.hyperrail.android.R;
-import be.hyperrail.android.TrainActivity;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
-import be.hyperrail.android.irail.implementation.TrainStub;
-import be.hyperrail.android.irail.implementation.Transfer;
-import be.hyperrail.android.util.DurationFormatter;
+import be.hyperrail.android.viewgroup.RouteListItemLayout;
 
 /**
  * Recyclerview adapter to show results of route searches
@@ -106,10 +88,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             while (resultPosition < daySeparatorPositions.size() + routes.length) {
                 // Keep in mind that position shifts with the number of already placed date separators
                 if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                    RouteCardAdapter.DateSeparator separator = new RouteCardAdapter.DateSeparator();
-                    // The date of this separator is the one of the next departure
-                    separator.separatorDate = routes[routePosition].getDepartureTime();
-                    this.displayList[resultPosition] = separator;
+                    this.displayList[resultPosition] = routes[routePosition].getDepartureTime();
 
                     dayPosition++;
                 } else {
@@ -128,7 +107,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     @Override
     protected int onGetItemViewType(int position) {
-        if (displayList[position] instanceof DateSeparator) {
+        if (displayList[position] instanceof DateTime) {
             return VIEW_TYPE_DATE;
         }
         return VIEW_TYPE_ITEM;
@@ -157,125 +136,20 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
         if (genericHolder instanceof DateSeparatorViewHolder) {
             final DateSeparatorViewHolder holder = (DateSeparatorViewHolder) genericHolder;
-            DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd MMMMMMMM yyyy");
-            holder.vDateText.setText(df.print(((RouteCardAdapter.DateSeparator) displayList[position]).separatorDate));
+            holder.bind((DateTime) displayList[position]);
             return;
         }
 
         final RouteViewHolder holder = (RouteViewHolder) genericHolder;
         final Route route = (Route) displayList[position];
 
-        DateTimeFormatter hhmm = DateTimeFormat.forPattern("HH:mm");
-
-        holder.vDepartureTime.setText(hhmm.print(route.getDepartureTime()));
-        if (route.getDepartureDelay().getStandardSeconds() > 0) {
-            holder.vDepartureDelay.setText(context.getString(R.string.delay, route.getDepartureDelay().getStandardMinutes()));
-        } else {
-            holder.vDepartureDelay.setText("");
-        }
-
-        holder.vArrivalTime.setText(hhmm.print(route.getArrivalTime()));
-        if (route.getArrivalDelay().getStandardSeconds() > 0) {
-            holder.vArrivalDelay.setText(context.getString(R.string.delay, route.getArrivalDelay().getStandardMinutes()));
-        } else {
-            holder.vArrivalDelay.setText("");
-        }
-
-        holder.vDirection.setText(route.getOrigin().getDepartingTrain().getDirection().getLocalizedName());
-
-        Duration routeWithDelays = route.getDurationIncludingDelays();
-        Duration routeWithoutDelays = route.getDuration();
-
-        if (routeWithDelays.equals(routeWithoutDelays)) {
-            holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorMuted));
-            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorMuted));
-        } else if (routeWithDelays.isLongerThan(routeWithoutDelays)) {
-            holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorDelay));
-            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay));
-        } else {
-            holder.vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorFaster));
-            holder.vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorFaster));
-        }
-
-        holder.vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
-
-        holder.vTrainCount.setText(String.valueOf(route.getTrains().length));
-
-        holder.vPlatform.setText(route.getDeparturePlatform());
-
-        if (route.getOrigin().isDepartureCanceled()) {
-            holder.vPlatform.setText("");
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
-            holder.vStatusText.setText(R.string.status_cancelled);
-            holder.vStatusContainer.setVisibility(View.VISIBLE);
-        } else if (route.isPartiallyCanceled()){
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
-            holder.vStatusText.setText(R.string.status_partially_cancelled);
-            holder.vStatusContainer.setVisibility(View.VISIBLE);
-        } else {
-            holder.vStatusContainer.setVisibility(View.GONE);
-            holder.vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
-        }
-
-        if (!route.isDeparturePlatformNormal()) {
-            Drawable drawable = holder.vPlatformContainer.getBackground();
-            drawable.mutate();
-            drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
-        }
-
-        if (route.getAlerts() != null && route.getAlerts().length > 0) {
-            holder.vAlertsText.setVisibility(View.VISIBLE);
-
-            StringBuilder text = new StringBuilder();
-            int n = route.getAlerts().length;
-            for (int i = 0; i < n; i++) {
-                text.append(route.getAlerts()[i].getHeader());
-                if (i < n - 1) {
-                    text.append("\n");
-                }
-            }
-
-            holder.vAlertsText.setText(text.toString());
-        } else {
-            holder.vAlertsText.setVisibility(View.GONE);
-        }
-
-        RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);
-
-        // Launch intents to view details / click through
-        adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
-            @Override
-            public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
-                Intent i = null;
-                if (object instanceof Bundle) {
-                    i = TrainActivity.createIntent(context,
-                            (TrainStub) ((Bundle) object).getSerializable("train"),
-                            (Station) ((Bundle) object).getSerializable("from"),
-                            (Station) ((Bundle) object).getSerializable("to"),
-                            (DateTime) ((Bundle) object).getSerializable("date"));
-
-                } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, ((Transfer) object).getStation());
-                }
-                context.startActivity(i);
-            }
-        });
-        holder.vRecyclerView.setAdapter(adapter);
-        holder.vRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        holder.vRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        holder.vRecyclerView.setNestedScrollingEnabled(false);
+        holder.routeListItemLayout.bind(context,route,null,position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mOnClickListener != null) {
                     mOnClickListener.onRecyclerItemClick(RouteCardAdapter.this, route);
-                }
-
-                if (holder.vDetailContainer.getVisibility() == View.GONE) {
-                    holder.vDetailContainer.setVisibility(View.VISIBLE);
-                } else {
-                    holder.vDetailContainer.setVisibility(View.GONE);
                 }
             }
         });
@@ -285,6 +159,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             public boolean onLongClick(View v) {
                 if (mOnLongClickListener != null) {
                     mOnLongClickListener.onRecyclerItemLongClick(RouteCardAdapter.this, route);
+                    return true;
                 }
                 return false;
             }
@@ -301,54 +176,15 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private class RouteViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vDepartureTime;
-        protected final TextView vDepartureDelay;
-        protected final TextView vArrivalTime;
-        protected final TextView vArrivalDelay;
-        protected final TextView vDirection;
-        protected final TextView vDuration;
-        protected final ImageView vDurationIcon;
-        protected final TextView vTrainCount;
-        protected final TextView vPlatform;
-        protected final LinearLayout vPlatformContainer;
-        protected final RecyclerView vRecyclerView;
-        protected final LinearLayout vHeaderContainer;
-        protected final LinearLayout vDetailContainer;
-        protected final TextView vStatusText;
-        protected final LinearLayout vStatusContainer;
-        protected final TextView vAlertsText;
+        RouteListItemLayout routeListItemLayout;
 
         RouteViewHolder(View view) {
             super(view);
+            routeListItemLayout = view.findViewById(R.id.binder);
 
-            vDepartureTime = view.findViewById(R.id.text_departure_time);
-            vDepartureDelay = view.findViewById(R.id.text_departure_delay);
-
-            vArrivalTime = view.findViewById(R.id.text_arrival_time);
-            vArrivalDelay = view.findViewById(R.id.text_arrival_delay);
-
-            vDirection = view.findViewById(R.id.text_destination);
-            vDuration = view.findViewById(R.id.text_duration);
-            vDurationIcon = view.findViewById(R.id.image_duration);
-            vTrainCount = view.findViewById(R.id.text_train_count);
-
-            vPlatform = view.findViewById(R.id.text_platform);
-            vPlatformContainer = view.findViewById(R.id.layout_platform_container);
-
-            vRecyclerView = view.findViewById(R.id.recyclerview_primary);
-            vHeaderContainer = view.findViewById(R.id.cardview_collapsed);
-            vDetailContainer = view.findViewById(R.id.cardview_expanded);
-
-            vStatusContainer = view.findViewById(R.id.layout_train_status_container);
-            vStatusText = view.findViewById(R.id.text_train_status);
-            vAlertsText = view.findViewById(R.id.alert_message);
         }
 
     }
 
-    private class DateSeparator {
-
-        DateTime separatorDate;
-    }
 }
 

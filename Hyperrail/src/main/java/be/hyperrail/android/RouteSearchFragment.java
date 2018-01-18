@@ -33,6 +33,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.perf.metrics.AddTrace;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
@@ -78,6 +80,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
+    @AddTrace(name="RouteSearchFragment.onCreateView")
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -86,6 +89,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
+    @AddTrace(name="RouteSearchFragment.onViewCreated")
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -271,11 +275,9 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
     private void setSuggestions() {
         RecyclerView suggestions = this.getActivity().findViewById(R.id.recyclerview_primary);
-        // TODO pixel on Android O requires this much validation. There should be a better way for this.
-        if (suggestions != null && suggestions.getAdapter() != null && suggestions.getAdapter() instanceof RouteSuggestionsCardAdapter) {
-            RouteSuggestionsCardAdapter suggestionAdapter = (RouteSuggestionsCardAdapter) suggestions.getAdapter();
-            suggestionAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
-        }
+
+            mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
+
     }
 
     @Override

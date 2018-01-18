@@ -85,9 +85,22 @@
     <string name="shortcut_created">A shortcut has been added to your homescreen</string>
     <string name="walk_description">Walk to the next station</string>
     <string name="walk_heading">Walk</string>
+    <string name="ETA_stop_arrival">At %s I will arrive in %s with %s</string>
+    <string name="ETA_stop_departure">At %s I will leave from %s with %s</string>
+    <string name="ETA_transfer_arrival">At %s I will arrive in %s with %s</string>
+    <string name="ETA_transfer_departure">At %s I will leave from %s with %s</string>
 
     <string-array name="departarrive">
         <item>Leave</item>
         <item>Arrive</item>
     </string-array>
+    <string name="title_activity_station">Station</string>
+
+    <string name="list_day_names">Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday</string>
+    <string name="action_details">View details</string>
+    <string name="show_as_notification">Pin as notification</string>
+    <string name="action_share_arrival_eta">Share arrival ETA</string>
+    <string name="action_share_departure_ETA">Share departure ETA</string>
+    <string name="title_pick_station">Pick a station</string>
+    <string name="menu_group_settings">Settings</string>
 </resources>
