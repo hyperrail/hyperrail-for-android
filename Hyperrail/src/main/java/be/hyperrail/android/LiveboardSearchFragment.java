@@ -161,11 +161,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     private void setSuggestedStations() {
-        stationRecyclerView = this.getActivity().findViewById(R.id.recyclerview_primary);
-        // TODO pixel on Android O requires this much validation. There should be a better way for this.
-        if (stationRecyclerView != null && stationRecyclerView.getAdapter() != null && stationRecyclerView.getAdapter() instanceof StationCardAdapter) {
-            ((StationCardAdapter) stationRecyclerView.getAdapter()).setSuggestedStations(persistentQueryProvider.getAllStations());
-        }
+        mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
     }
 
     @Override
@@ -243,10 +239,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         }
 
         // TODO: replace this crash workaround with a good solution. Nexus 6P, android O.
-        if (stationRecyclerView.getAdapter() instanceof StationCardAdapter) {
-            StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-            adapter.setStations(stations);
-        }
+            mStationAdapter.setStations(stations);
+
     }
 
     /**
@@ -255,8 +249,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param type The type of the stations shown, determines the icon shown next to it.
      */
     private void setStationType(StationCardAdapter.stationType type) {
-        StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-        adapter.setStationIconType(type);
+        mStationAdapter.setStationIconType(type);
     }
 
     /**
@@ -265,8 +258,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param visible True to show recents and favorites
      */
     private void setSuggestionsVisible(boolean visible) {
-        StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-        adapter.setSuggestionsVisible(visible);
+        mStationAdapter.setSuggestionsVisible(visible);
     }
 
     /**
@@ -275,8 +267,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param nearbyOnTop Whether or not to show nearby stations before the favorite and recent stations
      */
     private void setNearbyOnTop(boolean nearbyOnTop) {
-        StationCardAdapter adapter = (StationCardAdapter) stationRecyclerView.getAdapter();
-        adapter.setNearbyOnTop(nearbyOnTop);
+        mStationAdapter.setNearbyOnTop(nearbyOnTop);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 17112610;
+    private static final int DATABASE_VERSION = 17121200;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -107,15 +107,11 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     // Store ID as BE.NMBS.XXXXXXXX
                     values.put(StationsDataColumns._ID, id);
                     // Replace special characters (for search purposes)
-                    values.put(StationsDataContract.StationsDataColumns.COLUMN_NAME_NAME, fields.next()
-                            .replaceAll("[éÉèÈêÊëË]", "e")
-                            .replaceAll("[âÂåäÄ]", "a")
-                            .replaceAll("[öÖ]", "o")
-                    );
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR, fields.next());
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL, fields.next());
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE, fields.next());
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN, fields.next());
+                    values.put(StationsDataContract.StationsDataColumns.COLUMN_NAME_NAME, cleanAccents(fields.next()));
+                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR, cleanAccents(fields.next()));
+                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL, cleanAccents(fields.next()));
+                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE, cleanAccents(fields.next()));
+                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN, cleanAccents(fields.next()));
                     values.put(StationsDataColumns.COLUMN_NAME_COUNTRY_CODE, fields.next());
 
                     String field = fields.next();
@@ -258,6 +254,13 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         onCreate(db);
     }
 
+    private String cleanAccents(String s){
+        return s.replaceAll("[éÉèÈêÊëË]", "e")
+                .replaceAll("[âÂåäÄ]", "a")
+                .replaceAll("[öÖø]", "o")
+                .replaceAll("[üÜ]", "u");
+    }
+
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache from a local file, so just recreate it
         onUpgrade(db, oldVersion, newVersion);
@@ -297,6 +300,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     @Override
     public Station[] getStationsByNameOrderBySize(String name) {
+        name = cleanAccents(name);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
@@ -342,7 +346,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
         double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
-
+        name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
@@ -493,6 +497,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     public Station getStationByName(String name) {
         SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
         SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
         String wcName = name.replaceAll("[^A-Za-z]", "%");
         Cursor c = db.query(

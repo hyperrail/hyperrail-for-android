@@ -215,13 +215,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mCurrentFragment = frg;
         mCurrentView = i;
 
-        mDrawerNavigationHandler.removeCallbacksAndMessages(null);
-        mDrawerNavigationHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg).commitAllowingStateLoss();
-            }
-        }, 50);
+
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").commit();
 
     }
 

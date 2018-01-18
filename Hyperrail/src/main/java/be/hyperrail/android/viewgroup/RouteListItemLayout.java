@@ -221,5 +221,13 @@ public class RouteListItemLayout extends LinearLayout implements ListDataViewGro
                 }
             }
         });
+
+        vHeaderContainer.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // still handle this in the parent
+                return false;
+            }
+        });
     }
 }

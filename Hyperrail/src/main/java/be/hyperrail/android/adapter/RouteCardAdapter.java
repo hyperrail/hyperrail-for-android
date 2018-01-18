@@ -151,7 +151,6 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
                 if (mOnClickListener != null) {
                     mOnClickListener.onRecyclerItemClick(RouteCardAdapter.this, route);
                 }
-
             }
         });
 
@@ -160,6 +159,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             public boolean onLongClick(View v) {
                 if (mOnLongClickListener != null) {
                     mOnLongClickListener.onRecyclerItemLongClick(RouteCardAdapter.this, route);
+                    return true;
                 }
                 return false;
             }
