@@ -42,6 +42,7 @@ import android.widget.EditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
@@ -86,12 +87,22 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
+    @AddTrace(name="LiveboardSearchFragment.onCreateView")
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_liveboard_search, container, false);
         stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
+
+        return view;
+    }
+
+    @Override
+    @AddTrace(name="LiveboardSearchFragment.onViewCreated")
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Create an instance of GoogleAPIClient.
 
         stationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         stationRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -101,13 +112,6 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         mStationAdapter.setOnItemClickListener(this);
         mStationAdapter.setOnLongItemClickListener(this);
         stationRecyclerView.setAdapter(mStationAdapter);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // Create an instance of GoogleAPIClient.
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
