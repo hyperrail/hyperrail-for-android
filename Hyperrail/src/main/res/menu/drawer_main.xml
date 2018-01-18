@@ -27,7 +27,7 @@
         android:title="@string/title_disturbances"
         app:showAsAction="ifRoom|collapseActionView" />
 
-    <item android:title="Settings">
+    <item android:title="@string/menu_group_settings">
         <menu>
             <group android:checkableBehavior="single">
                 <item

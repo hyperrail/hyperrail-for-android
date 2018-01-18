@@ -85,4 +85,5 @@
     <string name="walk_description">Promenez-vous à la station suivante</string>
     <string name="title_activity_station">Station</string>
 
+    <string name="menu_group_settings">Parametres</string>
 </resources>

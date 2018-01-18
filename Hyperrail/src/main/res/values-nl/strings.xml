@@ -105,4 +105,6 @@
     <string name="action_share_departure_ETA">Deel verwachte aankomsttijd...</string>
     <string name="action_share_arrival_eta">Deel verwachte vertrektijd</string>
     <string name="show_as_notification">Pin als notificatie</string>
+
+    <string name="menu_group_settings">Instellingen</string>
 </resources>

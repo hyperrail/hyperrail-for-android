@@ -54,7 +54,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/listitem_content_height_single"
             android:layout_marginLeft="@dimen/margin_include_item"
-            android:layout_toLeftOf="@id/layout_platform_container"
             android:layout_toRightOf="@id/text_departure_delay"
             android:gravity="center_vertical"
             android:text="Brussel-Zuid"
