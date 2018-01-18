@@ -254,7 +254,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         onCreate(db);
     }
 
-    private String cleanAccents(String s){
+    private String cleanAccents(String s) {
         return s.replaceAll("[éÉèÈêÊëË]", "e")
                 .replaceAll("[âÂåäÄ]", "a")
                 .replaceAll("[öÖø]", "o")
@@ -266,6 +266,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         onUpgrade(db, oldVersion, newVersion);
     }
 
+    @Override
+    @AddTrace(name="StationsDb.getStationsOrderBySize")
     public Station[] getStationsOrderBySize() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(
@@ -299,6 +301,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name="StationsDb.getStationsByNameOrderBySize")
     public Station[] getStationsByNameOrderBySize(String name) {
         name = cleanAccents(name);
         SQLiteDatabase db = this.getReadableDatabase();
@@ -333,6 +336,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name="StationsDb.getStationsOrderByLocation")
     public Station[] getStationsOrderByLocation(Location location) {
         return this.getStationsByNameOrderByLocation("", location);
     }
@@ -341,6 +345,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name="StationsDb.getStationsByNameOrderByLocation")
     public Station[] getStationsByNameOrderByLocation(String name, Location location) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -382,6 +387,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name="StationsDb.getStationsOrderByLocationAndSize")
     public Station[] getStationsOrderByLocationAndSize(Location location, int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
@@ -435,6 +441,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name="StationsDb.getStationNames")
     public String[] getStationNames(Station[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
@@ -453,6 +460,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name="StationsDb.getStationById")
     public Station getStationById(String id) {
 
         SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
@@ -494,6 +502,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @AddTrace(name="StationsDb.getStationByName")
     public Station getStationByName(String name) {
         SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
         SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
