@@ -271,11 +271,9 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
     private void setSuggestions() {
         RecyclerView suggestions = this.getActivity().findViewById(R.id.recyclerview_primary);
-        // TODO pixel on Android O requires this much validation. There should be a better way for this.
-        if (suggestions != null && suggestions.getAdapter() != null && suggestions.getAdapter() instanceof RouteSuggestionsCardAdapter) {
-            RouteSuggestionsCardAdapter suggestionAdapter = (RouteSuggestionsCardAdapter) suggestions.getAdapter();
-            suggestionAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
-        }
+
+            mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
+
     }
 
     @Override

@@ -42,7 +42,6 @@ import android.widget.EditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.crash.FirebaseCrash;
 
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
@@ -56,7 +55,6 @@ import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
 import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
-import static java.util.logging.Level.INFO;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
@@ -177,19 +175,16 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         s = s.trim();
 
         if (s.length() > 0) {
-            setStations(stationProvider.getStationsByNameOrderBySize(s));
-            setStationType(StationCardAdapter.stationType.SEARCHED);
+            setStations(stationProvider.getStationsByNameOrderBySize(s), StationCardAdapter.stationType.SEARCHED);
             setSuggestionsVisible(false);
 
         } else if (mLastLocation != null) {
-            setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations));
-            setStationType(StationCardAdapter.stationType.NEARBY);
+            setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations), StationCardAdapter.stationType.NEARBY);
             setNearbyOnTop(mNearbyOnTop);
             setSuggestionsVisible(true);
 
         } else {
-            setStations(stationProvider.getStationsOrderBySize());
-            setStationType(StationCardAdapter.stationType.UNDEFINED);
+            setStations(stationProvider.getStationsOrderBySize(), StationCardAdapter.stationType.UNDEFINED);
             setNearbyOnTop(false);
             setSuggestionsVisible(true);
 
@@ -231,25 +226,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      *
      * @param stations The new array of stations
      */
-    private void setStations(Station[] stations) {
-        if (stations != null) {
-            FirebaseCrash.logcat(INFO.intValue(), LogTag, "Setting liveboard search list to " + stations.length + " stations");
-        } else {
-            FirebaseCrash.logcat(INFO.intValue(), LogTag, "Setting liveboard search list to 0 stations");
-        }
-
-        // TODO: replace this crash workaround with a good solution. Nexus 6P, android O.
-            mStationAdapter.setStations(stations);
-
-    }
-
-    /**
-     * Set the type of stations (determines the icon). Does not apply to recents or favorites.
-     *
-     * @param type The type of the stations shown, determines the icon shown next to it.
-     */
-    private void setStationType(StationCardAdapter.stationType type) {
-        mStationAdapter.setStationIconType(type);
+    private void setStations(Station[] stations, StationCardAdapter.stationType type) {
+        mStationAdapter.setStations(stations);
     }
 
     /**
