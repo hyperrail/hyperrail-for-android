@@ -25,8 +25,8 @@ import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
 
-public class LiveboardStopLayout extends LinearLayout implements ListDataViewGroup<LiveBoard,TrainStop> {
-  
+public class LiveboardStopLayout extends LinearLayout implements ListDataViewGroup<LiveBoard, TrainStop> {
+
     protected TextView vDestination;
     protected TextView vTrainType;
     protected TextView vTrainNumber;
@@ -76,7 +76,7 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
     }
 
     @Override
-    public void bind(final Context context,final TrainStop stop, final LiveBoard liveboard, final int position) {
+    public void bind(final Context context, final TrainStop stop, final LiveBoard liveboard, final int position) {
 
         vDestination.setText(stop.getDestination().getLocalizedName());
 
@@ -85,13 +85,25 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
 
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
-        vDeparture.setText(df.print(stop.getDepartureTime()));
-        if (stop.getDepartureDelay().getStandardSeconds() > 0) {
-            vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
-            vDelayTime.setText(df.print(stop.getDelayedDepartureTime()));
+        if (stop.getDepartureTime() != null) {
+            vDeparture.setText(df.print(stop.getDepartureTime()));
+            if (stop.getDepartureDelay().getStandardSeconds() > 0) {
+                vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
+                vDelayTime.setText(df.print(stop.getDelayedDepartureTime()));
+            } else {
+                vDepartureDelay.setText("");
+                vDelayTime.setText("");
+            }
         } else {
-            vDepartureDelay.setText("");
-            vDelayTime.setText("");
+            // support for arrivals
+            vDeparture.setText(df.print(stop.getArrivalTime()));
+            if (stop.getArrivalDelay().getStandardSeconds() > 0) {
+                vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getArrivalDelay().getStandardMinutes()));
+                vDelayTime.setText(df.print(stop.getDelayedArrivalTime()));
+            } else {
+                vDepartureDelay.setText("");
+                vDelayTime.setText("");
+            }
         }
 
         vPlatform.setText(String.valueOf(stop.getPlatform()));
@@ -118,6 +130,5 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
     }
 
-    
 
 }

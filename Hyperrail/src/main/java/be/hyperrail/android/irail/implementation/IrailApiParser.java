@@ -291,7 +291,7 @@ public class IrailApiParser implements IrailParser {
             occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
         }
 
-        return new TrainStop(
+        return TrainStop.buildDepartureTrainstop(
                 stop,
                 destination,
                 new TrainStub(item.getString("vehicle"), destination, item.getJSONObject("vehicleinfo").getString("@id")),

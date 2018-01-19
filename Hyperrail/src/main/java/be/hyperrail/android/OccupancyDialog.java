@@ -229,7 +229,8 @@ public class OccupancyDialog {
             }
         });
 
-        if (mTrainStop != null) {
+        // When this contextmenu was called on a train stop or transfer in a route (but not on a train in a route!)
+        if (mTrainStop != null || mArrivalTransfer == mDepartureTransfer) {
             vSetNotification.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -242,7 +243,7 @@ public class OccupancyDialog {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_GLIMPSE,
-                                "Glimpse at pinned departures", NotificationManager.IMPORTANCE_DEFAULT);
+                                "Pinned departures", NotificationManager.IMPORTANCE_DEFAULT);
 
                         // Configure the notification channel.
                         notificationChannel.setDescription("Glimpse at pinned departures");
@@ -261,7 +262,13 @@ public class OccupancyDialog {
                     Intent resultIntent = null;
 
                     mBuilder.setContentTitle(mTrainStop.getTrain().getName() + " at " + mTrainStop.getStation().getLocalizedName());
-                    mBuilder.setCustomContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
+
+                    if (mTrainStop != null) {
+                        mBuilder.setCustomContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
+                    } else {
+                        mBuilder.setCustomContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mArrivalTransfer));
+                    }
+
                     resultIntent = TrainActivity.createIntent(mContext, mTrainStop.getTrain(), mTrainStop.getStation(), mTrainStop.getDepartureTime());
 
                     PendingIntent resultPendingIntent =

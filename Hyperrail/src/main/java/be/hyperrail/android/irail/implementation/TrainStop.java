@@ -45,14 +45,6 @@ public class TrainStop implements Serializable {
     private final OccupancyLevel occupancyLevel;
 
     protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
-        this(station, destination, train, platform, isPlatformNormal, departureTime, departureDelay, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
-
-        this.arrivalTime = arrivalTime;
-        this.arrivalDelay = arrivalDelay;
-        this.arrivalCanceled = arrivalCanceled;
-    }
-
-    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
         this.station = station;
         this.destination = destination;
         this.isPlatformNormal = isPlatformNormal;
@@ -65,13 +57,26 @@ public class TrainStop implements Serializable {
         this.hasLeft = hasLeft;
         this.semanticDepartureConnection = semanticDepartureConnection;
         this.occupancyLevel = occupancyLevel;
-
-        // TODO: API should provide this information, so we don't have to fake it
-        // Fill in arrival information using departure information
-        this.arrivalTime = departureTime;
-        this.arrivalDelay = departureDelay;
-        this.arrivalCanceled = departureCanceled;
+        this.arrivalTime = arrivalTime;
+        this.arrivalDelay = arrivalDelay;
+        this.arrivalCanceled = arrivalCanceled;
     }
+
+
+    protected static TrainStop buildDepartureTrainstop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
+        TrainStop t = new TrainStop(station, destination, train, platform, isPlatformNormal,
+                departureTime, null, departureDelay, null,
+                departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
+        return t;
+    }
+
+    protected static TrainStop buildArrivalTrainstop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
+        TrainStop t = new TrainStop(station, destination, train, platform, isPlatformNormal,
+                null, arrivalTime, null, arrivalDelay,
+                arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
+        return t;
+    }
+
 
     public TrainStub getTrain() {
         return train;
@@ -98,6 +103,9 @@ public class TrainStop implements Serializable {
     }
 
     public DateTime getDelayedDepartureTime() {
+        if (departureTime == null) {
+            return null;
+        }
         return departureTime.plus(departureDelay);
     }
 
@@ -126,6 +134,9 @@ public class TrainStop implements Serializable {
     }
 
     public DateTime getDelayedArrivalTime() {
+        if (arrivalTime == null) {
+            return null;
+        }
         return arrivalTime.plus(arrivalDelay);
     }
 

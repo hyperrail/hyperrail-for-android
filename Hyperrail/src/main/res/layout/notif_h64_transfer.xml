@@ -5,6 +5,12 @@
   ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
@@ -114,20 +120,45 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layout_platform_container"
-        android:layout_width="@dimen/listitem_content_height_onehalf"
-        android:layout_height="@dimen/listitem_content_height_onehalf"
+        android:id="@+id/layout_platform_arrival_container"
+        android:layout_width="@dimen/listitem_content_height_single"
+        android:layout_height="@dimen/listitem_content_height_single"
         android:layout_alignParentRight="true"
         android:layout_toLeftOf="@id/text_station"
         android:layout_marginLeft="@dimen/listitem_content_padding"
         android:layout_marginRight="24dp"
-        android:layout_marginTop="6dp"
         android:background="@drawable/platform_train"
         android:gravity="center"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text_platform"
+            android:id="@+id/text_platform_arrival"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5"
+            android:textAlignment="center"
+            android:textColor="@color/colorTextLight"
+            android:textSize="@dimen/listitem_content_primary_textsize"
+            tools:ignore="HardcodedText"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_platform_departure_container"
+        android:layout_width="@dimen/listitem_content_height_single"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@id/text_station"
+        android:layout_below="@id/layout_platform_arrival_container"
+        android:layout_marginLeft="@dimen/listitem_content_padding"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/platform_train"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_platform_departure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="5"

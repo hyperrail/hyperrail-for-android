@@ -26,8 +26,8 @@ import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
 
 
-public class TrainStopLayout extends LinearLayout implements ListDataViewGroup<Train,TrainStop> {
-    
+public class TrainStopLayout extends LinearLayout implements ListDataViewGroup<Train, TrainStop> {
+
     protected TextView vDestination;
     protected TextView vDepartureTime;
     protected TextView vDepartureDelay;
@@ -41,7 +41,7 @@ public class TrainStopLayout extends LinearLayout implements ListDataViewGroup<T
     protected TextView vStatusText;
 
     protected ImageView vOccupancy;
-    
+
     public TrainStopLayout(Context context) {
         super(context);
     }
@@ -58,7 +58,7 @@ public class TrainStopLayout extends LinearLayout implements ListDataViewGroup<T
     /*public LiveboardstopViewGroup(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }*/
-    
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -82,23 +82,33 @@ public class TrainStopLayout extends LinearLayout implements ListDataViewGroup<T
 
 
     @Override
-    public void bind(final Context context,final TrainStop stop, final Train train,final  int position) {
+    public void bind(final Context context, final TrainStop stop, final Train train, final int position) {
 
         vDestination.setText(stop.getStation().getLocalizedName());
 
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
-        vDepartureTime.setText(df.print(stop.getDepartureTime()));
-        if (stop.getDepartureDelay().getStandardSeconds() > 0) {
-            vDepartureDelay.setText(context.getString(R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
+        if (stop.getDepartureTime() != null) {
+            vDepartureTime.setText(df.print(stop.getDepartureTime()));
+            if (stop.getDepartureDelay().getStandardSeconds() > 0) {
+                vDepartureDelay.setText(context.getString(R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
+            } else {
+                vDepartureDelay.setText("");
+            }
         } else {
+            vDepartureTime.setText("--:--");
             vDepartureDelay.setText("");
         }
 
-        vArrivalTime.setText(df.print(stop.getArrivalTime()));
-        if (stop.getArrivalDelay().getStandardSeconds() > 0) {
-            vArrivalDelay.setText(context.getString(R.string.delay, stop.getArrivalDelay().getStandardMinutes()));
+        if (stop.getArrivalTime() != null) {
+            vArrivalTime.setText(df.print(stop.getArrivalTime()));
+            if (stop.getArrivalDelay().getStandardSeconds() > 0) {
+                vArrivalDelay.setText(context.getString(R.string.delay, stop.getArrivalDelay().getStandardMinutes()));
+            } else {
+                vArrivalDelay.setText("");
+            }
         } else {
+            vArrivalTime.setText("--:--");
             vArrivalDelay.setText("");
         }
 
