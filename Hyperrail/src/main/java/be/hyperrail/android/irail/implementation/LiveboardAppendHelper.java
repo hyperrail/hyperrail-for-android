@@ -68,9 +68,10 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
     public void onSuccessResponse(LiveBoard data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
-                if (data.getStops().length > 0) {
-                    TrainStop[] newStops = data.getStops();
 
+                TrainStop[] newStops = data.getStops();
+
+                if (newStops.length > 0) {
                     // It can happen that a scheduled departure was before the search time.
                     // In this case, prevent duplicates by searching the first stop which isn't before
                     // the searchdate, and removing all earlier stops.
@@ -79,8 +80,16 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                         i++;
                     }
                     if (i > 0) {
-                        newStops = Arrays.copyOfRange(data.getStops(), i, data.getStops().length - 1);
+                        if (i <= data.getStops().length - 1) {
+                            newStops = Arrays.copyOfRange(data.getStops(), i, data.getStops().length - 1);
+                        } else {
+                            newStops = new TrainStop[0];
+                        }
                     }
+                }
+
+                if (newStops.length > 0) {
+
                     TrainStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), newStops);
                     LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime());
                     this.successResponseListener.onSuccessResponse(merged, tag);
