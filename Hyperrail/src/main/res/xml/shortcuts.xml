@@ -1,0 +1,50 @@
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="station"
+        android:shortcutLongLabel="@string/shortcut_label_station_short"
+        android:shortcutShortLabel="@string/shortcut_label_station_long"
+        tools:targetApi="25">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="be.hyperrail.android.MainActivity"
+            android:targetPackage="be.hyperrail.android">
+            <extra
+                android:name="view"
+                android:value="0" />
+        </intent>
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <categories android:name="android.shortcut." />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="route"
+        android:shortcutLongLabel="@string/shortcut_label_route_short"
+        android:shortcutShortLabel="@string/shortcut_label_route_long"
+        tools:targetApi="25">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="be.hyperrail.android.MainActivity"
+            android:targetPackage="be.hyperrail.android">
+            <extra
+                android:name="view"
+                android:value="10" />
+        </intent>
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <!--<categories android:name="android.shortcut." />-->
+    </shortcut>
+</shortcuts>

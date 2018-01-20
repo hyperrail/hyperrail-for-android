@@ -14,6 +14,10 @@ package be.hyperrail.android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -142,19 +146,30 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 startActivity(MainActivity.createRouteToIntent(getApplicationContext(), mCurrentStation.getName()));
                 return true;
             case R.id.action_details:
-                startActivity(StationActivity.createIntent(getApplicationContext(),mCurrentStation));
+                startActivity(StationActivity.createIntent(getApplicationContext(), mCurrentStation));
                 return true;
             case R.id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this,mCurrentStation.getId());
+                    mShortcutInfoBuilder.setShortLabel(mCurrentStation.getLocalizedName());
 
-                Intent addIntent = new Intent();
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentStation.getLocalizedName());
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
-                addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-                getApplicationContext().sendBroadcast(addIntent);
-
-                Snackbar.make(vLayoutRoot, R.string.shortcut_created,Snackbar.LENGTH_LONG).show();
+                    mShortcutInfoBuilder.setLongLabel("Departures from " + mCurrentStation.getLocalizedName());
+                    mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher));
+                    shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
+                    mShortcutInfoBuilder.setIntent(shortcutIntent);
+                    ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
+                    ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
+                    mShortcutManager.requestPinShortcut(mShortcutInfo, null);
+                } else {
+                    Intent addIntent = new Intent();
+                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentStation.getLocalizedName());
+                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                    addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                    getApplicationContext().sendBroadcast(addIntent);
+                }
+                Snackbar.make(vLayoutRoot, R.string.shortcut_created, Snackbar.LENGTH_LONG).show();
 
                 return true;
 

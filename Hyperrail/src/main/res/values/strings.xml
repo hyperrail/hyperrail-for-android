@@ -103,4 +103,11 @@
     <string name="action_share_departure_ETA">Share departure ETA</string>
     <string name="title_pick_station">Pick a station</string>
     <string name="menu_group_settings">Settings</string>
+
+
+    <string name="shortcut_label_route_short">Route</string>
+    <string name="shortcut_label_route_long">Plan a trip</string>
+    <string name="shortcut_label_station_short">Departures</string>
+    <string name="shortcut_label_station_long">View departures</string>
+
 </resources>
