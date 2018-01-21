@@ -14,8 +14,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     android:gravity="center">
 
     <TextView
@@ -79,22 +77,35 @@
         android:textSize="@dimen/listitem_content_primary_textsize"
         tools:ignore="HardcodedText" />
 
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/image_occupancy"
-        android:layout_width="24dp"
+    <ImageView
+        android:id="@+id/image_duration"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/listitem_content_height_single"
         android:layout_below="@id/text_station"
         android:layout_marginLeft="@dimen/activity_tiny_margin"
         android:layout_toRightOf="@id/text_delay2"
-        android:padding="4dp"
-        android:src="@drawable/ic_occupancy_unknown" />
+        android:src="@drawable/ic_transfer_within_a_station"
+        android:tint="@color/colorMuted" />
+
+    <TextView
+        android:id="@+id/text_waiting_time"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/listitem_content_height_single"
+
+        android:layout_below="@id/text_station"
+        android:layout_toRightOf="@id/image_duration"
+        android:gravity="center_vertical"
+        android:text="0:10"
+        android:textColor="@color/colorMuted"
+        tools:ignore="HardcodedText" />
+
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/layout_train_status_container"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/listitem_content_height_single"
         android:layout_below="@id/text_station"
-        android:layout_toRightOf="@id/image_occupancy"
+        android:layout_toRightOf="@id/text_waiting_time"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -122,7 +133,6 @@
         android:layout_height="@dimen/listitem_content_height_single"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="@dimen/listitem_content_padding"
-        android:layout_marginRight="24dp"
         android:layout_toLeftOf="@id/text_station"
         android:background="@drawable/platform_train"
         android:gravity="center"
@@ -147,7 +157,6 @@
         android:layout_alignParentRight="true"
         android:layout_below="@id/layout_platform_arrival_container"
         android:layout_marginLeft="@dimen/listitem_content_padding"
-        android:layout_marginRight="24dp"
         android:layout_marginTop="1dp"
         android:layout_toLeftOf="@id/text_station"
         android:background="@drawable/platform_train"

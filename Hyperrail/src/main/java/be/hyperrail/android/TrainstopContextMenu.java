@@ -260,20 +260,28 @@ public class TrainstopContextMenu {
                             new NotificationCompat.Builder(mContext, NOTIFICATION_CHANNEL_GLIMPSE)
                                     .setSmallIcon(R.drawable.ic_hyperrail_notification);
 
-                    Intent resultIntent = null;
+                    Intent resultIntent;
 
                     mBuilder.setColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
                     if (mTrainStop != null) {
                         mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
                         mBuilder.setSubText("Train at  " + mTrainStop.getStation().getLocalizedName() + " towards " + mTrainStop.getTrain().getDirection().getLocalizedName());
+                        resultIntent = TrainActivity.createIntent(mContext, mTrainStop.getTrain(), mTrainStop.getStation(), mTrainStop.getDepartureTime());
+
                     } else {
-                        mBuilder.setSubText("Transfer at  " + mTrainStop.getStation().getLocalizedName());
+                        if (mDepartureTransfer != null) {
+                            mBuilder.setSubText("Transfer at  " + mDepartureTransfer.getStation().getLocalizedName());
+                            resultIntent = LiveboardActivity.createIntent(mContext, mDepartureTransfer.getStation(), mDepartureTransfer.getArrivalTime());
+                        } else {
+                            mBuilder.setSubText("Transfer at  " + mArrivalTransfer.getStation().getLocalizedName());
+                            resultIntent = LiveboardActivity.createIntent(mContext, mArrivalTransfer.getStation(), mArrivalTransfer.getArrivalTime());
+                        }
                         mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mArrivalTransfer));
+
                     }
 
                     mBuilder.setStyle(new android.support.v4.app.NotificationCompat.DecoratedCustomViewStyle());
 
-                    resultIntent = TrainActivity.createIntent(mContext, mTrainStop.getTrain(), mTrainStop.getStation(), mTrainStop.getDepartureTime());
 
                     PendingIntent resultPendingIntent =
                             PendingIntent.getActivity(

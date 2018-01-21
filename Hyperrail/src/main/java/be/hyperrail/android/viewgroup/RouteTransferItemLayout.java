@@ -95,7 +95,7 @@ public class RouteTransferItemLayout extends LinearLayout implements ListDataVie
 
         vStation = findViewById(R.id.text_station);
         vWaitingTime = findViewById(R.id.text_waiting_time);
-        vWaitingTimeContainer = findViewById(R.id.cardview_detail_1);
+        vWaitingTimeContainer = findViewById(R.id.layout_transfer_duration);
 
         vTimeline = findViewById(R.id.image_timeline);
     }
@@ -107,6 +107,7 @@ public class RouteTransferItemLayout extends LinearLayout implements ListDataVie
 
         // If we have have both and arrival and a departure, set the duration
         if (transfer.getArrivalTime() != null && transfer.getDepartureTime() != null) {
+            //TODO: cleanup
             vWaitingTime.setText(
                     DurationFormatter.formatDuration(
                             transfer.getArrivalTime(), transfer.getArrivalDelay(),

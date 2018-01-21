@@ -17,6 +17,7 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.util.DurationFormatter;
 
 public class NotificationLayoutBuilder {
 
@@ -33,7 +34,7 @@ public class NotificationLayoutBuilder {
         } else {
             contentView.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
         }
-        contentView.setViewVisibility(R.id.container_occupancy,View.INVISIBLE);
+        contentView.setViewVisibility(R.id.container_occupancy, View.INVISIBLE);
 
         if (hasArrivalInfo && hasDepartureInfo) {
             contentView.setTextViewText(R.id.text_time1, df.print(stop.getArrivalTime()));
@@ -97,86 +98,91 @@ public class NotificationLayoutBuilder {
         return contentView;
     }
 
-    public static RemoteViews createNotificationLayout(Context context, Transfer stop) {
+    public static RemoteViews createNotificationLayout(Context context, Transfer transfer) {
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-        boolean hasDepartureInfo = stop.getDepartingTrain() != null;
-        boolean hasArrivalInfo = stop.getArrivingTrain() != null;
+        boolean hasDepartureInfo = transfer.getDepartingTrain() != null;
+        boolean hasArrivalInfo = transfer.getArrivingTrain() != null;
 
         RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_transfer);
 
-        if (!stop.isDepartureCanceled() && !stop.isArrivalCanceled()) {
+        if (!transfer.isDepartureCanceled() && !transfer.isArrivalCanceled()) {
             contentView.setViewVisibility(R.id.layout_train_status_container, View.INVISIBLE);
         } else {
             contentView.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
         }
-        contentView.setViewVisibility(R.id.container_occupancy,View.INVISIBLE);
+        contentView.setViewVisibility(R.id.container_occupancy, View.INVISIBLE);
 
         if (hasArrivalInfo && hasDepartureInfo) {
-            contentView.setTextViewText(R.id.text_time1, df.print(stop.getArrivalTime()));
-            contentView.setTextViewText(R.id.text_delay1, String.valueOf(stop.getArrivalDelay().toStandardMinutes()));
+            contentView.setTextViewText(R.id.text_time1, df.print(transfer.getArrivalTime()));
+            contentView.setTextViewText(R.id.text_delay1, String.valueOf(transfer.getArrivalDelay().toStandardMinutes()));
 
             contentView.setViewVisibility(R.id.text_time1, View.VISIBLE);
-            if (stop.getArrivalDelay().getStandardMinutes() > 0) {
+            if (transfer.getArrivalDelay().getStandardMinutes() > 0) {
                 contentView.setViewVisibility(R.id.text_delay1, View.VISIBLE);
             } else {
                 contentView.setViewVisibility(R.id.text_delay1, View.INVISIBLE);
             }
 
-            contentView.setTextViewText(R.id.text_time2, df.print(stop.getDepartureTime()));
-            contentView.setTextViewText(R.id.text_delay2, String.valueOf(stop.getDepartureDelay().getStandardMinutes()));
+            contentView.setTextViewText(R.id.text_time2, df.print(transfer.getDepartureTime()));
+            contentView.setTextViewText(R.id.text_delay2, String.valueOf(transfer.getDepartureDelay().getStandardMinutes()));
 
             contentView.setViewVisibility(R.id.text_time2, View.VISIBLE);
-            if (stop.getDepartureDelay().getStandardMinutes() > 0) {
+            if (transfer.getDepartureDelay().getStandardMinutes() > 0) {
                 contentView.setViewVisibility(R.id.text_delay2, View.VISIBLE);
             } else {
                 contentView.setViewVisibility(R.id.text_delay2, View.INVISIBLE);
             }
+
+            //TODO: cleanup
+            contentView.setTextViewText(R.id.text_waiting_time, DurationFormatter.formatDuration(
+                    transfer.getArrivalTime(), transfer.getArrivalDelay(),
+                    transfer.getDepartureTime(), transfer.getDepartureDelay()));
         } else if (hasDepartureInfo) {
             // only departure info
-            contentView.setTextViewText(R.id.text_time1, df.print(stop.getDepartureTime()));
-            contentView.setTextViewText(R.id.text_delay1, String.valueOf(stop.getDepartureDelay().getStandardMinutes()));
+            contentView.setTextViewText(R.id.text_time1, df.print(transfer.getDepartureTime()));
+            contentView.setTextViewText(R.id.text_delay1, String.valueOf(transfer.getDepartureDelay().getStandardMinutes()));
 
             contentView.setViewVisibility(R.id.text_time1, View.VISIBLE);
             contentView.setViewVisibility(R.id.text_delay1, View.INVISIBLE);
             contentView.setViewVisibility(R.id.text_time2, View.INVISIBLE);
             contentView.setViewVisibility(R.id.text_delay2, View.INVISIBLE);
 
-            if (stop.getArrivalDelay().getStandardMinutes() > 0) {
+            if (transfer.getArrivalDelay().getStandardMinutes() > 0) {
                 contentView.setViewVisibility(R.id.text_delay1, View.VISIBLE);
-                contentView.setTextViewText(R.id.text_time2, df.print(stop.getDepartureTime().withDurationAdded(stop.getDepartureDelay(), 1)));
+                contentView.setTextViewText(R.id.text_time2, df.print(transfer.getDepartureTime().withDurationAdded(transfer.getDepartureDelay(), 1)));
                 contentView.setViewVisibility(R.id.text_time2, View.VISIBLE);
                 contentView.setTextColor(R.id.text_time2, ContextCompat.getColor(context, R.color.colorDelay));
             }
 
         } else if (hasArrivalInfo) {
             // only arrival info
-            contentView.setTextViewText(R.id.text_time1, df.print(stop.getArrivalTime()));
-            contentView.setTextViewText(R.id.text_delay1, String.valueOf(stop.getArrivalDelay().getStandardMinutes()));
+            contentView.setTextViewText(R.id.text_time1, df.print(transfer.getArrivalTime()));
+            contentView.setTextViewText(R.id.text_delay1, String.valueOf(transfer.getArrivalDelay().getStandardMinutes()));
 
             contentView.setViewVisibility(R.id.text_time1, View.VISIBLE);
             contentView.setViewVisibility(R.id.text_delay1, View.INVISIBLE);
             contentView.setViewVisibility(R.id.text_time2, View.INVISIBLE);
             contentView.setViewVisibility(R.id.text_delay2, View.INVISIBLE);
 
-            if (stop.getArrivalDelay().getStandardMinutes() > 0) {
+            if (transfer.getArrivalDelay().getStandardMinutes() > 0) {
                 contentView.setViewVisibility(R.id.text_delay1, View.VISIBLE);
-                contentView.setTextViewText(R.id.text_time2, df.print(stop.getArrivalTime().withDurationAdded(stop.getArrivalDelay(), 1)));
+                contentView.setTextViewText(R.id.text_time2, df.print(transfer.getArrivalTime().withDurationAdded(transfer.getArrivalDelay(), 1)));
                 contentView.setViewVisibility(R.id.text_time2, View.VISIBLE);
                 contentView.setTextColor(R.id.text_time2, ContextCompat.getColor(context, R.color.colorDelay));
             }
         }
 
-        contentView.setTextViewText(R.id.text_station, stop.getStation().getLocalizedName());
+        contentView.setTextViewText(R.id.text_station, transfer.getStation().getLocalizedName());
         contentView.setViewVisibility(R.id.text_station, View.VISIBLE);
 
         if (hasArrivalInfo) {
-            contentView.setTextViewText(R.id.text_platform_arrival, stop.getArrivalPlatform());
+            contentView.setTextViewText(R.id.text_platform_arrival, transfer.getArrivalPlatform());
             contentView.setViewVisibility(R.id.layout_platform_arrival_container, View.VISIBLE);
         } else {
             contentView.setViewVisibility(R.id.layout_platform_arrival_container, View.INVISIBLE);
         }
         if (hasDepartureInfo) {
-            contentView.setTextViewText(R.id.text_platform_departure, stop.getDeparturePlatform());
+            contentView.setTextViewText(R.id.text_platform_departure, transfer.getDeparturePlatform());
             contentView.setViewVisibility(R.id.layout_platform_departure_container, View.VISIBLE);
         } else {
             contentView.setViewVisibility(R.id.layout_platform_departure_container, View.INVISIBLE);
