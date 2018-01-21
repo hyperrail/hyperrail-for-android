@@ -382,6 +382,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
     @Override
     public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop stop) {
-        (new OccupancyDialog(LiveboardActivity.this, stop)).show();
+        (new TrainstopContextMenu(LiveboardActivity.this, stop)).show();
     }
 }

@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -38,7 +39,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 /**
  * Dialog to submit occupancy data
  */
-public class OccupancyDialog {
+public class TrainstopContextMenu {
 
     private static final String NOTIFICATION_CHANNEL_GLIMPSE = "glimpse";
     private final View mActivityView;
@@ -48,7 +49,7 @@ public class OccupancyDialog {
     private Transfer mArrivalTransfer;
     private Context mContext;
 
-    public OccupancyDialog(Context context, TrainStop stop) {
+    public TrainstopContextMenu(Context context, TrainStop stop) {
         this(context);
         this.route = null;
         this.mTrainStop = stop;
@@ -56,7 +57,7 @@ public class OccupancyDialog {
         this.mDepartureTransfer = null;
     }
 
-    public OccupancyDialog(Context context, Transfer transfer, Route route) {
+    public TrainstopContextMenu(Context context, Transfer transfer, Route route) {
         this(context);
         this.mArrivalTransfer = transfer;
         this.mDepartureTransfer = transfer;
@@ -64,7 +65,7 @@ public class OccupancyDialog {
         this.mTrainStop = null;
     }
 
-    public OccupancyDialog(Context context, Transfer departureTransfer, Transfer arrivalTransfer, Route route) {
+    public TrainstopContextMenu(Context context, Transfer departureTransfer, Transfer arrivalTransfer, Route route) {
         this(context);
         this.mArrivalTransfer = arrivalTransfer;
         this.mDepartureTransfer = departureTransfer;
@@ -72,7 +73,7 @@ public class OccupancyDialog {
         this.mTrainStop = null;
     }
 
-    private OccupancyDialog(Context context) {
+    private TrainstopContextMenu(Context context) {
         this.mContext = context;
         this.mActivityView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
     }
@@ -169,12 +170,12 @@ public class OccupancyDialog {
                         new IRailSuccessResponseListener<Boolean>() {
                             @Override
                             public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                             }
                         }, new IRailErrorResponseListener<Boolean>() {
                             @Override
                             public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                             }
                         }, null);
                 vDialog.dismiss();
@@ -193,12 +194,12 @@ public class OccupancyDialog {
                         new IRailSuccessResponseListener<Boolean>() {
                             @Override
                             public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                             }
                         }, new IRailErrorResponseListener<Boolean>() {
                             @Override
                             public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                             }
                         }, null);
                 vDialog.dismiss();
@@ -217,12 +218,12 @@ public class OccupancyDialog {
                         new IRailSuccessResponseListener<Boolean>() {
                             @Override
                             public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                             }
                         }, new IRailErrorResponseListener<Boolean>() {
                             @Override
                             public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(OccupancyDialog.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                             }
                         }, null);
                 vDialog.dismiss();
@@ -261,13 +262,16 @@ public class OccupancyDialog {
 
                     Intent resultIntent = null;
 
-                    mBuilder.setContentTitle(mTrainStop.getTrain().getName() + " at " + mTrainStop.getStation().getLocalizedName());
-
+                    mBuilder.setColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
                     if (mTrainStop != null) {
-                        mBuilder.setCustomContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
+                        mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
+                        mBuilder.setSubText("Train at  " + mTrainStop.getStation().getLocalizedName() + " towards " + mTrainStop.getTrain().getDirection().getLocalizedName());
                     } else {
-                        mBuilder.setCustomContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mArrivalTransfer));
+                        mBuilder.setSubText("Transfer at  " + mTrainStop.getStation().getLocalizedName());
+                        mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mArrivalTransfer));
                     }
+
+                    mBuilder.setStyle(new android.support.v4.app.NotificationCompat.DecoratedCustomViewStyle());
 
                     resultIntent = TrainActivity.createIntent(mContext, mTrainStop.getTrain(), mTrainStop.getStation(), mTrainStop.getDepartureTime());
 

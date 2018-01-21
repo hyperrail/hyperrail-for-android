@@ -14,6 +14,10 @@ package be.hyperrail.android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -96,14 +100,25 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_shortcut) {
             Intent shortcutIntent = this.createShortcutIntent();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mCurrentSearchQuery.getName());
+                mShortcutInfoBuilder.setShortLabel(mCurrentSearchQuery.getName());
 
-            Intent addIntent = new Intent();
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentSearchQuery.getName());
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_shortcut_train));
-            addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-            getApplicationContext().sendBroadcast(addIntent);
-
+                mShortcutInfoBuilder.setLongLabel("Train " + mCurrentSearchQuery.getName());
+                mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_shortcut_train));
+                shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
+                mShortcutInfoBuilder.setIntent(shortcutIntent);
+                ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
+                ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
+                mShortcutManager.requestPinShortcut(mShortcutInfo, null);
+            } else {
+                Intent addIntent = new Intent();
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentSearchQuery.getName());
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_shortcut_train));
+                addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                getApplicationContext().sendBroadcast(addIntent);
+            }
             Snackbar.make(vLayoutRoot, R.string.shortcut_created, Snackbar.LENGTH_LONG).show();
 
             return true;
@@ -239,7 +254,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop stop) {
-        (new OccupancyDialog(TrainActivity.this, stop)).show();
+        (new TrainstopContextMenu(TrainActivity.this, stop)).show();
     }
 }
 

@@ -22,8 +22,8 @@ import android.view.ViewGroup;
 
 import java.util.Objects;
 
-import be.hyperrail.android.OccupancyDialog;
 import be.hyperrail.android.R;
+import be.hyperrail.android.TrainstopContextMenu;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
@@ -131,7 +131,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             new View.OnLongClickListener() {
                                 @Override
                                 public boolean onLongClick(View view) {
-                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                    (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
                                             transfer,route)
                                     ).show();
                                     return false;
@@ -144,7 +144,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             new View.OnLongClickListener() {
                                 @Override
                                 public boolean onLongClick(View view) {
-                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                    (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
                                             transfer, null,route)
                                     ).show();
                                     return false;
@@ -159,7 +159,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             new View.OnLongClickListener() {
                                 @Override
                                 public boolean onLongClick(View view) {
-                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                    (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
                                             null, transfer,route)
                                     ).show();
                                     return false;
@@ -201,7 +201,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
-                                (new OccupancyDialog(RouteDetailCardAdapter.this.context,
+                                (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
                                         transferBefore, transferAfter,route)
                                 ).show();
                                 return false;

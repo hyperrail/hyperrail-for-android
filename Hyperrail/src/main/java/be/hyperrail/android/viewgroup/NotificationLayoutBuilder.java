@@ -26,7 +26,14 @@ public class NotificationLayoutBuilder {
         boolean hasArrivalInfo = (stop.getArrivalTime() != null);
         boolean hasDepartureInfo = (stop.getDepartureTime() != null);
 
-        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notif_h64);
+        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_trainstop);
+
+        if (!stop.isDepartureCanceled() && !stop.isArrivalCanceled()) {
+            contentView.setViewVisibility(R.id.layout_train_status_container, View.INVISIBLE);
+        } else {
+            contentView.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
+        }
+        contentView.setViewVisibility(R.id.container_occupancy,View.INVISIBLE);
 
         if (hasArrivalInfo && hasDepartureInfo) {
             contentView.setTextViewText(R.id.text_time1, df.print(stop.getArrivalTime()));
@@ -95,7 +102,14 @@ public class NotificationLayoutBuilder {
         boolean hasDepartureInfo = stop.getDepartingTrain() != null;
         boolean hasArrivalInfo = stop.getArrivingTrain() != null;
 
-        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notif_h64_transfer);
+        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_transfer);
+
+        if (!stop.isDepartureCanceled() && !stop.isArrivalCanceled()) {
+            contentView.setViewVisibility(R.id.layout_train_status_container, View.INVISIBLE);
+        } else {
+            contentView.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
+        }
+        contentView.setViewVisibility(R.id.container_occupancy,View.INVISIBLE);
 
         if (hasArrivalInfo && hasDepartureInfo) {
             contentView.setTextViewText(R.id.text_time1, df.print(stop.getArrivalTime()));
