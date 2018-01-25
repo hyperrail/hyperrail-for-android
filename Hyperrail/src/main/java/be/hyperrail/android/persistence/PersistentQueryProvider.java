@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import be.hyperrail.android.irail.contracts.IrailStationProvider;
-import be.hyperrail.android.irail.factories.IrailFactory;
-
 import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
 import static be.hyperrail.android.persistence.SuggestionType.LIST;
@@ -79,8 +76,6 @@ public class PersistentQueryProvider {
      */
     private static final String TAG_FAV_TRAINS = "fav_trains";
 
-    private final Context context;
-
     /**
      * An instance of sharedPreferences
      */
@@ -91,13 +86,9 @@ public class PersistentQueryProvider {
      */
     private static final int MAX_STORED = 64;
 
-    private final IrailStationProvider stationProvider;
-
     @SuppressLint("ApplySharedPref")
     public PersistentQueryProvider(Context context) {
-        this.context = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.stationProvider = IrailFactory.getStationsProviderInstance();
     }
 
     /**
@@ -214,7 +205,7 @@ public class PersistentQueryProvider {
         if (type == FAVORITE) {
             return load(TAG_FAV_ROUTES, limit, type, RouteSuggestion.class);
         } else if (type == HISTORY) {
-            return load(TAG_RECENT_ROUTES, limit, type, RouteSuggestion.class);
+            return load(TAG_RECENT_ROUTES, limit, true, type, RouteSuggestion.class);
         }
         return null;
     }
@@ -227,7 +218,7 @@ public class PersistentQueryProvider {
         if (type == FAVORITE) {
             return load(TAG_FAV_STATIONS, limit, type, StationSuggestion.class);
         } else if (type == HISTORY) {
-            return load(TAG_RECENT_STATIONS, limit, type, StationSuggestion.class);
+            return load(TAG_RECENT_STATIONS, limit, true, type, StationSuggestion.class);
         }
         return null;
     }
@@ -240,7 +231,7 @@ public class PersistentQueryProvider {
         if (type == FAVORITE) {
             return load(TAG_FAV_TRAINS, limit, type, TrainSuggestion.class);
         } else if (type == HISTORY) {
-            return load(TAG_RECENT_TRAINS, limit, type, TrainSuggestion.class);
+            return load(TAG_RECENT_TRAINS, limit, true, type, TrainSuggestion.class);
         }
         return null;
     }
@@ -292,7 +283,7 @@ public class PersistentQueryProvider {
     /**
      * Store a query under a tag
      *
-     * @param tag   The tag under which the query will be stored
+     * @param tag    The tag under which the query will be stored
      * @param object The query to store
      */
     private <T extends Suggestable> void store(String tag, T object, Class<T> classInstance) {

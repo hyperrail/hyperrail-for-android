@@ -420,8 +420,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
     }
 
-    ;
-
     private static class LoadAutoCompleteTask extends AsyncTask<IrailStationProvider, Void, String[]> {
 
         private WeakReference<RouteSearchFragment> fragmentReference;

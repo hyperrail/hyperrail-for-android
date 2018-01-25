@@ -15,6 +15,7 @@ package be.hyperrail.android.irail.factories;
 import android.content.Context;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.metrics.AddTrace;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailParser;
@@ -35,6 +36,7 @@ public class IrailFactory {
     private static IrailDataProvider dataProviderInstance;
     private static IrailParser parserInstance;
 
+    @AddTrace(name="IrailFactory.setup")
     public static void setup(Context applicationContext) {
         stationProviderInstance = new StationsDb(applicationContext);
         parserInstance = new IrailApiParser(IrailFactory.stationProviderInstance);

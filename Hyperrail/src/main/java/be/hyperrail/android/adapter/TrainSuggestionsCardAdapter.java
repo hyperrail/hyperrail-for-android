@@ -104,7 +104,7 @@ public class TrainSuggestionsCardAdapter extends RecyclerView.Adapter<TrainSugge
         });
     }
 
-    public void setTrains(List<Suggestion<TrainSuggestion>> suggestions) {
+    public void setSuggestedTrains(List<Suggestion<TrainSuggestion>> suggestions) {
         this.suggestedTrains = suggestions;
         this.notifyDataSetChanged();
     }
