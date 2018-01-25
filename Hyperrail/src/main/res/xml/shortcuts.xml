@@ -15,7 +15,7 @@
         tools:targetApi="25">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="be.hyperrail.android.MainActivity"
+            android:targetClass="be.hyperrail.android.activities.MainActivity"
             android:targetPackage="be.hyperrail.android">
             <extra
                 android:name="view"
@@ -36,7 +36,7 @@
         tools:targetApi="25">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="be.hyperrail.android.MainActivity"
+            android:targetClass="be.hyperrail.android.activities.MainActivity"
             android:targetPackage="be.hyperrail.android">
             <extra
                 android:name="view"

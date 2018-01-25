@@ -5,7 +5,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context="be.hyperrail.android.RouteActivity">
+              tools:context="be.hyperrail.android.activities.RouteActivity">
 
     <include layout="@layout/toolbar_default" />
 

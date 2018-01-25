@@ -10,7 +10,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package be.hyperrail.android.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -29,6 +35,7 @@ import android.view.ViewGroup;
 
 import org.joda.time.DateTime;
 
+import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;

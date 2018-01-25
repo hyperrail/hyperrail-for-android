@@ -21,7 +21,7 @@
         android:supportsRtl="false"
         android:theme="@style/Hyperrail">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:windowSoftInputMode="stateUnchanged">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -34,28 +34,28 @@
 
         </activity>
         <activity
-            android:name=".LiveboardActivity"
+            android:name=".activities.LiveboardActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
-            android:name=".RouteActivity"
+            android:name=".activities.RouteActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
-            android:name=".TrainActivity"
+            android:name=".activities.TrainActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
-            android:name=".RouteDetailActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".activities.RouteDetailActivity"
+            android:parentActivityName=".activities.MainActivity">
         </activity>
         <activity
-            android:name=".StationActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".activities.StationActivity"
+            android:parentActivityName=".activities.MainActivity">
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -79,7 +79,7 @@
                 android:resource="@xml/appwidget_provider"/>
         </receiver>
 
-        <activity android:name=".StationPickerActivity">
+        <activity android:name=".activities.StationPickerActivity">
         </activity>
 
 

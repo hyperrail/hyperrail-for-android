@@ -33,9 +33,9 @@ import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import be.hyperrail.android.LiveboardActivity;
 import be.hyperrail.android.R;
-import be.hyperrail.android.TrainActivity;
+import be.hyperrail.android.activities.LiveboardActivity;
+import be.hyperrail.android.activities.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.db.Station;

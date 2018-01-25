@@ -19,7 +19,7 @@
                     android:updatePeriodMillis="0"
                     android:previewImage="@mipmap/ic_launcher"
                     android:initialLayout="@layout/widget_nextdepartures"
-                    android:configure="be.hyperrail.android.StationPickerActivity"
+                    android:configure="be.hyperrail.android.activities.StationPickerActivity"
                     android:resizeMode="horizontal|vertical"
                     android:widgetCategory="home_screen">
 </appwidget-provider>

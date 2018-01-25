@@ -11,12 +11,18 @@
  */
 
 /*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/*
  * # This Source Code Form is subject to the terms of the Mozilla Public
  * # License, v. 2.0. If a copy of the MPL was not distributed with this
  * # file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android;
+package be.hyperrail.android.activities;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -36,6 +42,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+
+import be.hyperrail.android.R;
+import be.hyperrail.android.fragments.DisturbanceListFragment;
+import be.hyperrail.android.fragments.FeedbackFragment;
+import be.hyperrail.android.fragments.LiveboardSearchFragment;
+import be.hyperrail.android.fragments.RouteSearchFragment;
+import be.hyperrail.android.fragments.TrainSearchFragment;
 
 /**
  * The main activity contains a drawer layout and fragments for search, disturbances and settings

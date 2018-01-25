@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:animateLayoutChanges="true"
               android:orientation="vertical"
-              tools:context="be.hyperrail.android.RouteSearchFragment">
+              tools:context="be.hyperrail.android.fragments.RouteSearchFragment">
 
     <LinearLayout
         android:id="@+id/accentSearchContainer"

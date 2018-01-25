@@ -12,7 +12,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="be.hyperrail.android.StationActivity">
+    tools:context="be.hyperrail.android.activities.StationActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

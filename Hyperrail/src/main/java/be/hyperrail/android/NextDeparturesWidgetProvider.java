@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import be.hyperrail.android.activities.LiveboardActivity;
 import be.hyperrail.android.irail.db.Station;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_DELETED;
