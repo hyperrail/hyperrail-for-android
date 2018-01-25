@@ -33,7 +33,7 @@ import be.hyperrail.android.persistence.SuggestionType;
 /**
  * Recyclerview to show stations (for searches, recents ,...)
  */
-public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.StationViewHolder> {
+public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationSuggestionsCardAdapter.StationViewHolder> {
 
     private final Context context;
     private List<Suggestion<StationSuggestion>> suggestedStations;
@@ -50,7 +50,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
      *
      * @param nearbyOnTop Whether or not to show nearby stations on top of favorite/recents (suggestions)
      */
-    public void setNearbyOnTop(boolean nearbyOnTop) {
+    public void showNearbyStationsOnTop(boolean nearbyOnTop) {
         this.nearbyOnTop = nearbyOnTop;
         this.notifyDataSetChanged();
     }
@@ -61,7 +61,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         UNDEFINED
     }
 
-    public StationCardAdapter(Context context, Station[] stations) {
+    public StationSuggestionsCardAdapter(Context context, Station[] stations) {
         this.context = context;
         this.stations = stations;
     }
@@ -124,7 +124,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
+                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
                 }
             }
         });
@@ -133,7 +133,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
+                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
                 }
                 return false;
             }
@@ -167,7 +167,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationCardAdapter.this, q);
+                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, q);
                 }
             }
         });
@@ -176,7 +176,7 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationCardAdapter.this, q);
+                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, q);
                 }
                 return false;
             }
@@ -188,12 +188,12 @@ public class StationCardAdapter extends RecyclerView.Adapter<StationCardAdapter.
         this.notifyDataSetChanged();
     }
 
-    public void setStations(Station[] stations) {
+    public void setSearchResultStations(Station[] stations) {
         this.stations = stations;
         this.notifyDataSetChanged();
     }
 
-    public void setStationIconType(stationType type) {
+    public void setSearchResultType(stationType type) {
         this.currentDisplayType = type;
         this.notifyDataSetChanged();
     }

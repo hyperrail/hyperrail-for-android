@@ -266,9 +266,17 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         onUpgrade(db, oldVersion, newVersion);
     }
 
+
+    Station[] stationsOrderedBySizeCache;
+
     @Override
     @AddTrace(name="StationsDb.getStationsOrderBySize")
     public Station[] getStationsOrderBySize() {
+
+        if (stationsOrderedBySizeCache != null){
+            return stationsOrderedBySizeCache;
+        }
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
@@ -294,6 +302,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] stations = loadStationCursor(c);
         c.close();
         db.close();
+
+        stationsOrderedBySizeCache = stations;
+
         return stations;
     }
 

@@ -43,7 +43,7 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
         this.context = context;
     }
 
-    public void updateHistory(List<Suggestion<RouteSuggestion>> queries) {
+    public void setSuggestedRoutes(List<Suggestion<RouteSuggestion>> queries) {
         this.queries = queries;
         this.notifyDataSetChanged();
     }

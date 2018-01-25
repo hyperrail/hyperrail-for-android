@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -50,11 +51,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.perf.metrics.AddTrace;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
+
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.LiveboardActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
-import be.hyperrail.android.adapter.StationCardAdapter;
+import be.hyperrail.android.adapter.StationSuggestionsCardAdapter;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
@@ -70,8 +74,8 @@ import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
  */
 public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<StationSuggestion>>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Suggestion<StationSuggestion>> {
 
-    private static final String LogTag = "LiveboardSearch";
     private static final int COARSE_LOCATION_REQUEST = 1;
+
     private RecyclerView stationRecyclerView;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -82,9 +86,12 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     private PersistentQueryProvider persistentQueryProvider;
     private boolean mNearbyOnTop;
     private Suggestion<StationSuggestion> mLastSelectedQuery;
-    private StationCardAdapter mStationAdapter;
+    private StationSuggestionsCardAdapter mStationAdapter;
 
-    private OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeListener;
+    /**
+     * This alternative onclicklistener allows to "catch" clicks. This way we can reuse this fragment for purposes other than just showing liveboards
+     */
+    private OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeOnClickListener;
 
     public LiveboardSearchFragment() {
         // Required empty public constructor
@@ -95,28 +102,26 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
-    @AddTrace(name="LiveboardSearchFragment.onCreateView")
+    @AddTrace(name = "LiveboardSearchFragment.onCreateView")
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_liveboard_search, container, false);
-        stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
 
-        return view;
+        return inflater.inflate(R.layout.fragment_liveboard_search, container, false);
     }
 
     @Override
-    @AddTrace(name="LiveboardSearchFragment.onViewCreated")
+    @AddTrace(name = "LiveboardSearchFragment.onViewCreated")
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Create an instance of GoogleAPIClient.
 
+        stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
         stationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         stationRecyclerView.setItemAnimator(new DefaultItemAnimator());
         registerForContextMenu(stationRecyclerView);
 
-        mStationAdapter = new StationCardAdapter(this.getActivity(), null);
+        mStationAdapter = new StationSuggestionsCardAdapter(this.getActivity(), null);
         mStationAdapter.setOnItemClickListener(this);
         mStationAdapter.setOnLongItemClickListener(this);
         stationRecyclerView.setAdapter(mStationAdapter);
@@ -148,7 +153,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
             vStationSearchField.setText(stationName);
             loadStations(stationName);
         } else {
-            loadStations("");
+            //loadStations("");
         }
 
         vStationSearchField.addTextChangedListener(new TextWatcher() {
@@ -167,11 +172,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
             }
         });
-        setSuggestedStations();
-    }
 
-    private void setSuggestedStations() {
-        mStationAdapter.setSuggestedStations(persistentQueryProvider.getAllStations());
+        // Setting suggested stations will be handled on fragment start
     }
 
     @Override
@@ -187,19 +189,20 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         s = s.trim();
 
         if (s.length() > 0) {
-            setStations(stationProvider.getStationsByNameOrderBySize(s), StationCardAdapter.stationType.SEARCHED);
-            setSuggestionsVisible(false);
-
+            setStations(stationProvider.getStationsByNameOrderBySize(s), StationSuggestionsCardAdapter.stationType.SEARCHED);
+            mStationAdapter.setSuggestionsVisible(false);
+            mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.SEARCHED);
         } else if (mLastLocation != null) {
-            setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations), StationCardAdapter.stationType.NEARBY);
-            setNearbyOnTop(mNearbyOnTop);
-            setSuggestionsVisible(true);
+            setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations), StationSuggestionsCardAdapter.stationType.NEARBY);
+            mStationAdapter.showNearbyStationsOnTop(mNearbyOnTop);
+            mStationAdapter.setSuggestionsVisible(true);
+            mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.NEARBY);
 
         } else {
-            setStations(stationProvider.getStationsOrderBySize(), StationCardAdapter.stationType.UNDEFINED);
-            setNearbyOnTop(false);
-            setSuggestionsVisible(true);
-
+            setStations(stationProvider.getStationsOrderBySize(), StationSuggestionsCardAdapter.stationType.UNDEFINED);
+            mStationAdapter.showNearbyStationsOnTop(false);
+            mStationAdapter.setSuggestionsVisible(true);
+            mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.UNDEFINED);
         }
     }
 
@@ -209,8 +212,10 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onStart() {
         super.onStart();
-        setSuggestedStations();
         mGoogleApiClient.connect();
+
+        UpdateSuggestionsTask t = new UpdateSuggestionsTask(this);
+        t.execute(persistentQueryProvider);
     }
 
     /**
@@ -238,34 +243,16 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      *
      * @param stations The new array of stations
      */
-    private void setStations(Station[] stations, StationCardAdapter.stationType type) {
-        mStationAdapter.setStations(stations);
-    }
-
-    /**
-     * Show/hide recents and favorites
-     *
-     * @param visible True to show recents and favorites
-     */
-    private void setSuggestionsVisible(boolean visible) {
-        mStationAdapter.setSuggestionsVisible(visible);
-    }
-
-    /**
-     * Whether or not to show nearby stations before the favorite and recent stations
-     *
-     * @param nearbyOnTop Whether or not to show nearby stations before the favorite and recent stations
-     */
-    private void setNearbyOnTop(boolean nearbyOnTop) {
-        mStationAdapter.setNearbyOnTop(nearbyOnTop);
+    private void setStations(Station[] stations, StationSuggestionsCardAdapter.stationType type) {
+        mStationAdapter.setSearchResultStations(stations);
     }
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
-        if (alternativeListener == null) {
+        if (alternativeOnClickListener == null) {
             openLiveboard(object.getData());
         } else {
-            alternativeListener.onRecyclerItemClick(sender, object);
+            alternativeOnClickListener.onRecyclerItemClick(sender, object);
         }
     }
 
@@ -315,7 +302,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
                 != PackageManager.PERMISSION_GRANTED || !preferences.contains("stations_enable_nearby")) {
 
             // Should we show an explanation?
-            // Explain anywau
+            // Explain anyway
             /*if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)) */
 
@@ -399,7 +386,36 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         getLastLocation();
     }
 
-    public void setAlternativeListener(OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeListener) {
-        this.alternativeListener = alternativeListener;
+    public void setAlternativeOnClickListener(OnRecyclerItemClickListener<Suggestion<StationSuggestion>> alternativeOnClickListener) {
+        this.alternativeOnClickListener = alternativeOnClickListener;
     }
+
+    private static class UpdateSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<StationSuggestion>>> {
+
+        private WeakReference<LiveboardSearchFragment> fragmentReference;
+
+        // only retain a weak reference to the activity
+        UpdateSuggestionsTask(LiveboardSearchFragment context) {
+            fragmentReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected List<Suggestion<StationSuggestion>> doInBackground(PersistentQueryProvider... provider) {
+            return provider[0].getAllStations();
+        }
+
+        @Override
+        protected void onPostExecute(List<Suggestion<StationSuggestion>> suggestions) {
+            super.onPostExecute(suggestions);
+
+            // get a reference to the activity if it is still there
+            LiveboardSearchFragment fragment = fragmentReference.get();
+            if (fragment == null) return;
+
+            fragment.mStationAdapter.setSuggestedStations(suggestions);
+        }
+    }
+
+    ;
+
 }

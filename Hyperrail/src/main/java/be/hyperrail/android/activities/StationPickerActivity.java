@@ -39,7 +39,7 @@ public class StationPickerActivity extends AppCompatActivity implements OnRecycl
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         LiveboardSearchFragment frg = new LiveboardSearchFragment();
-        frg.setAlternativeListener(this);
+        frg.setAlternativeOnClickListener(this);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg).commit();
     }
 

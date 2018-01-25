@@ -20,6 +20,7 @@ package be.hyperrail.android.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -45,6 +46,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.RouteActivity;
@@ -88,7 +92,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    @AddTrace(name="RouteSearchFragment.onCreateView")
+    @AddTrace(name = "RouteSearchFragment.onCreateView")
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -97,7 +101,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    @AddTrace(name="RouteSearchFragment.onViewCreated")
+    @AddTrace(name = "RouteSearchFragment.onViewCreated")
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -118,15 +122,8 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         mSuggestionsAdapter.setOnLongItemClickListener(this);
         mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
 
-        // Initialize autocomplete
-        IrailStationProvider stationProvider = IrailFactory.getStationsProviderInstance();
-        String[] names = stationProvider.getStationNames(stationProvider.getStationsOrderBySize());
-
-        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(this.getActivity(),
-                android.R.layout.simple_dropdown_item_1line, names);
-
-        vFromText.setAdapter(autocompleteAdapter);
-        vToText.setAdapter(autocompleteAdapter);
+        LoadAutoCompleteTask loadAutoCompleteTask = new LoadAutoCompleteTask(this);
+        loadAutoCompleteTask.execute(IrailFactory.getStationsProviderInstance());
 
         // Handle special keys in "from" text
         vFromText.setOnKeyListener(new View.OnKeyListener() {
@@ -234,7 +231,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             vFromText.setText(savedInstanceState.getString("from", ""), false);
             vToText.setText(savedInstanceState.getString("to", ""), false);
         }
-        setSuggestions();
     }
 
     private void showDateTimeRow() {
@@ -268,7 +264,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             } else {
                 persistentQueryProvider.delete(mLastSelectedQuery);
             }
-            mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
+            mSuggestionsAdapter.setSuggestedRoutes(persistentQueryProvider.getAllRoutes());
         }
 
         // handle menu here - get item index or ID from info
@@ -278,13 +274,14 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     @Override
     public void onStart() {
         super.onStart();
-        setSuggestions();
+        LoadSuggestionsTask loadSuggestionsTask = new LoadSuggestionsTask(this);
+        loadSuggestionsTask.execute(persistentQueryProvider);
     }
 
     private void setSuggestions() {
         RecyclerView suggestions = this.getActivity().findViewById(R.id.recyclerview_primary);
 
-            mSuggestionsAdapter.updateHistory(persistentQueryProvider.getAllRoutes());
+        mSuggestionsAdapter.setSuggestedRoutes(persistentQueryProvider.getAllRoutes());
 
     }
 
@@ -397,5 +394,68 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vDatetime.setText(day + " " + at + " " + time);
     }
 
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<RouteSuggestion>>> {
+
+        private WeakReference<RouteSearchFragment> fragmentReference;
+
+        // only retain a weak reference to the activity
+        LoadSuggestionsTask(RouteSearchFragment context) {
+            fragmentReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected List<Suggestion<RouteSuggestion>> doInBackground(PersistentQueryProvider... provider) {
+            return provider[0].getAllRoutes();
+        }
+
+        @Override
+        protected void onPostExecute(List<Suggestion<RouteSuggestion>> suggestions) {
+            super.onPostExecute(suggestions);
+
+            // get a reference to the activity if it is still there
+            RouteSearchFragment fragment = fragmentReference.get();
+            if (fragment == null) return;
+
+            fragment.mSuggestionsAdapter.setSuggestedRoutes(suggestions);
+        }
+    }
+
+    ;
+
+    private static class LoadAutoCompleteTask extends AsyncTask<IrailStationProvider, Void, String[]> {
+
+        private WeakReference<RouteSearchFragment> fragmentReference;
+
+        // only retain a weak reference to the activity
+        LoadAutoCompleteTask(RouteSearchFragment context) {
+            fragmentReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected String[] doInBackground(IrailStationProvider... provider) {
+            return provider[0].getStationNames(provider[0].getStationsOrderBySize());
+
+        }
+
+        @Override
+        protected void onPostExecute(String[] stations) {
+            super.onPostExecute(stations);
+
+            // get a reference to the activity if it is still there
+            RouteSearchFragment fragment = fragmentReference.get();
+            if (fragment == null) return;
+
+            // Initialize autocomplete
+
+            ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<String>(fragment.getActivity(),
+                    android.R.layout.simple_dropdown_item_1line, stations);
+
+            fragment.vFromText.setAdapter(autocompleteAdapter);
+            fragment.vToText.setAdapter(autocompleteAdapter);
+
+        }
+    }
+
+    ;
 }
 
