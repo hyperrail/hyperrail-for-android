@@ -40,6 +40,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -55,7 +56,7 @@ import be.hyperrail.android.fragments.TrainSearchFragment;
  */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout vDrawerLayout;
+    private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
 
     private Fragment mCurrentFragment;
@@ -127,11 +128,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDualPane = (findViewById(R.id.drawer) == null);
 
         if (!mDualPane) {
-            vDrawerLayout = findViewById(R.id.drawer);
+            mDrawerLayout = findViewById(R.id.drawer);
 
             mDrawerToggle = new ActionBarDrawerToggle(
                     this,
-                    vDrawerLayout,
+                    mDrawerLayout,
                     R.string.app_name,
                     R.string.app_name
             ) {
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             };
 
-            vDrawerLayout.addDrawerListener(mDrawerToggle);
+            mDrawerLayout.addDrawerListener(mDrawerToggle);
             mDrawerToggle.syncState();
 
             if (getSupportActionBar() != null) {
@@ -228,9 +229,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mCurrentFragment = frg;
         mCurrentView = i;
 
+        // Allow drawer to close smooth
+        mDrawerNavigationHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.this.getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
+            }
+        },200);
 
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").commit();
-
+        // Close drawer before loading next fragment
+        mDrawerLayout.closeDrawer(Gravity.START);
     }
 
     @Override
@@ -285,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         if (!mDualPane) {
-            vDrawerLayout.closeDrawers();
+            mDrawerLayout.closeDrawers();
         }
         return true;
     }

@@ -150,10 +150,10 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         if (savedInstanceState != null) {
             // Restore the search field and results
             String stationName = savedInstanceState.getString("station", "");
-            vStationSearchField.setText(stationName);
-            loadStations(stationName);
-        } else {
-            //loadStations("");
+            if (!stationName.isEmpty()) {
+                vStationSearchField.setText(stationName);
+                loadStations(stationName);
+            }
         }
 
         vStationSearchField.addTextChangedListener(new TextWatcher() {
@@ -189,16 +189,18 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         s = s.trim();
 
         if (s.length() > 0) {
+            // Text search
             setStations(stationProvider.getStationsByNameOrderBySize(s), StationSuggestionsCardAdapter.stationType.SEARCHED);
             mStationAdapter.setSuggestionsVisible(false);
             mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.SEARCHED);
         } else if (mLastLocation != null) {
+            // Nearby stations
             setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations), StationSuggestionsCardAdapter.stationType.NEARBY);
             mStationAdapter.showNearbyStationsOnTop(mNearbyOnTop);
             mStationAdapter.setSuggestionsVisible(true);
             mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.NEARBY);
-
         } else {
+            // Just a list of popular stations as fallback
             setStations(stationProvider.getStationsOrderBySize(), StationSuggestionsCardAdapter.stationType.UNDEFINED);
             mStationAdapter.showNearbyStationsOnTop(false);
             mStationAdapter.setSuggestionsVisible(true);

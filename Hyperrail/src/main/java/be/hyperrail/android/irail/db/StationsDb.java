@@ -29,6 +29,8 @@ import java.util.Scanner;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 
+import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_ID;
+import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_NAME;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_TABLE_FACILITIES;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_TABLE_STATIONS;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_DELETE_TABLE_FACILITIES;
@@ -46,7 +48,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 17121200;
+    private static final int DATABASE_VERSION = 18012500;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -71,6 +73,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         db.execSQL(SQL_CREATE_TABLE_STATIONS);
         db.execSQL(SQL_CREATE_TABLE_FACILITIES);
+        db.execSQL(SQL_CREATE_INDEX_ID);
+        db.execSQL(SQL_CREATE_INDEX_NAME);
 
         FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Filling stations database");
         fill(db);
