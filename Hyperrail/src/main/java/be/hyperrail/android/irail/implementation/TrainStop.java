@@ -41,10 +41,10 @@ public class TrainStop implements Serializable {
     private Duration arrivalDelay;
     private boolean arrivalCanceled;
 
-    private final String semanticDepartureConnection;
+    private final String departureSemanticId;
     private final OccupancyLevel occupancyLevel;
 
-    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
+    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureSemanticId, OccupancyLevel occupancyLevel) {
         this.station = station;
         this.destination = destination;
         this.isPlatformNormal = isPlatformNormal;
@@ -55,7 +55,7 @@ public class TrainStop implements Serializable {
         this.arrivalCanceled = departureCanceled;
         this.train = train;
         this.hasLeft = hasLeft;
-        this.semanticDepartureConnection = semanticDepartureConnection;
+        this.departureSemanticId = departureSemanticId;
         this.occupancyLevel = occupancyLevel;
         this.arrivalTime = arrivalTime;
         this.arrivalDelay = arrivalDelay;
@@ -144,8 +144,8 @@ public class TrainStop implements Serializable {
         this.hasLeft = hasLeft;
     }
 
-    public String getSemanticDepartureConnection() {
-        return semanticDepartureConnection;
+    public String getDepartureSemanticId() {
+        return departureSemanticId;
     }
 
     public OccupancyLevel getOccupancyLevel() {

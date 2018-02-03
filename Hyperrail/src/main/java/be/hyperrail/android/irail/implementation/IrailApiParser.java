@@ -133,6 +133,7 @@ public class IrailApiParser implements IrailParser {
                             viaDeparture.getString("vehicle"),
                             stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")), null);
                 } else {
+                    // TODO: walking should be handled better. Allow other methods of transportation
                     trains[i + 1] = new TrainStub(
                             "WALK",
                             null, null);

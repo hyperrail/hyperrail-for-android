@@ -26,7 +26,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.perf.metrics.AddTrace;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -77,8 +76,8 @@ public class IrailApi implements IrailDataProvider {
         this.parser = parser;
         this.stationProvider = stationProvider;
         this.requestQueue = Volley.newRequestQueue(context);
-        this.requestPolicy = new DefaultRetryPolicy(10000,
-                3,
+        this.requestPolicy = new DefaultRetryPolicy(3000,
+                4,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
     }
 
@@ -115,7 +114,6 @@ public class IrailApi implements IrailDataProvider {
     }
 
     @Override
-    @AddTrace(name = "iRailGetroute")
     public void getRoutes(final Station from, final Station to, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
                           final IRailSuccessResponseListener<RouteResult> successListener, final IRailErrorResponseListener<RouteResult> errorListener,
                           final Object tag) {
@@ -197,7 +195,6 @@ public class IrailApi implements IrailDataProvider {
     }
 
     @Override
-    @AddTrace(name = "iRailGetLiveboard")
     public void getLiveboard(Station station, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
                              final IRailSuccessResponseListener<LiveBoard> successListener, final IRailErrorResponseListener<LiveBoard> errorListener,
                              final Object tag) {

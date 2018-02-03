@@ -103,7 +103,7 @@ public class TrainstopContextMenu {
         final String mDepartureEtaText;
 
         if (this.mTrainStop != null) {
-            mDepartureConnection = mTrainStop.getSemanticDepartureConnection();
+            mDepartureConnection = mTrainStop.getDepartureSemanticId();
             mStationSemanticId = mTrainStop.getStation().getSemanticId();
             mVehicleSemanticId = mTrainStop.getTrain().getSemanticId();
             mDateTime = mTrainStop.getDepartureTime();
