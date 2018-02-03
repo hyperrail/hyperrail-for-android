@@ -53,6 +53,7 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteAppendHelper;
 import be.hyperrail.android.irail.implementation.RouteResult;
+import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.RouteSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.util.ErrorDialogFactory;
@@ -187,27 +188,31 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         api.abortAllQueries();
 
-        api.getRoutes(mSearchFrom, mSearchTo, mSearchDate, mSearchTimeType, new IRailSuccessResponseListener<RouteResult>() {
-                    @Override
-                    public void onSuccessResponse(RouteResult data, Object tag) {
-                        vRefreshLayout.setRefreshing(false);
-                        mRoutes = data;
-                        showData(mRoutes);
+        //TODO: pass this request to the activity instead of loose parameters
+        IrailRoutesRequest request = new IrailRoutesRequest(mSearchFrom, mSearchTo, mSearchTimeType, mSearchDate);
+        request.setCallback(new IRailSuccessResponseListener<RouteResult>() {
+                                @Override
+                                public void onSuccessResponse(RouteResult data, Object tag) {
+                                    vRefreshLayout.setRefreshing(false);
+                                    mRoutes = data;
+                                    showData(mRoutes);
 
-                        // Scroll past the load earlier item
-                        ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+                                    // Scroll past the load earlier item
+                                    ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
 
-                        initialLoadCompleted = true;
-                    }
-                }, new IRailErrorResponseListener<RouteResult>() {
-                    @Override
-                    public void onErrorResponse(Exception e, Object tag) {
-                        // only finish if we're loading new data
-                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                        ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, mRoutes == null);
-                    }
-                },
+                                    initialLoadCompleted = true;
+                                }
+                            }, new IRailErrorResponseListener() {
+                                @Override
+                                public void onErrorResponse(Exception e, Object tag) {
+                                    // only finish if we're loading new data
+                                    ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                                    ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, mRoutes == null);
+                                }
+                            },
                 null);
+
+        api.getRoutes(request);
     }
 
     public void loadNextRecyclerviewItems() {
@@ -240,7 +245,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
                 }
 
             }
-        }, new IRailErrorResponseListener<RouteResult>() {
+        }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);
@@ -274,7 +279,7 @@ public class RouteActivity extends RecyclerViewActivity<RouteResult> implements 
 
                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
-        }, new IRailErrorResponseListener<RouteResult>() {
+        }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, RouteActivity.this, false);

@@ -54,7 +54,6 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
@@ -103,7 +102,7 @@ public class IrailApi implements IrailDataProvider {
                 public void onSuccessResponse(RouteResult data, Object tag) {
                     for (Route r : data.getRoutes()) {
                         if (r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
-                          request.notifySuccessListeners(r);
+                            request.notifySuccessListeners(r);
                         }
                     }
                 }
@@ -128,7 +127,6 @@ public class IrailApi implements IrailDataProvider {
 
     public void getRoutes(final IrailRoutesRequest request) {
 
-        final DateTime finalDateTime = request.getSearchTime();
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
 
         DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
@@ -159,7 +157,7 @@ public class IrailApi implements IrailDataProvider {
                     public void onResponse(JSONObject response) {
                         RouteResult routeResult;
                         try {
-                            routeResult = parser.parseRouteResult(response, request.getOrigin(), request.getDestination(), finalDateTime, request.getTimeDefinition());
+                            routeResult = parser.parseRouteResult(response, request.getOrigin(), request.getDestination(), request.getSearchTime(), request.getTimeDefinition());
                         } catch (JSONException e) {
                             FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse routes", e.getMessage());
                             FirebaseCrash.report(e);
@@ -244,31 +242,32 @@ public class IrailApi implements IrailDataProvider {
         requestQueue.add(jsObjRequest);
     }
 
-    public void getLiveboardBefore(Station station, DateTime timeFilter, final RouteTimeDefinition timeFilterType,
-                                   final IRailSuccessResponseListener<LiveBoard> successListener, final IRailErrorResponseListener errorListener,
-                                   final Object tag) {
-        if (timeFilter == null) {
-            timeFilter = new DateTime();
+    public void getLiveboardBefore(@NonNull IrailLiveboardRequest... requests) {
+        for (IrailLiveboardRequest request :
+                requests) {
+            getLiveboardBefore(request);
         }
-        final DateTime finalTimeFilter = timeFilter;
-        IrailLiveboardRequest request = new IrailLiveboardRequest(station, timeFilterType, timeFilter.minusHours(1));
-        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+    }
+
+    public void getLiveboardBefore(final IrailLiveboardRequest request) {
+        final IrailLiveboardRequest actualRequest = new IrailLiveboardRequest(request.getStation(), request.getTimeDefinition(), request.getSearchTime().minusHours(1));
+        actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(LiveBoard data, Object tag) {
                 List<TrainStop> stops = new ArrayList<>();
                 for (TrainStop s : data.getStops()) {
-                    if (s.getDepartureTime().isBefore(finalTimeFilter)) {
+                    if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
                         stops.add(s);
                     }
                 }
-                successListener.onSuccessResponse(new LiveBoard(data, stops.toArray(new TrainStop[]{}), data.getSearchTime()), tag);
+                request.notifySuccessListeners(new LiveBoard(data, stops.toArray(new TrainStop[]{}), data.getSearchTime()));
             }
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(Exception e, Object tag) {
-                errorListener.onErrorResponse(e, tag);
+                request.notifyErrorListeners(e);
             }
-        }, tag);
+        }, actualRequest.getTag());
         getLiveboard(request);
     }
 
@@ -284,7 +283,7 @@ public class IrailApi implements IrailDataProvider {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
-                + "&id=" + request.getTrainStub().getId() + "&date=" + dateTimeformat.print(request.getSearchTime());
+                + "&id=" + request.getTrainId() + "&date=" + dateTimeformat.print(request.getSearchTime());
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -402,7 +401,7 @@ public class IrailApi implements IrailDataProvider {
             PostOccupancyTask t = new PostOccupancyTask(url, request);
             t.execute(payload.toString());
         } catch (Exception e) {
-           request.notifyErrorListeners(e);
+            request.notifyErrorListeners(e);
         }
     }
 

@@ -44,6 +44,7 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.persistence.TrainSuggestion;
@@ -181,14 +182,16 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
         vRefreshLayout.setRefreshing(true);
 
         IrailFactory.getDataProviderInstance().abortAllQueries();
-        IrailFactory.getDataProviderInstance().getTrain(mCurrentSearchQuery.getId(), mTrainDate, new IRailSuccessResponseListener<Train>() {
+        //TODO: pass this request to the activity instead of loose parameters
+        IrailTrainRequest request = new IrailTrainRequest(mCurrentSearchQuery.getId(),mTrainDate);
+        request.setCallback(new IRailSuccessResponseListener<Train>() {
             @Override
             public void onSuccessResponse(Train data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
                 mTrain = data;
                 showData(mTrain);
             }
-        }, new IRailErrorResponseListener<Train>() {
+        }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
@@ -197,6 +200,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
                 ErrorDialogFactory.showErrorDialog(e, TrainActivity.this, mTrain == null);
             }
         }, null);
+        IrailFactory.getDataProviderInstance().getTrain(request);
     }
 
     protected void showData(Train train) {

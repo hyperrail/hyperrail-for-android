@@ -19,7 +19,7 @@ import be.hyperrail.android.irail.implementation.Disturbance;
  */
 public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> {
 
-    IrailDisturbanceRequest(){
+    public IrailDisturbanceRequest(){
         super();
     }
 

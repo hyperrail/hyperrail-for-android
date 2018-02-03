@@ -32,6 +32,8 @@ public interface IrailDataProvider {
 
     void getLiveboard(@NonNull IrailLiveboardRequest... request);
 
+    void getLiveboardBefore(@NonNull IrailLiveboardRequest... request);
+
     void getRoutes(@NonNull IrailRoutesRequest... request);
 
     void getRoute(@NonNull IrailRouteRequest... request);

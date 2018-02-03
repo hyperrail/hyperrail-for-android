@@ -34,14 +34,6 @@ public interface IrailDataResponse<T> {
     T getData();
 
     /**
-     * Get the request which resulted in this response
-     *
-     * @return the request object
-     */
-    @NonNull
-    IrailRequest getRequest();
-
-    /**
      * Whether or not the request was successful.
      *
      * @return Whether or not the request was successful.

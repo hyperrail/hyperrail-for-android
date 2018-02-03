@@ -17,7 +17,6 @@ import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
-import be.hyperrail.android.irail.implementation.TrainStub;
 
 /**
  * A request for train data
@@ -25,7 +24,7 @@ import be.hyperrail.android.irail.implementation.TrainStub;
 public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailRequest<Train> {
 
     @NonNull
-    private final TrainStub trainStub;
+    private final String trainId;
 
     @NonNull
     private final DateTime searchTime;
@@ -33,41 +32,47 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     // Train IDs arent always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
 
     /**
-     * The departure station of this train
+     * The departure station of this train. Additional information for request history/favorites.
      */
     @Nullable
     private Station origin;
 
     /**
-     * The departure time at the departure station for this train
+     * The departure time at the departure station for this train. Additional information for request history/favorites.
      */
     @Nullable
     private DateTime departureTime;
 
     /**
+     * The direction of this train. Additional information for request history/favorites.
+     */
+    @Nullable
+    private Station direction;
+
+
+    /**
      * Create a request for train departures or arrivals in a given station
      *
-     * @param train      The train for which data should be retrieved
+     * @param trainId    The train for which data should be retrieved
      * @param searchTime The time for which should be searched
      */
-    public IrailTrainRequest(@NonNull TrainStub train, @NonNull DateTime searchTime) {
+    public IrailTrainRequest(@NonNull String trainId, @NonNull DateTime searchTime) {
         super();
-        this.trainStub = train;
-
+        this.trainId = trainId;
         this.searchTime = searchTime;
     }
 
     public IrailTrainRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        Station direction = null;
-        String id = jsonObject.getString("id");
 
         if (jsonObject.has("direction")) {
-            direction = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("direction"));
+            this.direction = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("direction"));
+        } else {
+            this.direction = null;
         }
 
         // TODO: ids should not be tightly coupled to irail
-        this.trainStub = new TrainStub(id, direction, "http://irail.be/vehicle/" + id);
+        this.trainId = jsonObject.getString("id");
 
         if (jsonObject.has("time")) {
             this.searchTime = new DateTime(jsonObject.getLong("time"));
@@ -86,9 +91,9 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
 
-        json.put("id", getTrainStub().getId());
-        if (getTrainStub().getDirection() != null) {
-            json.put("direction", getTrainStub().getDirection().getId());
+        json.put("id", getTrainId());
+        if (direction != null) {
+            json.put("direction", direction.getId());
         }
         if (this.getDepartureTime() != null) {
             json.put("departure_time", getDepartureTime().getMillis());
@@ -124,7 +129,7 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     }
 
     @NonNull
-    public TrainStub getTrainStub() {
-        return trainStub;
+    public String getTrainId() {
+        return trainId;
     }
 }

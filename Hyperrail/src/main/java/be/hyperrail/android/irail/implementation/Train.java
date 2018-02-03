@@ -59,7 +59,7 @@ public class Train extends TrainStub implements Serializable {
 
     public IrailDataResponse<Train> getTrain() {
         // override stub method
-        return new ApiResponse<>(this, request);
+        return new ApiResponse<>(this);
     }
 
     public double getLongitude() {

@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
@@ -19,9 +21,10 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.util.ArrayUtils;
 
-public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResult>, IRailErrorResponseListener<RouteResult> {
+public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResult>, IRailErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;
@@ -31,12 +34,12 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
     private RouteResult originalRouteResult;
 
     private IRailSuccessResponseListener<RouteResult> successResponseListener;
-    private IRailErrorResponseListener<RouteResult> errorResponseListener;
+    private IRailErrorResponseListener errorResponseListener;
 
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
     public void appendRouteResult(final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
-                                  final IRailErrorResponseListener<RouteResult> errorResponseListener) {
+                                  final IRailErrorResponseListener errorResponseListener) {
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
 
@@ -47,12 +50,13 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
         } else {
             lastSearchTime = routes.getSearchTime().plusHours(1);
         }
-
-        api.getRoutes(routes.getOrigin(), routes.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, TAG_APPEND);
+        IrailRoutesRequest request = new IrailRoutesRequest(routes.getOrigin(), routes.getDestination(), RouteTimeDefinition.DEPART, lastSearchTime);
+        request.setCallback(this, this, TAG_APPEND);
+        api.getRoutes(request);
     }
 
     public void prependRouteResult(final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
-                                   final IRailErrorResponseListener<RouteResult> errorResponseListener) {
+                                   final IRailErrorResponseListener errorResponseListener) {
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
 
@@ -64,7 +68,9 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
             lastSearchTime = routes.getSearchTime();
         }
 
-        api.getRoutes(routes.getOrigin(), routes.getDestination(), lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, TAG_PREPEND);
+        IrailRoutesRequest request = new IrailRoutesRequest(routes.getOrigin(), routes.getDestination(), RouteTimeDefinition.ARRIVE, lastSearchTime);
+        request.setCallback(this, this, TAG_PREPEND);
+        api.getRoutes(request);
     }
 
     @Override
@@ -79,7 +85,9 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
                     attempt++;
                     lastSearchTime = lastSearchTime.plusHours(2);
                     if (attempt < 12) {
-                        api.getRoutes(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime, RouteTimeDefinition.DEPART, this, this, tag);
+                        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.DEPART, lastSearchTime);
+                        request.setCallback(this, this, TAG_APPEND);
+                        api.getRoutes(request);
                     } else {
                         this.successResponseListener.onSuccessResponse(originalRouteResult, this);
                     }
@@ -94,7 +102,9 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
                     attempt++;
                     lastSearchTime = lastSearchTime.minusHours(2);
                     if (attempt < 12) {
-                        api.getRoutes(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), lastSearchTime, RouteTimeDefinition.ARRIVE, this, this, tag);
+                        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.ARRIVE, lastSearchTime);
+                        request.setCallback(this, this, TAG_PREPEND);
+                        api.getRoutes(request);
                     } else {
                         this.successResponseListener.onSuccessResponse(originalRouteResult, this);
                     }
@@ -104,7 +114,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
     }
 
     @Override
-    public void onErrorResponse(Exception e, Object tag) {
+    public void onErrorResponse(@NonNull Exception e, Object tag) {
         errorResponseListener.onErrorResponse(e, this);
     }
 }

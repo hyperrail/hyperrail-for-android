@@ -42,6 +42,7 @@ import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Disturbance;
+import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
@@ -124,14 +125,16 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
         vRefreshLayout.setRefreshing(true);
 
         IrailFactory.getDataProviderInstance().abortAllQueries();
-        IrailFactory.getDataProviderInstance().getDisturbances(new IRailSuccessResponseListener<Disturbance[]>() {
+
+        IrailDisturbanceRequest request = new IrailDisturbanceRequest();
+        request.setCallback(new IRailSuccessResponseListener<Disturbance[]>() {
             @Override
             public void onSuccessResponse(Disturbance[] data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
                 lastUpdate = new DateTime();
                 setData(data);
             }
-        }, new IRailErrorResponseListener<Disturbance[]>() {
+        }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
@@ -139,6 +142,7 @@ public class DisturbanceListFragment extends Fragment implements OnRecyclerItemC
                 ErrorDialogFactory.showErrorDialog(e, DisturbanceListFragment.this.getActivity(), false);
             }
         }, null);
+        IrailFactory.getDataProviderInstance().getDisturbances(request);
     }
 
     private void setData(Disturbance[] disturbances) {

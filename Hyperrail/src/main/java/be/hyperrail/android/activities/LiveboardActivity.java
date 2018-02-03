@@ -25,6 +25,7 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,6 +56,7 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.LiveboardAppendHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.StationSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
@@ -69,6 +71,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
     private LiveBoard mCurrentLiveboard;
     private Station mCurrentStation;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
 
     public static Intent createIntent(Context context, Station station) {
@@ -159,7 +162,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
             case R.id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this,mCurrentStation.getId());
+                    ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mCurrentStation.getId());
                     mShortcutInfoBuilder.setShortLabel(mCurrentStation.getLocalizedName());
 
                     mShortcutInfoBuilder.setLongLabel("Departures from " + mCurrentStation.getLocalizedName());
@@ -168,7 +171,10 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                     mShortcutInfoBuilder.setIntent(shortcutIntent);
                     ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
                     ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
-                    mShortcutManager.requestPinShortcut(mShortcutInfo, null);
+
+                    if (mShortcutManager != null) {
+                        mShortcutManager.requestPinShortcut(mShortcutInfo, null);
+                    }
                 } else {
                     Intent addIntent = new Intent();
                     addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
@@ -200,7 +206,6 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
     @Override
     protected void getData() {
-
         if (mSearchDate != null) {
             vWarningNotRealtime.setVisibility(View.VISIBLE);
             DateTimeFormatter df = DateTimeFormat.forPattern(getString(R.string.warning_not_realtime_datetime));
@@ -220,9 +225,11 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         api.abortAllQueries();
 
-        api.getLiveboard(mCurrentStation, mSearchDate, RouteTimeDefinition.DEPART, new IRailSuccessResponseListener<LiveBoard>() {
+        //TODO: pass this request to the activity instead of loose parameters
+        IrailLiveboardRequest request = new IrailLiveboardRequest(mCurrentStation, RouteTimeDefinition.DEPART, mSearchDate);
+        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
-            public void onSuccessResponse(LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
 
                 // store retrieved data
@@ -242,15 +249,15 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
             }
 
-        }, new IRailErrorResponseListener<LiveBoard>() {
+        }, new IRailErrorResponseListener() {
             @Override
-            public void onErrorResponse(Exception e, Object tag) {
+            public void onErrorResponse(@NonNull Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
                 // only finish if we're loading new data
                 ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, mCurrentLiveboard == null);
             }
         }, null);
-
+        api.getLiveboard(request);
     }
 
     @Override
@@ -263,7 +270,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         LiveboardAppendHelper helper = new LiveboardAppendHelper();
         helper.appendLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
             @Override
-            public void onSuccessResponse(LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
@@ -284,9 +291,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
                 }
 
             }
-        }, new IRailErrorResponseListener<LiveBoard>() {
+        }, new IRailErrorResponseListener() {
             @Override
-            public void onErrorResponse(Exception e, Object tag) {
+            public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
                 ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
             }
@@ -303,7 +310,7 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
         LiveboardAppendHelper helper = new LiveboardAppendHelper();
         helper.prependLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
             @Override
-            public void onSuccessResponse(LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     if (mCurrentLiveboard == null) {
@@ -319,9 +326,9 @@ public class LiveboardActivity extends RecyclerViewActivity<LiveBoard> implement
 
                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
-        }, new IRailErrorResponseListener<LiveBoard>() {
+        }, new IRailErrorResponseListener() {
             @Override
-            public void onErrorResponse(Exception e, Object tag) {
+            public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardActivity.this, false);
                 ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
