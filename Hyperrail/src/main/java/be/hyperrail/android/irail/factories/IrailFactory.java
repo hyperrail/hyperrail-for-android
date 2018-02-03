@@ -40,7 +40,7 @@ public class IrailFactory {
     public static void setup(Context applicationContext) {
         stationProviderInstance = new StationsDb(applicationContext);
         parserInstance = new IrailApiParser(IrailFactory.stationProviderInstance);
-        dataProviderInstance = new IrailApi(applicationContext, parserInstance, stationProviderInstance);
+        dataProviderInstance = new IrailApi(applicationContext, parserInstance);
     }
 
     private static IrailParser getParserInstance() {

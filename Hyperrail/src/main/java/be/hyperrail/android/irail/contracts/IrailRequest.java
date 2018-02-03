@@ -13,10 +13,12 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 /**
- * A request for API data
+ * A request for API data from an API providing IRail-like data.
+ *
+ * Requests can contain additional data fields which are not supported by all supported data sources. Data fields should be ignored when they are not supported by the API.
  */
 
-public interface IrailRequest extends Serializable {
+public interface IrailRequest<T> extends Serializable {
 
     /**
      * The date this search was created at
@@ -32,4 +34,13 @@ public interface IrailRequest extends Serializable {
      */
     JSONObject toJson() throws JSONException;
 
+    IRailSuccessResponseListener<T> getOnSuccessListener();
+    void notifySuccessListeners(T data);
+
+    IRailErrorResponseListener getOnErrorListener();
+    void notifyErrorListeners(Exception e);
+
+    void setCallback(IRailSuccessResponseListener<T> successResponseListener, IRailErrorResponseListener errorResponseListener, Object tag);
+
+    Object getTag();
 }

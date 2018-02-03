@@ -121,7 +121,7 @@ public class TrainstopContextMenu {
 
             // Occupancy + departure ETA
             if (mDepartureTransfer != null && mDepartureTransfer.getDepartingTrain() != null && !mDepartureTransfer.getDepartingTrain().getId().equals("WALK")) {
-                mDepartureConnection = mDepartureTransfer.getDepartureConnectionSemanticId();
+                mDepartureConnection = mDepartureTransfer.getDepartureSemanticId();
                 mStationSemanticId = mDepartureTransfer.getStation().getSemanticId();
                 mVehicleSemanticId = mDepartureTransfer.getDepartingTrain().getSemanticId();
                 mDateTime = mDepartureTransfer.getDepartureTime();

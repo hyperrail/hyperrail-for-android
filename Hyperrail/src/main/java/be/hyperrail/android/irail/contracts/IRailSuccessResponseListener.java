@@ -6,8 +6,10 @@
 
 package be.hyperrail.android.irail.contracts;
 
+import android.support.annotation.NonNull;
+
 public interface IRailSuccessResponseListener<T> {
 
-    void onSuccessResponse(T data, Object tag);
+    void onSuccessResponse(@NonNull T data, Object tag);
 
 }

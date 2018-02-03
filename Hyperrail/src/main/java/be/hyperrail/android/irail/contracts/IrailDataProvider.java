@@ -12,14 +12,9 @@
 
 package be.hyperrail.android.irail.contracts;
 
-import org.joda.time.DateTime;
+import android.support.annotation.NonNull;
 
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.implementation.Disturbance;
-import be.hyperrail.android.irail.implementation.LiveBoard;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteResult;
-import be.hyperrail.android.irail.implementation.Train;
+import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
@@ -27,49 +22,24 @@ import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 
 /**
- * Retrieve (realtime) data according from the iRail API, or any API which has identical endpoints.
+ * Retrieve (realtime) data according from the iRail API, or any API which provides similar data.
+ * Requests can contain additional data fields which are not supported by all supported data sources. Data fields should be ignored when they are not supported by the API.
  * See http://docs.irail.be/
  */
 public interface IrailDataProvider {
 
-    @Deprecated
-    void getRoutes(Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
+    void getDisturbances(@NonNull IrailDisturbanceRequest... request);
 
-    @Deprecated
-    void getRoutes(String from, String to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
+    void getLiveboard(@NonNull IrailLiveboardRequest... request);
 
-    @Deprecated
-    void getRoute(final String semanticId, Station from, Station to, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<Route> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
+    void getRoutes(@NonNull IrailRoutesRequest... request);
 
-    @Deprecated
-    void getLiveboard(String name, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<LiveBoard> successListener, IRailErrorResponseListener<LiveBoard> errorListener, Object tag);
+    void getRoute(@NonNull IrailRouteRequest... request);
 
-    @Deprecated
-    void getLiveboard(Station station, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<LiveBoard> successListener, IRailErrorResponseListener<LiveBoard> errorListener, Object tag);
+    void getTrain(@NonNull IrailTrainRequest... request);
 
-    @Deprecated
-    void getLiveboardBefore(Station station, DateTime timeFilter, RouteTimeDefinition timeFilterType, IRailSuccessResponseListener<LiveBoard> successListener, IRailErrorResponseListener<LiveBoard> errorListener, Object tag);
-
-    @Deprecated
-    void getTrain(String id, IRailSuccessResponseListener<Train> successListener, IRailErrorResponseListener<Train> errorListener, Object tag);
-
-    @Deprecated
-    void getTrain(String id, DateTime day, IRailSuccessResponseListener<Train> successListener, IRailErrorResponseListener<Train> errorListener, Object tag);
-
-    void getDisturbances(IRailSuccessResponseListener<Disturbance[]> successListener, IRailErrorResponseListener<Disturbance[]> errorListener, Object tag);
-
-    @Deprecated
-    void postOccupancy(String departureConnection, String stationSemanticId, String vehicleSemanticId, DateTime date, OccupancyLevel occupancy, IRailSuccessResponseListener<Boolean> successListener, IRailErrorResponseListener<Boolean> errorListener, Object tag);
+    void postOccupancy(@NonNull IrailPostOccupancyRequest... request);
 
     void abortAllQueries();
 
-    void getLiveboard(IrailLiveboardRequest request, IRailSuccessResponseListener<LiveBoard> successListener, IRailErrorResponseListener<LiveBoard> errorListener, Object tag);
-
-    void getRoutes(IrailRoutesRequest request, IRailSuccessResponseListener<RouteResult> successListener, IRailErrorResponseListener<RouteResult> errorListener, Object tag);
-
-    void getRoute(IrailRouteRequest request, IRailSuccessResponseListener<Route> successListener, IRailErrorResponseListener<Route> errorListener, Object tag);
-
-    void getTrain(IrailTrainRequest request, IRailSuccessResponseListener<Train> successListener, IRailErrorResponseListener<Train> errorListener, Object tag);
-
-    void postOccupancy(IrailPostOccupancyRequest request, IRailSuccessResponseListener<Boolean> successListener, IRailErrorResponseListener<Boolean> errorListener, Object tag);
 }

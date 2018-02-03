@@ -6,6 +6,8 @@
 
 package be.hyperrail.android.irail.implementation.requests;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,19 +18,27 @@ import be.hyperrail.android.irail.contracts.OccupancyLevel;
 /**
  * A request to post occupancy data
  */
-public class IrailPostOccupancyRequest extends IrailBaseRequest implements IrailRequest {
+public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> implements IrailRequest<Boolean> {
 
-
+    @NonNull
     private final String departureSemanticId;
+
+    @NonNull
     private final String stationSemanticId;
+
+    @NonNull
     private final String vehicleSemanticId;
+
+    @NonNull
     private final DateTime date;
+
+    @NonNull
     private final OccupancyLevel occupancy;
 
     /**
      * Create a request  to post occupancy data
      */
-    public IrailPostOccupancyRequest(String departureSemanticId, String stationSemanticId, String vehicleSemanticId, DateTime date, OccupancyLevel occupancy) {
+    public IrailPostOccupancyRequest(@NonNull String departureSemanticId, @NonNull String stationSemanticId, @NonNull String vehicleSemanticId, @NonNull DateTime date, @NonNull OccupancyLevel occupancy) {
         super();
 
         this.departureSemanticId = departureSemanticId;
@@ -41,7 +51,7 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest implements Irail
     /**
      * Deserialize JSON for a request to post occupancy data
      */
-    public IrailPostOccupancyRequest(JSONObject jsonObject) throws JSONException {
+    public IrailPostOccupancyRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
 
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
@@ -54,13 +64,37 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest implements Irail
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("departure_semantic_id", departureSemanticId);
-        json.put("station_semantic_id", stationSemanticId);
-        json.put("vehicle_semantic_id", vehicleSemanticId);
-        json.put("date", date.getMillis());
-        json.put("occupancy", occupancy.name());
+        json.put("departure_semantic_id", getDepartureSemanticId());
+        json.put("station_semantic_id", getStationSemanticId());
+        json.put("vehicle_semantic_id", getVehicleSemanticId());
+        json.put("date", getDate().getMillis());
+        json.put("occupancy", getOccupancy().name());
         return json;
     }
 
 
+    @NonNull
+    public String getDepartureSemanticId() {
+        return departureSemanticId;
+    }
+
+    @NonNull
+    public String getStationSemanticId() {
+        return stationSemanticId;
+    }
+
+    @NonNull
+    public String getVehicleSemanticId() {
+        return vehicleSemanticId;
+    }
+
+    @NonNull
+    public DateTime getDate() {
+        return date;
+    }
+
+    @NonNull
+    public OccupancyLevel getOccupancy() {
+        return occupancy;
+    }
 }

@@ -7,6 +7,8 @@
 
 package be.hyperrail.android.irail.implementation.requests;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,27 +17,36 @@ import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.Route;
 
 /**
  * A request for a route between two or more stations
  */
-public class IrailRouteRequest extends IrailBaseRequest implements IrailRequest {
+public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailRequest<Route> {
 
+    @NonNull
     private final Station origin;
+
+    @NonNull
     private final Station destination;
+
+    @NonNull
     private final RouteTimeDefinition timeDefinition;
+
+    @NonNull
     private final DateTime searchTime;
 
     /**
      * The (semantic) id for this route
      */
+    @NonNull
     private final String departureSemanticId;
 
     /**
      * Create a request to get a specific between two stations
      */
     // TODO: support vias
-    public IrailRouteRequest(String departureSemanticId, Station origin, Station destination, RouteTimeDefinition timeDefinition, DateTime searchTime) {
+    public IrailRouteRequest(@NonNull String departureSemanticId, @NonNull Station origin, @NonNull Station destination, @NonNull RouteTimeDefinition timeDefinition, @NonNull DateTime searchTime) {
         super();
         this.origin = origin;
         this.destination = destination;
@@ -44,7 +55,22 @@ public class IrailRouteRequest extends IrailBaseRequest implements IrailRequest 
         this.departureSemanticId = departureSemanticId;
     }
 
-    public IrailRouteRequest(JSONObject jsonObject) throws JSONException {
+    /**
+     * Create a request to load a specific route
+     *
+     * @param route The route for which fresh data should be retrieved
+     */
+    public IrailRouteRequest(@NonNull Route route) {
+        super();
+        this.origin = route.getDepartureStation();
+        this.destination = route.getArrivalStation();
+        this.timeDefinition = RouteTimeDefinition.DEPART;
+        this.searchTime = route.getDepartureTime();
+        this.departureSemanticId = route.getOrigin().getDepartureSemanticId();
+    }
+
+    public IrailRouteRequest(@NonNull JSONObject jsonObject) throws JSONException {
+        super(jsonObject);
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
         this.origin = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("from"));
         this.destination = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("to"));
@@ -65,27 +91,36 @@ public class IrailRouteRequest extends IrailBaseRequest implements IrailRequest 
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("departure_semantic_id", departureSemanticId);
-        json.put("time_definition", timeDefinition.name());
-        json.put("time", searchTime.getMillis());
-        json.put("from", origin.getId());
-        json.put("to", destination.getId());
+        json.put("departure_semantic_id", getDepartureSemanticId());
+        json.put("time_definition", getTimeDefinition().name());
+        json.put("time", getSearchTime().getMillis());
+        json.put("from", getOrigin().getId());
+        json.put("to", getDestination().getId());
         return json;
     }
 
+    @NonNull
     public Station getOrigin() {
         return origin;
     }
 
+    @NonNull
     public Station getDestination() {
         return destination;
     }
 
+    @NonNull
     public RouteTimeDefinition getTimeDefinition() {
         return timeDefinition;
     }
 
+    @NonNull
     public DateTime getSearchTime() {
         return searchTime;
+    }
+
+    @NonNull
+    public String getDepartureSemanticId() {
+        return departureSemanticId;
     }
 }

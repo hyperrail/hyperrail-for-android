@@ -28,10 +28,10 @@ public class ApiResponseTest {
 
     @Before
     public void setup() {
-        correct = new ApiResponse<>("ok", false, false, null);
-        cached = new ApiResponse<>("cached", true, false, null);
-        offline = new ApiResponse<>("offline", false, true, null);
-        filenotfound = new ApiResponse<>("fnf", false, false, new FileNotFoundException("File not found"));
+        correct = new ApiResponse<>("ok", false, false, null, request);
+        cached = new ApiResponse<>("cached", true, false, null, request);
+        offline = new ApiResponse<>("offline", false, true, null, request);
+        filenotfound = new ApiResponse<>("fnf", false, false, new FileNotFoundException("File not found"), request);
     }
 
     @Test

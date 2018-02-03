@@ -18,22 +18,31 @@
 
 package be.hyperrail.android.irail.implementation.requests;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.LiveBoard;
 
 /**
  * A request for a station liveboard
  */
-public class IrailLiveboardRequest extends IrailBaseRequest implements IrailRequest {
+public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implements IrailRequest<LiveBoard> {
 
+    @NonNull
     private final Station station;
+
+    @NonNull
     private final RouteTimeDefinition timeDefinition;
+
+    @NonNull
     private final DateTime searchTime;
 
     /**
@@ -43,14 +52,14 @@ public class IrailLiveboardRequest extends IrailBaseRequest implements IrailRequ
      * @param timeDefinition The kind of data which should be retrieved: arrivals or departures
      * @param searchTime     The time for which should be searched
      */
-    public IrailLiveboardRequest(Station station, RouteTimeDefinition timeDefinition, DateTime searchTime) {
+    public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @NonNull DateTime searchTime) {
         super();
         this.station = station;
         this.timeDefinition = timeDefinition;
         this.searchTime = searchTime;
     }
 
-    public IrailLiveboardRequest(JSONObject jsonObject) throws JSONException {
+    public IrailLiveboardRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
 
         this.station = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("id"));
@@ -75,15 +84,21 @@ public class IrailLiveboardRequest extends IrailBaseRequest implements IrailRequ
         return json;
     }
 
+    @NonNull
     public Station getStation() {
         return station;
     }
 
+    @NonNull
     public RouteTimeDefinition getTimeDefinition() {
         return timeDefinition;
     }
 
+    @NonNull
     public DateTime getSearchTime() {
         return searchTime;
     }
+
+    IRailSuccessResponseListener<LiveBoard> successResponseListener;
+
 }

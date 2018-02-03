@@ -12,8 +12,10 @@
 
 package be.hyperrail.android.irail.contracts;
 
-public interface IRailErrorResponseListener<T> {
+import android.support.annotation.NonNull;
 
-    void onErrorResponse(Exception e, Object tag);
+public interface IRailErrorResponseListener {
+
+    void onErrorResponse(@NonNull Exception e, Object tag);
 
 }
