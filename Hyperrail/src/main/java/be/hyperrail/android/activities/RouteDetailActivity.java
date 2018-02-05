@@ -32,10 +32,12 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 
 import static be.hyperrail.android.R.string.warning_not_realtime_datetime;
 
@@ -103,7 +105,7 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
                             (DateTime) ((Bundle) object).getSerializable("date"));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(RouteDetailActivity.this, ((Transfer) object).getStation());
+                    i = LiveboardActivity.createIntent(RouteDetailActivity.this, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART, null));
                 }
                 startActivity(i);
             }

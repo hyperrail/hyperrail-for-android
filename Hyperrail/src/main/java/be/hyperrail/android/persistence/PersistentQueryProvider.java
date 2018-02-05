@@ -22,6 +22,7 @@ import com.google.firebase.crash.FirebaseCrash;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +40,7 @@ import static be.hyperrail.android.persistence.SuggestionType.LIST;
  * Store data about recent and favorite searches as json object in preferences.
  * For code-duplication reasons, all data is stored as a RouteSuggestion. Stations are stored as a query from the station, with an empty string as destination.
  */
-public class PersistentQueryProvider {
+public class PersistentQueryProvider implements Serializable {
 
     /**
      * Name of the preferences file

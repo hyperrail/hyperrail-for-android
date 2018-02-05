@@ -8,6 +8,7 @@
 package be.hyperrail.android.irail.implementation.requests;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -33,14 +34,14 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     @NonNull
     private final RouteTimeDefinition timeDefinition;
 
-    @NonNull
+    @Nullable
     private final DateTime searchTime;
 
     /**
      * Create a request to search routes between two stations
      */
     // TODO: support vias
-    public IrailRoutesRequest(@NonNull Station origin, @NonNull Station destination, @NonNull RouteTimeDefinition timeDefinition, @NonNull DateTime searchTime) {
+    public IrailRoutesRequest(@NonNull Station origin, @NonNull Station destination, @NonNull RouteTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
         super();
         this.origin = origin;
         this.destination = destination;
@@ -66,7 +67,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
         if (jsonObject.has("time")) {
             this.searchTime = new DateTime(jsonObject.getLong("time"));
         } else {
-            this.searchTime = new DateTime();
+            this.searchTime = null;
         }
     }
 
@@ -74,7 +75,9 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
         json.put("time_definition", timeDefinition.name());
-        json.put("time", searchTime.getMillis());
+        if (searchTime != null) {
+            json.put("time", searchTime.getMillis());
+        }
         json.put("from", origin.getId());
         json.put("to", destination.getId());
         return json;
@@ -97,6 +100,13 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
 
     @NonNull
     public DateTime getSearchTime() {
-        return searchTime;
+        if (this.searchTime == null) {
+            return new DateTime(); // return now;
+        }
+        return searchTime; // return the actual query time
+    }
+
+    public boolean isNow(){
+        return (this.searchTime == null);
     }
 }

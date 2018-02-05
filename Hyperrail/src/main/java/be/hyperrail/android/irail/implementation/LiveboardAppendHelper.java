@@ -6,6 +6,8 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 
 import java.util.Arrays;
@@ -32,7 +34,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
 
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
-    public void appendLiveboard(final LiveBoard liveBoard, final IRailSuccessResponseListener<LiveBoard> successResponseListener,
+    public void appendLiveboard(@NonNull final LiveBoard liveBoard, final IRailSuccessResponseListener<LiveBoard> successResponseListener,
                                 final IRailErrorResponseListener errorResponseListener) {
 
         this.successResponseListener = successResponseListener;
@@ -51,7 +53,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         api.getLiveboard(request);
     }
 
-    public void prependLiveboard(final LiveBoard liveBoard, final IRailSuccessResponseListener<LiveBoard> successResponseListener,
+    public void prependLiveboard(@NonNull final LiveBoard liveBoard, final IRailSuccessResponseListener<LiveBoard> successResponseListener,
                                  final IRailErrorResponseListener errorResponseListener) {
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
@@ -69,7 +71,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
     }
 
     @Override
-    public void onSuccessResponse(LiveBoard data, Object tag) {
+    public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
 

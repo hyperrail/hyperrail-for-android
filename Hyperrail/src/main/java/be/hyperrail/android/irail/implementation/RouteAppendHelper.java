@@ -38,7 +38,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
 
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
-    public void appendRouteResult(final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
+    public void appendRouteResult(@NonNull final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
                                   final IRailErrorResponseListener errorResponseListener) {
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
@@ -55,7 +55,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
         api.getRoutes(request);
     }
 
-    public void prependRouteResult(final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
+    public void prependRouteResult(@NonNull final RouteResult routes, final IRailSuccessResponseListener<RouteResult> successResponseListener,
                                    final IRailErrorResponseListener errorResponseListener) {
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
@@ -74,7 +74,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
     }
 
     @Override
-    public void onSuccessResponse(RouteResult data, Object tag) {
+    public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
                 if (data.getRoutes().length > 0) {

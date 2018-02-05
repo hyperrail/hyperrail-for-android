@@ -39,11 +39,13 @@ import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.TrainStopCardAdapter;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
@@ -53,7 +55,7 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 /**
  * Activity to show a train
  */
-public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<be.hyperrail.android.irail.implementation.TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
+public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
 
     private Station mScrollToStation;
     private Train mTrain;
@@ -183,7 +185,7 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
         IrailFactory.getDataProviderInstance().abortAllQueries();
         //TODO: pass this request to the activity instead of loose parameters
-        IrailTrainRequest request = new IrailTrainRequest(mCurrentSearchQuery.getId(),mTrainDate);
+        IrailTrainRequest request = new IrailTrainRequest(mCurrentSearchQuery.getId(), mTrainDate);
         request.setCallback(new IRailSuccessResponseListener<Train>() {
             @Override
             public void onSuccessResponse(Train data, Object tag) {
@@ -259,8 +261,13 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, be.hyperrail.android.irail.implementation.TrainStop object) {
-        Intent i = LiveboardActivity.createIntent(getApplicationContext(), object.getStation(), object.getDepartureTime());
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
+        // TODO: trainstops should have a way to distinguish the first and last stop
+        DateTime queryTime = object.getArrivalTime();
+        if (queryTime == null) {
+            queryTime = object.getDepartureTime();
+        }
+        Intent i = LiveboardActivity.createIntent(getApplicationContext(), new IrailLiveboardRequest(object.getStation(), RouteTimeDefinition.DEPART, queryTime));
         startActivity(i);
     }
 

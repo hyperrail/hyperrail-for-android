@@ -60,8 +60,10 @@ import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.StationSuggestionsCardAdapter;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.StationSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
@@ -236,7 +238,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      */
     private void openLiveboard(Station station) {
         persistentQueryProvider.store(new Suggestion<>(new StationSuggestion(station), HISTORY));
-        Intent i = LiveboardActivity.createIntent(getActivity(), station);
+        Intent i = LiveboardActivity.createIntent(getActivity(), new IrailLiveboardRequest(station, RouteTimeDefinition.DEPART, null));
         startActivity(i);
     }
 

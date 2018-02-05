@@ -19,12 +19,12 @@
 package be.hyperrail.android.irail.implementation.requests;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
@@ -42,8 +42,8 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
     @NonNull
     private final RouteTimeDefinition timeDefinition;
 
-    @NonNull
-    private final DateTime searchTime;
+    @Nullable
+    private DateTime searchTime;
 
     /**
      * Create a request for train departures or arrivals in a given station
@@ -52,7 +52,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
      * @param timeDefinition The kind of data which should be retrieved: arrivals or departures
      * @param searchTime     The time for which should be searched
      */
-    public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @NonNull DateTime searchTime) {
+    public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
         super();
         this.station = station;
         this.timeDefinition = timeDefinition;
@@ -71,7 +71,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         if (jsonObject.has("time")) {
             this.searchTime = new DateTime(jsonObject.getLong("time"));
         } else {
-            this.searchTime = new DateTime();
+            this.searchTime = null;
         }
     }
 
@@ -79,7 +79,9 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
         json.put("time_definition", timeDefinition.name());
-        json.put("time", searchTime.getMillis());
+        if (searchTime != null) {
+            json.put("time", searchTime.getMillis());
+        }
         json.put("id", station.getId());
         return json;
     }
@@ -96,9 +98,18 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
 
     @NonNull
     public DateTime getSearchTime() {
-        return searchTime;
+        if (this.searchTime == null) {
+            return new DateTime(); // return now;
+        }
+        return searchTime; // return the actual query time
     }
 
-    IRailSuccessResponseListener<LiveBoard> successResponseListener;
+    public void setSearchTime(@Nullable DateTime searchTime) {
+        this.searchTime = searchTime;
+    }
+
+    public boolean isNow(){
+        return (this.searchTime == null);
+    }
 
 }

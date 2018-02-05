@@ -38,11 +38,13 @@ import be.hyperrail.android.activities.LiveboardActivity;
 import be.hyperrail.android.activities.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.util.DurationFormatter;
 
 public class RouteListItemLayout extends LinearLayout implements ListDataViewGroup<RouteResult, Route> {
@@ -200,7 +202,7 @@ public class RouteListItemLayout extends LinearLayout implements ListDataViewGro
                             (DateTime) ((Bundle) object).getSerializable("date"));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, ((Transfer) object).getStation());
+                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART,null));
                 }
                 context.startActivity(i);
             }

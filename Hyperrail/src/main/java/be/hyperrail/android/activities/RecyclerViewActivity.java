@@ -125,6 +125,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         mPersistentQueryProvider = new PersistentQueryProvider(this.getApplicationContext());
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
+        // -------- TODO: move to fragment
         // Initialize pull to refresh
         vRefreshLayout = findViewById(R.id.swiperefresh);
         vRefreshLayout.setOnRefreshListener(
@@ -140,12 +141,14 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
                     }
                 }
         );
+        // -------- END TODO: move to fragment
+
 
         // Enable the Up button
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
+        // -------- TODO: move to fragment
         // Set-up recyclerview
         vRecyclerView = findViewById(R.id.recyclerview_primary);
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -186,6 +189,8 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
         } else {
             showData(restoredItems);
         }
+        // -------- END TODO: move to fragment
+
     }
 
     /**
@@ -202,14 +207,17 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      *
      * @return recyclerview adapter
      */
+    @Deprecated
     abstract protected RecyclerView.Adapter getAdapter();
 
     @Override
+    @Deprecated
     public void loadNextRecyclerviewItems() {
 
     }
 
     @Override
+    @Deprecated
     public void loadPreviousRecyclerviewItems() {
 
     }
@@ -219,6 +227,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      *
      * @return Null in case of no items, else an array of items
      */
+    @Deprecated
     protected T getRestoredInstanceStateItems() {
         return null;
     }
@@ -265,11 +274,13 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
     /**
      * Get the data
      */
+    @Deprecated
     protected abstract void getData();
 
     /**
      * Get the initial data. Can be used to set some parameters before calling getData();
      */
+    @Deprecated
     protected void getInitialData() {
         getData();
     }
@@ -279,6 +290,7 @@ public abstract class RecyclerViewActivity<T> extends AppCompatActivity implemen
      *
      * @param data the data to show
      */
+    @Deprecated
     protected abstract void showData(T data);
 
     @Override

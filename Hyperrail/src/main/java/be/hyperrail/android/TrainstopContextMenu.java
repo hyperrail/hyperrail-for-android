@@ -30,10 +30,12 @@ import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
 import be.hyperrail.android.viewgroup.NotificationLayoutBuilder;
 
@@ -105,6 +107,7 @@ public class TrainstopContextMenu {
 
         boolean occupancyVisible = true;
 
+        // TODO: clean this mess up
         if (this.mTrainStop != null) {
             mDepartureConnection = mTrainStop.getDepartureSemanticId();
             mStationSemanticId = mTrainStop.getStation().getSemanticId();
@@ -165,7 +168,7 @@ public class TrainstopContextMenu {
             }
         }
 
-        if (occupancyVisible) {
+        if (occupancyVisible && mDepartureConnection != null) {
             vLowOccupancy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -284,10 +287,10 @@ public class TrainstopContextMenu {
                     } else {
                         if (mDepartureTransfer != null) {
                             mBuilder.setSubText("Transfer at  " + mDepartureTransfer.getStation().getLocalizedName());
-                            resultIntent = LiveboardActivity.createIntent(mContext, mDepartureTransfer.getStation(), mDepartureTransfer.getArrivalTime());
+                            resultIntent = LiveboardActivity.createIntent(mContext, new IrailLiveboardRequest(mDepartureTransfer.getStation(), RouteTimeDefinition.DEPART, mDepartureTransfer.getArrivalTime()));
                         } else {
                             mBuilder.setSubText("Transfer at  " + mArrivalTransfer.getStation().getLocalizedName());
-                            resultIntent = LiveboardActivity.createIntent(mContext, mArrivalTransfer.getStation(), mArrivalTransfer.getArrivalTime());
+                            resultIntent = LiveboardActivity.createIntent(mContext, new IrailLiveboardRequest(mArrivalTransfer.getStation(), RouteTimeDefinition.DEPART, mArrivalTransfer.getArrivalTime()));
                         }
                         mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mArrivalTransfer));
 

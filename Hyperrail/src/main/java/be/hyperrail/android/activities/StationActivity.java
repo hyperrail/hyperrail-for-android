@@ -33,8 +33,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.joda.time.LocalTime;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.db.StationFacilities;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 
 public class StationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -63,7 +65,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(LiveboardActivity.createIntent(StationActivity.this, mStation));
+                        startActivity(LiveboardActivity.createIntent(StationActivity.this, new IrailLiveboardRequest(mStation, RouteTimeDefinition.DEPART, null)));
                     }
                 }
         );
@@ -111,7 +113,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         mMap.setTrafficEnabled(false);
         mMap.setMinZoomPreference(10);
         mMap.setMaxZoomPreference(18);
-        mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(stationLocation,stationLocation));
+        mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(stationLocation, stationLocation));
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
