@@ -59,6 +59,7 @@ import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.RouteSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
@@ -361,7 +362,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         if (searchDateTime != null) {
             d = searchDateTime;
         }
-        Intent i = RouteActivity.createIntent(getActivity(), from, to, d, timedef);
+        Intent i = RouteActivity.createIntent(getActivity(), new IrailRoutesRequest(from, to, timedef, d));
         startActivity(i);
     }
 

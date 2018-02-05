@@ -22,12 +22,12 @@ import java.io.FileNotFoundException;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.TrainstopContextMenu;
-import be.hyperrail.android.activities.RecyclerViewActivity;
 import be.hyperrail.android.activities.TrainActivity;
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
+import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
@@ -41,7 +41,7 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 /**
  * A fragment for showing liveboard results
  */
-public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implements ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
+public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implements InfiniteScrollingDataSource, ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
 
     private LiveBoard mCurrentLiveboard;
 
@@ -213,10 +213,6 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     protected void showData(LiveBoard liveBoard) {
-        getActivity().setTitle(mRequest.getStation().getLocalizedName());
-        if (getActivity() instanceof RecyclerViewActivity) {
-            ((RecyclerViewActivity) getActivity()).setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
-        }
         ((LiveboardCardAdapter) vRecyclerView.getAdapter()).updateLiveboard(liveBoard);
     }
 

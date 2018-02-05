@@ -72,7 +72,9 @@ public class LiveboardActivity extends ResultActivity {
 
         super.onCreate(savedInstanceState);
 
+        // Title and subtitle belong to the activity, and are therefore a responsibility of this class
         setTitle(mRequest.getStation().getLocalizedName());
+        setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
 
         fragment = new LiveboardFragment();
         fragment.setRequest(mRequest);
@@ -105,6 +107,7 @@ public class LiveboardActivity extends ResultActivity {
 
     @Override
     public void onDateTimePicked(DateTime date) {
+        setSubTitle(date == null ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
         fragment.onDateTimePicked(date);
     }
 

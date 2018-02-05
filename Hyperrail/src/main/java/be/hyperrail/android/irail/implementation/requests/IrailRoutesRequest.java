@@ -35,7 +35,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     private final RouteTimeDefinition timeDefinition;
 
     @Nullable
-    private final DateTime searchTime;
+    private DateTime searchTime;
 
     /**
      * Create a request to search routes between two stations
@@ -106,7 +106,12 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
         return searchTime; // return the actual query time
     }
 
+    public void setSearchTime(@Nullable DateTime searchTime) {
+        this.searchTime = searchTime;
+    }
+
     public boolean isNow(){
         return (this.searchTime == null);
     }
+
 }
