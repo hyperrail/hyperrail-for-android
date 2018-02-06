@@ -138,7 +138,9 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         // 2 || 3: nearby before suggestions
         mNearbyOnTop = (order == 2 || order == 3);
 
-        persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
+        persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());
+        activeSuggestionsUpdateTask = new UpdateSuggestionsTask(this);
+        activeSuggestionsUpdateTask.execute(persistentQueryProvider);
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -219,12 +221,12 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         super.onStart();
         mGoogleApiClient.connect();
 
-        if (activeSuggestionsUpdateTask != null){
+        // If not pending or running, start a new task
+        if (activeSuggestionsUpdateTask.getStatus() == AsyncTask.Status.FINISHED) {
             activeSuggestionsUpdateTask.cancel(true);
+            activeSuggestionsUpdateTask = new UpdateSuggestionsTask(this);
+            activeSuggestionsUpdateTask.execute(persistentQueryProvider);
         }
-
-        activeSuggestionsUpdateTask = new UpdateSuggestionsTask(this);
-        activeSuggestionsUpdateTask.execute(persistentQueryProvider);
     }
 
     /**

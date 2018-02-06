@@ -59,9 +59,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     private final Context context;
 
-    public StationsDb(Context applicationContext) {
-        super(applicationContext, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = applicationContext;
+    public StationsDb(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     /**
@@ -326,7 +326,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+        
 
         stationsOrderedBySizeCache = stations;
 
@@ -339,8 +339,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     @Override
     @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
     public Station[] getStationsByNameOrderBySize(String name) {
-        name = cleanAccents(name);
         SQLiteDatabase db = this.getReadableDatabase();
+        name = cleanAccents(name);
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 new String[]{
@@ -364,7 +364,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+        
         return stations;
     }
 
@@ -415,7 +415,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+        
         return stations;
     }
 
@@ -457,7 +457,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] stations = loadStationCursor(c);
 
         c.close();
-        db.close();
+        
 
         if (stations == null) {
             return null;
@@ -498,9 +498,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     @Override
     @AddTrace(name = "StationsDb.getStationById")
     public Station getStationById(String id) {
-
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 new String[]{
@@ -525,7 +523,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        db.close();
+        
 
         if (results == null) {
             return null;
@@ -540,8 +538,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     @Override
     @AddTrace(name = "StationsDb.getStationByName")
     public Station getStationByName(String name) {
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
         String wcName = name.replaceAll("[^A-Za-z]", "%");
@@ -569,7 +566,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         if (c.getCount() < 1) {
 
             c.close();
-            db.close();
+            
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/") - 1);
@@ -588,7 +585,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        db.close();
+        
 
         if (results == null) {
             return null;
@@ -598,9 +595,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     }
 
     public StationFacilities getStationFacilitiesById(String id) {
-
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationFacilityColumns.TABLE_NAME,
                 new String[]{
@@ -649,13 +644,13 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         if (c.getCount() == 0) {
             c.close();
-            db.close();
+            
             return null;
         }
 
         StationFacilities result = loadFacilitiesCursor(c);
         c.close();
-        db.close();
+        
         return result;
 
     }

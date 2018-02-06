@@ -157,4 +157,16 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     public Station getDirection() {
         return mTrainDirection;
     }
+
+    public void setDirection(Station direction) {
+        mTrainDirection = direction;
+    }
+
+    @Override
+    public boolean equalsIgnoringTime(IrailRequest other) {
+        if (!(other instanceof IrailTrainRequest)) {
+            return false;
+        }
+        return getTrainId().equals(((IrailTrainRequest) other).getTrainId());
+    }
 }

@@ -97,17 +97,18 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
         this.searchTime = searchTime;
     }
 
-    public boolean isNow(){
+    public boolean isNow() {
         return (this.searchTime == null);
     }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof IrailRouteRequest)) {
+        if (!(o instanceof IrailRoutesRequest)) {
             return false;
         }
 
-        IrailRouteRequest other = (IrailRouteRequest) o;
-        return (getOrigin().equals(other.getOrigin()) && getDestination().equals(other.getDestination()) && getTimeDefinition().equals(other.getTimeDefinition()) && getSearchTime().equals(other.getSearchTime()));
+        IrailRoutesRequest other = (IrailRoutesRequest) o;
+        return (getOrigin().equals(other.getOrigin()) && getDestination().equals(other.getDestination()) && getTimeDefinition().equals(other.getTimeDefinition()) && (searchTime == other.searchTime));
     }
 
     @Override
@@ -120,5 +121,15 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
         return getOrigin().equals(other.getOrigin()) ?
                 getDestination().getLocalizedName().compareTo(other.getDestination().getLocalizedName()) :
                 getOrigin().getLocalizedName().compareTo(other.getOrigin().getLocalizedName());
+    }
+
+    @Override
+    public boolean equalsIgnoringTime(IrailRequest other) {
+        if (!(other instanceof IrailRoutesRequest)) {
+            return false;
+        }
+
+        IrailRoutesRequest o = (IrailRoutesRequest) other;
+        return getOrigin().equals(o.getOrigin()) && getDestination().equals(o.getDestination());
     }
 }

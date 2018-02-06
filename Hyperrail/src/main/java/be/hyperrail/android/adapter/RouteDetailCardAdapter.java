@@ -12,7 +12,7 @@
 
 package be.hyperrail.android.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,13 +46,15 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     private final Route route;
 
-    private final Context context;
+    // We need to keep the context as an activity in order to be able to open the contextmenu here
+    // TODO: check if this "deep nesting" can be prevented
+    private final Activity context;
     private OnRecyclerItemClickListener<Object> listener;
 
     private final int VIEW_TYPE_TRANSFER = 0;
     private final int VIEW_TYPE_TRAIN = 1;
 
-    public RouteDetailCardAdapter(Context context, Route route, boolean embedded) {
+    public RouteDetailCardAdapter(Activity context, Route route, boolean embedded) {
         this.context = context;
         this.route = route;
         this.embedded = embedded;

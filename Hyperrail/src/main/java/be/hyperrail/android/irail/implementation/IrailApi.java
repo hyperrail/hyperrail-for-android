@@ -54,6 +54,7 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
@@ -75,9 +76,9 @@ public class IrailApi implements IrailDataProvider {
     private static final String UA = "HyperRail for Android - " + BuildConfig.VERSION_NAME;
     private final RetryPolicy requestPolicy;
 
-    public IrailApi(Context context, IrailParser parser) {
+    public IrailApi(Context context) {
         this.context = context;
-        this.parser = parser;
+        this.parser = new IrailApiParser(IrailFactory.getStationsProviderInstance());
         this.requestQueue = Volley.newRequestQueue(context);
         this.requestPolicy = new DefaultRetryPolicy(3000,
                 4,

@@ -43,4 +43,11 @@ public interface IrailRequest<T> extends Serializable, Comparable<IrailRequest> 
     void setCallback(IRailSuccessResponseListener<T> successResponseListener, IRailErrorResponseListener errorResponseListener, Object tag);
 
     Object getTag();
+
+    /**
+     * Check if this object equals another when ignoring all extra and time related fields
+     * @param other
+     * @return
+     */
+    boolean equalsIgnoringTime(IrailRequest other);
 }

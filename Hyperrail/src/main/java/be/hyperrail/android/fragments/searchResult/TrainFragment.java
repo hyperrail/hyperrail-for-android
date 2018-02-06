@@ -4,18 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package be.hyperrail.android.fragments.searchResult;
 
 import android.content.Intent;
@@ -32,18 +20,23 @@ import org.joda.time.DateTime;
 import be.hyperrail.android.R;
 import be.hyperrail.android.TrainstopContextMenu;
 import be.hyperrail.android.activities.searchResult.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.TrainStopCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
+import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.persistence.PersistentQueryProvider;
+import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
@@ -132,6 +125,15 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
         getActivity().setTitle(train.getName() + " " + train.getDirection().getLocalizedName());
 
         mRecyclerviewAdapter.updateTrain(train);
+        mRequest.setOrigin(train.getStops()[0].getStation());
+        mRequest.setDirection(train.getDirection());
+
+        // Update the request in the activity, so additional information will be stored when marking it as favorite
+        if (getActivity() instanceof TrainActivity) {
+            ((TrainActivity) getActivity()).setRequest(mRequest);
+        }
+
+        PersistentQueryProvider.getInstance(getActivity()).store(new Suggestion<IrailRequest>(mRequest, SuggestionType.HISTORY));
 
         if (!mRequest.isNow()) {
             int i = train.getStopnumberForDepartureTime(mRequest.getSearchTime());

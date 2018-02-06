@@ -12,6 +12,7 @@
 
 package be.hyperrail.android.viewgroup;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -187,7 +188,8 @@ public class RouteListItemLayout extends LinearLayout implements ListDataViewGro
             vAlertsText.setVisibility(View.GONE);
         }
 
-        RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);
+        // The initial call from an activity to the adapter responsible for this layout should pass the context in an activity!
+        RouteDetailCardAdapter adapter = new RouteDetailCardAdapter((Activity) context, route, true);
 
         // Launch intents to view details / click through
         adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
@@ -202,7 +204,7 @@ public class RouteListItemLayout extends LinearLayout implements ListDataViewGro
                             ));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART,null));
+                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART, null));
                 }
                 context.startActivity(i);
             }

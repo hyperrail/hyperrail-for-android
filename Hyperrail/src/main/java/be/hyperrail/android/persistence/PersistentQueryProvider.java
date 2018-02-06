@@ -6,7 +6,6 @@
 
 package be.hyperrail.android.persistence;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -85,11 +84,19 @@ public class PersistentQueryProvider implements Serializable {
     /**
      * Limit the amount of stored items per tag for performance reasons
      */
-    private static final int MAX_STORED = 64;
+    private static final int MAX_STORED = 8;
 
-    @SuppressLint("ApplySharedPref")
-    public PersistentQueryProvider(Context context) {
+    private PersistentQueryProvider(Context context) {
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    private static PersistentQueryProvider mInstance;
+
+    public static PersistentQueryProvider getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new PersistentQueryProvider(context);
+        }
+        return mInstance;
     }
 
     /**
@@ -316,22 +323,22 @@ public class PersistentQueryProvider implements Serializable {
     }
 
     public <T extends IrailRequest> boolean isFavorite(T toCheck) {
-
+        // TODO: reduce code duplication
         if (toCheck.getClass() == IrailRoutesRequest.class) {
             for (Suggestion<IrailRoutesRequest> favorite : getRoutes(FAVORITE)) {
-                if (toCheck.equals(favorite.getData())) {
+                if (toCheck.equalsIgnoringTime(favorite.getData())) {
                     return true;
                 }
             }
         } else if (toCheck.getClass() == IrailLiveboardRequest.class) {
             for (Suggestion<IrailLiveboardRequest> favorite : getStations(FAVORITE)) {
-                if (toCheck.equals(favorite.getData())) {
+                if (toCheck.equalsIgnoringTime(favorite.getData())) {
                     return true;
                 }
             }
         } else if (toCheck.getClass() == IrailTrainRequest.class) {
             for (Suggestion<IrailTrainRequest> favorite : getTrains(FAVORITE)) {
-                if (toCheck.equals(favorite.getData())) {
+                if (toCheck.equalsIgnoringTime(favorite.getData())) {
                     return true;
                 }
             }
@@ -512,11 +519,21 @@ public class PersistentQueryProvider implements Serializable {
      * @return The filtered collection
      */
     private <T extends IrailRequest> Set<String> removeFromPersistentSet(Set<String> collection, T remove) {
+        // TODO: fix method
+        // TODO: this will not work for trains - they will need a better way to compare
         Set<String> toBeRemoved = new HashSet<>();
+        JSONObject searchThisJson;
+        try {
+            searchThisJson = remove.toJson();
+            searchThisJson.remove("created_at");
+        } catch (JSONException exception) {
+            return collection;
+        }
         for (String entry : collection) {
             try {
                 JSONObject object = new JSONObject(entry);
-                if (remove.equals(object)) {
+                object.remove("created_at");
+                if (searchThisJson.equals(object)) {
                     toBeRemoved.add(entry);
                 }
             } catch (JSONException exception) {
@@ -540,7 +557,7 @@ public class PersistentQueryProvider implements Serializable {
         Set<Suggestion<T>> toBeRemoved = new HashSet<>();
         for (Suggestion<T> entry : collection) {
             for (Suggestion<T> removalEntry : remove) {
-                if (entry.getData().equals(removalEntry.getData())) {
+                if (entry.getData().equalsIgnoringTime(removalEntry.getData())) {
                     toBeRemoved.add(entry);
                 }
             }

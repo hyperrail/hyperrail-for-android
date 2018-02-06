@@ -23,6 +23,7 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.activities.ResultActivity;
 import be.hyperrail.android.fragments.searchResult.TrainFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
@@ -64,7 +65,7 @@ public class TrainActivity extends ResultActivity {
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         setTitle(R.string.title_train);
-        setSubTitle(mRequest.getTrainId());
+        setSubTitle(TrainStub.getTrainName(mRequest.getTrainId()));
     }
 
     @Override
@@ -155,5 +156,13 @@ public class TrainActivity extends ResultActivity {
         return mPersistentQueryProvider.isFavorite(mRequest);
     }
 
+    /**
+     * Update the request used for determining the activity title and favorite status
+     *
+     * @param request The new request
+     */
+    public void setRequest(IrailTrainRequest request) {
+        mRequest = request;
+    }
 }
 

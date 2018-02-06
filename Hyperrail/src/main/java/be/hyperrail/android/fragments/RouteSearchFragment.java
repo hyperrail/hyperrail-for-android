@@ -111,7 +111,9 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vDatetime = view.findViewById(R.id.input_datetime);
         vArriveDepart = view.findViewById(R.id.input_arrivedepart);
 
-        persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
+        persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());
+        activeSuggestionsUpdateTask = new LoadSuggestionsTask(this);
+        activeSuggestionsUpdateTask.execute(persistentQueryProvider);
 
         mSuggestionsRecyclerView = view.findViewById(R.id.recyclerview_primary);
         mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -274,12 +276,11 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     @Override
     public void onStart() {
         super.onStart();
-        if (activeSuggestionsUpdateTask != null){
+        if (activeSuggestionsUpdateTask.getStatus() == AsyncTask.Status.FINISHED) {
             activeSuggestionsUpdateTask.cancel(true);
+            activeSuggestionsUpdateTask = new LoadSuggestionsTask(this);
+            activeSuggestionsUpdateTask.execute(persistentQueryProvider);
         }
-
-        activeSuggestionsUpdateTask = new LoadSuggestionsTask(this);
-        activeSuggestionsUpdateTask.execute(persistentQueryProvider);
     }
 
     private void setSuggestions() {
@@ -369,7 +370,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         IrailRoutesRequest request = new IrailRoutesRequest(from, to, timedef, d);
         persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
 
-        Intent i = RouteActivity.createIntent(getActivity(),request);
+        Intent i = RouteActivity.createIntent(getActivity(), request);
         startActivity(i);
     }
 

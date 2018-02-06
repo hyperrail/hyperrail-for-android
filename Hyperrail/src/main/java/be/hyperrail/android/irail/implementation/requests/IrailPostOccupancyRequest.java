@@ -72,6 +72,13 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> impleme
         return json;
     }
 
+    @Override
+    public boolean equalsIgnoringTime(IrailRequest other) {
+        // Time is essential for this request
+        // Not supported
+        return false;
+    }
+
 
     @NonNull
     public String getDepartureSemanticId() {

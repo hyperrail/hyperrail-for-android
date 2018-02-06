@@ -74,6 +74,14 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         return json;
     }
 
+    @Override
+    public boolean equalsIgnoringTime(IrailRequest other) {
+        if (!(other instanceof IrailLiveboardRequest)){
+            return false;
+        }
+        return this.getStation().equals(((IrailLiveboardRequest) other).getStation());
+    }
+
     @NonNull
     public Station getStation() {
         return station;
@@ -107,7 +115,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         }
 
         IrailLiveboardRequest other = (IrailLiveboardRequest) o;
-        return (getStation().equals(other.getStation()) && getSearchTime().equals(other.getSearchTime()));
+        return (getStation().equals(other.getStation()) && searchTime == other.searchTime);
     }
 
     @Override

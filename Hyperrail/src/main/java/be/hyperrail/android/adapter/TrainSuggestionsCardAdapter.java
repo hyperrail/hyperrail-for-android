@@ -22,6 +22,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.List;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.Suggestion;
 
@@ -57,7 +58,7 @@ public class TrainSuggestionsCardAdapter extends RecyclerView.Adapter<TrainSugge
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
         final Suggestion<IrailTrainRequest> t = suggestedTrains.get(position);
-        String title = t.getData().getTrainId();
+        String title = TrainStub.getTrainName(t.getData().getTrainId());
         if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
             title += " - " + df.print(t.getData().getDepartureTime());

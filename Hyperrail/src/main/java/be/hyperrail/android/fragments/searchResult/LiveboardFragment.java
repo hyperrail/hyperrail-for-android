@@ -228,13 +228,13 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        Intent i = TrainActivity.createIntent(getActivity().getApplicationContext(), new IrailTrainRequest(object.getTrain().getId(), object.getDepartureTime()));
+        Intent i = TrainActivity.createIntent(getActivity(), new IrailTrainRequest(object.getTrain().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 
     @Override
     public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop object) {
-        (new TrainstopContextMenu(getActivity().getApplicationContext(), object)).show();
+        (new TrainstopContextMenu(getActivity(), object)).show();
     }
 
 }

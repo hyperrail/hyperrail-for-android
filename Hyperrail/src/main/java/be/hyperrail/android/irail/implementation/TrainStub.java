@@ -34,15 +34,14 @@ public class TrainStub implements Serializable {
 
     // Direction is required, since we need to display something
     public TrainStub(@NonNull String id, @NonNull Station direction, String uri) {
-        // TODO: null IDs should be disallowed once the old suggestion code has been removed
-        if (id != null) {
-            // TODO: all ids should have a correct prefix already, should not be tightly coupled to iRail
-            if (!id.startsWith("BE.NMBS.")) {
-                id = "BE.NMBS." + id;
-            }
 
-            this.id = id.toUpperCase();
+        // TODO: all ids should have a correct prefix already, should not be tightly coupled to iRail
+        if (!id.startsWith("BE.NMBS.")) {
+            id = "BE.NMBS." + id;
         }
+
+        this.id = id.toUpperCase();
+
         this.direction = direction;
         this.uri = uri;
     }
@@ -72,9 +71,12 @@ public class TrainStub implements Serializable {
      * @return Human-readable name
      */
     public String getName() {
-        return getType() + " " + getNumber();
+        return getTrainName(id);
     }
 
+    public static String getTrainName(String id){
+        return getTrainType(id) + " " + getTrainNumber(id);
+    }
     /**
      * ID without leading BE.NMBS, for example IC4516
      *
@@ -103,10 +105,13 @@ public class TrainStub implements Serializable {
      * @return The type of this train
      */
     public String getType() {
-        String rid = getReducedId();
+        return getTrainType(getReducedId());
+    }
+
+    public static String getTrainType(String id){
         // S trains are special
-        if (rid.startsWith("S")) {
-            return rid.substring(0, rid.length() - 4);
+        if (id.startsWith("S")) {
+            return id.substring(0, id.length() - 4);
         }
 
         String pattern = "(\\w+?)(\\d+)";
@@ -115,7 +120,7 @@ public class TrainStub implements Serializable {
         Pattern r = Pattern.compile(pattern);
 
         // Now create matcher object.
-        Matcher m = r.matcher(rid);
+        Matcher m = r.matcher(id);
         if (m.find()) {
             return m.group(1);
         }
@@ -128,10 +133,13 @@ public class TrainStub implements Serializable {
      * @return The number of this train
      */
     public String getNumber() {
-        String rid = getReducedId();
+        return getTrainNumber(getReducedId());
+    }
+
+    public static String getTrainNumber(String id){
         // S trains are special
-        if (rid.startsWith("S")) {
-            return rid.substring(rid.length() - 4);
+        if (id.startsWith("S")) {
+            return id.substring(id.length() - 4);
         }
 
         String pattern = "(\\w+?)(\\d+)";
@@ -140,7 +148,7 @@ public class TrainStub implements Serializable {
         Pattern r = Pattern.compile(pattern);
 
         // Now create matcher object.
-        Matcher m = r.matcher(rid);
+        Matcher m = r.matcher(id);
         if (m.find()) {
             return m.group(2);
         }

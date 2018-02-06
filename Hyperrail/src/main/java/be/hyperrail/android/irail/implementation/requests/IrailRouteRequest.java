@@ -135,4 +135,14 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
                 getDestination().compareTo(other.getDestination()) :
                 getOrigin().compareTo(other.getOrigin());
     }
+
+    @Override
+    public boolean equalsIgnoringTime(IrailRequest other) {
+        if (!(other instanceof IrailRouteRequest)) {
+            return false;
+        }
+        // Not really meaningful for this request type
+        IrailRouteRequest o = (IrailRouteRequest) other;
+        return getDepartureSemanticId().equals(o.getDepartureSemanticId()) && getOrigin().equals(o.getOrigin()) && getDestination().equals(o.getDestination());
+    }
 }

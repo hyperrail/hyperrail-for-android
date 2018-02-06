@@ -129,7 +129,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
 
     @Override
     public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop object) {
-        (new TrainstopContextMenu(getActivity().getApplicationContext(), object)).show();
+        (new TrainstopContextMenu(getActivity(), object)).show();
     }
 
     @Override

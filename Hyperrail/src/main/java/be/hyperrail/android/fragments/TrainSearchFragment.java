@@ -88,7 +88,7 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Create an instance of GoogleAPIClient.
-        persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
+        persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());
 
         recentTrainsRecyclerView = view.findViewById(R.id.recyclerview_primary);
 
@@ -134,13 +134,6 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("station", vTrainSearchField.getText().toString());
-    }
-
-    private void setSuggestions() {
-        if (recentTrainsRecyclerView != null && recentTrainsRecyclerView.getAdapter() != null && recentTrainsRecyclerView.getAdapter() instanceof TrainSuggestionsCardAdapter) {
-            TrainSuggestionsCardAdapter suggestionAdapter = (TrainSuggestionsCardAdapter) recentTrainsRecyclerView.getAdapter();
-            suggestionAdapter.setSuggestedTrains(persistentQueryProvider.getAllTrains());
-        }
     }
 
     /**

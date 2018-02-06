@@ -67,7 +67,7 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mPersistentQueryProvider = new PersistentQueryProvider(this.getApplicationContext());
+        mPersistentQueryProvider = PersistentQueryProvider.getInstance(this.getApplicationContext());
     }
 
     /**

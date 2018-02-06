@@ -11,7 +11,6 @@ import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -53,9 +52,9 @@ public class TrainstopContextMenu {
     private Route route;
     private TrainStop mTrainStop;
     private Transfer mArrivalTransfer;
-    private Context mContext;
+    private Activity mContext;
 
-    public TrainstopContextMenu(Context context, TrainStop stop) {
+    public TrainstopContextMenu(Activity context, TrainStop stop) {
         this(context);
         this.route = null;
         this.mTrainStop = stop;
@@ -63,7 +62,7 @@ public class TrainstopContextMenu {
         this.mDepartureTransfer = null;
     }
 
-    public TrainstopContextMenu(Context context, Transfer transfer, Route route) {
+    public TrainstopContextMenu(Activity context, Transfer transfer, Route route) {
         this(context);
         this.mArrivalTransfer = transfer;
         this.mDepartureTransfer = transfer;
@@ -71,7 +70,7 @@ public class TrainstopContextMenu {
         this.mTrainStop = null;
     }
 
-    public TrainstopContextMenu(Context context, Transfer departureTransfer, Transfer arrivalTransfer, Route route) {
+    public TrainstopContextMenu(Activity context, Transfer departureTransfer, Transfer arrivalTransfer, Route route) {
         this(context);
         this.mArrivalTransfer = arrivalTransfer;
         this.mDepartureTransfer = departureTransfer;
@@ -79,9 +78,9 @@ public class TrainstopContextMenu {
         this.mTrainStop = null;
     }
 
-    private TrainstopContextMenu(Context context) {
+    private TrainstopContextMenu(Activity context) {
         this.mContext = context;
-        this.mActivityView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
+        this.mActivityView = context.getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     public void show() {
