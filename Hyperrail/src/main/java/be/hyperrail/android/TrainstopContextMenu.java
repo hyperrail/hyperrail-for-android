@@ -37,6 +37,7 @@ import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.viewgroup.NotificationLayoutBuilder;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -282,7 +283,7 @@ public class TrainstopContextMenu {
                     if (mTrainStop != null) {
                         mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
                         mBuilder.setSubText("Train at  " + mTrainStop.getStation().getLocalizedName() + " towards " + mTrainStop.getTrain().getDirection().getLocalizedName());
-                        resultIntent = TrainActivity.createIntent(mContext, mTrainStop.getTrain(), mTrainStop.getStation(), mTrainStop.getDepartureTime());
+                        resultIntent = TrainActivity.createIntent(mContext, new IrailTrainRequest(mTrainStop.getTrain().getId(), mTrainStop.getDepartureTime()));
 
                     } else {
                         if (mDepartureTransfer != null) {

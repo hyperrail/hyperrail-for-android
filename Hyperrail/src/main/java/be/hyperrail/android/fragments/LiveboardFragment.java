@@ -36,6 +36,7 @@ import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.LiveboardAppendHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
@@ -219,10 +220,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        Intent i = TrainActivity.createIntent(getActivity().getApplicationContext(),
-                object.getTrain(),
-                mCurrentLiveboard,
-                object.getDepartureTime());
+        Intent i = TrainActivity.createIntent(getActivity().getApplicationContext(), new IrailTrainRequest(object.getTrain().getId(),object.getDepartureTime()));
         startActivity(i);
     }
 

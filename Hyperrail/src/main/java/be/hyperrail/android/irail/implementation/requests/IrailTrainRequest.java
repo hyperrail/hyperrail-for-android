@@ -26,8 +26,8 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     @NonNull
     private final String trainId;
 
-    @NonNull
-    private final DateTime searchTime;
+    @Nullable
+    private DateTime searchTime;
 
     // Train IDs arent always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
 
@@ -48,6 +48,7 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
      */
     @Nullable
     private Station direction;
+    private Station targetStation;
 
 
     /**
@@ -56,7 +57,8 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
      * @param trainId    The train for which data should be retrieved
      * @param searchTime The time for which should be searched
      */
-    public IrailTrainRequest(@NonNull String trainId, @NonNull DateTime searchTime) {
+    // TODO: support between stations, target scroll station as optional (display) parameters
+    public IrailTrainRequest(@NonNull String trainId, @Nullable DateTime searchTime) {
         super();
         this.trainId = trainId;
         this.searchTime = searchTime;
@@ -77,7 +79,7 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
         if (jsonObject.has("time")) {
             this.searchTime = new DateTime(jsonObject.getLong("time"));
         } else {
-            this.searchTime = new DateTime();
+            this.searchTime = null;
         }
 
         if (jsonObject.has("departure_time")) {
@@ -101,13 +103,26 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
         if (this.getOrigin() != null) {
             json.put("origin", getOrigin().getId());
         }
-        json.put("time", searchTime.getMillis());
+        if (this.searchTime != null) {
+            json.put("time", searchTime.getMillis());
+        }
         return json;
     }
 
     @NonNull
     public DateTime getSearchTime() {
+        if (searchTime == null) {
+            return new DateTime();
+        }
         return searchTime;
+    }
+
+    public boolean isNow() {
+        return searchTime == null;
+    }
+
+    public void setSearchTime(@Nullable DateTime searchTime) {
+        this.searchTime = searchTime;
     }
 
     @Nullable
@@ -131,5 +146,9 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     @NonNull
     public String getTrainId() {
         return trainId;
+    }
+
+    public Station getTargetStation() {
+        return targetStation;
     }
 }

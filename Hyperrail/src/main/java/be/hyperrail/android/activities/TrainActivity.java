@@ -26,106 +26,82 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.TrainstopContextMenu;
-import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
-import be.hyperrail.android.adapter.TrainStopCardAdapter;
-import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
+import be.hyperrail.android.fragments.TrainFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Train;
-import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.TrainStub;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.persistence.TrainSuggestion;
-import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * Activity to show a train
  */
-public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
+public class TrainActivity extends ResultActivity {
 
-    private Station mScrollToStation;
-    private Train mTrain;
-    private TrainStub mCurrentSearchQuery;
-    private DateTime mTrainDate;
+    private IrailTrainRequest mRequest;
+    private TrainFragment fragment;
 
-    public static Intent createIntent(Context context, TrainStub stub, DateTime day) {
+    public static Intent createIntent(Context context, IrailTrainRequest request) {
         Intent i = new Intent(context, TrainActivity.class);
-        i.putExtra("stub", stub);
-        i.putExtra("date", day);
-        return i;
-    }
-
-    public static Intent createIntent(Context context, TrainStub stub, Station currentStation, DateTime day) {
-        Intent i = createIntent(context, stub, day);
-        i.putExtra("currentStation", currentStation);
-        return i;
-    }
-
-    public static Intent createIntent(Context context, TrainStub stub, Station currentStation, Station destinationStation, DateTime day) {
-        Intent i = createIntent(context, stub, currentStation, day);
-        i.putExtra("destinationStation", destinationStation);
+        i.putExtra("request", request);
         return i;
     }
 
     public Intent createShortcutIntent() {
         Intent i = new Intent(this, TrainActivity.class);
         i.putExtra("shortcut", true);
-        i.putExtra("stub", mCurrentSearchQuery.getId());
+        i.putExtra("id", mRequest.getTrainId());
         return i;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("train")) {
-            this.mTrain = (Train) savedInstanceState.get("train");
-        }
 
         if (getIntent().hasExtra("shortcut")) {
-            mCurrentSearchQuery = new TrainStub(getIntent().getStringExtra("stub"), null, null);
+            mRequest = new IrailTrainRequest(getIntent().getStringExtra("id"), null);
         } else {
-            mCurrentSearchQuery = (TrainStub) getIntent().getSerializableExtra("stub");
+            mRequest = (IrailTrainRequest) getIntent().getSerializableExtra("request");
         }
 
         super.onCreate(savedInstanceState);
+
+        fragment = new TrainFragment();
+        fragment.setRequest(mRequest);
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+
         setTitle(R.string.title_train);
-        if (mTrain == null) {
-            setSubTitle(mCurrentSearchQuery.getName());
-        }
+        setSubTitle(mRequest.getTrainId());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_shortcut) {
             Intent shortcutIntent = this.createShortcutIntent();
+            // TODO: replace train ID
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mCurrentSearchQuery.getName());
-                mShortcutInfoBuilder.setShortLabel(mCurrentSearchQuery.getName());
+                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getTrainId());
+                mShortcutInfoBuilder.setShortLabel(mRequest.getTrainId());
 
-                mShortcutInfoBuilder.setLongLabel("Train " + mCurrentSearchQuery.getName());
+                mShortcutInfoBuilder.setLongLabel("Train " + mRequest.getTrainId());
                 mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_shortcut_train));
                 shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                 mShortcutInfoBuilder.setIntent(shortcutIntent);
                 ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
                 ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
-                mShortcutManager.requestPinShortcut(mShortcutInfo, null);
+                if (mShortcutManager != null) {
+                    mShortcutManager.requestPinShortcut(mShortcutInfo, null);
+                }
             } else {
                 Intent addIntent = new Intent();
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mCurrentSearchQuery.getName());
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mRequest.getTrainId());
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_shortcut_train));
                 addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
                 getApplicationContext().sendBroadcast(addIntent);
@@ -138,19 +114,8 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("train", mTrain);
-    }
-
-    @Override
-    protected Train getRestoredInstanceStateItems() {
-        return mTrain;
-    }
-
-    @Override
     protected int getLayout() {
-        return R.layout.activity_train;
+        return R.layout.activity_result;
     }
 
     @Override
@@ -159,68 +124,8 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     }
 
     @Override
-    protected RecyclerView.Adapter getAdapter() {
-        return new TrainStopCardAdapter(this, null);
-    }
-
-    @Override
-    protected void getInitialData() {
-        // which station should we scroll to?
-        mScrollToStation = null;
-        if (getIntent().hasExtra("currentStation")) {
-            mScrollToStation = (Station) getIntent().getSerializableExtra("currentStation");
-        }
-
-        if (getIntent().hasExtra("date")) {
-            mTrainDate = (DateTime) getIntent().getSerializableExtra("date");
-        } else {
-            mTrainDate = new DateTime();
-        }
-
-        getData();
-    }
-
-    protected void getData() {
-        vRefreshLayout.setRefreshing(true);
-
-        IrailFactory.getDataProviderInstance().abortAllQueries();
-        //TODO: pass this request to the activity instead of loose parameters
-        IrailTrainRequest request = new IrailTrainRequest(mCurrentSearchQuery.getId(), mTrainDate);
-        request.setCallback(new IRailSuccessResponseListener<Train>() {
-            @Override
-            public void onSuccessResponse(Train data, Object tag) {
-                vRefreshLayout.setRefreshing(false);
-                mTrain = data;
-                showData(mTrain);
-            }
-        }, new IRailErrorResponseListener() {
-            @Override
-            public void onErrorResponse(Exception e, Object tag) {
-                vRefreshLayout.setRefreshing(false);
-
-                // only finish if we're loading new data
-                ErrorDialogFactory.showErrorDialog(e, TrainActivity.this, mTrain == null);
-            }
-        }, null);
-        IrailFactory.getDataProviderInstance().getTrain(request);
-    }
-
-    protected void showData(Train train) {
-        setSubTitle(train.getName() + " " + train.getDirection().getLocalizedName());
-
-        TrainStopCardAdapter adapter = new TrainStopCardAdapter(this, train);
-        vRecyclerView.setAdapter(adapter);
-        if (mScrollToStation != null) {
-            int i = train.getStopNumberForStation(mScrollToStation);
-            if (i >= 0) {
-                vRecyclerView.scrollToPosition(i);
-
-                // unset this value. On next refresh, show everything
-                mScrollToStation = null;
-            }
-        }
-        adapter.setOnItemClickListener(this);
-        adapter.setOnItemLongClickListener(this);
+    public void onDateTimePicked(DateTime date) {
+        fragment.onDateTimePicked(date);
     }
 
     @Override
@@ -232,7 +137,8 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
     @Override
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQueryProvider.store(new Suggestion<>(new TrainSuggestion(this.mTrain, this.mTrain.getStops()[0].getStation(), this.mTrain.getStops()[0].getDepartureTime()), SuggestionType.FAVORITE));
+            //noinspection ConstantConditions
+            mPersistentQueryProvider.store(new Suggestion<>(new TrainSuggestion(new TrainStub(mRequest.getTrainId(), null, "")), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -242,7 +148,8 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
                     })
                     .show();
         } else {
-            mPersistentQueryProvider.delete(new Suggestion<>(new TrainSuggestion(this.mTrain), SuggestionType.FAVORITE));
+            //noinspection ConstantConditions
+            mPersistentQueryProvider.delete(new Suggestion<>(new TrainSuggestion(new TrainStub(mRequest.getTrainId(), null, "")), SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -257,23 +164,9 @@ public class TrainActivity extends RecyclerViewActivity<Train> implements OnRecy
 
     @Override
     public boolean isFavorite() {
-        return mPersistentQueryProvider.isFavorite(new TrainSuggestion(this.mCurrentSearchQuery));
+        //noinspection ConstantConditions
+        return mPersistentQueryProvider.isFavorite(new TrainSuggestion(new TrainStub(mRequest.getTrainId(), null, "")));
     }
 
-    @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        // TODO: trainstops should have a way to distinguish the first and last stop
-        DateTime queryTime = object.getArrivalTime();
-        if (queryTime == null) {
-            queryTime = object.getDepartureTime();
-        }
-        Intent i = LiveboardActivity.createIntent(getApplicationContext(), new IrailLiveboardRequest(object.getStation(), RouteTimeDefinition.DEPART, queryTime));
-        startActivity(i);
-    }
-
-    @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop stop) {
-        (new TrainstopContextMenu(TrainActivity.this, stop)).show();
-    }
 }
 

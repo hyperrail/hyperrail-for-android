@@ -188,6 +188,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         bundle.putSerializable("train", train);
                         // Get the departure date (day) of this train
                         bundle.putSerializable("date", transferBefore.getDepartureTime());
+                        // TODO: consider if these should be included
                         bundle.putSerializable("from", transferBefore.getStation());
                         bundle.putSerializable("to", transferAfter.getStation());
 

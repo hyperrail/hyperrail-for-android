@@ -54,6 +54,7 @@ import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.TrainSuggestionsCardAdapter;
 import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestable;
 import be.hyperrail.android.persistence.Suggestion;
@@ -153,8 +154,9 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
      * @param t The train which should be loaded
      */
     private void openTrain(TrainStub t) {
+        // TODO: just take a train ID as a parameter here
         persistentQueryProvider.store(new Suggestion<Suggestable>(new TrainSuggestion(t), SuggestionType.HISTORY));
-        Intent i = TrainActivity.createIntent(getActivity(), t, DateTime.now());
+        Intent i = TrainActivity.createIntent(getActivity(), new IrailTrainRequest(t.getId(), DateTime.now()));
         startActivity(i);
     }
 

@@ -33,11 +33,11 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 
 import static be.hyperrail.android.R.string.warning_not_realtime_datetime;
 
@@ -99,10 +99,12 @@ public class RouteDetailActivity extends RecyclerViewActivity<Route> {
                 Intent i = null;
                 if (object instanceof Bundle) {
                     i = TrainActivity.createIntent(RouteDetailActivity.this,
-                            (TrainStub) ((Bundle) object).getSerializable("train"),
-                            (Station) ((Bundle) object).getSerializable("from"),
-                            (Station) ((Bundle) object).getSerializable("to"),
-                            (DateTime) ((Bundle) object).getSerializable("date"));
+                            new IrailTrainRequest(
+                                    ((TrainStub) ((Bundle) object).getSerializable("train")).getId(),
+                                    (DateTime) ((Bundle) object).getSerializable("date")
+                            )
+                    );
+
 
                 } else if (object instanceof Transfer) {
                     i = LiveboardActivity.createIntent(RouteDetailActivity.this, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART, null));

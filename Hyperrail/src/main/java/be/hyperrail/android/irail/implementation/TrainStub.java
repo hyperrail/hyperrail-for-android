@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,19 +27,22 @@ import be.hyperrail.android.irail.db.Station;
 public class TrainStub implements Serializable {
 
     private final String uri;
+
+    @NonNull
     protected String id;
     protected Station direction;
 
     // Direction is required, since we need to display something
-    public TrainStub(String id, Station direction, String uri) {
-        if (id != null && !id.startsWith("BE.NMBS.")) {
-            id = "BE.NMBS." + id;
-        }
-
+    public TrainStub(@NonNull String id, @NonNull Station direction, String uri) {
+        // TODO: null IDs should be disallowed once the old suggestion code has been removed
         if (id != null) {
+            // TODO: all ids should have a correct prefix already, should not be tightly coupled to iRail
+            if (!id.startsWith("BE.NMBS.")) {
+                id = "BE.NMBS." + id;
+            }
+
             this.id = id.toUpperCase();
         }
-
         this.direction = direction;
         this.uri = uri;
     }
@@ -47,6 +52,7 @@ public class TrainStub implements Serializable {
      *
      * @return ID, for example BE.NMBS.IC4516
      */
+    @NonNull
     public String getId() {
         return id;
     }

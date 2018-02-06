@@ -39,12 +39,12 @@ import be.hyperrail.android.activities.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.util.DurationFormatter;
 
 public class RouteListItemLayout extends LinearLayout implements ListDataViewGroup<RouteResult, Route> {
@@ -196,10 +196,10 @@ public class RouteListItemLayout extends LinearLayout implements ListDataViewGro
                 Intent i = null;
                 if (object instanceof Bundle) {
                     i = TrainActivity.createIntent(context,
-                            (TrainStub) ((Bundle) object).getSerializable("train"),
-                            (Station) ((Bundle) object).getSerializable("from"),
-                            (Station) ((Bundle) object).getSerializable("to"),
-                            (DateTime) ((Bundle) object).getSerializable("date"));
+                            new IrailTrainRequest(
+                                    ((TrainStub) ((Bundle) object).getSerializable("train")).getId(),
+                                    (DateTime) ((Bundle) object).getSerializable("date")
+                            ));
 
                 } else if (object instanceof Transfer) {
                     i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART,null));
