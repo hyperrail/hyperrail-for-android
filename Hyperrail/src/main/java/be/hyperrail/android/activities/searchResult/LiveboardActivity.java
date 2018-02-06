@@ -4,7 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.activities;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package be.hyperrail.android.activities.searchResult;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +28,10 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.LiveboardFragment;
+import be.hyperrail.android.activities.MainActivity;
+import be.hyperrail.android.activities.ResultActivity;
+import be.hyperrail.android.activities.StationActivity;
+import be.hyperrail.android.fragments.searchResult.LiveboardFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
@@ -56,9 +65,9 @@ public class LiveboardActivity extends ResultActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailLiveboardRequest) savedInstanceState.getSerializable("request");
-        } else if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
+
+        // Validate the intent used to create this activity
+        if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
             this.mRequest = new IrailLiveboardRequest(IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART, null);
         } else {
@@ -76,8 +85,8 @@ public class LiveboardActivity extends ResultActivity {
         setTitle(mRequest.getStation().getLocalizedName());
         setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
 
-        fragment = new LiveboardFragment();
-        fragment.setRequest(mRequest);
+        fragment = LiveboardFragment.createInstance(mRequest);
+
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -86,13 +95,6 @@ public class LiveboardActivity extends ResultActivity {
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, mRequest.getStation().getName());
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "liveboard");
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
-    }
-
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("request", mRequest);
     }
 
     @Override

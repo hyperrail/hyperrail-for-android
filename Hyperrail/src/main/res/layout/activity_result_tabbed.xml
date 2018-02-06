@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical"
-    tools:context="be.hyperrail.android.activities.LiveboardActivity">
+    tools:context="be.hyperrail.android.activities.searchResult.LiveboardActivity">
 
     <include layout="@layout/toolbar_default" />
 

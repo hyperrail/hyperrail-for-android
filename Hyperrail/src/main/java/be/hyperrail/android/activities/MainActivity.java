@@ -45,11 +45,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.DisturbanceListFragment;
 import be.hyperrail.android.fragments.FeedbackFragment;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.fragments.RouteSearchFragment;
 import be.hyperrail.android.fragments.TrainSearchFragment;
+import be.hyperrail.android.fragments.searchResult.DisturbanceListFragment;
 
 /**
  * The main activity contains a drawer layout and fragments for search, disturbances and settings

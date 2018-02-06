@@ -13,7 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
-import be.hyperrail.android.activities.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.LiveboardActivity;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;

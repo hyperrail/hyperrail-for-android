@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.fragments;
+package be.hyperrail.android.fragments.searchResult;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,7 +22,7 @@ import java.io.FileNotFoundException;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.TrainstopContextMenu;
-import be.hyperrail.android.activities.TrainActivity;
+import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
@@ -45,8 +45,14 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implements InfiniteScrollingDataSource, ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
 
     private LiveBoard mCurrentLiveboard;
-
+    private LiveboardCardAdapter mLiveboardCardAdapter;
     private IrailLiveboardRequest mRequest;
+
+    public static LiveboardFragment createInstance(IrailLiveboardRequest request){
+        LiveboardFragment frg = new LiveboardFragment();
+        frg.setRequest(request);
+        return frg;
+    }
 
     @Nullable
     @Override
@@ -77,10 +83,12 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        LiveboardCardAdapter adapter = new LiveboardCardAdapter(this.getActivity(), vRecyclerView, this);
-        adapter.setOnItemClickListener(this);
-        adapter.setOnItemLongClickListener(this);
-        return adapter;
+        if (mLiveboardCardAdapter != null) {
+            mLiveboardCardAdapter = new LiveboardCardAdapter(this.getActivity(), vRecyclerView, this);
+            mLiveboardCardAdapter.setOnItemClickListener(this);
+            mLiveboardCardAdapter.setOnItemLongClickListener(this);
+        }
+        return mLiveboardCardAdapter;
     }
 
     @Override
@@ -220,7 +228,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        Intent i = TrainActivity.createIntent(getActivity().getApplicationContext(), new IrailTrainRequest(object.getTrain().getId(),object.getDepartureTime()));
+        Intent i = TrainActivity.createIntent(getActivity().getApplicationContext(), new IrailTrainRequest(object.getTrain().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 

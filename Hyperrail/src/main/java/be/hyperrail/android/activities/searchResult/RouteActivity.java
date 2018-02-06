@@ -16,7 +16,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.activities;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package be.hyperrail.android.activities.searchResult;
 
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +41,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.RoutesFragment;
+import be.hyperrail.android.activities.ResultActivity;
+import be.hyperrail.android.fragments.searchResult.RoutesFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
@@ -70,6 +77,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
             Station origin = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("from"));
             Station destination = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("to"));
@@ -81,12 +90,10 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-
         setTitle(mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName());
         setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
 
-        mFragment = new RoutesFragment();
-        mFragment.setRequest(mRequest);
+        mFragment = RoutesFragment.createInstance(mRequest);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment).commit();
 
         Bundle bundle = new Bundle();
@@ -148,7 +155,6 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         }
 
     }
-
 
     @Override
     public void onDateTimePicked(DateTime date) {

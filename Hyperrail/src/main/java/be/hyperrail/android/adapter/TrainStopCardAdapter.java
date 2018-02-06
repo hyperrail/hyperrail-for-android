@@ -4,12 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package be.hyperrail.android.adapter;
 
 import android.content.Context;
@@ -29,14 +23,14 @@ import be.hyperrail.android.viewgroup.TrainStopLayout;
  */
 public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdapter.TrainStopViewHolder> {
 
-    private final Train train;
+    private Train mTrain;
     private final Context context;
     private OnRecyclerItemClickListener<TrainStop> clickListener;
     private OnRecyclerItemLongClickListener<TrainStop> longClickListener;
 
     public TrainStopCardAdapter(Context context, Train train) {
         this.context = context;
-        this.train = train;
+        this.mTrain = train;
     }
 
     @Override
@@ -53,9 +47,9 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
 
     @Override
     public void onBindViewHolder(TrainStopViewHolder holder, int position) {
-        final TrainStop stop = train.getStops()[position];
+        final TrainStop stop = mTrain.getStops()[position];
 
-        holder.trainStopLayout.bind(context, stop, train, position);
+        holder.trainStopLayout.bind(context, stop, mTrain, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,10 +73,10 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
 
     @Override
     public int getItemCount() {
-        if (train == null || train.getStops() == null) {
+        if (mTrain == null || mTrain.getStops() == null) {
             return 0;
         }
-        return train.getStops().length;
+        return mTrain.getStops().length;
     }
 
     public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
@@ -91,6 +85,11 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
 
     public void setOnItemLongClickListener(OnRecyclerItemLongClickListener<TrainStop> listener) {
         this.longClickListener = listener;
+    }
+
+    public void updateTrain(Train train) {
+        this.mTrain = train;
+        notifyDataSetChanged();
     }
 
     class TrainStopViewHolder extends RecyclerView.ViewHolder {
@@ -103,4 +102,3 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
         }
     }
 }
-

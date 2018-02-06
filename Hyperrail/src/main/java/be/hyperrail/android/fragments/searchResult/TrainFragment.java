@@ -10,7 +10,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.fragments;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package be.hyperrail.android.fragments.searchResult;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +31,7 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.TrainstopContextMenu;
-import be.hyperrail.android.activities.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.LiveboardActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.TrainStopCardAdapter;
@@ -49,6 +55,13 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
     private Train mCurrentTrain;
     private Station mScrollToStation;
     private IrailTrainRequest mRequest;
+    private TrainStopCardAdapter mRecyclerviewAdapter;
+
+    public static TrainFragment createInstance(IrailTrainRequest request) {
+        TrainFragment frg = new TrainFragment();
+        frg.setRequest(request);
+        return frg;
+    }
 
     @Nullable
     @Override
@@ -79,9 +92,12 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        // An empty adapter for now. It will be replaced when we get the actual data
-        // TODO: instead of replacing the adapter, update the contents
-        return new TrainStopCardAdapter(getActivity(), null);
+        if (mRecyclerviewAdapter == null) {
+            mRecyclerviewAdapter = new TrainStopCardAdapter(getActivity(), null);
+        }
+        mRecyclerviewAdapter.setOnItemClickListener(this);
+        mRecyclerviewAdapter.setOnItemLongClickListener(this);
+        return mRecyclerviewAdapter;
     }
 
     @Override
@@ -119,8 +135,8 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
     protected void showData(Train train) {
         getActivity().setTitle(train.getName() + " " + train.getDirection().getLocalizedName());
 
-        TrainStopCardAdapter adapter = new TrainStopCardAdapter(getActivity(), train);
-        vRecyclerView.setAdapter(adapter);
+        mRecyclerviewAdapter.updateTrain(train);
+
         if (mScrollToStation != null) {
             int i = train.getStopNumberForStation(mScrollToStation);
             if (i >= 0) {
@@ -130,8 +146,6 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
                 mScrollToStation = null;
             }
         }
-        adapter.setOnItemClickListener(this);
-        adapter.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -146,7 +160,7 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        // TODO: trainstops should have a way to distinguish the first and last stop
+        // TODO: TrainStop objects should have a way to distinguish the first and last stop
         DateTime queryTime = object.getArrivalTime();
         if (queryTime == null) {
             queryTime = object.getDepartureTime();

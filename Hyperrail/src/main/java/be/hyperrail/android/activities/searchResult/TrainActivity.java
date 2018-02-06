@@ -16,7 +16,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.activities;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package be.hyperrail.android.activities.searchResult;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +38,8 @@ import android.view.View;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.TrainFragment;
+import be.hyperrail.android.activities.ResultActivity;
+import be.hyperrail.android.fragments.searchResult.TrainFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
@@ -64,6 +71,7 @@ public class TrainActivity extends ResultActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
             mRequest = new IrailTrainRequest(getIntent().getStringExtra("id"), null);
         } else {
@@ -72,8 +80,7 @@ public class TrainActivity extends ResultActivity {
 
         super.onCreate(savedInstanceState);
 
-        fragment = new TrainFragment();
-        fragment.setRequest(mRequest);
+        fragment = TrainFragment.createInstance(mRequest);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         setTitle(R.string.title_train);
@@ -84,7 +91,7 @@ public class TrainActivity extends ResultActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_shortcut) {
             Intent shortcutIntent = this.createShortcutIntent();
-            // TODO: replace train ID
+            // TODO: replace train ID with a name
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getTrainId());
                 mShortcutInfoBuilder.setShortLabel(mRequest.getTrainId());

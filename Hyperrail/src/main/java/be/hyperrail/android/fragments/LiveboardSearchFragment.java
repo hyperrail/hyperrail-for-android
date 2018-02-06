@@ -55,7 +55,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.LiveboardActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.StationSuggestionsCardAdapter;

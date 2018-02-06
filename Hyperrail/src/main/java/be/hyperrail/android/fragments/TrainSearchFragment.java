@@ -49,7 +49,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.TrainActivity;
+import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.TrainSuggestionsCardAdapter;

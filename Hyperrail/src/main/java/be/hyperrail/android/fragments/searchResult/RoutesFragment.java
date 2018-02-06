@@ -4,8 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
-package be.hyperrail.android.fragments;
+
+package be.hyperrail.android.fragments.searchResult;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +27,7 @@ import android.view.ViewGroup;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.RouteDetailActivity;
+import be.hyperrail.android.activities.searchResult.RouteDetailActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteCardAdapter;
@@ -43,8 +49,14 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements InfiniteScrollingDataSource, ResultFragment<IrailRoutesRequest>, OnRecyclerItemClickListener<Route>, OnRecyclerItemLongClickListener<Route> {
 
     private RouteResult mCurrentRouteResult;
-
+    private RouteCardAdapter mRouteCardAdapter;
     private IrailRoutesRequest mRequest;
+
+    public static RoutesFragment createInstance(IrailRoutesRequest request){
+        RoutesFragment frg = new RoutesFragment();
+        frg.setRequest(request);
+        return frg;
+    }
 
     @Nullable
     @Override
@@ -59,7 +71,6 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         if (savedInstanceState != null && savedInstanceState.containsKey("routes")) {
             this.mCurrentRouteResult = (RouteResult) savedInstanceState.get("routes");
         }
-
     }
 
     @Override
@@ -93,13 +104,14 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         }
     }
 
-
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        RouteCardAdapter adapter = new RouteCardAdapter(getActivity(), vRecyclerView, this);
-        adapter.setOnItemClickListener(this);
-        adapter.setOnItemLongClickListener(this);
-        return adapter;
+        if (mRouteCardAdapter == null) {
+            mRouteCardAdapter = new RouteCardAdapter(getActivity(), vRecyclerView, this);
+            mRouteCardAdapter.setOnItemClickListener(this);
+            mRouteCardAdapter.setOnItemLongClickListener(this);
+        }
+        return mRouteCardAdapter;
     }
 
     @Override
@@ -119,7 +131,6 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         api.abortAllQueries();
 
-        //TODO: pass this request to the activity instead of loose parameters
         IrailRoutesRequest request = new IrailRoutesRequest(mRequest.getOrigin(), mRequest.getDestination(), mRequest.getTimeDefinition(), mRequest.getSearchTime());
         request.setCallback(new IRailSuccessResponseListener<RouteResult>() {
                                 @Override

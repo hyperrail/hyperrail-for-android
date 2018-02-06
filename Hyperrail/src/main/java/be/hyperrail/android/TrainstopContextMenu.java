@@ -24,8 +24,8 @@ import android.widget.LinearLayout;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import be.hyperrail.android.activities.LiveboardActivity;
-import be.hyperrail.android.activities.TrainActivity;
+import be.hyperrail.android.activities.searchResult.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
