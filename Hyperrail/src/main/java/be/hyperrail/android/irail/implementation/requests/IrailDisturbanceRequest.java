@@ -11,20 +11,38 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.implementation.Disturbance;
 
 
 /**
  * A request for disturbance information
  */
-public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> {
+public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> implements IrailRequest<Disturbance[]> {
 
     public IrailDisturbanceRequest(){
         super();
     }
 
-    IrailDisturbanceRequest(@NonNull JSONObject json) throws JSONException {
+    public IrailDisturbanceRequest(@NonNull JSONObject json) throws JSONException {
         super(json);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (! (obj instanceof IrailDisturbanceRequest)){
+            return false;
+        }
+        // All requests are identical as no data fields are stored
+        return true;
+    }
+
+    @Override
+    public int compareTo(@NonNull IrailRequest o) {
+        if (! (o instanceof  IrailDisturbanceRequest)){
+            return -1;
+        }
+
+        return 0;
+    }
 }

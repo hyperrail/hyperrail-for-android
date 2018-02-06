@@ -83,7 +83,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     protected RecyclerView.Adapter getAdapter() {
-        if (mLiveboardCardAdapter != null) {
+        if (mLiveboardCardAdapter == null) {
             mLiveboardCardAdapter = new LiveboardCardAdapter(this.getActivity(), vRecyclerView, this);
             mLiveboardCardAdapter.setOnItemClickListener(this);
             mLiveboardCardAdapter.setOnItemLongClickListener(this);
@@ -222,7 +222,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     protected void showData(LiveBoard liveBoard) {
-        ((LiveboardCardAdapter) vRecyclerView.getAdapter()).updateLiveboard(liveBoard);
+        mLiveboardCardAdapter.updateLiveboard(liveBoard);
     }
 
 

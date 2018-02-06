@@ -39,7 +39,6 @@ import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
@@ -53,7 +52,6 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 public class TrainFragment extends RecyclerViewFragment<Train> implements InfiniteScrollingDataSource, ResultFragment<IrailTrainRequest>, OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
 
     private Train mCurrentTrain;
-    private Station mScrollToStation;
     private IrailTrainRequest mRequest;
     private TrainStopCardAdapter mRecyclerviewAdapter;
 
@@ -102,8 +100,6 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
 
     @Override
     protected void getInitialData() {
-        // which station should we scroll to?
-        mScrollToStation = mRequest.getTargetStation();
         getData();
     }
 
@@ -137,13 +133,10 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
 
         mRecyclerviewAdapter.updateTrain(train);
 
-        if (mScrollToStation != null) {
-            int i = train.getStopNumberForStation(mScrollToStation);
+        if (!mRequest.isNow()) {
+            int i = train.getStopnumberForDepartureTime(mRequest.getSearchTime());
             if (i >= 0) {
                 vRecyclerView.scrollToPosition(i);
-
-                // unset this value. On next refresh, show everything
-                mScrollToStation = null;
             }
         }
     }

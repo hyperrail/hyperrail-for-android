@@ -63,25 +63,13 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         super(jsonObject);
 
         this.station = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("id"));
-        if (jsonObject.has("time_definition")) {
-            this.timeDefinition = RouteTimeDefinition.valueOf(jsonObject.getString("time_definition"));
-        } else {
-            this.timeDefinition = RouteTimeDefinition.DEPART;
-        }
-        if (jsonObject.has("time")) {
-            this.searchTime = new DateTime(jsonObject.getLong("time"));
-        } else {
-            this.searchTime = null;
-        }
+        timeDefinition = RouteTimeDefinition.DEPART;
+        searchTime = null;
     }
 
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("time_definition", timeDefinition.name());
-        if (searchTime != null) {
-            json.put("time", searchTime.getMillis());
-        }
         json.put("id", station.getId());
         return json;
     }
@@ -108,8 +96,27 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         this.searchTime = searchTime;
     }
 
-    public boolean isNow(){
+    public boolean isNow() {
         return (this.searchTime == null);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IrailLiveboardRequest)) {
+            return false;
+        }
+
+        IrailLiveboardRequest other = (IrailLiveboardRequest) o;
+        return (getStation().equals(other.getStation()) && getSearchTime().equals(other.getSearchTime()));
+    }
+
+    @Override
+    public int compareTo(@NonNull IrailRequest o) {
+        if (!(o instanceof IrailLiveboardRequest)) {
+            return -1;
+        }
+
+        IrailLiveboardRequest other = (IrailLiveboardRequest) o;
+        return getStation().compareTo(other.getStation());
+    }
 }

@@ -97,4 +97,12 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> impleme
     public OccupancyLevel getOccupancy() {
         return occupancy;
     }
+
+    @Override
+    public int compareTo(@NonNull IrailRequest o) {
+        if (!(o instanceof IrailPostOccupancyRequest)) {
+            return -1;
+        }
+        return getDate().compareTo(((IrailPostOccupancyRequest) o).getDate());
+    }
 }

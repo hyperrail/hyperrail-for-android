@@ -4,24 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package be.hyperrail.android.activities.searchResult;
 
 import android.content.Context;
@@ -41,11 +23,9 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.activities.ResultActivity;
 import be.hyperrail.android.fragments.searchResult.TrainFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
-import be.hyperrail.android.persistence.TrainSuggestion;
 
 /**
  * Activity to show a train
@@ -145,7 +125,7 @@ public class TrainActivity extends ResultActivity {
     public void markFavorite(boolean favorite) {
         if (favorite) {
             //noinspection ConstantConditions
-            mPersistentQueryProvider.store(new Suggestion<>(new TrainSuggestion(new TrainStub(mRequest.getTrainId(), null, "")), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.store(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -156,7 +136,7 @@ public class TrainActivity extends ResultActivity {
                     .show();
         } else {
             //noinspection ConstantConditions
-            mPersistentQueryProvider.delete(new Suggestion<>(new TrainSuggestion(new TrainStub(mRequest.getTrainId(), null, "")), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.delete(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_train_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -172,7 +152,7 @@ public class TrainActivity extends ResultActivity {
     @Override
     public boolean isFavorite() {
         //noinspection ConstantConditions
-        return mPersistentQueryProvider.isFavorite(new TrainSuggestion(new TrainStub(mRequest.getTrainId(), null, "")));
+        return mPersistentQueryProvider.isFavorite(mRequest);
     }
 
 }

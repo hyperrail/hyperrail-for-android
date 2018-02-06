@@ -4,24 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package be.hyperrail.android.activities.searchResult;
 
 import android.content.Context;
@@ -47,7 +29,6 @@ import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
-import be.hyperrail.android.persistence.RouteSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 
@@ -164,7 +145,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
 
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQueryProvider.store(new Suggestion<>(new RouteSuggestion(mRequest.getOrigin(), mRequest.getDestination()), FAVORITE));
+            mPersistentQueryProvider.store(new Suggestion<>(mRequest, FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -174,7 +155,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
                     })
                     .show();
         } else {
-            mPersistentQueryProvider.delete(new Suggestion<>(new RouteSuggestion(mRequest.getOrigin(), mRequest.getDestination()), FAVORITE));
+            mPersistentQueryProvider.delete(new Suggestion<>(mRequest, FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_route_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -188,7 +169,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
     }
 
     public boolean isFavorite() {
-        return mPersistentQueryProvider.isFavorite(new RouteSuggestion(mRequest.getOrigin(), mRequest.getDestination()));
+        return mPersistentQueryProvider.isFavorite(mRequest);
     }
 
 }

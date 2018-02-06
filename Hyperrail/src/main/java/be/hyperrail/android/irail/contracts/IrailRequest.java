@@ -18,7 +18,7 @@ import java.io.Serializable;
  * Requests can contain additional data fields which are not supported by all supported data sources. Data fields should be ignored when they are not supported by the API.
  */
 
-public interface IrailRequest<T> extends Serializable {
+public interface IrailRequest<T> extends Serializable, Comparable<IrailRequest> {
 
     /**
      * The date this search was created at

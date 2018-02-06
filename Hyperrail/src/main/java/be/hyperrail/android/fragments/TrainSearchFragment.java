@@ -41,8 +41,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import org.joda.time.DateTime;
-
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -53,25 +51,22 @@ import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.TrainSuggestionsCardAdapter;
-import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
-import be.hyperrail.android.persistence.Suggestable;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
-import be.hyperrail.android.persistence.TrainSuggestion;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class TrainSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<TrainSuggestion>>, OnRecyclerItemLongClickListener<Suggestion<TrainSuggestion>> {
+public class TrainSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailTrainRequest>>, OnRecyclerItemLongClickListener<Suggestion<IrailTrainRequest>> {
 
     private RecyclerView recentTrainsRecyclerView;
     private EditText vTrainSearchField;
 
     private PersistentQueryProvider persistentQueryProvider;
-    private Suggestion<TrainSuggestion> mLastSelectedQuery;
-    private TrainSuggestionsCardAdapter mTrainSuggestionAdapter;
+    private Suggestion<IrailTrainRequest> mLastSelectedQuery;
+    private TrainSuggestionsCardAdapter mIrailTrainRequestAdapter;
 
     public TrainSearchFragment() {
         // Required empty public constructor
@@ -101,10 +96,10 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
         recentTrainsRecyclerView.setItemAnimator(new DefaultItemAnimator());
         registerForContextMenu(recentTrainsRecyclerView);
 
-        mTrainSuggestionAdapter = new TrainSuggestionsCardAdapter(this.getActivity());
-        mTrainSuggestionAdapter.setOnItemClickListener(this);
-        mTrainSuggestionAdapter.setOnLongItemClickListener(this);
-        recentTrainsRecyclerView.setAdapter(mTrainSuggestionAdapter);
+        mIrailTrainRequestAdapter = new TrainSuggestionsCardAdapter(this.getActivity());
+        mIrailTrainRequestAdapter.setOnItemClickListener(this);
+        mIrailTrainRequestAdapter.setOnLongItemClickListener(this);
+        recentTrainsRecyclerView.setAdapter(mIrailTrainRequestAdapter);
 
         LoadSuggestionsTask t = new LoadSuggestionsTask(this);
         t.execute(persistentQueryProvider);
@@ -151,12 +146,13 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
     /**
      * Open a trainActivity for a certain train id
      *
-     * @param t The train which should be loaded
+     * @param id The train id which should be loaded
      */
-    private void openTrain(TrainStub t) {
+    private void openTrain(String id) {
         // TODO: just take a train ID as a parameter here
-        persistentQueryProvider.store(new Suggestion<Suggestable>(new TrainSuggestion(t), SuggestionType.HISTORY));
-        Intent i = TrainActivity.createIntent(getActivity(), new IrailTrainRequest(t.getId(), DateTime.now()));
+        IrailTrainRequest request = new IrailTrainRequest(id, null);
+        persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
+        Intent i = TrainActivity.createIntent(getActivity(), request);
         startActivity(i);
     }
 
@@ -167,7 +163,7 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
         Pattern p = Pattern.compile("\\w{1,3}\\d{2,6}");
         Matcher m = p.matcher(searchQuery);
         if (m.matches()) {
-            openTrain(new TrainStub(searchQuery.toUpperCase(), null, null));
+            openTrain(searchQuery.toUpperCase());
             return;
         }
 
@@ -178,12 +174,12 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<TrainSuggestion> object) {
-        openTrain(object.getData());
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailTrainRequest> object) {
+        openTrain(object.getData().getTrainId());
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<TrainSuggestion> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailTrainRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -192,7 +188,7 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
         super.onCreateContextMenu(menu, v, menuInfo);
         if (mLastSelectedQuery != null) {
             getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
-            menu.setHeaderTitle(mLastSelectedQuery.getData().getName());
+            menu.setHeaderTitle(mLastSelectedQuery.getData().getTrainId());
         }
     }
 
@@ -205,14 +201,14 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
             } else {
                 persistentQueryProvider.delete(mLastSelectedQuery);
             }
-            mTrainSuggestionAdapter.setSuggestedTrains(persistentQueryProvider.getAllTrains());
+            mIrailTrainRequestAdapter.setSuggestedTrains(persistentQueryProvider.getAllTrains());
         }
 
         // handle menu here - get item index or ID from info
         return super.onContextItemSelected(item);
     }
 
-    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<TrainSuggestion>>> {
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailTrainRequest>>> {
 
         private WeakReference<TrainSearchFragment> fragmentReference;
 
@@ -222,19 +218,19 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         @Override
-        protected List<Suggestion<TrainSuggestion>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<IrailTrainRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllTrains();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<TrainSuggestion>> suggestions) {
+        protected void onPostExecute(List<Suggestion<IrailTrainRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there
             TrainSearchFragment fragment = fragmentReference.get();
             if (fragment == null) return;
 
-            fragment.mTrainSuggestionAdapter.setSuggestedTrains(suggestions);
+            fragment.mIrailTrainRequestAdapter.setSuggestedTrains(suggestions);
         }
     }
 }

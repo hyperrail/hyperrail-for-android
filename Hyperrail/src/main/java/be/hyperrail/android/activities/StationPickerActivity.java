@@ -20,10 +20,10 @@ import android.support.v7.widget.Toolbar;
 import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
-import be.hyperrail.android.persistence.StationSuggestion;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 
-public class StationPickerActivity extends AppCompatActivity implements OnRecyclerItemClickListener<Suggestion<StationSuggestion>> {
+public class StationPickerActivity extends AppCompatActivity implements OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class StationPickerActivity extends AppCompatActivity implements OnRecycl
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<StationSuggestion> object) {
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailLiveboardRequest> object) {
         finish();
     }
 }

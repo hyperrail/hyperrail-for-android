@@ -4,12 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package be.hyperrail.android.activities.searchResult;
 
 import android.content.Context;
@@ -35,7 +29,6 @@ import be.hyperrail.android.fragments.searchResult.LiveboardFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.persistence.StationSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
@@ -161,7 +154,7 @@ public class LiveboardActivity extends ResultActivity {
     @Override
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            mPersistentQueryProvider.store(new Suggestion<>(new StationSuggestion(mRequest.getStation()), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.store(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -171,7 +164,7 @@ public class LiveboardActivity extends ResultActivity {
                     })
                     .show();
         } else {
-            mPersistentQueryProvider.delete(new Suggestion<>(new StationSuggestion(mRequest.getStation()), SuggestionType.FAVORITE));
+            mPersistentQueryProvider.delete(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
@@ -186,6 +179,6 @@ public class LiveboardActivity extends ResultActivity {
 
     @Override
     public boolean isFavorite() {
-        return mPersistentQueryProvider.isFavorite(new StationSuggestion(mRequest.getStation()));
+        return mPersistentQueryProvider.isFavorite(mRequest);
     }
 }

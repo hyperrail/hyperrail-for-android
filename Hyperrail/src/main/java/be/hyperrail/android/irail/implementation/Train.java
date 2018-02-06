@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -80,6 +82,23 @@ public class Train extends TrainStub implements Serializable {
             if (Objects.equals(stops[i].getStation().getId(), station.getId())) {
                 return i;
             }
+        }
+        return -1;
+    }
+
+    /**
+     * Get zero-based index for this departure time in the stops list. -1 if this stop doesn't exist.
+     * @param time The datetime to search for
+     * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
+     */
+    public int getStopnumberForDepartureTime(DateTime time) {
+        for (int i = 0; i < stops.length; i++) {
+            if (Objects.equals(stops[i].getDepartureTime(), time)) {
+                return i;
+            }
+        }
+        if (Objects.equals(stops[stops.length-1].getArrivalTime(), time)) {
+            return stops.length-1;
         }
         return -1;
     }

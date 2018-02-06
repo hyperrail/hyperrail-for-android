@@ -24,31 +24,27 @@ import be.hyperrail.android.irail.implementation.Train;
 public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailRequest<Train> {
 
     @NonNull
-    private final String trainId;
+    private final String mTrainId;
 
     @Nullable
-    private DateTime searchTime;
+    private DateTime mSearchTime;
 
-    // Train IDs arent always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
+    // Train IDs aren't always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
 
     /**
      * The departure station of this train. Additional information for request history/favorites.
      */
     @Nullable
-    private Station origin;
+    private Station mTrainOriginStation;
 
     /**
      * The departure time at the departure station for this train. Additional information for request history/favorites.
      */
     @Nullable
-    private DateTime departureTime;
+    private DateTime mTrainDepartureTime;
 
-    /**
-     * The direction of this train. Additional information for request history/favorites.
-     */
     @Nullable
-    private Station direction;
-    private Station targetStation;
+    private Station mTrainDirection;
 
 
     /**
@@ -60,33 +56,21 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     // TODO: support between stations, target scroll station as optional (display) parameters
     public IrailTrainRequest(@NonNull String trainId, @Nullable DateTime searchTime) {
         super();
-        this.trainId = trainId;
-        this.searchTime = searchTime;
+        this.mTrainId = trainId;
+        this.mSearchTime = searchTime;
     }
 
     public IrailTrainRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
-            this.direction = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("direction"));
+            this.mTrainDirection = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("direction"));
         } else {
-            this.direction = null;
+            this.mTrainDirection = null;
         }
 
         // TODO: ids should not be tightly coupled to irail
-        this.trainId = jsonObject.getString("id");
-
-        if (jsonObject.has("time")) {
-            this.searchTime = new DateTime(jsonObject.getLong("time"));
-        } else {
-            this.searchTime = null;
-        }
-
-        if (jsonObject.has("departure_time")) {
-            this.departureTime = new DateTime(jsonObject.getLong("departure_time"));
-        } else {
-            this.departureTime = null;
-        }
+        this.mTrainId = jsonObject.getString("id");
     }
 
     @Override
@@ -94,8 +78,8 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
         JSONObject json = super.toJson();
 
         json.put("id", getTrainId());
-        if (direction != null) {
-            json.put("direction", direction.getId());
+        if (getDirection() != null) {
+            json.put("direction", getDirection().getId());
         }
         if (this.getDepartureTime() != null) {
             json.put("departure_time", getDepartureTime().getMillis());
@@ -103,52 +87,74 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
         if (this.getOrigin() != null) {
             json.put("origin", getOrigin().getId());
         }
-        if (this.searchTime != null) {
-            json.put("time", searchTime.getMillis());
-        }
+        mSearchTime = null;
         return json;
     }
 
     @NonNull
     public DateTime getSearchTime() {
-        if (searchTime == null) {
+        if (mSearchTime == null) {
             return new DateTime();
         }
-        return searchTime;
+        return mSearchTime;
     }
 
     public boolean isNow() {
-        return searchTime == null;
+        return mSearchTime == null;
     }
 
     public void setSearchTime(@Nullable DateTime searchTime) {
-        this.searchTime = searchTime;
+        this.mSearchTime = searchTime;
     }
 
     @Nullable
     public Station getOrigin() {
-        return origin;
+        return mTrainOriginStation;
     }
 
     public void setOrigin(@Nullable Station origin) {
-        this.origin = origin;
+        this.mTrainOriginStation = origin;
     }
 
     @Nullable
     public DateTime getDepartureTime() {
-        return departureTime;
+        return mTrainDepartureTime;
     }
 
     public void setDepartureTime(@Nullable DateTime departure) {
-        this.departureTime = departure;
+        this.mTrainDepartureTime = departure;
     }
 
     @NonNull
     public String getTrainId() {
-        return trainId;
+        return mTrainId;
     }
 
-    public Station getTargetStation() {
-        return targetStation;
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IrailTrainRequest)) {
+            return false;
+        }
+
+        IrailTrainRequest other = (IrailTrainRequest) o;
+        return (getTrainId().equals(other.getTrainId()) && getSearchTime().equals(other.getSearchTime()));
+    }
+
+    @Override
+    public int compareTo(@NonNull IrailRequest o) {
+        if (!(o instanceof IrailTrainRequest)) {
+            return -1;
+        }
+
+        IrailTrainRequest other = (IrailTrainRequest) o;
+        return getTrainId().compareTo(other.getTrainId());
+    }
+
+    /**
+     * The direction of this train. Additional information for request history/favorites.
+     */
+    @Nullable
+    public Station getDirection() {
+        return mTrainDirection;
     }
 }

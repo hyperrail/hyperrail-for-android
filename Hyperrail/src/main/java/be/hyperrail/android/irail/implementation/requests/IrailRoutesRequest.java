@@ -58,26 +58,13 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
             throw new IllegalArgumentException("Origin or destionation station can't be null");
         }
 
-        if (jsonObject.has("time_definition")) {
-            this.timeDefinition = RouteTimeDefinition.valueOf(jsonObject.getString("time_definition"));
-        } else {
-            this.timeDefinition = RouteTimeDefinition.DEPART;
-        }
-
-        if (jsonObject.has("time")) {
-            this.searchTime = new DateTime(jsonObject.getLong("time"));
-        } else {
-            this.searchTime = null;
-        }
+        timeDefinition = RouteTimeDefinition.DEPART;
+        searchTime = null;
     }
 
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("time_definition", timeDefinition.name());
-        if (searchTime != null) {
-            json.put("time", searchTime.getMillis());
-        }
         json.put("from", origin.getId());
         json.put("to", destination.getId());
         return json;
@@ -113,5 +100,25 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     public boolean isNow(){
         return (this.searchTime == null);
     }
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IrailRouteRequest)) {
+            return false;
+        }
 
+        IrailRouteRequest other = (IrailRouteRequest) o;
+        return (getOrigin().equals(other.getOrigin()) && getDestination().equals(other.getDestination()) && getTimeDefinition().equals(other.getTimeDefinition()) && getSearchTime().equals(other.getSearchTime()));
+    }
+
+    @Override
+    public int compareTo(@NonNull IrailRequest o) {
+        if (!(o instanceof IrailRouteRequest)) {
+            return -1;
+        }
+
+        IrailRouteRequest other = (IrailRouteRequest) o;
+        return getOrigin().equals(other.getOrigin()) ?
+                getDestination().getLocalizedName().compareTo(other.getDestination().getLocalizedName()) :
+                getOrigin().getLocalizedName().compareTo(other.getOrigin().getLocalizedName());
+    }
 }

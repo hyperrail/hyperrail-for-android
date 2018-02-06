@@ -75,25 +75,14 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
         this.origin = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("from"));
         this.destination = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("to"));
 
-        if (jsonObject.has("time_definition")) {
-            this.timeDefinition = RouteTimeDefinition.valueOf(jsonObject.getString("time_definition"));
-        } else {
-            this.timeDefinition = RouteTimeDefinition.DEPART;
-        }
-
-        if (jsonObject.has("time")) {
-            this.searchTime = new DateTime(jsonObject.getLong("time"));
-        } else {
-            this.searchTime = new DateTime();
-        }
+        timeDefinition = RouteTimeDefinition.DEPART;
+        searchTime = null;
     }
 
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
         json.put("departure_semantic_id", getDepartureSemanticId());
-        json.put("time_definition", getTimeDefinition().name());
-        json.put("time", getSearchTime().getMillis());
         json.put("from", getOrigin().getId());
         json.put("to", getDestination().getId());
         return json;
@@ -122,5 +111,28 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
     @NonNull
     public String getDepartureSemanticId() {
         return departureSemanticId;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IrailRouteRequest)) {
+            return false;
+        }
+
+        IrailRouteRequest other = (IrailRouteRequest) o;
+        return (getDepartureSemanticId().equals(other.getDepartureSemanticId()) && getOrigin().equals(other.getOrigin()) && getDestination().equals(other.getDestination()) && getTimeDefinition().equals(other.getTimeDefinition()) && getSearchTime().equals(other.getSearchTime()));
+    }
+
+    @Override
+    public int compareTo(@NonNull IrailRequest o) {
+        if (!(o instanceof IrailRouteRequest)) {
+            return -1;
+        }
+
+        IrailRouteRequest other = (IrailRouteRequest) o;
+        return getOrigin().equals(other.getOrigin()) ?
+                getDestination().compareTo(other.getDestination()) :
+                getOrigin().compareTo(other.getOrigin());
     }
 }
