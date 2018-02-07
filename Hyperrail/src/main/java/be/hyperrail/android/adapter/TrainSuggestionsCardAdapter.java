@@ -22,8 +22,9 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.List;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.persistence.Suggestion;
-import be.hyperrail.android.persistence.TrainSuggestion;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -31,10 +32,10 @@ import be.hyperrail.android.persistence.TrainSuggestion;
 public class TrainSuggestionsCardAdapter extends RecyclerView.Adapter<TrainSuggestionsCardAdapter.TrainViewHolder> {
 
     private final Context context;
-    private List<Suggestion<TrainSuggestion>> suggestedTrains;
+    private List<Suggestion<IrailTrainRequest>> suggestedTrains;
 
-    private OnRecyclerItemLongClickListener<Suggestion<TrainSuggestion>> longClickListener;
-    private OnRecyclerItemClickListener<Suggestion<TrainSuggestion>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<IrailTrainRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<IrailTrainRequest>> listener;
 
     public TrainSuggestionsCardAdapter(Context context) {
         this.context = context;
@@ -56,11 +57,11 @@ public class TrainSuggestionsCardAdapter extends RecyclerView.Adapter<TrainSugge
     @Override
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
-        final Suggestion<TrainSuggestion> t = suggestedTrains.get(position);
-        String title = t.getData().getName();
-        if (t.getData().getDepartureDate() != null) {
+        final Suggestion<IrailTrainRequest> t = suggestedTrains.get(position);
+        String title = TrainStub.getTrainName(t.getData().getTrainId());
+        if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-            title += " - " + df.print(t.getData().getDepartureDate());
+            title += " - " + df.print(t.getData().getDepartureTime());
         }
         if (t.getData().getOrigin() != null) {
             title += " - " + t.getData().getOrigin().getLocalizedName();
@@ -104,16 +105,16 @@ public class TrainSuggestionsCardAdapter extends RecyclerView.Adapter<TrainSugge
         });
     }
 
-    public void setSuggestedTrains(List<Suggestion<TrainSuggestion>> suggestions) {
+    public void setSuggestedTrains(List<Suggestion<IrailTrainRequest>> suggestions) {
         this.suggestedTrains = suggestions;
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<TrainSuggestion>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailTrainRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<TrainSuggestion>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailTrainRequest>> listener) {
         this.longClickListener = listener;
     }
 

@@ -51,7 +51,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.RouteActivity;
+import be.hyperrail.android.activities.searchResult.RouteActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteSuggestionsCardAdapter;
@@ -59,8 +59,8 @@ import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
-import be.hyperrail.android.persistence.RouteSuggestion;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.DateTimePicker;
@@ -70,7 +70,7 @@ import be.hyperrail.android.util.OnDateTimeSetListener;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<RouteSuggestion>>, OnDateTimeSetListener, OnRecyclerItemLongClickListener<Suggestion<RouteSuggestion>> {
+public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailRoutesRequest>>, OnDateTimeSetListener, OnRecyclerItemLongClickListener<Suggestion<IrailRoutesRequest>> {
 
     private AutoCompleteTextView vFromText;
     private AutoCompleteTextView vToText;
@@ -82,10 +82,10 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
     private PersistentQueryProvider persistentQueryProvider;
 
-    private final int TAG_ACCENT_SEARCH = 1;
-    private Suggestion<RouteSuggestion> mLastSelectedQuery;
+    private Suggestion<IrailRoutesRequest> mLastSelectedQuery;
     private RecyclerView mSuggestionsRecyclerView;
     private RouteSuggestionsCardAdapter mSuggestionsAdapter;
+    private LoadSuggestionsTask activeSuggestionsUpdateTask;
 
     public RouteSearchFragment() {
         // Required empty public constructor
@@ -111,7 +111,9 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vDatetime = view.findViewById(R.id.input_datetime);
         vArriveDepart = view.findViewById(R.id.input_arrivedepart);
 
-        persistentQueryProvider = new PersistentQueryProvider(this.getActivity());
+        persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());
+        activeSuggestionsUpdateTask = new LoadSuggestionsTask(this);
+        activeSuggestionsUpdateTask.execute(persistentQueryProvider);
 
         mSuggestionsRecyclerView = view.findViewById(R.id.recyclerview_primary);
         mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -242,7 +244,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<RouteSuggestion> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailRoutesRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -251,7 +253,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         super.onCreateContextMenu(menu, v, menuInfo);
         getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
         if (mLastSelectedQuery != null) {
-            menu.setHeaderTitle(mLastSelectedQuery.getData().from.getLocalizedName() + " - " + mLastSelectedQuery.getData().to.getLocalizedName());
+            menu.setHeaderTitle(mLastSelectedQuery.getData().getOrigin().getLocalizedName() + " - " + mLastSelectedQuery.getData().getDestination().getLocalizedName());
         }
     }
 
@@ -274,8 +276,11 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     @Override
     public void onStart() {
         super.onStart();
-        LoadSuggestionsTask loadSuggestionsTask = new LoadSuggestionsTask(this);
-        loadSuggestionsTask.execute(persistentQueryProvider);
+        if (activeSuggestionsUpdateTask.getStatus() == AsyncTask.Status.FINISHED) {
+            activeSuggestionsUpdateTask.cancel(true);
+            activeSuggestionsUpdateTask = new LoadSuggestionsTask(this);
+            activeSuggestionsUpdateTask.execute(persistentQueryProvider);
+        }
     }
 
     private void setSuggestions() {
@@ -349,7 +354,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             return;
         }
 
-        persistentQueryProvider.store(new Suggestion<>(new RouteSuggestion(from, to), SuggestionType.HISTORY));
+
         RouteTimeDefinition timedef;
         if (vArriveDepart.getSelectedItemPosition() == 0) {
             timedef = RouteTimeDefinition.DEPART;
@@ -361,13 +366,17 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         if (searchDateTime != null) {
             d = searchDateTime;
         }
-        Intent i = RouteActivity.createIntent(getActivity(), from, to, d, timedef);
+
+        IrailRoutesRequest request = new IrailRoutesRequest(from, to, timedef, d);
+        persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
+
+        Intent i = RouteActivity.createIntent(getActivity(), request);
         startActivity(i);
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<RouteSuggestion> object) {
-        doSearch(object.getData().from, object.getData().to);
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailRoutesRequest> object) {
+        doSearch(object.getData().getOrigin(), object.getData().getDestination());
     }
 
     @Override
@@ -394,7 +403,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vDatetime.setText(day + " " + at + " " + time);
     }
 
-    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<RouteSuggestion>>> {
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailRoutesRequest>>> {
 
         private WeakReference<RouteSearchFragment> fragmentReference;
 
@@ -404,12 +413,12 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         @Override
-        protected List<Suggestion<RouteSuggestion>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<IrailRoutesRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllRoutes();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<RouteSuggestion>> suggestions) {
+        protected void onPostExecute(List<Suggestion<IrailRoutesRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there
@@ -450,10 +459,8 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
             fragment.vFromText.setAdapter(autocompleteAdapter);
             fragment.vToText.setAdapter(autocompleteAdapter);
-
         }
     }
 
-    ;
 }
 

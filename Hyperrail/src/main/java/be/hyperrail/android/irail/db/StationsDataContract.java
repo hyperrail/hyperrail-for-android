@@ -135,6 +135,7 @@ class StationsDataContract {
 
     static final String SQL_CREATE_INDEX_NAME = " CREATE INDEX stations_station_name ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns.COLUMN_NAME_NAME + ");";
     static final String SQL_CREATE_INDEX_ID = " CREATE INDEX stations_station_id ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns._ID + ");";
+    static final String SQL_CREATE_INDEX_FACILITIES_ID = " CREATE INDEX facilities_station_id ON " + StationFacilityColumns.TABLE_NAME + " (" + StationFacilityColumns._ID + ");";
     static final String SQL_DELETE_TABLE_STATIONS =
             "DROP TABLE IF EXISTS " + StationsDataColumns.TABLE_NAME + ";";
 

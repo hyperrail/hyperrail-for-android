@@ -11,7 +11,6 @@ import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -24,16 +23,20 @@ import android.widget.LinearLayout;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import be.hyperrail.android.activities.LiveboardActivity;
-import be.hyperrail.android.activities.TrainActivity;
+import be.hyperrail.android.activities.searchResult.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.viewgroup.NotificationLayoutBuilder;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -49,9 +52,9 @@ public class TrainstopContextMenu {
     private Route route;
     private TrainStop mTrainStop;
     private Transfer mArrivalTransfer;
-    private Context mContext;
+    private Activity mContext;
 
-    public TrainstopContextMenu(Context context, TrainStop stop) {
+    public TrainstopContextMenu(Activity context, TrainStop stop) {
         this(context);
         this.route = null;
         this.mTrainStop = stop;
@@ -59,7 +62,7 @@ public class TrainstopContextMenu {
         this.mDepartureTransfer = null;
     }
 
-    public TrainstopContextMenu(Context context, Transfer transfer, Route route) {
+    public TrainstopContextMenu(Activity context, Transfer transfer, Route route) {
         this(context);
         this.mArrivalTransfer = transfer;
         this.mDepartureTransfer = transfer;
@@ -67,7 +70,7 @@ public class TrainstopContextMenu {
         this.mTrainStop = null;
     }
 
-    public TrainstopContextMenu(Context context, Transfer departureTransfer, Transfer arrivalTransfer, Route route) {
+    public TrainstopContextMenu(Activity context, Transfer departureTransfer, Transfer arrivalTransfer, Route route) {
         this(context);
         this.mArrivalTransfer = arrivalTransfer;
         this.mDepartureTransfer = departureTransfer;
@@ -75,9 +78,9 @@ public class TrainstopContextMenu {
         this.mTrainStop = null;
     }
 
-    private TrainstopContextMenu(Context context) {
+    private TrainstopContextMenu(Activity context) {
         this.mContext = context;
-        this.mActivityView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
+        this.mActivityView = context.getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     public void show() {
@@ -102,8 +105,11 @@ public class TrainstopContextMenu {
         final String mArrivalEtaText;
         final String mDepartureEtaText;
 
+        boolean occupancyVisible = true;
+
+        // TODO: clean this mess up
         if (this.mTrainStop != null) {
-            mDepartureConnection = mTrainStop.getSemanticDepartureConnection();
+            mDepartureConnection = mTrainStop.getDepartureSemanticId();
             mStationSemanticId = mTrainStop.getStation().getSemanticId();
             mVehicleSemanticId = mTrainStop.getTrain().getSemanticId();
             mDateTime = mTrainStop.getDepartureTime();
@@ -121,7 +127,7 @@ public class TrainstopContextMenu {
 
             // Occupancy + departure ETA
             if (mDepartureTransfer != null && mDepartureTransfer.getDepartingTrain() != null && !mDepartureTransfer.getDepartingTrain().getId().equals("WALK")) {
-                mDepartureConnection = mDepartureTransfer.getDepartureConnectionSemanticId();
+                mDepartureConnection = mDepartureTransfer.getDepartureSemanticId();
                 mStationSemanticId = mDepartureTransfer.getStation().getSemanticId();
                 mVehicleSemanticId = mDepartureTransfer.getDepartingTrain().getSemanticId();
                 mDateTime = mDepartureTransfer.getDepartureTime();
@@ -129,6 +135,8 @@ public class TrainstopContextMenu {
                 mDepartureEtaText = String.format(mContext.getString(R.string.ETA_transfer_departure), DateTimeFormat.forPattern("hh:mm").print(mDepartureTransfer.getDelayedDepartureTime()), mDepartureTransfer.getStation().getLocalizedName(), mDepartureTransfer.getDepartingTrain().getName());
             } else {
                 vOccupancyContainer.setVisibility(View.GONE);
+                occupancyVisible = false;
+
                 mDepartureEtaText = null;
 
                 mDepartureConnection = null;
@@ -160,77 +168,83 @@ public class TrainstopContextMenu {
             }
         }
 
-        vLowOccupancy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mApiInstance.postOccupancy(
-                        mDepartureConnection,
-                        mStationSemanticId,
-                        mVehicleSemanticId,
-                        mDateTime,
-                        OccupancyLevel.LOW,
-                        new IRailSuccessResponseListener<Boolean>() {
-                            @Override
-                            public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
-                            }
-                        }, new IRailErrorResponseListener<Boolean>() {
-                            @Override
-                            public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
-                            }
-                        }, null);
-                vDialog.dismiss();
-            }
-        });
+        if (occupancyVisible && mDepartureConnection != null) {
+            vLowOccupancy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IrailPostOccupancyRequest request = new IrailPostOccupancyRequest(mDepartureConnection,
+                            mStationSemanticId,
+                            mVehicleSemanticId,
+                            mDateTime,
+                            OccupancyLevel.LOW);
+                    request.setCallback(
 
-        vMediumOccupancy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mApiInstance.postOccupancy(
-                        mDepartureConnection,
-                        mStationSemanticId,
-                        mVehicleSemanticId,
-                        mDateTime,
-                        OccupancyLevel.MEDIUM,
-                        new IRailSuccessResponseListener<Boolean>() {
-                            @Override
-                            public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
-                            }
-                        }, new IRailErrorResponseListener<Boolean>() {
-                            @Override
-                            public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
-                            }
-                        }, null);
-                vDialog.dismiss();
-            }
-        });
+                            new IRailSuccessResponseListener<Boolean>() {
+                                @Override
+                                public void onSuccessResponse(Boolean data, Object tag) {
+                                    Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                }
+                            }, new IRailErrorResponseListener() {
+                                @Override
+                                public void onErrorResponse(Exception data, Object tag) {
+                                    Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                }
+                            }, null);
+                    mApiInstance.postOccupancy(request);
+                    vDialog.dismiss();
+                }
+            });
 
-        vHighOccupancy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mApiInstance.postOccupancy(
-                        mDepartureConnection,
-                        mStationSemanticId,
-                        mVehicleSemanticId,
-                        mDateTime,
-                        OccupancyLevel.HIGH,
-                        new IRailSuccessResponseListener<Boolean>() {
-                            @Override
-                            public void onSuccessResponse(Boolean data, Object tag) {
-                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
-                            }
-                        }, new IRailErrorResponseListener<Boolean>() {
-                            @Override
-                            public void onErrorResponse(Exception data, Object tag) {
-                                Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
-                            }
-                        }, null);
-                vDialog.dismiss();
-            }
-        });
+            vMediumOccupancy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IrailPostOccupancyRequest request = new IrailPostOccupancyRequest(mDepartureConnection,
+                            mStationSemanticId,
+                            mVehicleSemanticId,
+                            mDateTime,
+                            OccupancyLevel.MEDIUM);
+                    request.setCallback(
+
+                            new IRailSuccessResponseListener<Boolean>() {
+                                @Override
+                                public void onSuccessResponse(Boolean data, Object tag) {
+                                    Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                }
+                            }, new IRailErrorResponseListener() {
+                                @Override
+                                public void onErrorResponse(Exception data, Object tag) {
+                                    Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                }
+                            }, null);
+                    mApiInstance.postOccupancy(request);
+                }
+            });
+
+            vHighOccupancy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IrailPostOccupancyRequest request = new IrailPostOccupancyRequest(mDepartureConnection,
+                            mStationSemanticId,
+                            mVehicleSemanticId,
+                            mDateTime,
+                            OccupancyLevel.HIGH);
+                    request.setCallback(
+
+                            new IRailSuccessResponseListener<Boolean>() {
+                                @Override
+                                public void onSuccessResponse(Boolean data, Object tag) {
+                                    Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
+                                }
+                            }, new IRailErrorResponseListener() {
+                                @Override
+                                public void onErrorResponse(Exception data, Object tag) {
+                                    Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
+                                }
+                            }, null);
+                    mApiInstance.postOccupancy(request);
+                }
+            });
+        }
 
         // When this contextmenu was called on a train stop or transfer in a route (but not on a train in a route!)
         if (mTrainStop != null || mArrivalTransfer == mDepartureTransfer) {
@@ -268,15 +282,15 @@ public class TrainstopContextMenu {
                     if (mTrainStop != null) {
                         mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mTrainStop));
                         mBuilder.setSubText("Train at  " + mTrainStop.getStation().getLocalizedName() + " towards " + mTrainStop.getTrain().getDirection().getLocalizedName());
-                        resultIntent = TrainActivity.createIntent(mContext, mTrainStop.getTrain(), mTrainStop.getStation(), mTrainStop.getDepartureTime());
+                        resultIntent = TrainActivity.createIntent(mContext, new IrailTrainRequest(mTrainStop.getTrain().getId(), mTrainStop.getDepartureTime()));
 
                     } else {
                         if (mDepartureTransfer != null) {
                             mBuilder.setSubText("Transfer at  " + mDepartureTransfer.getStation().getLocalizedName());
-                            resultIntent = LiveboardActivity.createIntent(mContext, mDepartureTransfer.getStation(), mDepartureTransfer.getArrivalTime());
+                            resultIntent = LiveboardActivity.createIntent(mContext, new IrailLiveboardRequest(mDepartureTransfer.getStation(), RouteTimeDefinition.DEPART, mDepartureTransfer.getArrivalTime()));
                         } else {
                             mBuilder.setSubText("Transfer at  " + mArrivalTransfer.getStation().getLocalizedName());
-                            resultIntent = LiveboardActivity.createIntent(mContext, mArrivalTransfer.getStation(), mArrivalTransfer.getArrivalTime());
+                            resultIntent = LiveboardActivity.createIntent(mContext, new IrailLiveboardRequest(mArrivalTransfer.getStation(), RouteTimeDefinition.DEPART, mArrivalTransfer.getArrivalTime()));
                         }
                         mBuilder.setCustomBigContentView(NotificationLayoutBuilder.createNotificationLayout(mContext, mArrivalTransfer));
 

@@ -12,6 +12,9 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
@@ -21,18 +24,24 @@ import be.hyperrail.android.irail.contracts.IrailDataResponse;
  */
 public class ApiResponse<T> implements IrailDataResponse<T> {
 
+    @Nullable
     private final T data;
+
     private final boolean isCached;
     private final boolean isOffline;
+
+    @Nullable
     private final Exception exception;
+
+    @NonNull
     private final DateTime time;
 
     public ApiResponse(T data) {
-        this(data, null);
+        this(data, false, false, null);
     }
 
     @Deprecated
-    public ApiResponse(T data, Exception exception) {
+    public ApiResponse(@Nullable T data, @Nullable Exception exception) {
         this.data = data;
         this.exception = exception;
         this.isCached = false;
@@ -40,7 +49,7 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
         this.time = new DateTime();
     }
 
-    public ApiResponse(T data, boolean isCached, boolean isOffline, Exception exception) {
+    public ApiResponse(@Nullable T data, boolean isCached, boolean isOffline, @Nullable Exception exception) {
         this.data = data;
         this.isCached = isCached;
         this.isOffline = isOffline;
@@ -48,6 +57,7 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
         this.time = new DateTime();
     }
 
+    @Nullable
     @Override
     public T getData() {
         return data;
@@ -58,11 +68,13 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
         return (exception == null);
     }
 
+    @Nullable
     @Override
     public Exception getException() {
         return exception;
     }
 
+    @NonNull
     @Override
     public DateTime getTime() {
         return time;

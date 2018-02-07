@@ -10,12 +10,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.irail.contracts;
+package be.hyperrail.android.fragments.searchResult;
 
 import android.support.annotation.NonNull;
 
-public interface IRailErrorResponseListener {
+import be.hyperrail.android.irail.contracts.IrailRequest;
+import be.hyperrail.android.util.OnDateTimeSetListener;
 
-    void onErrorResponse(@NonNull Exception e, Object tag);
+public interface ResultFragment<T extends IrailRequest> extends OnDateTimeSetListener {
 
+    void setRequest(@NonNull T request);
+
+    T getRequest();
 }

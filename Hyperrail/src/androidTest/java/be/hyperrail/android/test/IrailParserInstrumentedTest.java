@@ -77,7 +77,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(false, liveboard.getStops()[1].hasLeft());
 
         assertEquals("http://irail.be/vehicle/L783", liveboard.getStops()[1].getTrain().getSemanticId());
-        assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getSemanticDepartureConnection());
+        assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getDepartureSemanticId());
         assertEquals(OccupancyLevel.HIGH, liveboard.getStops()[1].getOccupancyLevel());
         // END tests stop 1
     }
@@ -107,7 +107,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(new DateTime((long) 1510839540 * 1000), train.getStops()[2].getDepartureTime());
         assertEquals(new Duration(60 * 1000), train.getStops()[2].getDepartureDelay());
         assertEquals(true, train.getStops()[2].hasLeft());
-        assertEquals("http://irail.be/connections/8844008/20171116/IC537", train.getStops()[2].getSemanticDepartureConnection());
+        assertEquals("http://irail.be/connections/8844008/20171116/IC537", train.getStops()[2].getDepartureSemanticId());
     }
 
     @Test

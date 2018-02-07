@@ -24,7 +24,6 @@
 
 package be.hyperrail.android.activities;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +32,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
@@ -45,11 +45,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.DisturbanceListFragment;
 import be.hyperrail.android.fragments.FeedbackFragment;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.fragments.RouteSearchFragment;
 import be.hyperrail.android.fragments.TrainSearchFragment;
+import be.hyperrail.android.fragments.searchResult.DisturbanceListFragment;
 
 /**
  * The main activity contains a drawer layout and fragments for search, disturbances and settings
@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment mCurrentFragment;
     private int mCurrentView;
 
+    // Define this as an enumeration type, so compilers can give better advice on possible errors
+    @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE,VIEW_TYPE_TRAIN,VIEW_TYPE_SETTINGS,VIEW_TYPE_FEEDBACK})
+    public @interface ViewType {}
     private static final int VIEW_TYPE_LIVEBOARD = 0;
     private static final int VIEW_TYPE_ROUTE = 10;
     private static final int VIEW_TYPE_DISTURBANCE = 20;
@@ -105,19 +108,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        // migrate to 0.9.13 by checking if an old field still exists (this field will be removed by this migration)
-        // clearing is required for both history, favorites and settings due to major changes. Can be deleted by 27 november
-        // TODO: remove code for next production release
-        if (sharedPreferences.contains("migrated1.9.1")) {
-            AlertDialog builder = (new AlertDialog.Builder(this)).create();
-            builder.setTitle("Your settings have been reset");
-            builder.setMessage("In order to complete the update to this version of hyperrail, we had to reset your settings and history. We're sorry for the inconvenience.");
-            builder.show();
-            sharedPreferences.edit()
-                    .clear().commit();
-        }
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
@@ -198,10 +188,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param i    The view type constant
      * @param args The parameters for the fragment
      */
-    private void setView(int i, Bundle args) {
+    private void setView(@ViewType int i, Bundle args) {
         final Fragment frg;
         switch (i) {
             default:
+            case VIEW_TYPE_SETTINGS:
+                // No fragment associated with this view type
             case VIEW_TYPE_LIVEBOARD:
                 frg = LiveboardSearchFragment.newInstance();
                 setSubTitle(R.string.title_liveboard);

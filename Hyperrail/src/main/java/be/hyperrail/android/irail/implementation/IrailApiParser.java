@@ -53,7 +53,7 @@ public class IrailApiParser implements IrailParser {
         TrainStub firstTrain = new TrainStub(
                 departure.getString("vehicle"),
                 stationProvider.getStationByName(departure.getJSONObject("direction").getString("name")),
-        null);
+                null);
 
         TrainStub lastTrain = new TrainStub(
                 arrival.getString("vehicle"),
@@ -133,9 +133,10 @@ public class IrailApiParser implements IrailParser {
                             viaDeparture.getString("vehicle"),
                             stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")), null);
                 } else {
+                    // TODO: walking should be handled better. Allow other methods of transportation
                     trains[i + 1] = new TrainStub(
                             "WALK",
-                            null, null);
+                            stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")), null);
                 }
 
                 OccupancyLevel viaOccupancyLevel = OccupancyLevel.UNKNOWN;
@@ -173,24 +174,24 @@ public class IrailApiParser implements IrailParser {
         }
 
         Message[][] trainalerts = new Message[trains.length][];
-        for (int t = 0; t < trains.length; t++){
-            if (t == 0){
-                if (departure.has("alerts")){
+        for (int t = 0; t < trains.length; t++) {
+            if (t == 0) {
+                if (departure.has("alerts")) {
                     JSONArray alerts = departure.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
-                    for (int i =0; i < alerts.length(); i++){
+                    for (int i = 0; i < alerts.length(); i++) {
                         trainalerts[t][i] = new Message(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
                 }
             } else {
-                JSONObject viaDeparture = routeObject.getJSONObject("vias").getJSONArray("via").getJSONObject(t-1).getJSONObject("departure") ;
+                JSONObject viaDeparture = routeObject.getJSONObject("vias").getJSONArray("via").getJSONObject(t - 1).getJSONObject("departure");
 
-                if (viaDeparture.has("alerts")){
+                if (viaDeparture.has("alerts")) {
                     JSONArray alerts = viaDeparture.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
-                    for (int i =0; i < alerts.length(); i++){
+                    for (int i = 0; i < alerts.length(); i++) {
                         trainalerts[t][i] = new Message(alerts.getJSONObject(i));
                     }
                 } else {
@@ -355,7 +356,7 @@ public class IrailApiParser implements IrailParser {
             stops[i] = parseTrainStop(destination, t, jsonStops.getJSONObject(i));
         }
 
-        return new Train(id,uri, destination, stops[0].getStation(), longitude, latitude, stops);
+        return new Train(id, uri, destination, stops[0].getStation(), longitude, latitude, stops);
     }
 
     private static DateTime timestamp2date(String time) {

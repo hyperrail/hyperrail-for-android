@@ -12,6 +12,7 @@
 
 package be.hyperrail.android.viewgroup;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -34,15 +35,17 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.LiveboardActivity;
-import be.hyperrail.android.activities.TrainActivity;
+import be.hyperrail.android.activities.searchResult.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
-import be.hyperrail.android.irail.db.Station;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.util.DurationFormatter;
 
 public class RouteListItemLayout extends LinearLayout implements ListDataViewGroup<RouteResult, Route> {
@@ -185,7 +188,8 @@ public class RouteListItemLayout extends LinearLayout implements ListDataViewGro
             vAlertsText.setVisibility(View.GONE);
         }
 
-        RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(context, route, true);
+        // The initial call from an activity to the adapter responsible for this layout should pass the context in an activity!
+        RouteDetailCardAdapter adapter = new RouteDetailCardAdapter((Activity) context, route, true);
 
         // Launch intents to view details / click through
         adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
@@ -194,13 +198,13 @@ public class RouteListItemLayout extends LinearLayout implements ListDataViewGro
                 Intent i = null;
                 if (object instanceof Bundle) {
                     i = TrainActivity.createIntent(context,
-                            (TrainStub) ((Bundle) object).getSerializable("train"),
-                            (Station) ((Bundle) object).getSerializable("from"),
-                            (Station) ((Bundle) object).getSerializable("to"),
-                            (DateTime) ((Bundle) object).getSerializable("date"));
+                            new IrailTrainRequest(
+                                    ((TrainStub) ((Bundle) object).getSerializable("train")).getId(),
+                                    (DateTime) ((Bundle) object).getSerializable("date")
+                            ));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, ((Transfer) object).getStation());
+                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART, null));
                 }
                 context.startActivity(i);
             }

@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,18 +27,20 @@ import be.hyperrail.android.irail.db.Station;
 public class TrainStub implements Serializable {
 
     private final String uri;
+
+    @NonNull
     protected String id;
     protected Station direction;
 
     // Direction is required, since we need to display something
-    public TrainStub(String id, Station direction, String uri) {
-        if (id != null && !id.startsWith("BE.NMBS.")) {
+    public TrainStub(@NonNull String id, @NonNull Station direction, String uri) {
+
+        // TODO: all ids should have a correct prefix already, should not be tightly coupled to iRail
+        if (!id.startsWith("BE.NMBS.")) {
             id = "BE.NMBS." + id;
         }
 
-        if (id != null) {
-            this.id = id.toUpperCase();
-        }
+        this.id = id.toUpperCase();
 
         this.direction = direction;
         this.uri = uri;
@@ -47,6 +51,7 @@ public class TrainStub implements Serializable {
      *
      * @return ID, for example BE.NMBS.IC4516
      */
+    @NonNull
     public String getId() {
         return id;
     }
@@ -66,9 +71,12 @@ public class TrainStub implements Serializable {
      * @return Human-readable name
      */
     public String getName() {
-        return getType() + " " + getNumber();
+        return getTrainName(id);
     }
 
+    public static String getTrainName(String id){
+        return getTrainType(id) + " " + getTrainNumber(id);
+    }
     /**
      * ID without leading BE.NMBS, for example IC4516
      *
@@ -97,10 +105,13 @@ public class TrainStub implements Serializable {
      * @return The type of this train
      */
     public String getType() {
-        String rid = getReducedId();
+        return getTrainType(getReducedId());
+    }
+
+    public static String getTrainType(String id){
         // S trains are special
-        if (rid.startsWith("S")) {
-            return rid.substring(0, rid.length() - 4);
+        if (id.startsWith("S")) {
+            return id.substring(0, id.length() - 4);
         }
 
         String pattern = "(\\w+?)(\\d+)";
@@ -109,7 +120,7 @@ public class TrainStub implements Serializable {
         Pattern r = Pattern.compile(pattern);
 
         // Now create matcher object.
-        Matcher m = r.matcher(rid);
+        Matcher m = r.matcher(id);
         if (m.find()) {
             return m.group(1);
         }
@@ -122,10 +133,13 @@ public class TrainStub implements Serializable {
      * @return The number of this train
      */
     public String getNumber() {
-        String rid = getReducedId();
+        return getTrainNumber(getReducedId());
+    }
+
+    public static String getTrainNumber(String id){
         // S trains are special
-        if (rid.startsWith("S")) {
-            return rid.substring(rid.length() - 4);
+        if (id.startsWith("S")) {
+            return id.substring(id.length() - 4);
         }
 
         String pattern = "(\\w+?)(\\d+)";
@@ -134,7 +148,7 @@ public class TrainStub implements Serializable {
         Pattern r = Pattern.compile(pattern);
 
         // Now create matcher object.
-        Matcher m = r.matcher(rid);
+        Matcher m = r.matcher(id);
         if (m.find()) {
             return m.group(2);
         }

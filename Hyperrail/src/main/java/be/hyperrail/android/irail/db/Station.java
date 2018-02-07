@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.irail.db;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.Serializable;
@@ -24,7 +26,7 @@ import be.hyperrail.android.irail.factories.IrailFactory;
  * <p>
  * https://github.com/iRail/stations/blob/master/stations.csv
  */
-public class Station implements Serializable {
+public class Station implements Serializable, Comparable {
 
     protected String id;
     protected String name;
@@ -43,7 +45,7 @@ public class Station implements Serializable {
     }
 
     public Station(String id, String name, String nl, String fr, String de, String en, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
-        if (!id.startsWith("BE.NMBS.")){
+        if (!id.startsWith("BE.NMBS.")) {
             throw new IllegalArgumentException("Station IDs should start with BE.NMBS!");
         }
 
@@ -156,5 +158,13 @@ public class Station implements Serializable {
     @Override
     public boolean equals(Object obj) {
         return obj != null && obj instanceof Station && this.getId().equals(((Station) obj).getId());
+    }
+
+    @Override
+    public int compareTo(@NonNull Object o) {
+        if (!(o instanceof Station)) {
+            return -1;
+        }
+        return getLocalizedName().compareTo(((Station) o).getLocalizedName());
     }
 }

@@ -25,8 +25,9 @@ import android.widget.TextView;
 import java.util.List;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.persistence.StationSuggestion;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
@@ -36,12 +37,12 @@ import be.hyperrail.android.persistence.SuggestionType;
 public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationSuggestionsCardAdapter.StationViewHolder> {
 
     private final Context context;
-    private List<Suggestion<StationSuggestion>> suggestedStations;
+    private List<Suggestion<IrailLiveboardRequest>> suggestedStations;
     private Station[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
-    private OnRecyclerItemLongClickListener<Suggestion<StationSuggestion>> longClickListener;
-    private OnRecyclerItemClickListener<Suggestion<StationSuggestion>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> listener;
 
     private stationType currentDisplayType = stationType.UNDEFINED;
 
@@ -124,7 +125,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
+                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new IrailLiveboardRequest(station, RouteTimeDefinition.DEPART, null), SuggestionType.LIST));
                 }
             }
         });
@@ -133,7 +134,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new StationSuggestion(station), SuggestionType.LIST));
+                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new IrailLiveboardRequest(station, RouteTimeDefinition.DEPART, null), SuggestionType.LIST));
                 }
                 return false;
             }
@@ -145,9 +146,9 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             position = position - stations.length;
         }
 
-        final Suggestion<StationSuggestion> q = suggestedStations.get(position);
+        final Suggestion<IrailLiveboardRequest> q = suggestedStations.get(position);
 
-        holder.vStation.setText(q.getData().getLocalizedName());
+        holder.vStation.setText(q.getData().getStation().getLocalizedName());
 
         switch (q.getType()) {
             case FAVORITE:
@@ -183,7 +184,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         });
     }
 
-    public void setSuggestedStations(List<Suggestion<StationSuggestion>> suggestedStations) {
+    public void setSuggestedStations(List<Suggestion<IrailLiveboardRequest>> suggestedStations) {
         this.suggestedStations = suggestedStations;
         this.notifyDataSetChanged();
     }
@@ -203,11 +204,11 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<StationSuggestion>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<StationSuggestion>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> listener) {
         this.longClickListener = listener;
     }
 

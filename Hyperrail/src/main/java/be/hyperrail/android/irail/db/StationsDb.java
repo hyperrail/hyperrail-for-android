@@ -29,6 +29,7 @@ import java.util.Scanner;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 
+import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_ID;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_NAME;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_TABLE_FACILITIES;
@@ -48,7 +49,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 18012500;
+    private static final int DATABASE_VERSION = 18012505;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -58,9 +59,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     private final Context context;
 
-    public StationsDb(Context applicationContext) {
-        super(applicationContext, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = applicationContext;
+    public StationsDb(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     /**
@@ -68,6 +69,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      *
      * @param db Handle in which the database should be created.
      */
+    @AddTrace(name = "StationsDb.onCreate")
     public void onCreate(SQLiteDatabase db) {
         FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Creating stations database");
 
@@ -75,21 +77,27 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         db.execSQL(SQL_CREATE_TABLE_FACILITIES);
         db.execSQL(SQL_CREATE_INDEX_ID);
         db.execSQL(SQL_CREATE_INDEX_NAME);
+        db.execSQL(SQL_CREATE_INDEX_FACILITIES_ID);
 
         FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Filling stations database");
-        fill(db);
+        fillStations(db);
+        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations table ready");
+        fillFacilities(db);
+        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations facilities table ready");
         FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations database ready");
     }
 
     /**
      * Fill the database with data from the embedded CSV file (raw resource).
      *
-     * @param db The database to fill
+     * @param db The database to fillStations
      */
-    @AddTrace(name = "fillStationsDb")
-    private void fill(SQLiteDatabase db) {
+    @AddTrace(name = "StationsDb.fillStations")
+    private void fillStations(SQLiteDatabase db) {
 
+        db.beginTransaction();
         try (Scanner lines = new Scanner(context.getResources().openRawResource(R.raw.stations))) {
+
             lines.useDelimiter("\n");
 
             while (lines.hasNext()) {
@@ -148,6 +156,16 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 }
             }
         }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+    }
+
+    @AddTrace(name = "StationsDb.fillFacilities")
+    public void fillFacilities(SQLiteDatabase db) {
+
+        db.beginTransaction();
 
         try (Scanner lines = new Scanner(context.getResources().openRawResource(R.raw.stationfacilities))) {
             lines.useDelimiter("\n");
@@ -249,6 +267,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 }
             }
         }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -274,10 +295,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     Station[] stationsOrderedBySizeCache;
 
     @Override
-    @AddTrace(name="StationsDb.getStationsOrderBySize")
+    @AddTrace(name = "StationsDb.getStationsOrderBySize")
     public Station[] getStationsOrderBySize() {
 
-        if (stationsOrderedBySizeCache != null){
+        if (stationsOrderedBySizeCache != null) {
             return stationsOrderedBySizeCache;
         }
 
@@ -305,7 +326,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+        
 
         stationsOrderedBySizeCache = stations;
 
@@ -316,10 +337,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsByNameOrderBySize")
+    @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
     public Station[] getStationsByNameOrderBySize(String name) {
-        name = cleanAccents(name);
         SQLiteDatabase db = this.getReadableDatabase();
+        name = cleanAccents(name);
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 new String[]{
@@ -343,7 +364,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+        
         return stations;
     }
 
@@ -351,7 +372,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsOrderByLocation")
+    @AddTrace(name = "StationsDb.getStationsOrderByLocation")
     public Station[] getStationsOrderByLocation(Location location) {
         return this.getStationsByNameOrderByLocation("", location);
     }
@@ -360,7 +381,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsByNameOrderByLocation")
+    @AddTrace(name = "StationsDb.getStationsByNameOrderByLocation")
     public Station[] getStationsByNameOrderByLocation(String name, Location location) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -402,7 +423,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsOrderByLocationAndSize")
+    @AddTrace(name = "StationsDb.getStationsOrderByLocationAndSize")
     public Station[] getStationsOrderByLocationAndSize(Location location, int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
@@ -456,7 +477,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationNames")
+    @AddTrace(name = "StationsDb.getStationNames")
     public String[] getStationNames(Station[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
@@ -475,11 +496,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationById")
+    @AddTrace(name = "StationsDb.getStationById")
     public Station getStationById(String id) {
-
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 new String[]{
@@ -517,10 +536,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationByName")
+    @AddTrace(name = "StationsDb.getStationByName")
     public Station getStationByName(String name) {
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
         String wcName = name.replaceAll("[^A-Za-z]", "%");
@@ -548,7 +566,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         if (c.getCount() < 1) {
 
             c.close();
-            db.close();
+            
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/") - 1);
@@ -577,9 +595,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     }
 
     public StationFacilities getStationFacilitiesById(String id) {
-
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationFacilityColumns.TABLE_NAME,
                 new String[]{
@@ -628,7 +644,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         if (c.getCount() == 0) {
             c.close();
-            db.close();
+            
             return null;
         }
 

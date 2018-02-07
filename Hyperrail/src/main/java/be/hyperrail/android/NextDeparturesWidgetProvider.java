@@ -13,8 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
-import be.hyperrail.android.activities.LiveboardActivity;
+import be.hyperrail.android.activities.searchResult.LiveboardActivity;
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
+import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_DELETED;
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_DISABLED;
@@ -45,7 +47,7 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
             int appWidgetId = appWidgetIds[i];
             Station mStation = null; // todo: load
             // Create an Intent to launch ExampleActivity
-            Intent intent = LiveboardActivity.createIntent(context, mStation);
+            Intent intent = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(mStation, RouteTimeDefinition.DEPART, null));
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
             // Get the layout for the App Widget and attach an on-click listener
