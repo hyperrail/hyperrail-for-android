@@ -415,7 +415,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        
+        db.close();
         return stations;
     }
 
@@ -457,7 +457,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] stations = loadStationCursor(c);
 
         c.close();
-        
+        db.close();
 
         if (stations == null) {
             return null;
@@ -523,7 +523,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        
+        db.close();
 
         if (results == null) {
             return null;
@@ -585,7 +585,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        
+        db.close();
 
         if (results == null) {
             return null;
@@ -650,7 +650,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         StationFacilities result = loadFacilitiesCursor(c);
         c.close();
-        
+        db.close();
         return result;
 
     }
