@@ -157,7 +157,7 @@ public class Station implements Serializable, Comparable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj instanceof Station && this.getId().equals(((Station) obj).getId());
+        return obj instanceof Station && this.getId().equals(((Station) obj).getId());
     }
 
     @Override

@@ -11,7 +11,6 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".Launcher"
@@ -19,7 +18,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false"
-        android:theme="@style/Hyperrail">
+        android:theme="@style/Hyperrail"
+        android:fullBackupContent="@xml/backup_descriptor">
         <activity
             android:name=".activities.MainActivity"
             android:hardwareAccelerated="true"
@@ -53,10 +53,10 @@
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.searchResult.RouteDetailActivity"
-            android:parentActivityName=".activities.MainActivity"></activity>
+            android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.StationActivity"
-            android:parentActivityName=".activities.MainActivity"></activity>
+            android:parentActivityName=".activities.MainActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -79,7 +79,7 @@
                 android:resource="@xml/appwidget_provider" />
         </receiver>
 
-        <activity android:name=".activities.StationPickerActivity"></activity>
+        <activity android:name=".activities.StationPickerActivity" />
 
 
     </application>

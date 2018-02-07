@@ -37,7 +37,7 @@ import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
 
-public class RouteTrainItemLayout extends LinearLayout implements ListDataViewGroup<Route,TrainStub> {
+public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route,TrainStub> {
 
     protected TextView vDirection;
     protected TextView vDuration;

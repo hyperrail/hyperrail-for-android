@@ -343,6 +343,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
             explanation.show();
         } else {
+            // TODO: update to https://developers.google.com/android/reference/com/google/android/gms/location/FusedLocationProviderClient AFTER updating to Google Play Libraries to 12.0
+            // https://stackoverflow.com/a/46482065/1889679
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mGoogleApiClient);
 

@@ -67,6 +67,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         searchTime = null;
     }
 
+    @NonNull
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
@@ -76,10 +77,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
 
     @Override
     public boolean equalsIgnoringTime(IrailRequest other) {
-        if (!(other instanceof IrailLiveboardRequest)){
-            return false;
-        }
-        return this.getStation().equals(((IrailLiveboardRequest) other).getStation());
+        return other instanceof IrailLiveboardRequest && this.getStation().equals(((IrailLiveboardRequest) other).getStation());
     }
 
     @NonNull

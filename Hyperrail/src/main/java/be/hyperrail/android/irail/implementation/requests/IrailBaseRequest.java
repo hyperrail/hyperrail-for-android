@@ -13,6 +13,7 @@
 package be.hyperrail.android.irail.implementation.requests;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -42,18 +43,20 @@ public abstract class IrailBaseRequest<T> implements IrailRequest<T> {
         this.createdAt = new DateTime(json.getLong("created_at"));
     }
 
+    @NonNull
     public JSONObject toJson() throws JSONException {
         JSONObject json = new JSONObject();
         json.put("created_at", createdAt.getMillis());
         return json;
     }
 
+    @NonNull
     public DateTime getCreatedAt() {
         return createdAt;
     }
 
 
-    public void setCallback(IRailSuccessResponseListener<T> successResponseListener, IRailErrorResponseListener errorResponseListener, Object tag) {
+    public void setCallback(@Nullable IRailSuccessResponseListener<T> successResponseListener, @Nullable IRailErrorResponseListener errorResponseListener, @Nullable Object tag) {
         this.errorResponseListener = errorResponseListener;
         this.successResponseListener = successResponseListener;
         this.tag = tag;

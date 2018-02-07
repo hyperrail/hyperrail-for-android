@@ -33,7 +33,6 @@ public class ErrorDialogFactory {
      * @param exception The exception which occurred
      * @param context   The current context
      * @param finish    Whether or not to finish this activity
-     * @return The dialog which is shown
      */
     public static void showErrorDialog(final Exception exception, final Activity context, final boolean finish) {
         if (exception instanceof ServerError) {
@@ -153,7 +152,6 @@ public class ErrorDialogFactory {
      *
      * @param context The current context
      * @param finish  Whether or not to finish this activity
-     * @return The dialog which is shown
      */
     public static void showInvalidDepartureStationError(final Activity context, final boolean finish) {
         ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_not_found_title, R.string.error_departure_not_found_message, finish);
@@ -164,7 +162,6 @@ public class ErrorDialogFactory {
      *
      * @param context The current context
      * @param finish  Whether or not to finish this activity
-     * @return The dialog which is shown
      */
     public static void showInvalidDestinationStationError(final Activity context, final boolean finish) {
         ErrorDialogFactory.showCustomDialog(context, R.string.error_destination_not_found_title, R.string.error_destination_not_found_message, finish);
@@ -175,7 +172,6 @@ public class ErrorDialogFactory {
      *
      * @param context The current context
      * @param finish  Whether or not to finish this activity
-     * @return The dialog which is shown
      */
     public static void showDepartureEqualsArrivalStationError(final Activity context, final boolean finish) {
         ErrorDialogFactory.showCustomDialog(context, R.string.error_departure_equals_destination, R.string.error_departure_equals_destination_message, finish);

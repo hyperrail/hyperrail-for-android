@@ -5,7 +5,8 @@
               android:layout_height="match_parent"
               android:layout_margin="@dimen/listitem_content_padding"
               android:gravity="center_vertical"
-              android:orientation="horizontal">
+              android:orientation="horizontal"
+    android:baselineAligned="false">
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -92,7 +93,6 @@
         android:id="@+id/layout_platform_container"
         android:layout_width="@dimen/listitem_content_height_onehalf"
         android:layout_height="@dimen/listitem_content_height_onehalf"
-        android:layout_alignParentRight="true"
         android:background="@drawable/platform_train"
         android:gravity="center">
 

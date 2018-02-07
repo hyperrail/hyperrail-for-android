@@ -48,9 +48,6 @@ public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> imp
 
     @Override
     public boolean equalsIgnoringTime(IrailRequest other) {
-        if (!(other instanceof IrailDisturbanceRequest)){
-            return false;
-        }
-        return true;
+        return other instanceof IrailDisturbanceRequest;
     }
 }

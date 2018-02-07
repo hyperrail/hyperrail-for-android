@@ -92,7 +92,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
                 // Keep in mind that position shifts with the number of already placed date separators
                 if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();;
+                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
 
                     dayPosition++;
                 } else {

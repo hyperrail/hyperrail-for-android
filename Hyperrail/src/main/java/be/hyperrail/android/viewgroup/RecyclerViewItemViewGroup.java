@@ -9,10 +9,11 @@ package be.hyperrail.android.viewgroup;
 import android.content.Context;
 
 /**
- * Created by Bert on 23-11-2017.
+ * Interface for RecyclerView items
+ * @param <C>
+ * @param <T>
  */
-
-public interface ListDataViewGroup<C, T> {
+public interface RecyclerViewItemViewGroup<C, T> {
 
     /**
      * Bind data to this view

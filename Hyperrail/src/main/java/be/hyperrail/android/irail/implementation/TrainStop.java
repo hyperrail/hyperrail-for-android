@@ -64,17 +64,15 @@ public class TrainStop implements Serializable {
 
 
     protected static TrainStop buildDepartureTrainstop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
-        TrainStop t = new TrainStop(station, destination, train, platform, isPlatformNormal,
+        return new TrainStop(station, destination, train, platform, isPlatformNormal,
                 departureTime, null, departureDelay, null,
                 departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
-        return t;
     }
 
     protected static TrainStop buildArrivalTrainstop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
-        TrainStop t = new TrainStop(station, destination, train, platform, isPlatformNormal,
+        return new TrainStop(station, destination, train, platform, isPlatformNormal,
                 null, arrivalTime, null, arrivalDelay,
                 arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
-        return t;
     }
 
 

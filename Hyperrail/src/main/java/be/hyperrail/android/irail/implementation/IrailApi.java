@@ -100,16 +100,16 @@ public class IrailApi implements IrailDataProvider {
             // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
             routesRequest.setCallback(new IRailSuccessResponseListener<RouteResult>() {
                 @Override
-                public void onSuccessResponse(RouteResult data, Object tag) {
+                public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
                     for (Route r : data.getRoutes()) {
-                        if (r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
+                        if (r.getTransfers()[0].getDepartureSemanticId() != null && r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
                             request.notifySuccessListeners(r);
                         }
                     }
                 }
             }, new IRailErrorResponseListener() {
                 @Override
-                public void onErrorResponse(Exception e, Object tag) {
+                public void onErrorResponse(@NonNull Exception e, Object tag) {
                     request.notifyErrorListeners(e);
                 }
             }, request.getTag());
@@ -254,7 +254,7 @@ public class IrailApi implements IrailDataProvider {
         final IrailLiveboardRequest actualRequest = new IrailLiveboardRequest(request.getStation(), request.getTimeDefinition(), request.getSearchTime().minusHours(1));
         actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
-            public void onSuccessResponse(LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 List<TrainStop> stops = new ArrayList<>();
                 for (TrainStop s : data.getStops()) {
                     if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
@@ -265,7 +265,7 @@ public class IrailApi implements IrailDataProvider {
             }
         }, new IRailErrorResponseListener() {
             @Override
-            public void onErrorResponse(Exception e, Object tag) {
+            public void onErrorResponse(@NonNull Exception e, Object tag) {
                 request.notifyErrorListeners(e);
             }
         }, actualRequest.getTag());

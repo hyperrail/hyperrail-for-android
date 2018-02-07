@@ -78,8 +78,6 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         bind(mStation);
     }
 
-    private GoogleMap mMap;
-
     private void bind(Station station) {
         StationFacilities facilities = station.getStationFacilities();
         StringBuilder openingHoursString = new StringBuilder();
@@ -103,20 +101,19 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+    public void onMapReady(GoogleMap map) {
 
         // Add a marker in Sydney, Australia, and move the camera.
         LatLng stationLocation = new LatLng(mStation.getLatitude(), mStation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(stationLocation).title(mStation.getLocalizedName()));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(stationLocation, 15));
-        mMap.setBuildingsEnabled(true);
-        mMap.setTrafficEnabled(false);
-        mMap.setMinZoomPreference(10);
-        mMap.setMaxZoomPreference(18);
-        mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(stationLocation, stationLocation));
+        map.addMarker(new MarkerOptions().position(stationLocation).title(mStation.getLocalizedName()));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(stationLocation, 15));
+        map.setBuildingsEnabled(true);
+        map.setTrafficEnabled(false);
+        map.setMinZoomPreference(10);
+        map.setMaxZoomPreference(18);
+        map.setLatLngBoundsForCameraTarget(new LatLngBounds(stationLocation, stationLocation));
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
+            map.setMyLocationEnabled(true);
         }
     }
 }

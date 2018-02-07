@@ -103,10 +103,16 @@ public class Transfer implements Serializable {
     }
 
     public DateTime getDelayedDepartureTime() {
+        if (departureTime == null) {
+            return null;
+        }
         return departureTime.plus(departureDelay);
     }
 
     public DateTime getDelayedArrivalTime() {
+        if (arrivalTime == null) {
+            return null;
+        }
         return arrivalTime.plus(arrivalDelay);
     }
 

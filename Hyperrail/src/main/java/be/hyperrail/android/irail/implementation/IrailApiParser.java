@@ -50,14 +50,16 @@ public class IrailApiParser implements IrailParser {
         JSONObject departure = routeObject.getJSONObject("departure");
         JSONObject arrival = routeObject.getJSONObject("arrival");
 
+        Station direction = stationProvider.getStationByName(departure.getJSONObject("direction").getString("name"));
+
         TrainStub firstTrain = new TrainStub(
                 departure.getString("vehicle"),
-                stationProvider.getStationByName(departure.getJSONObject("direction").getString("name")),
+                direction,
                 null);
 
         TrainStub lastTrain = new TrainStub(
                 arrival.getString("vehicle"),
-                stationProvider.getStationByName(arrival.getJSONObject("direction").getString("name")),
+                direction,
                 null);
 
         OccupancyLevel departureOccupancyLevel = OccupancyLevel.UNKNOWN;

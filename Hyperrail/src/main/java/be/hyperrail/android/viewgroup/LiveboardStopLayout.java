@@ -25,7 +25,7 @@ import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
 
-public class LiveboardStopLayout extends LinearLayout implements ListDataViewGroup<LiveBoard, TrainStop> {
+public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<LiveBoard, TrainStop> {
 
     protected TextView vDestination;
     protected TextView vTrainType;

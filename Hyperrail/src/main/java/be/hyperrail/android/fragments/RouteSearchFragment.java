@@ -454,7 +454,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
             // Initialize autocomplete
 
-            ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<String>(fragment.getActivity(),
+            ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(fragment.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, stations);
 
             fragment.vFromText.setAdapter(autocompleteAdapter);

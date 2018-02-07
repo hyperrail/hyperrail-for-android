@@ -141,7 +141,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
     }
 
     @Override
-    public void onErrorResponse(Exception e, Object tag) {
+    public void onErrorResponse(@NonNull Exception e, Object tag) {
         if (this.errorResponseListener != null) {
             this.errorResponseListener.onErrorResponse(e, this);
         }

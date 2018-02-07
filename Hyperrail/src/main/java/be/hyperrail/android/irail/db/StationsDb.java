@@ -23,6 +23,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -326,7 +327,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        
+
 
         stationsOrderedBySizeCache = stations;
 
@@ -364,7 +365,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        
+
         return stations;
     }
 
@@ -492,12 +493,18 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         return results;
     }
 
+    HashMap<String, Station> mStationIdCache = new HashMap<>();
+    HashMap<String, Station> mStationNameCache = new HashMap<>();
+
     /**
      * @inheritDoc
      */
     @Override
     @AddTrace(name = "StationsDb.getStationById")
     public Station getStationById(String id) {
+        if (mStationIdCache.containsKey(id)) {
+            return mStationIdCache.get(id);
+        }
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
@@ -526,9 +533,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         db.close();
 
         if (results == null) {
+            FirebaseCrash.report(new IllegalStateException("ID Not found in station database! " + id));
             return null;
         }
-
+        mStationIdCache.put(id, results[0]);
         return results[0];
     }
 
@@ -538,6 +546,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     @Override
     @AddTrace(name = "StationsDb.getStationByName")
     public Station getStationByName(String name) {
+        if (mStationNameCache.containsKey(name)) {
+            return mStationNameCache.get(name);
+        }
+
         SQLiteDatabase db = getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
@@ -566,7 +578,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         if (c.getCount() < 1) {
 
             c.close();
-            
+
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/") - 1);
@@ -591,6 +603,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             return null;
         }
 
+        mStationNameCache.put(name, results[0]);
         return results[0];
     }
 
@@ -644,7 +657,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         if (c.getCount() == 0) {
             c.close();
-            
+
             return null;
         }
 

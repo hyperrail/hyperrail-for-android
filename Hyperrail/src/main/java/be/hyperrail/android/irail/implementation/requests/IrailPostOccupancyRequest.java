@@ -61,6 +61,7 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> impleme
         this.occupancy = OccupancyLevel.valueOf(jsonObject.getString("occupancy"));
     }
 
+    @NonNull
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();

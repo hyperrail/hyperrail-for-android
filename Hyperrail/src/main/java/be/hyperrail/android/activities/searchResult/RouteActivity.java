@@ -36,7 +36,9 @@ import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 
 public class RouteActivity extends ResultActivity implements OnDateTimeSetListener {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
+
     private IrailRoutesRequest mRequest;
     private RoutesFragment mFragment;
 

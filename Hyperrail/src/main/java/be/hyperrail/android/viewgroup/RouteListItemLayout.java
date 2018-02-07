@@ -48,7 +48,7 @@ import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 import be.hyperrail.android.util.DurationFormatter;
 
-public class RouteListItemLayout extends LinearLayout implements ListDataViewGroup<RouteResult, Route> {
+public class RouteListItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<RouteResult, Route> {
 
     protected TextView vDepartureTime;
     protected TextView vDepartureDelay;

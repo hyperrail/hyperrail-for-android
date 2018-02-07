@@ -14,6 +14,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -181,12 +182,12 @@ public class TrainstopContextMenu {
 
                             new IRailSuccessResponseListener<Boolean>() {
                                 @Override
-                                public void onSuccessResponse(Boolean data, Object tag) {
+                                public void onSuccessResponse(@NonNull Boolean data, Object tag) {
                                     Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                                 }
                             }, new IRailErrorResponseListener() {
                                 @Override
-                                public void onErrorResponse(Exception data, Object tag) {
+                                public void onErrorResponse(@NonNull Exception data, Object tag) {
                                     Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                                 }
                             }, null);
@@ -207,12 +208,12 @@ public class TrainstopContextMenu {
 
                             new IRailSuccessResponseListener<Boolean>() {
                                 @Override
-                                public void onSuccessResponse(Boolean data, Object tag) {
+                                public void onSuccessResponse(@NonNull Boolean data, Object tag) {
                                     Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                                 }
                             }, new IRailErrorResponseListener() {
                                 @Override
-                                public void onErrorResponse(Exception data, Object tag) {
+                                public void onErrorResponse(@NonNull Exception data, Object tag) {
                                     Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                                 }
                             }, null);
@@ -232,12 +233,12 @@ public class TrainstopContextMenu {
 
                             new IRailSuccessResponseListener<Boolean>() {
                                 @Override
-                                public void onSuccessResponse(Boolean data, Object tag) {
+                                public void onSuccessResponse(@NonNull Boolean data, Object tag) {
                                     Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_sent, Snackbar.LENGTH_LONG).show();
                                 }
                             }, new IRailErrorResponseListener() {
                                 @Override
-                                public void onErrorResponse(Exception data, Object tag) {
+                                public void onErrorResponse(@NonNull Exception data, Object tag) {
                                     Snackbar.make(TrainstopContextMenu.this.mActivityView, R.string.spitsgids_feedback_error, Snackbar.LENGTH_LONG).show();
                                 }
                             }, null);

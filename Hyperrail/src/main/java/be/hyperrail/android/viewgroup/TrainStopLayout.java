@@ -26,7 +26,7 @@ import be.hyperrail.android.irail.implementation.Train;
 import be.hyperrail.android.irail.implementation.TrainStop;
 
 
-public class TrainStopLayout extends LinearLayout implements ListDataViewGroup<Train, TrainStop> {
+public class TrainStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Train, TrainStop> {
 
     protected TextView vDestination;
     protected TextView vDepartureTime;

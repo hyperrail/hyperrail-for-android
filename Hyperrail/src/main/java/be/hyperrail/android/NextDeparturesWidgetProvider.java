@@ -30,6 +30,10 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
+        if (intent.getAction() == null) {
+            throw new IllegalStateException();
+        }
+
         switch (intent.getAction()) {
             case ACTION_APPWIDGET_UPDATE:
             case ACTION_APPWIDGET_DELETED:

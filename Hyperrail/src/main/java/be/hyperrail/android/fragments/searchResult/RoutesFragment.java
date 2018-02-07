@@ -144,7 +144,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                                 }
                             }, new IRailErrorResponseListener() {
                                 @Override
-                                public void onErrorResponse(Exception e, Object tag) {
+                                public void onErrorResponse(@NonNull Exception e, Object tag) {
                                     // only finish if we're loading new data
                                     ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                                     ErrorDialogFactory.showErrorDialog(e, getActivity(), mCurrentRouteResult == null);
@@ -187,7 +187,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
             }
         }, new IRailErrorResponseListener() {
             @Override
-            public void onErrorResponse(Exception e, Object tag) {
+            public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
                 ((RouteCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
                 ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
@@ -204,7 +204,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         RouteAppendHelper appendHelper = new RouteAppendHelper();
         appendHelper.prependRouteResult(mCurrentRouteResult, new IRailSuccessResponseListener<RouteResult>() {
             @Override
-            public void onSuccessResponse(RouteResult data, Object tag) {
+            public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
                 // data consists of both old and new routes
                 if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
                     // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
@@ -221,7 +221,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
             }
         }, new IRailErrorResponseListener() {
             @Override
-            public void onErrorResponse(Exception e, Object tag) {
+            public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
                 ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                 ((RouteCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();

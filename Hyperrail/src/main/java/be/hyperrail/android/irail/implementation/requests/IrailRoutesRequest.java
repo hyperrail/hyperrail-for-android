@@ -62,6 +62,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
         searchTime = null;
     }
 
+    @NonNull
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();

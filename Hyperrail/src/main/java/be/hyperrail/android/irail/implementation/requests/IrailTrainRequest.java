@@ -73,6 +73,7 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
         this.mTrainId = jsonObject.getString("id");
     }
 
+    @NonNull
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
@@ -164,9 +165,6 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
 
     @Override
     public boolean equalsIgnoringTime(IrailRequest other) {
-        if (!(other instanceof IrailTrainRequest)) {
-            return false;
-        }
-        return getTrainId().equals(((IrailTrainRequest) other).getTrainId());
+        return other instanceof IrailTrainRequest && getTrainId().equals(((IrailTrainRequest) other).getTrainId());
     }
 }

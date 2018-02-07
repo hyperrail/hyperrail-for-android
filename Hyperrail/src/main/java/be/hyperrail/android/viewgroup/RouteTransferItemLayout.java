@@ -37,7 +37,7 @@ import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
 
-public class RouteTransferItemLayout extends LinearLayout implements ListDataViewGroup<Route, Transfer> {
+public class RouteTransferItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, Transfer> {
     protected TextView vDepartureTime;
     protected LinearLayout vDepartureContainer;
     protected TextView vDepartureDelay;
