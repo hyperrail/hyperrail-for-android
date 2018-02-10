@@ -52,7 +52,6 @@ import be.hyperrail.android.BuildConfig;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
@@ -86,7 +85,7 @@ public class IrailApi implements IrailDataProvider {
     }
 
     private final Context context;
-    private final IrailParser parser;
+    private final IrailApiParser parser;
 
     private final int TAG_IRAIL_API_GET = 0;
 
@@ -212,7 +211,7 @@ public class IrailApi implements IrailDataProvider {
                     public void onResponse(JSONObject response) {
                         LiveBoard result;
                         try {
-                            result = parser.parseLiveboard(response, request.getSearchTime());
+                            result = parser.parseLiveboard(response, request.getSearchTime(), request.getTimeDefinition());
                         } catch (JSONException e) {
                             FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
                             FirebaseCrash.report(e);
@@ -251,7 +250,7 @@ public class IrailApi implements IrailDataProvider {
     }
 
     public void getLiveboardBefore(final IrailLiveboardRequest request) {
-        final IrailLiveboardRequest actualRequest = new IrailLiveboardRequest(request.getStation(), request.getTimeDefinition(), request.getSearchTime().minusHours(1));
+        final IrailLiveboardRequest actualRequest =  request.withSearchTime(request.getSearchTime().minusHours(1));
         actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
@@ -261,7 +260,7 @@ public class IrailApi implements IrailDataProvider {
                         stops.add(s);
                     }
                 }
-                request.notifySuccessListeners(new LiveBoard(data, stops.toArray(new TrainStop[]{}), data.getSearchTime()));
+                request.notifySuccessListeners(new LiveBoard(data, stops.toArray(new TrainStop[]{}), data.getSearchTime(), actualRequest.getTimeDefinition()));
             }
         }, new IRailErrorResponseListener() {
             @Override

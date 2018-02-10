@@ -7,17 +7,16 @@
 
 package be.hyperrail.android.activities.searchResult;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.ResultActivity;
 import be.hyperrail.android.fragments.searchResult.RouteFragment;
 import be.hyperrail.android.irail.implementation.Route;
 
@@ -43,7 +42,7 @@ public class RouteDetailActivity extends ResultActivity {
         setSubTitle(df.print(route.getDepartureTime()));
 
         Fragment fragment = RouteFragment.createInstance(route);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }
 
     @Override

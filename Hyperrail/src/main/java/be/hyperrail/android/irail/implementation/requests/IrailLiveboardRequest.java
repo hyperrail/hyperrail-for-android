@@ -40,7 +40,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
     private final Station station;
 
     @NonNull
-    private final RouteTimeDefinition timeDefinition;
+    private RouteTimeDefinition timeDefinition;
 
     @Nullable
     private DateTime searchTime;
@@ -65,6 +65,12 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         this.station = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("id"));
         timeDefinition = RouteTimeDefinition.DEPART;
         searchTime = null;
+    }
+
+    public IrailLiveboardRequest(IrailLiveboardRequest copy){
+        this.searchTime = copy.searchTime;
+        this.timeDefinition = copy.timeDefinition;
+        this.station = copy.station;
     }
 
     @NonNull
@@ -104,6 +110,18 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
 
     public boolean isNow() {
         return (this.searchTime == null);
+    }
+
+    public IrailLiveboardRequest withTimeDefinition(RouteTimeDefinition timeDefinition){
+        IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
+        clone.timeDefinition = timeDefinition;
+        return clone;
+    }
+
+    public IrailLiveboardRequest withSearchTime(DateTime searchTime){
+        IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
+        clone.searchTime = searchTime;
+        return clone;
     }
 
     @Override

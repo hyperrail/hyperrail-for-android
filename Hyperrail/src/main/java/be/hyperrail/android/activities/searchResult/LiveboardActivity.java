@@ -14,6 +14,10 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -23,7 +27,6 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.MainActivity;
-import be.hyperrail.android.activities.ResultActivity;
 import be.hyperrail.android.activities.StationActivity;
 import be.hyperrail.android.fragments.searchResult.LiveboardFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
@@ -42,6 +45,8 @@ public class LiveboardActivity extends ResultActivity {
     LiveboardFragment fragment;
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
+    private DeparturesArrivalsAdapter mDeparturesArrivalsAdapter;
+    private ViewPager mViewPager;
 
     public static Intent createIntent(Context context, IrailLiveboardRequest request) {
         Intent i = new Intent(context, LiveboardActivity.class);
@@ -78,9 +83,14 @@ public class LiveboardActivity extends ResultActivity {
         setTitle(mRequest.getStation().getLocalizedName());
         setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
 
-        fragment = LiveboardFragment.createInstance(mRequest);
+        mDeparturesArrivalsAdapter =
+                new DeparturesArrivalsAdapter(getSupportFragmentManager());
+        mViewPager = findViewById(R.id.pager);
+        mViewPager.setAdapter(mDeparturesArrivalsAdapter);
 
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setElevation(0);
+        }
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Bundle bundle = new Bundle();
@@ -180,5 +190,38 @@ public class LiveboardActivity extends ResultActivity {
     @Override
     public boolean isFavorite() {
         return mPersistentQueryProvider.isFavorite(mRequest);
+    }
+
+
+    private class DeparturesArrivalsAdapter extends FragmentPagerAdapter {
+
+        Fragment[] fragments = new Fragment[2];
+
+        DeparturesArrivalsAdapter(FragmentManager fm) {
+            super(fm);
+            fragments[0] = LiveboardFragment.createInstance(mRequest.withTimeDefinition(RouteTimeDefinition.DEPART));
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            if (i == 1 && fragments[1] == null) {
+                fragments[1] = LiveboardFragment.createInstance(mRequest.withTimeDefinition(RouteTimeDefinition.ARRIVE));
+            }
+            return fragments[i];
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if (position == 0) {
+                return LiveboardActivity.this.getString(R.string.title_departures);
+            } else {
+                return LiveboardActivity.this.getString(R.string.title_arrivals);
+            }
+        }
     }
 }

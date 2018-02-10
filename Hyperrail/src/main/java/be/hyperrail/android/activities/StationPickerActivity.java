@@ -40,7 +40,7 @@ public class StationPickerActivity extends AppCompatActivity implements OnRecycl
         }
         LiveboardSearchFragment frg = new LiveboardSearchFragment();
         frg.setAlternativeOnClickListener(this);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frg).commit();
     }
 
     @Override

@@ -57,7 +57,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.mShowDividers = false;
     }

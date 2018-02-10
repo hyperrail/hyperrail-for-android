@@ -13,10 +13,11 @@
 package be.hyperrail.android.fragments.searchResult;
 
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -53,13 +54,13 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
 
         // Initialize pull to refresh
-        vRefreshLayout = getActivity().findViewById(R.id.swiperefresh);
+        vRefreshLayout = view.findViewById(R.id.swiperefresh);
         vRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override

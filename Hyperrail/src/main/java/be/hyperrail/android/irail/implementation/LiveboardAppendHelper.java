@@ -97,7 +97,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                 if (newStops.length > 0) {
 
                     TrainStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), newStops);
-                    LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime());
+                    LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getTimeDefinition());
                     this.successResponseListener.onSuccessResponse(merged, tag);
                 } else {
                     // No results, search two hours further in case this day doesn't have results.
@@ -120,7 +120,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                 if (data.getStops().length > 0) {
                     // TODO: prevent duplicates by checking arrival time
                     TrainStop[] mergedStops = ArrayUtils.concatenate(data.getStops(), originalLiveboard.getStops());
-                    LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime());
+                    LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getTimeDefinition());
                     this.successResponseListener.onSuccessResponse(merged, tag);
                 } else {
                     attempt++;

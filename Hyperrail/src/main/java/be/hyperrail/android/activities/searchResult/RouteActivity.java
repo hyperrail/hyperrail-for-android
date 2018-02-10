@@ -23,7 +23,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.ResultActivity;
 import be.hyperrail.android.fragments.searchResult.RoutesFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
@@ -77,7 +76,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
 
         mFragment = RoutesFragment.createInstance(mRequest);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment).commit();
 
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getId() + mRequest.getOrigin().getId());

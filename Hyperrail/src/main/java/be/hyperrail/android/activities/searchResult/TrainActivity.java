@@ -20,7 +20,6 @@ import android.view.View;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.ResultActivity;
 import be.hyperrail.android.fragments.searchResult.TrainFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.TrainStub;
@@ -62,7 +61,7 @@ public class TrainActivity extends ResultActivity {
         super.onCreate(savedInstanceState);
 
         fragment = TrainFragment.createInstance(mRequest);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         setTitle(R.string.title_train);
         setSubTitle(TrainStub.getTrainName(mRequest.getTrainId()));

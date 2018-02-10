@@ -24,7 +24,6 @@
 
 package be.hyperrail.android.activities;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +35,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerNavigationHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                MainActivity.this.getFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
+                MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
             }
         },200);
 

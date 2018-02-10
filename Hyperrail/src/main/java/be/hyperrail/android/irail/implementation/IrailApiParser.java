@@ -12,13 +12,14 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
@@ -29,7 +30,7 @@ import be.hyperrail.android.irail.db.Station;
  *
  * @inheritDoc
  */
-public class IrailApiParser implements IrailParser {
+public class IrailApiParser  {
 
     private final IrailStationProvider stationProvider;
 
@@ -226,7 +227,6 @@ public class IrailApiParser implements IrailParser {
                 transfers, alerts, trainalerts, null);
     }
 
-    @Override
     public Disturbance[] parseDisturbances(JSONObject jsonData) throws JSONException {
 
         if (jsonData == null) {
@@ -252,7 +252,7 @@ public class IrailApiParser implements IrailParser {
         return result;
     }
 
-    public LiveBoard parseLiveboard(JSONObject jsonData, DateTime searchDate) throws JSONException {
+    public LiveBoard parseLiveboard(JSONObject jsonData, DateTime searchDate, RouteTimeDefinition timeDefinition) throws JSONException {
 
         if (jsonData == null) {
             throw new IllegalArgumentException("JSONObject is null");
@@ -270,7 +270,7 @@ public class IrailApiParser implements IrailParser {
             object = jsonData.getJSONObject("arrivals");
             items = object.getJSONArray("arrival");
         } else {
-            return new LiveBoard(s, new TrainStop[0], searchDate);
+            return new LiveBoard(s, new TrainStop[0], searchDate, timeDefinition);
         }
 
         TrainStop[] stops = new TrainStop[items.length()];
@@ -282,10 +282,12 @@ public class IrailApiParser implements IrailParser {
         return new LiveBoard(
                 s,
                 stops,
-                searchDate);
+                searchDate,
+                timeDefinition);
     }
 
     // allow providing station, so liveboards don't need to parse a station over and over
+    @NonNull
     private TrainStop parseLiveboardStop(Station stop, JSONObject item) throws JSONException {
         Station destination = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
 
@@ -310,6 +312,7 @@ public class IrailApiParser implements IrailParser {
     }
 
     // allow providing station, so liveboards don't need to parse a station over and over
+    @NonNull
     private TrainStop parseTrainStop(Station destination, TrainStub t, JSONObject item) throws JSONException {
         Station stop = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
 
@@ -358,13 +361,16 @@ public class IrailApiParser implements IrailParser {
             stops[i] = parseTrainStop(destination, t, jsonStops.getJSONObject(i));
         }
 
+        // Consider whether or not the searchDate should be stored
         return new Train(id, uri, destination, stops[0].getStation(), longitude, latitude, stops);
     }
 
+    @NonNull
     private static DateTime timestamp2date(String time) {
         return timestamp2date(Long.parseLong(time));
     }
 
+    @NonNull
     private static DateTime timestamp2date(long time) {
         return new DateTime(time * 1000);
     }

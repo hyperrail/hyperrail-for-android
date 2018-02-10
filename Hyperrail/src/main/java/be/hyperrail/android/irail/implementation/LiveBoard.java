@@ -16,6 +16,7 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
+import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 
 /**
@@ -24,10 +25,11 @@ import be.hyperrail.android.irail.db.Station;
  */
 public class LiveBoard extends Station implements Serializable {
 
-    private TrainStop[] stops;
-    private DateTime searchTime;
+    private TrainStop[] mStops;
+    private DateTime mSearchTime;
+    private final RouteTimeDefinition mTimeDefinition;
 
-    LiveBoard(Station station, TrainStop[] stops, DateTime searchTime) {
+    LiveBoard(Station station, TrainStop[] stops, DateTime searchTime, RouteTimeDefinition timeDefinition) {
         super(
                 station.getId(),
                 station.getName(),
@@ -40,15 +42,20 @@ public class LiveBoard extends Station implements Serializable {
                 station.getLatitude(),
                 station.getLongitude(),
                 station.getAvgStopTimes());
-        this.stops = stops;
-        this.searchTime = searchTime;
+        mStops = stops;
+        mSearchTime = searchTime;
+        mTimeDefinition = timeDefinition;
     }
 
     public TrainStop[] getStops() {
-        return stops;
+        return mStops;
     }
 
     public DateTime getSearchTime() {
-        return searchTime;
+        return mSearchTime;
+    }
+
+    public RouteTimeDefinition getTimeDefinition() {
+        return mTimeDefinition;
     }
 }

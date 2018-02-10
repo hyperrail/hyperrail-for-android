@@ -50,7 +50,8 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     public static LiveboardFragment createInstance(IrailLiveboardRequest request){
         LiveboardFragment frg = new LiveboardFragment();
-        frg.setRequest(request);
+        // Clone
+        frg.setRequest(new IrailLiveboardRequest(request));
         return frg;
     }
 
@@ -61,7 +62,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -108,12 +109,8 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
         showData(null);
 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
-        api.abortAllQueries();
 
-        // TODO: create clone constructor
-        // clone the request to prevent possible concurrency issues
-        IrailLiveboardRequest request = new IrailLiveboardRequest(mRequest.getStation(), mRequest.getTimeDefinition(), mRequest.getSearchTime());
-        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+        mRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
@@ -143,7 +140,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                 ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), mCurrentLiveboard == null);
             }
         }, null);
-        api.getLiveboard(request);
+        api.getLiveboard(mRequest);
     }
 
     @Override
