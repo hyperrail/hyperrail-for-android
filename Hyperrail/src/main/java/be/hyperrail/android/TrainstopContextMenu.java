@@ -218,6 +218,7 @@ public class TrainstopContextMenu {
                                 }
                             }, null);
                     mApiInstance.postOccupancy(request);
+                    vDialog.dismiss();
                 }
             });
 
@@ -243,6 +244,7 @@ public class TrainstopContextMenu {
                                 }
                             }, null);
                     mApiInstance.postOccupancy(request);
+                    vDialog.dismiss();
                 }
             });
         }
@@ -315,7 +317,7 @@ public class TrainstopContextMenu {
 
                     // Builds the notification and issues it.
                     mNotifyMgr.notify(mNotificationId, mBuilder.build());
-
+                    vDialog.dismiss();
                 }
             });
         } else {
@@ -332,6 +334,7 @@ public class TrainstopContextMenu {
                     sendIntent.putExtra(Intent.EXTRA_TEXT, mArrivalEtaText);
                     sendIntent.setType("text/plain");
                     mContext.startActivity(sendIntent);
+                    vDialog.dismiss();
                 }
             });
         }
@@ -339,7 +342,6 @@ public class TrainstopContextMenu {
         if (mDepartureEtaText == null) {
             vShareDepartureEta.setVisibility(View.GONE);
         } else {
-
             vShareDepartureEta.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -347,6 +349,7 @@ public class TrainstopContextMenu {
                     sendIntent.putExtra(Intent.EXTRA_TEXT, mDepartureEtaText);
                     sendIntent.setType("text/plain");
                     mContext.startActivity(sendIntent);
+                    vDialog.dismiss();
                 }
             });
         }
