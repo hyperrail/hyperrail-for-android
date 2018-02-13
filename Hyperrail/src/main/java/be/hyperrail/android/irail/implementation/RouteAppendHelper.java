@@ -24,6 +24,10 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.util.ArrayUtils;
 
+/**
+ * A class which allows to append route results.
+ * TODO: move to IrailApi API implementation as this is API specific
+ */
 public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResult>, IRailErrorResponseListener {
 
     private final int TAG_APPEND = 0;
@@ -95,7 +99,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
                 break;
             case TAG_PREPEND:
                 if (data.getRoutes().length > 0) {
-                    Route[] mergedRoutes = ArrayUtils.concatenate(data.getRoutes(),originalRouteResult.getRoutes());
+                    Route[] mergedRoutes = ArrayUtils.concatenate(data.getRoutes(), originalRouteResult.getRoutes());
                     RouteResult merged = new RouteResult(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
                     successResponseListener.onSuccessResponse(merged, tag);
                 } else {

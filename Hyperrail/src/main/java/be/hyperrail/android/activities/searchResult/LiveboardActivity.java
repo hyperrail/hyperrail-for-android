@@ -88,8 +88,12 @@ public class LiveboardActivity extends ResultActivity {
         mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mDeparturesArrivalsAdapter);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setElevation(0);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setElevation(0);
+            }
+            mViewPager.setElevation(4);
         }
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
