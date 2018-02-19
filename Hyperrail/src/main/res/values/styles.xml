@@ -9,13 +9,19 @@
     <style name="Hyperrail" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-
         <item name="colorAccent">@color/colorPrimary</item>
 
         <item name="windowActionModeOverlay">true</item>
         <item name="android:actionMenuTextColor">@color/colorTextLight</item>
-
         <item name="actionModeBackground">@color/colorPrimaryDark</item>
+        <item name="android:windowAnimationStyle">@style/Transitions</item>
+    </style>
+
+    <style name="Transitions" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@transition/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@transition/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/slide_out_right</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/slide_in_left</item>
     </style>
 
     <style name="ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">

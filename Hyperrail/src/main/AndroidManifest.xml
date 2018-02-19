@@ -79,8 +79,17 @@
                 android:resource="@xml/appwidget_provider" />
         </receiver>
 
-        <activity android:name=".activities.StationPickerActivity" />
+        <activity android:name=".activities.NextDeparturesWidgetConfiguration" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
 
+        </activity>
+
+
+
+        <service android:name=".NextDeparturesWidgetService"
+        android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
 

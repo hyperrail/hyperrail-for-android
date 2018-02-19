@@ -5,21 +5,15 @@
   ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 
-<!--
-  ~ This Source Code Form is subject to the terms of the Mozilla Public
-  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
-  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
-  -->
-
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
                     android:minWidth="110dp"
                     android:minResizeWidth="110dp"
                     android:minHeight="40dp"
                     android:minResizeHeight="40dp"
-                    android:updatePeriodMillis="0"
+                    android:updatePeriodMillis="60000"
                     android:previewImage="@mipmap/ic_launcher"
                     android:initialLayout="@layout/widget_nextdepartures"
-                    android:configure="be.hyperrail.android.activities.StationPickerActivity"
+                    android:configure="be.hyperrail.android.activities.NextDeparturesWidgetConfiguration"
                     android:resizeMode="horizontal|vertical"
                     android:widgetCategory="home_screen">
 </appwidget-provider>

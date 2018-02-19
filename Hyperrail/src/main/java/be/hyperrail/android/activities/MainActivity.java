@@ -63,8 +63,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int mCurrentView;
 
     // Define this as an enumeration type, so compilers can give better advice on possible errors
-    @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE,VIEW_TYPE_TRAIN,VIEW_TYPE_SETTINGS,VIEW_TYPE_FEEDBACK})
-    public @interface ViewType {}
+    @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE, VIEW_TYPE_TRAIN, VIEW_TYPE_SETTINGS, VIEW_TYPE_FEEDBACK})
+    public @interface ViewType {
+    }
+
     private static final int VIEW_TYPE_LIVEBOARD = 0;
     private static final int VIEW_TYPE_ROUTE = 10;
     private static final int VIEW_TYPE_DISTURBANCE = 20;
@@ -222,12 +224,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mCurrentView = i;
 
         // Allow drawer to close smooth
-        mDrawerNavigationHandler.postDelayed(new Runnable() {
+       /* mDrawerNavigationHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
+                if (!MainActivity.this.isFinishing()) {*/
+                    MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
+        /*        }
             }
-        },200);
+        }, 200);*/
 
         // Close drawer before loading next fragment
         mDrawerLayout.closeDrawer(Gravity.START);

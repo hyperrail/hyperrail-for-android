@@ -10,7 +10,7 @@
     <color name="backgroundMaterialDark">#ff212121</color>
     <color name="backgroundMaterialLight">#fffafafa</color>
     <color name="colorTextDark">#333</color>
-    <color name="colorTextLight">#eee</color>
+    <color name="colorTextLight">#fffafafa</color>
     <color name="colorWarningNotRealtime">#1860d8</color>
 
     <!-- History list -->

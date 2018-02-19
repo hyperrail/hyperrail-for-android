@@ -93,7 +93,6 @@ public class LiveboardActivity extends ResultActivity {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setElevation(0);
             }
-            mViewPager.setElevation(4);
         }
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
