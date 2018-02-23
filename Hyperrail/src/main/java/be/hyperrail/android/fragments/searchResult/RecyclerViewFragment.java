@@ -91,6 +91,7 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
         RecyclerView.Adapter adapter = getAdapter();
         vRecyclerView.setAdapter(adapter);
 
+
         // Restore a previous instance state
         T restoredItems = getRestoredInstanceStateItems();
         if (restoredItems == null) {

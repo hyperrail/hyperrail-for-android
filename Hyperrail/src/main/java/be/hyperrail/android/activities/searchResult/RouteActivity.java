@@ -72,8 +72,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        setTitle(mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName());
-        setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
+        this.setHeader();
 
         mFragment = RoutesFragment.createInstance(mRequest);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment).commit();
@@ -84,6 +83,11 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         bundle.putString(FirebaseAnalytics.Param.DESTINATION, mRequest.getDestination().getName());
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "route");
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
+    }
+
+    private void setHeader() {
+        setTitle(mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName());
+        setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
     }
 
 
@@ -101,9 +105,11 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_swap:
+                // Create a new request with reversed origin and destination station
                 this.mRequest = new IrailRoutesRequest(mRequest.getDestination(), mRequest.getOrigin(), mRequest.getTimeDefinition(), mRequest.isNow() ? null : mRequest.getSearchTime());
                 this.setFavoriteDisplayState(this.isFavorite());
-                // TODO: update fragment
+                this.setHeader();
+                mFragment.setRequest(this.mRequest);
                 return true;
             case R.id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();

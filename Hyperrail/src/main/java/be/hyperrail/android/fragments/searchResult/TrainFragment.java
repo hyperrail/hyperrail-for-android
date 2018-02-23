@@ -50,7 +50,7 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
 
     public static TrainFragment createInstance(IrailTrainRequest request) {
         TrainFragment frg = new TrainFragment();
-        frg.setRequest(request);
+        frg.mRequest = request;
         return frg;
     }
 
@@ -68,6 +68,7 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
     @Override
     public void setRequest(@NonNull IrailTrainRequest request) {
         this.mRequest = request;
+        getInitialData();
     }
 
     @Override

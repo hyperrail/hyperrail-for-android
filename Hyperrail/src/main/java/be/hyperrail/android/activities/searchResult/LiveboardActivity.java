@@ -202,12 +202,13 @@ public class LiveboardActivity extends ResultActivity {
 
         DeparturesArrivalsAdapter(FragmentManager fm) {
             super(fm);
-            fragments[0] = LiveboardFragment.createInstance(mRequest.withTimeDefinition(RouteTimeDefinition.DEPART));
         }
 
         @Override
         public Fragment getItem(int i) {
-            if (i == 1 && fragments[1] == null) {
+            if (i == 0 && fragments[i] == null) {
+                fragments[0] = LiveboardFragment.createInstance(mRequest.withTimeDefinition(RouteTimeDefinition.DEPART));
+            } else if (i == 1 && fragments[1] == null) {
                 fragments[1] = LiveboardFragment.createInstance(mRequest.withTimeDefinition(RouteTimeDefinition.ARRIVE));
             }
             return fragments[i];

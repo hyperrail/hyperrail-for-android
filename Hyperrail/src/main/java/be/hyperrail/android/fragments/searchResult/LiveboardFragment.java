@@ -48,10 +48,10 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     private LiveboardCardAdapter mLiveboardCardAdapter;
     private IrailLiveboardRequest mRequest;
 
-    public static LiveboardFragment createInstance(IrailLiveboardRequest request){
+    public static LiveboardFragment createInstance(IrailLiveboardRequest request) {
+        // Clone the request so we can't accidentally modify the original
         LiveboardFragment frg = new LiveboardFragment();
-        // Clone
-        frg.setRequest(new IrailLiveboardRequest(request));
+        frg.mRequest = request;
         return frg;
     }
 
@@ -69,6 +69,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     @Override
     public void setRequest(@NonNull IrailLiveboardRequest request) {
         this.mRequest = request;
+        getInitialData();
     }
 
     @Override
@@ -99,7 +100,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     protected void getData() {
-        if (vRefreshLayout.isRefreshing()) {
+        if (this.vRefreshLayout.isRefreshing()) {
             // Disable infinite scrolling for now to prevent having 2 loading icons
             // Also prevents the loadNext method from trying to load all the time during initial load
             ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
@@ -109,6 +110,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
         showData(null);
 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
+        // Don't abort all queries: there might be multiple fragments at the same screen!
 
         mRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override

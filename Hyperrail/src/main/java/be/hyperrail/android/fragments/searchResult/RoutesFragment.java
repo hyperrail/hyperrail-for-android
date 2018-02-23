@@ -52,9 +52,9 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     private RouteCardAdapter mRouteCardAdapter;
     private IrailRoutesRequest mRequest;
 
-    public static RoutesFragment createInstance(IrailRoutesRequest request){
+    public static RoutesFragment createInstance(IrailRoutesRequest request) {
         RoutesFragment frg = new RoutesFragment();
-        frg.setRequest(request);
+        frg.mRequest = request;
         return frg;
     }
 
@@ -76,6 +76,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     @Override
     public void setRequest(@NonNull IrailRoutesRequest request) {
         this.mRequest = request;
+        getInitialData();
     }
 
     @Override

@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.annotation.StringRes;
+import android.util.Log;
 
 import com.android.volley.NoConnectionError;
 import com.android.volley.ServerError;
@@ -35,6 +36,12 @@ public class ErrorDialogFactory {
      * @param finish    Whether or not to finish this activity
      */
     public static void showErrorDialog(final Exception exception, final Activity context, final boolean finish) {
+        if (context == null || context.isFinishing()) {
+            // No valid context/activity to show this dialog
+            Log.w("ErrorDialogFactory","Failed to show error dialog: Activity is already finishing or finished");
+            return;
+        }
+
         if (exception instanceof ServerError) {
             if (((ServerError) exception).networkResponse != null) {
                 if (((ServerError) exception).networkResponse.statusCode == 404) {
@@ -47,7 +54,7 @@ public class ErrorDialogFactory {
             } else {
                 showGeneralErrorDialog(context, finish);
             }
-        } else if (exception instanceof NoConnectionError){
+        } else if (exception instanceof NoConnectionError) {
             showNetworkErrorDialog(context, finish);
         } else {
             showGeneralErrorDialog(context, finish);

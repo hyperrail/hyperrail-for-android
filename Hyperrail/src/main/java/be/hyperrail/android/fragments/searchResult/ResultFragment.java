@@ -19,7 +19,15 @@ import be.hyperrail.android.util.OnDateTimeSetListener;
 
 public interface ResultFragment<T extends IrailRequest> extends OnDateTimeSetListener {
 
+    /**
+     * Update the Request object for which this fragment shows data, and retrieve new data.
+     * @param request The new Request object for this fragment
+     */
     void setRequest(@NonNull T request);
 
+    /**
+     * Get the current Request object for which results are shown
+     * @return The current request object
+     */
     T getRequest();
 }
