@@ -61,6 +61,9 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
+            mRequest = (IrailRoutesRequest) savedInstanceState.getSerializable("request");
+        }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
 
@@ -68,9 +71,6 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("routes")) {
-            this.mCurrentRouteResult = (RouteResult) savedInstanceState.get("routes");
-        }
     }
 
     @Override
@@ -93,16 +93,16 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("routes", mCurrentRouteResult);
+        outState.putSerializable("result", mCurrentRouteResult);
+        outState.putSerializable("request", mRequest);
     }
 
     @Override
-    protected RouteResult getRestoredInstanceStateItems() {
-        if (mCurrentRouteResult == null) {
-            return null;
-        } else {
-            return mCurrentRouteResult;
+    protected RouteResult getRestoredInstanceStateItems(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
+            this.mCurrentRouteResult = (RouteResult) savedInstanceState.get("result");
         }
+        return mCurrentRouteResult;
     }
 
     @Override

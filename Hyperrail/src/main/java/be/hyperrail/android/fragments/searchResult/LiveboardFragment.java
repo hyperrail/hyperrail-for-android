@@ -58,12 +58,30 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("request")){
+            mRequest = (IrailLiveboardRequest) savedInstanceState.getSerializable("request");
+        }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("request", mRequest);
+        outState.putSerializable("result", mCurrentLiveboard);
+    }
+
+    @Override
+    protected LiveBoard getRestoredInstanceStateItems(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
+            mCurrentLiveboard =  (LiveBoard) savedInstanceState.getSerializable("result");
+        }
+        return mCurrentLiveboard;
     }
 
     @Override

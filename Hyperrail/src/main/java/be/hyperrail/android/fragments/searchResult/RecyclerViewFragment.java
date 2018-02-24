@@ -91,9 +91,8 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
         RecyclerView.Adapter adapter = getAdapter();
         vRecyclerView.setAdapter(adapter);
 
-
         // Restore a previous instance state
-        T restoredItems = getRestoredInstanceStateItems();
+        T restoredItems = getRestoredInstanceStateItems(savedInstanceState);
         if (restoredItems == null) {
             getInitialData();
         } else {
@@ -113,7 +112,7 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
      *
      * @return Null in case of no items, else an array of items
      */
-    protected T getRestoredInstanceStateItems() {
+    protected T getRestoredInstanceStateItems(Bundle savedInstanceState) {
         return null;
     }
 

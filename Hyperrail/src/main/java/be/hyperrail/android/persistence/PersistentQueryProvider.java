@@ -525,6 +525,12 @@ public class PersistentQueryProvider implements Serializable {
         try {
             searchThisJson = remove.toJson();
             searchThisJson.remove("created_at");
+
+            // Temporary workaround for comparing train requests
+            searchThisJson.remove("direction");
+            searchThisJson.remove("origin");
+            searchThisJson.remove("departure_time");
+
         } catch (JSONException exception) {
             return collection;
         }
@@ -533,6 +539,12 @@ public class PersistentQueryProvider implements Serializable {
             try {
                 JSONObject object = new JSONObject(entry);
                 object.remove("created_at");
+
+                // Temporary workaround for comparing train requests
+                object.remove("direction");
+                object.remove("origin");
+                object.remove("departure_time");
+
                 if (searchThis.equals(object.toString())) {
                     toBeRemoved.add(entry);
                 }

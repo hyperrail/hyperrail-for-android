@@ -27,7 +27,6 @@ import be.hyperrail.android.adapter.TrainStopCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Train;
@@ -57,6 +56,9 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("request")){
+            mRequest = (IrailTrainRequest) savedInstanceState.getSerializable("request");
+        }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
 
@@ -66,9 +68,24 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("request", mRequest);
+        outState.putSerializable("result", mCurrentTrain);
+    }
+
+    @Override
+    protected Train getRestoredInstanceStateItems(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
+            this.mCurrentTrain = (Train) savedInstanceState.get("result");
+        }
+        return mCurrentTrain;
+    }
+
+    @Override
     public void setRequest(@NonNull IrailTrainRequest request) {
         this.mRequest = request;
-        getInitialData();
+        //getInitialData();
     }
 
     @Override
@@ -134,7 +151,7 @@ public class TrainFragment extends RecyclerViewFragment<Train> implements Infini
             ((TrainActivity) getActivity()).setRequest(mRequest);
         }
 
-        PersistentQueryProvider.getInstance(getActivity()).store(new Suggestion<IrailRequest>(mRequest, SuggestionType.HISTORY));
+        PersistentQueryProvider.getInstance(getActivity()).store(new Suggestion<>(mRequest, SuggestionType.HISTORY));
 
         if (!mRequest.isNow()) {
             int i = train.getStopnumberForDepartureTime(mRequest.getSearchTime());

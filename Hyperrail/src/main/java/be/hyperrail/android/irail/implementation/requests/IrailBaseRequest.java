@@ -31,9 +31,9 @@ import be.hyperrail.android.irail.contracts.IrailRequest;
 public abstract class IrailBaseRequest<T> implements IrailRequest<T> {
 
     protected DateTime createdAt;
-    protected Object tag;
-    protected IRailErrorResponseListener errorResponseListener;
-    protected IRailSuccessResponseListener<T> successResponseListener;
+    protected transient Object tag;
+    protected transient IRailErrorResponseListener errorResponseListener;
+    protected transient IRailSuccessResponseListener<T> successResponseListener;
 
     protected IrailBaseRequest() {
         this.createdAt = new DateTime();

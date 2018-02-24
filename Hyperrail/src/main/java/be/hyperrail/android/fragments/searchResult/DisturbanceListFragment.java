@@ -46,7 +46,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     DisturbanceCardAdapter disturbanceCardAdapter;
     private IrailDisturbanceRequest mRequest;
 
-    public static DisturbanceListFragment createInstance(){
+    public static DisturbanceListFragment createInstance() {
         DisturbanceListFragment frg = new DisturbanceListFragment();
         frg.setRequest(new IrailDisturbanceRequest());
         return frg;
@@ -64,6 +64,9 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
+            mRequest = (IrailDisturbanceRequest) savedInstanceState.getSerializable("request");
+        }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
@@ -121,6 +124,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (lastUpdate != null) {
+            outState.putSerializable("request", mRequest);
             outState.putSerializable("disturbances", disturbances);
             outState.putLong("updated", lastUpdate.getMillis());
         }

@@ -51,6 +51,9 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("request")){
+            mRequest = (IrailRouteRequest) savedInstanceState.getSerializable("request");
+        }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
 
@@ -58,6 +61,21 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.mShowDividers = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("request", mRequest);
+        outState.putSerializable("result", mRoute);
+    }
+
+    @Override
+    protected Route getRestoredInstanceStateItems(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
+            this.mRoute = (Route) savedInstanceState.get("result");
+        }
+        return mRoute;
     }
 
     @Override
