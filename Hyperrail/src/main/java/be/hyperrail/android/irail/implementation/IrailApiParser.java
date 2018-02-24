@@ -30,7 +30,7 @@ import be.hyperrail.android.irail.db.Station;
  *
  * @inheritDoc
  */
-public class IrailApiParser  {
+public class IrailApiParser {
 
     private final IrailStationProvider stationProvider;
 
@@ -84,8 +84,8 @@ public class IrailApiParser  {
                 new Duration(0), false, new Duration(departure.getInt("delay") * 1000), departure.getInt("canceled") != 0, null,
                 timestamp2date(departure.getString("time")),
                 departure.getString("departureConnection"),
-                departureOccupancyLevel
-        );
+                departureOccupancyLevel,
+                TransferType.DEPARTURE);
         Station departureStation = departureTransfer.getStation();
 
         Transfer arrivalTransfer = new Transfer(
@@ -101,8 +101,8 @@ public class IrailApiParser  {
                 new Duration(arrival.getInt("delay") * 1000), arrival.getInt("canceled") != 0, new Duration(0), false, timestamp2date(arrival.getString("time")),
                 null,
                 null,
-                OccupancyLevel.UNKNOWN
-        );
+                OccupancyLevel.UNKNOWN,
+                TransferType.ARRIVAL);
 
         Station arrivalStation = arrivalTransfer.getStation();
 
@@ -160,11 +160,15 @@ public class IrailApiParser  {
                         hasArrived,
                         viaDeparture.getJSONObject("platforminfo").getInt("normal") == 1,
                         hasLeft, viaDeparture.getString("platform"),
-                        new Duration(viaArrival.getInt("delay") * 1000), viaArrival.getInt("canceled") != 0, new Duration(viaDeparture.getInt("delay") * 1000), viaDeparture.getInt("canceled") != 0, timestamp2date(viaArrival.getString("time")),
+                        new Duration(viaArrival.getInt("delay") * 1000),
+                        viaArrival.getInt("canceled") != 0,
+                        new Duration(viaDeparture.getInt("delay") * 1000),
+                        viaDeparture.getInt("canceled") != 0,
+                        timestamp2date(viaArrival.getString("time")),
                         timestamp2date(viaDeparture.getString("time")),
                         viaDeparture.getString("departureConnection"),
-                        viaOccupancyLevel
-                );
+                        viaOccupancyLevel,
+                        TransferType.TRANSFER);
                 transfers[i + 1] = s;
             }
         } else {
@@ -276,7 +280,11 @@ public class IrailApiParser  {
         TrainStop[] stops = new TrainStop[items.length()];
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            stops[i] = parseLiveboardStop(s, item);
+            if (timeDefinition == RouteTimeDefinition.DEPART) {
+                stops[i] = parseLiveboardStop(s, item, TrainStopType.DEPARTURE);
+            } else {
+                stops[i] = parseLiveboardStop(s, item, TrainStopType.ARRIVAL);
+            }
         }
 
         return new LiveBoard(
@@ -288,32 +296,46 @@ public class IrailApiParser  {
 
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
-    private TrainStop parseLiveboardStop(Station stop, JSONObject item) throws JSONException {
+    private TrainStop parseLiveboardStop(Station stop, JSONObject item, TrainStopType type) throws JSONException {
         Station destination = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
         if (item.has("occupancy")) {
             occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
         }
-
-        return TrainStop.buildDepartureTrainstop(
-                stop,
-                destination,
-                new TrainStub(item.getString("vehicle"), destination, item.getJSONObject("vehicleinfo").getString("@id")),
-                item.getString("platform"),
-                item.getJSONObject("platforminfo").getInt("normal") == 1,
-                timestamp2date(item.getString("time")),
-                new Duration(item.getInt("delay") * 1000),
-                item.getInt("canceled") != 0,
-                (item.has("left")) && (item.getInt("left") == 1),
-                item.getString("departureConnection"),
-                occupancyLevel
-        );
+        if (type == TrainStopType.DEPARTURE) {
+            return TrainStop.buildDepartureTrainstop(
+                    stop,
+                    destination,
+                    new TrainStub(item.getString("vehicle"), destination, item.getJSONObject("vehicleinfo").getString("@id")),
+                    item.getString("platform"),
+                    item.getJSONObject("platforminfo").getInt("normal") == 1,
+                    timestamp2date(item.getString("time")),
+                    new Duration(item.getInt("delay") * 1000),
+                    item.getInt("canceled") != 0,
+                    (item.has("left")) && (item.getInt("left") == 1),
+                    item.getString("departureConnection"),
+                    occupancyLevel
+            );
+        } else {
+            return TrainStop.buildArrivalTrainstop(
+                    stop,
+                    destination,
+                    new TrainStub(item.getString("vehicle"), destination, item.getJSONObject("vehicleinfo").getString("@id")),
+                    item.getString("platform"),
+                    item.getJSONObject("platforminfo").getInt("normal") == 1,
+                    timestamp2date(item.getString("time")),
+                    new Duration(item.getInt("delay") * 1000),
+                    item.getInt("canceled") != 0,
+                    (item.has("left")) && (item.getInt("left") == 1),
+                    item.getString("departureConnection"),
+                    occupancyLevel);
+        }
     }
 
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
-    private TrainStop parseTrainStop(Station destination, TrainStub t, JSONObject item) throws JSONException {
+    private TrainStop parseTrainStop(Station destination, TrainStub train, JSONObject item, TrainStopType type) throws JSONException {
         Station stop = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
@@ -324,7 +346,7 @@ public class IrailApiParser  {
         return new TrainStop(
                 stop,
                 destination,
-                t,
+                train,
                 item.getString("platform"),
                 item.getJSONObject("platforminfo").getInt("normal") == 1,
                 timestamp2date(item.getString("scheduledDepartureTime")),
@@ -335,8 +357,8 @@ public class IrailApiParser  {
                 item.getInt("arrivalCanceled") != 0,
                 item.getInt("left") == 1,
                 item.getString("departureConnection"),
-                occupancyLevel
-        );
+                occupancyLevel,
+                type);
     }
 
     public Train parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException {
@@ -358,7 +380,13 @@ public class IrailApiParser  {
         TrainStub t = new TrainStub(id, destination, uri);
 
         for (int i = 0; i < jsonStops.length(); i++) {
-            stops[i] = parseTrainStop(destination, t, jsonStops.getJSONObject(i));
+            TrainStopType type = TrainStopType.STOP;
+            if (i == 0) {
+                type = TrainStopType.DEPARTURE;
+            } else if (i == jsonStops.length() - 1) {
+                type = TrainStopType.ARRIVAL;
+            }
+            stops[i] = parseTrainStop(destination, t, jsonStops.getJSONObject(i), type);
         }
 
         // Consider whether or not the searchDate should be stored

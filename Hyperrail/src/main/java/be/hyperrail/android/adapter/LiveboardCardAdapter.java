@@ -15,7 +15,6 @@ package be.hyperrail.android.adapter;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,10 @@ import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.TrainStopType;
 import be.hyperrail.android.viewgroup.LiveboardStopLayout;
+
+import static org.joda.time.Days.daysBetween;
 
 /**
  * Recyclerview adapter to show train departures in a station
@@ -61,49 +63,53 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
-        if (liveboard != null && liveboard.getStops() != null && liveboard.getStops().length > 0) {
-            // Default day to compare to is today
-            DateTime lastday = DateTime.now().withTimeAtStartOfDay();
-
-            if (!liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay().isEqual(lastday)) {
-                // If the first stop is not today, add date separators everywhere
-                lastday = liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
-            } else if (!liveboard.getSearchTime().withTimeAtStartOfDay().equals(liveboard.getStops()[0].getDepartureTime().withTimeAtStartOfDay())) {
-                // If the search results differ from the date searched, everything after the date searched should have separators
-                lastday = liveboard.getSearchTime().withTimeAtStartOfDay();
-            }
-
-            for (int i = 0; i < liveboard.getStops().length; i++) {
-                TrainStop stop = liveBoard.getStops()[i];
-
-                if (stop.getDepartureTime().withTimeAtStartOfDay().isAfter(lastday)) {
-                    lastday = stop.getDepartureTime().withTimeAtStartOfDay();
-                    daySeparatorPositions.add(i);
-                }
-            }
-
-            Log.d("DateSeparator", "Detected " + daySeparatorPositions.size() + " day changes");
-            this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
-
-            // Convert to array + take previous separators into account for position of next separator
-            int dayPosition = 0;
-            int stopPosition = 0;
-            int resultPosition = 0;
-            while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
-                // Keep in mind that position shifts with the number of already placed date separators
-                if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
-
-                    dayPosition++;
-                } else {
-                    this.displayList[resultPosition] = liveboard.getStops()[stopPosition];
-                    stopPosition++;
-                }
-
-                resultPosition++;
-            }
-        } else {
+        if (liveboard == null || liveboard.getStops() == null || liveboard.getStops().length == 0) {
             displayList = null;
+            return;
+        }
+
+        // Default day to compare to is today
+        DateTime dateCompareObj = DateTime.now().withTimeAtStartOfDay();
+        DateTime stoptime = liveBoard.getStops()[0].getType() == TrainStopType.DEPARTURE ?
+                liveBoard.getStops()[0].getDepartureTime() :
+                liveboard.getStops()[0].getArrivalTime();
+
+        if (!stoptime.withTimeAtStartOfDay().isEqual(dateCompareObj)) {
+            // If the first stop is not today, add date separators everywhere
+            dateCompareObj = stoptime.withTimeAtStartOfDay().minusDays(1);
+        } else if (!liveboard.getSearchTime().withTimeAtStartOfDay().equals(stoptime.withTimeAtStartOfDay())) {
+            // If the search results differ from the date searched, everything after the date searched should have separators
+            dateCompareObj = liveboard.getSearchTime().withTimeAtStartOfDay();
+        }
+
+        for (int i = 0; i < liveboard.getStops().length; i++) {
+            stoptime = liveBoard.getStops()[i].getType() == TrainStopType.DEPARTURE ? liveBoard.getStops()[i].getDepartureTime() : liveboard.getStops()[i].getArrivalTime();
+
+            if (daysBetween(stoptime.toLocalDate(), dateCompareObj.toLocalDate()).getDays() != 0) {
+                dateCompareObj = stoptime.withTimeAtStartOfDay();
+                daySeparatorPositions.add(i);
+            }
+        }
+
+        // Log.d("DateSeparator", "Detected " + daySeparatorPositions.size() + " day changes");
+        this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
+
+        // Convert to array + take previous separators into account for position of next separator
+        int dayPosition = 0;
+        int stopPosition = 0;
+        int resultPosition = 0;
+        while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
+            // Keep in mind that position shifts with the number of already placed date separators
+            if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
+                this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
+
+                dayPosition++;
+            } else {
+                this.displayList[resultPosition] = liveboard.getStops()[stopPosition];
+                stopPosition++;
+            }
+
+            resultPosition++;
         }
 
         super.notifyDataSetChanged();

@@ -24,14 +24,15 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.TrainStopType;
 
 public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<LiveBoard, TrainStop> {
 
     protected TextView vDestination;
     protected TextView vTrainType;
     protected TextView vTrainNumber;
-    protected TextView vDeparture;
-    protected TextView vDepartureDelay;
+    protected TextView vTime;
+    protected TextView vDelay;
     protected TextView vDelayTime;
     protected TextView vPlatform;
     protected LinearLayout vPlatformContainer;
@@ -64,8 +65,8 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
         vDestination = findViewById(be.hyperrail.android.R.id.text_destination);
         vTrainNumber = findViewById(be.hyperrail.android.R.id.text_train_number);
         vTrainType = findViewById(be.hyperrail.android.R.id.text_train_type);
-        vDeparture = findViewById(be.hyperrail.android.R.id.text_departure_time);
-        vDepartureDelay = findViewById(be.hyperrail.android.R.id.text_departure_delay);
+        vTime = findViewById(R.id.text_time1);
+        vDelay = findViewById(R.id.text_delay1);
         vDelayTime = findViewById(be.hyperrail.android.R.id.text_delay_time);
         vPlatform = findViewById(be.hyperrail.android.R.id.text_platform);
         vPlatformContainer = findViewById(be.hyperrail.android.R.id.layout_platform_container);
@@ -85,23 +86,23 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
 
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
-        if (stop.getDepartureTime() != null) {
-            vDeparture.setText(df.print(stop.getDepartureTime()));
+        if (stop.getType() == TrainStopType.DEPARTURE) {
+            vTime.setText(df.print(stop.getDepartureTime()));
             if (stop.getDepartureDelay().getStandardSeconds() > 0) {
-                vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
+                vDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
                 vDelayTime.setText(df.print(stop.getDelayedDepartureTime()));
             } else {
-                vDepartureDelay.setText("");
+                vDelay.setText("");
                 vDelayTime.setText("");
             }
         } else {
             // support for arrivals
-            vDeparture.setText(df.print(stop.getArrivalTime()));
+            vTime.setText(df.print(stop.getArrivalTime()));
             if (stop.getArrivalDelay().getStandardSeconds() > 0) {
-                vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getArrivalDelay().getStandardMinutes()));
+                vDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getArrivalDelay().getStandardMinutes()));
                 vDelayTime.setText(df.print(stop.getDelayedArrivalTime()));
             } else {
-                vDepartureDelay.setText("");
+                vDelay.setText("");
                 vDelayTime.setText("");
             }
         }
@@ -129,6 +130,5 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
 
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
     }
-
 
 }

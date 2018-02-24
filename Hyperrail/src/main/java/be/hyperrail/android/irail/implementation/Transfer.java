@@ -62,7 +62,9 @@ public class Transfer implements Serializable {
     @Nullable
     private final String departureSemanticId;
 
-    public Transfer(@NonNull Station station, @Nullable TrainStub arrivingTrain, @Nullable TrainStub departingTrain, @Nullable String arrivalPlatform, boolean arrivalNormal, boolean arrived, boolean departureNormal, boolean left, @Nullable String departurePlatform, @Nullable Duration arrivalDelay, boolean arrivalCanceled, @Nullable Duration departureDelay, boolean departureCanceled, @Nullable DateTime arrivalTime, @Nullable DateTime departureTime, @Nullable String departureSemanticId, @Nullable OccupancyLevel departureOccupancy) {
+    private final TransferType type;
+
+    public Transfer(@NonNull Station station, @Nullable TrainStub arrivingTrain, @Nullable TrainStub departingTrain, @Nullable String arrivalPlatform, boolean arrivalNormal, boolean arrived, boolean departureNormal, boolean left, @Nullable String departurePlatform, @Nullable Duration arrivalDelay, boolean arrivalCanceled, @Nullable Duration departureDelay, boolean departureCanceled, @Nullable DateTime arrivalTime, @Nullable DateTime departureTime, @Nullable String departureSemanticId, @Nullable OccupancyLevel departureOccupancy, TransferType type) {
         this.station = station;
         this.arrivingTrain = arrivingTrain;
         this.departingTrain = departingTrain;
@@ -80,6 +82,7 @@ public class Transfer implements Serializable {
         this.isArrivalPlatformNormal = arrivalNormal;
         this.departureSemanticId = departureSemanticId;
         this.departureOccupancy = departureOccupancy;
+        this.type = type;
     }
 
     @Nullable
@@ -173,5 +176,9 @@ public class Transfer implements Serializable {
 
     public boolean hasArrived() {
         return arrived;
+    }
+
+    public TransferType getType() {
+        return type;
     }
 }

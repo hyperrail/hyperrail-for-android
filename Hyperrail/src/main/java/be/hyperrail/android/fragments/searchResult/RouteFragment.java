@@ -18,11 +18,9 @@ import android.view.ViewGroup;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.TrainstopContextMenu;
 import be.hyperrail.android.activities.searchResult.LiveboardActivity;
 import be.hyperrail.android.activities.searchResult.TrainActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.implementation.Route;
@@ -36,7 +34,7 @@ import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
 /**
  * A fragment for showing liveboard results
  */
-public class RouteFragment extends RecyclerViewFragment<Route> implements ResultFragment<IrailRouteRequest>, OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
+public class RouteFragment extends RecyclerViewFragment<Route> implements ResultFragment<IrailRouteRequest>, OnRecyclerItemClickListener<TrainStop>{
 
     private IrailRouteRequest mRequest;
     /**
@@ -125,11 +123,6 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
     public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
         Intent i = TrainActivity.createIntent(getActivity().getApplicationContext(), new IrailTrainRequest(object.getTrain().getId(), object.getDepartureTime()));
         startActivity(i);
-    }
-
-    @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop object) {
-        (new TrainstopContextMenu(getActivity(), object)).show();
     }
 
     @Override

@@ -44,7 +44,9 @@ public class TrainStop implements Serializable {
     private final String departureSemanticId;
     private final OccupancyLevel occupancyLevel;
 
-    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureSemanticId, OccupancyLevel occupancyLevel) {
+    private final TrainStopType type;
+
+    protected TrainStop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureSemanticId, OccupancyLevel occupancyLevel, TrainStopType type) {
         this.station = station;
         this.destination = destination;
         this.isPlatformNormal = isPlatformNormal;
@@ -60,19 +62,20 @@ public class TrainStop implements Serializable {
         this.arrivalTime = arrivalTime;
         this.arrivalDelay = arrivalDelay;
         this.arrivalCanceled = arrivalCanceled;
+        this.type = type;
     }
 
 
     protected static TrainStop buildDepartureTrainstop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
         return new TrainStop(station, destination, train, platform, isPlatformNormal,
                 departureTime, null, departureDelay, null,
-                departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
+                departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, TrainStopType.DEPARTURE);
     }
 
     protected static TrainStop buildArrivalTrainstop(Station station, Station destination, TrainStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
         return new TrainStop(station, destination, train, platform, isPlatformNormal,
                 null, arrivalTime, null, arrivalDelay,
-                arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel);
+                arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, TrainStopType.ARRIVAL);
     }
 
 
@@ -148,6 +151,10 @@ public class TrainStop implements Serializable {
 
     public OccupancyLevel getOccupancyLevel() {
         return occupancyLevel;
+    }
+
+    public TrainStopType getType() {
+        return type;
     }
 }
 

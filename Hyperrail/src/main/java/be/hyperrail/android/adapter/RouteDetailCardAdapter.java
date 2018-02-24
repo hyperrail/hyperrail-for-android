@@ -27,6 +27,7 @@ import be.hyperrail.android.TrainstopContextMenu;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.TransferType;
 import be.hyperrail.android.viewgroup.RouteTrainItemLayout;
 import be.hyperrail.android.viewgroup.RouteTransferItemLayout;
 
@@ -127,49 +128,19 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 }
             });
 
-            if (transfer.getDepartingTrain() != null) {
-                if (transfer.getArrivingTrain() != null) {
-                    holder.itemView.setOnLongClickListener(
-                            new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
-                                    (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
-                                            transfer,route)
-                                    ).show();
-                                    return false;
-                                }
-
+            if (transfer.getType() == TransferType.TRANSFER) {
+                holder.itemView.setOnLongClickListener(
+                        new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
+                                        transfer, route)
+                                ).show();
+                                return false;
                             }
-                    );
-                } else {
-                    holder.itemView.setOnLongClickListener(
-                            new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
-                                    (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
-                                            transfer, null,route)
-                                    ).show();
-                                    return false;
-                                }
 
-                            }
-                    );
-                }
-            } else {
-                if (transfer.getArrivingTrain() != null) {
-                    holder.itemView.setOnLongClickListener(
-                            new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
-                                    (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
-                                            null, transfer,route)
-                                    ).show();
-                                    return false;
-                                }
-
-                            }
-                    );
-                }
+                        }
+                );
             }
 
         } else if (holder instanceof RouteTrainViewHolder) {

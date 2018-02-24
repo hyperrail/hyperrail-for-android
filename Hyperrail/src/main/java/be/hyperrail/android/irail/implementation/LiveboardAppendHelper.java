@@ -48,7 +48,11 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         this.originalLiveboard = liveBoard;
 
         if (liveBoard.getStops().length > 0) {
-            this.lastSearchTime = liveBoard.getStops()[liveBoard.getStops().length - 1].getDepartureTime().plusMinutes(1);
+            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == TrainStopType.DEPARTURE) {
+                this.lastSearchTime = liveBoard.getStops()[liveBoard.getStops().length - 1].getDepartureTime().plusMinutes(1);
+            } else {
+                this.lastSearchTime = liveBoard.getStops()[liveBoard.getStops().length - 1].getArrivalTime().plusMinutes(1);
+            }
         } else {
             this.lastSearchTime = liveBoard.getSearchTime().plusHours(1);
         }
@@ -66,7 +70,11 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         this.originalLiveboard = liveBoard;
 
         if (liveBoard.getStops().length > 0) {
-            this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime().minusHours(1);
+            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == TrainStopType.DEPARTURE) {
+                this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime().minusHours(1);
+            } else {
+                this.lastSearchTime = liveBoard.getStops()[0].getArrivalTime().minusHours(1);
+            }
         } else {
             this.lastSearchTime = liveBoard.getSearchTime().minusHours(1);
         }
@@ -87,9 +95,17 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                     // In this case, prevent duplicates by searching the first stop which isn't before
                     // the searchdate, and removing all earlier stops.
                     int i = 0;
-                    while (i < newStops.length && newStops[i].getDepartureTime().isBefore(data.getSearchTime())) {
-                        i++;
+
+                    if (data.getTimeDefinition() == RouteTimeDefinition.DEPART) {
+                        while (i < newStops.length && newStops[i].getDepartureTime().isBefore(data.getSearchTime())) {
+                            i++;
+                        }
+                    } else {
+                        while (i < newStops.length && newStops[i].getArrivalTime().isBefore(data.getSearchTime())) {
+                            i++;
+                        }
                     }
+
                     if (i > 0) {
                         if (i <= data.getStops().length - 1) {
                             newStops = Arrays.copyOfRange(data.getStops(), i, data.getStops().length - 1);
@@ -136,7 +152,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                             originalStops = Arrays.copyOfRange(originalLiveboard.getStops(), i + 1, originalLiveboard.getStops().length - 1);
                         }
                     }
-                    if (originalStops == null){
+                    if (originalStops == null) {
                         originalStops = originalLiveboard.getStops();
                     }
                     TrainStop[] mergedStops = ArrayUtils.concatenate(data.getStops(), originalStops);
@@ -165,6 +181,5 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         if (this.errorResponseListener != null) {
             this.errorResponseListener.onErrorResponse(e, this);
         }
-
     }
 }
