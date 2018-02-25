@@ -27,7 +27,6 @@ import be.hyperrail.android.TrainstopContextMenu;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
-import be.hyperrail.android.irail.implementation.TransferType;
 import be.hyperrail.android.viewgroup.RouteTrainItemLayout;
 import be.hyperrail.android.viewgroup.RouteTransferItemLayout;
 
@@ -128,20 +127,19 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 }
             });
 
-            if (transfer.getType() == TransferType.TRANSFER) {
-                holder.itemView.setOnLongClickListener(
-                        new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View view) {
-                                (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
-                                        transfer, route)
-                                ).show();
-                                return false;
-                            }
-
+            holder.itemView.setOnLongClickListener(
+                    new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
+                                    transfer, route)
+                            ).show();
+                            return false;
                         }
-                );
-            }
+
+                    }
+            );
+
 
         } else if (holder instanceof RouteTrainViewHolder) {
             // odd (1,3,...) : route between stations
@@ -151,7 +149,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             boolean isWalking = Objects.equals(train.getId(), "WALK");
 
-            ((RouteTrainViewHolder)holder).routeTrainItemLayout.bind(context,train,route,(position - 1) / 2);
+            ((RouteTrainViewHolder) holder).routeTrainItemLayout.bind(context, train, route, (position - 1) / 2);
 
             if (!isWalking) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +174,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             @Override
                             public boolean onLongClick(View view) {
                                 (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
-                                        transferBefore, transferAfter,route)
+                                        transferBefore, transferAfter, route)
                                 ).show();
                                 return false;
                             }

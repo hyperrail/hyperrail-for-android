@@ -120,7 +120,7 @@ public class TrainstopContextMenu {
 
 
         if (type == TYPE_TRAIN_STOP) {
-            vDialog.setTitle(mArrivalTransfer.getStation().getLocalizedName());
+            vDialog.setTitle(mTrainStop.getStation().getLocalizedName());
 
             mDepartureConnection = mTrainStop.getDepartureSemanticId();
             mStationSemanticId = mTrainStop.getStation().getSemanticId();
