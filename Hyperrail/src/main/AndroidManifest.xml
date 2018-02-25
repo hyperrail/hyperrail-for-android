@@ -44,7 +44,7 @@
             android:exported="true"
             android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".activities.searchResult.TrainActivity"
+            android:name=".activities.searchResult.VehicleActivity"
             android:exported="true"
             android:parentActivityName=".activities.MainActivity" />
         <activity

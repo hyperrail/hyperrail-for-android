@@ -28,7 +28,7 @@ import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
@@ -96,7 +96,7 @@ class NextDeparturesRemoteViewsFactory implements RemoteViewsService.RemoteViews
         // Construct a remote views item based on the app widget item XML file,
         // and set the text based on the position.
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.listview_liveboard);
-        TrainStop stop = mLiveboard.getStops()[0];
+        VehicleStop stop = mLiveboard.getStops()[0];
 
         rv.setTextViewText(R.id.text_destination, stop.getDestination().getLocalizedName());
 

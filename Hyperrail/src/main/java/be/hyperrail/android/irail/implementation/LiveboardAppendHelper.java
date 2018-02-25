@@ -48,7 +48,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         this.originalLiveboard = liveBoard;
 
         if (liveBoard.getStops().length > 0) {
-            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == TrainStopType.DEPARTURE) {
+            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
                 this.lastSearchTime = liveBoard.getStops()[liveBoard.getStops().length - 1].getDepartureTime().plusMinutes(1);
             } else {
                 this.lastSearchTime = liveBoard.getStops()[liveBoard.getStops().length - 1].getArrivalTime().plusMinutes(1);
@@ -70,7 +70,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         this.originalLiveboard = liveBoard;
 
         if (liveBoard.getStops().length > 0) {
-            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == TrainStopType.DEPARTURE) {
+            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
                 this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime().minusHours(1);
             } else {
                 this.lastSearchTime = liveBoard.getStops()[0].getArrivalTime().minusHours(1);
@@ -88,7 +88,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         switch ((int) tag) {
             case TAG_APPEND:
 
-                TrainStop[] newStops = data.getStops();
+                VehicleStop[] newStops = data.getStops();
 
                 if (newStops.length > 0) {
                     // It can happen that a scheduled departure was before the search time.
@@ -110,14 +110,14 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                         if (i <= data.getStops().length - 1) {
                             newStops = Arrays.copyOfRange(data.getStops(), i, data.getStops().length - 1);
                         } else {
-                            newStops = new TrainStop[0];
+                            newStops = new VehicleStop[0];
                         }
                     }
                 }
 
                 if (newStops.length > 0) {
 
-                    TrainStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), newStops);
+                    VehicleStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), newStops);
                     LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getTimeDefinition());
                     this.successResponseListener.onSuccessResponse(merged, tag);
                 } else {
@@ -143,9 +143,9 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                     // Both arrays are sorted chronologically
                     // Scanning back-to-front in the original array is O(n), which is acceptable for now
                     // Binary search would be tricky since trains might have a new delay, they are chronologically based on the actual real departure time!
-                    TrainStop[] originalStops = null;
+                    VehicleStop[] originalStops = null;
                     for (int i = originalLiveboard.getStops().length - 1; i >= 0 && originalStops == null; i--) {
-                        TrainStop s = originalLiveboard.getStops()[i];
+                        VehicleStop s = originalLiveboard.getStops()[i];
                         if (Objects.equals(s.getDepartureSemanticId(), data.getStops()[data.getStops().length - 1].getDepartureSemanticId())) {
                             // All before this stop are duplicates
                             // TODO: investigate if this code is totally bug free: aren't we ignoring too much?
@@ -155,7 +155,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                     if (originalStops == null) {
                         originalStops = originalLiveboard.getStops();
                     }
-                    TrainStop[] mergedStops = ArrayUtils.concatenate(data.getStops(), originalStops);
+                    VehicleStop[] mergedStops = ArrayUtils.concatenate(data.getStops(), originalStops);
                     LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getTimeDefinition());
                     this.successResponseListener.onSuccessResponse(merged, tag);
                 } else {

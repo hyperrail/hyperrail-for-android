@@ -53,7 +53,7 @@ import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 
 import static java.util.logging.Level.WARNING;
 
@@ -248,13 +248,13 @@ public class IrailApi implements IrailDataProvider {
         actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
-                List<TrainStop> stops = new ArrayList<>();
-                for (TrainStop s : data.getStops()) {
+                List<VehicleStop> stops = new ArrayList<>();
+                for (VehicleStop s : data.getStops()) {
                     if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
                         stops.add(s);
                     }
                 }
-                request.notifySuccessListeners(new LiveBoard(data, stops.toArray(new TrainStop[]{}), data.getSearchTime(), actualRequest.getTimeDefinition()));
+                request.notifySuccessListeners(new LiveBoard(data, stops.toArray(new VehicleStop[]{}), data.getSearchTime(), actualRequest.getTimeDefinition()));
             }
         }, new IRailErrorResponseListener() {
             @Override
@@ -266,14 +266,14 @@ public class IrailApi implements IrailDataProvider {
     }
 
     @Override
-    public void getTrain(@NonNull final IrailTrainRequest... requests) {
-        for (IrailTrainRequest request :
+    public void getTrain(@NonNull final IrailVehicleRequest... requests) {
+        for (IrailVehicleRequest request :
                 requests) {
             getTrain(request);
         }
     }
 
-    public void getTrain(final IrailTrainRequest request) {
+    public void getTrain(final IrailVehicleRequest request) {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
@@ -283,7 +283,7 @@ public class IrailApi implements IrailDataProvider {
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Train result;
+                        Vehicle result;
                         try {
                             result = parser.parseTrain(response, new DateTime());
                         } catch (JSONException e) {

@@ -9,7 +9,7 @@ package be.hyperrail.android.irail.implementation;
 /**
  * Possible trainstop types
  */
-public enum TrainStopType {
+public enum VehicleStopType {
     DEPARTURE,
     STOP,
     ARRIVAL

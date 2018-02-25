@@ -20,12 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Objects;
-
 import be.hyperrail.android.R;
-import be.hyperrail.android.TrainstopContextMenu;
+import be.hyperrail.android.VehiclePopupContextMenu;
 import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.RouteLeg;
+import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.viewgroup.RouteTrainItemLayout;
 import be.hyperrail.android.viewgroup.RouteTransferItemLayout;
@@ -131,8 +130,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {
-                            (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
-                                    transfer, route)
+                            (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
+                                                         transfer, route)
                             ).show();
                             return false;
                         }
@@ -145,18 +144,17 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             // odd (1,3,...) : route between stations
             final Transfer transferBefore = route.getTransfers()[(position - 1) / 2];
             final Transfer transferAfter = route.getTransfers()[(position + 1) / 2];
-            final TrainStub train = route.getTrains()[(position - 1) / 2];
 
-            boolean isWalking = Objects.equals(train.getId(), "WALK");
+            final RouteLeg leg =route.getLegs()[(position - 1) / 2];
 
-            ((RouteTrainViewHolder) holder).routeTrainItemLayout.bind(context, train, route, (position - 1) / 2);
+            ((RouteTrainViewHolder) holder).routeTrainItemLayout.bind(context, leg, route, (position - 1) / 2);
 
-            if (!isWalking) {
+            if (leg.getType() != RouteLegType.WALK) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("train", train);
+                        bundle.putSerializable("train", leg.getVehicleInformation());
                         // Get the departure date (day) of this train
                         bundle.putSerializable("date", transferBefore.getDepartureTime());
                         // TODO: consider if these should be included
@@ -173,8 +171,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
-                                (new TrainstopContextMenu(RouteDetailCardAdapter.this.context,
-                                        transferBefore, transferAfter, route)
+                                (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
+                                                             transferBefore, transferAfter, route)
                                 ).show();
                                 return false;
                             }
@@ -192,9 +190,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             return 0;
         }
         if (route.getTransfers() == null) {
-            return route.getTrains().length;
+            return route.getLegs().length;
         }
-        return route.getTrains().length + route.getTransfers().length;
+        return route.getLegs().length + route.getTransfers().length;
     }
 
     public void setOnItemClickListener(OnRecyclerItemClickListener<Object> listener) {
@@ -202,7 +200,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     /**
-     * Train ViewHolder, showing train, status, duration, direction
+     * Vehicle ViewHolder, showing train, status, duration, direction
      */
     private class RouteTrainViewHolder extends RecyclerView.ViewHolder {
 

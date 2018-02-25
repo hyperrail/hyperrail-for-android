@@ -16,12 +16,12 @@ import org.json.JSONObject;
 import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Train;
+import be.hyperrail.android.irail.implementation.Vehicle;
 
 /**
  * A request for train data
  */
-public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailRequest<Train> {
+public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements IrailRequest<Vehicle> {
 
     @NonNull
     private final String mTrainId;
@@ -29,7 +29,7 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
     @Nullable
     private DateTime mSearchTime;
 
-    // Train IDs aren't always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
+    // Vehicle IDs aren't always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
 
     /**
      * The departure station of this train. Additional information for request history/favorites.
@@ -54,13 +54,13 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
      * @param searchTime The time for which should be searched
      */
     // TODO: support between stations, target scroll station as optional (display) parameters
-    public IrailTrainRequest(@NonNull String trainId, @Nullable DateTime searchTime) {
+    public IrailVehicleRequest(@NonNull String trainId, @Nullable DateTime searchTime) {
         super();
         this.mTrainId = trainId;
         this.mSearchTime = searchTime;
     }
 
-    public IrailTrainRequest(@NonNull JSONObject jsonObject) throws JSONException {
+    public IrailVehicleRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
@@ -133,21 +133,21 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof IrailTrainRequest)) {
+        if (!(o instanceof IrailVehicleRequest)) {
             return false;
         }
 
-        IrailTrainRequest other = (IrailTrainRequest) o;
+        IrailVehicleRequest other = (IrailVehicleRequest) o;
         return (getTrainId().equals(other.getTrainId()) && getSearchTime().equals(other.getSearchTime()));
     }
 
     @Override
     public int compareTo(@NonNull IrailRequest o) {
-        if (!(o instanceof IrailTrainRequest)) {
+        if (!(o instanceof IrailVehicleRequest)) {
             return -1;
         }
 
-        IrailTrainRequest other = (IrailTrainRequest) o;
+        IrailVehicleRequest other = (IrailVehicleRequest) o;
         return getTrainId().compareTo(other.getTrainId());
     }
 
@@ -165,6 +165,6 @@ public class IrailTrainRequest extends IrailBaseRequest<Train> implements IrailR
 
     @Override
     public boolean equalsIgnoringTime(IrailRequest other) {
-        return other instanceof IrailTrainRequest && getTrainId().equals(((IrailTrainRequest) other).getTrainId());
+        return other instanceof IrailVehicleRequest && getTrainId().equals(((IrailVehicleRequest) other).getTrainId());
     }
 }

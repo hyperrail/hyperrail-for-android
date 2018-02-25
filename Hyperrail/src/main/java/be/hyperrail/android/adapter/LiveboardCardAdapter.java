@@ -27,8 +27,8 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.implementation.LiveBoard;
-import be.hyperrail.android.irail.implementation.TrainStop;
-import be.hyperrail.android.irail.implementation.TrainStopType;
+import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.android.irail.implementation.VehicleStopType;
 import be.hyperrail.android.viewgroup.LiveboardStopLayout;
 
 import static org.joda.time.Days.daysBetween;
@@ -36,7 +36,7 @@ import static org.joda.time.Days.daysBetween;
 /**
  * Recyclerview adapter to show train departures in a station
  */
-public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
+public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> {
 
     private LiveBoard liveboard;
     private final Context context;
@@ -70,7 +70,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
 
         // Default day to compare to is today
         DateTime dateCompareObj = DateTime.now().withTimeAtStartOfDay();
-        DateTime stoptime = liveBoard.getStops()[0].getType() == TrainStopType.DEPARTURE ?
+        DateTime stoptime = liveBoard.getStops()[0].getType() == VehicleStopType.DEPARTURE ?
                 liveBoard.getStops()[0].getDepartureTime() :
                 liveboard.getStops()[0].getArrivalTime();
 
@@ -83,7 +83,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
         }
 
         for (int i = 0; i < liveboard.getStops().length; i++) {
-            stoptime = liveBoard.getStops()[i].getType() == TrainStopType.DEPARTURE ? liveBoard.getStops()[i].getDepartureTime() : liveboard.getStops()[i].getArrivalTime();
+            stoptime = liveBoard.getStops()[i].getType() == VehicleStopType.DEPARTURE ? liveBoard.getStops()[i].getDepartureTime() : liveboard.getStops()[i].getArrivalTime();
 
             if (daysBetween(stoptime.toLocalDate(), dateCompareObj.toLocalDate()).getDays() != 0) {
                 dateCompareObj = stoptime.withTimeAtStartOfDay();
@@ -150,7 +150,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<TrainStop> {
             return;
         }
 
-        final TrainStop stop = (TrainStop) displayList[position];
+        final VehicleStop stop = (VehicleStop) displayList[position];
         LiveboardStopViewHolder holder = (LiveboardStopViewHolder) genericHolder;
         holder.liveboardStopView.bind(context, stop, liveboard, position);
 

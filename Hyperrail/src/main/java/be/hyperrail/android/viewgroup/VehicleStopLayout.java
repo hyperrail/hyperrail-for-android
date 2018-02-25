@@ -22,11 +22,11 @@ import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.Train;
-import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.Vehicle;
+import be.hyperrail.android.irail.implementation.VehicleStop;
 
 
-public class TrainStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Train, TrainStop> {
+public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Vehicle, VehicleStop> {
 
     protected TextView vDestination;
     protected TextView vDepartureTime;
@@ -42,15 +42,15 @@ public class TrainStopLayout extends LinearLayout implements RecyclerViewItemVie
 
     protected ImageView vOccupancy;
 
-    public TrainStopLayout(Context context) {
+    public VehicleStopLayout(Context context) {
         super(context);
     }
 
-    public TrainStopLayout(Context context, @Nullable AttributeSet attrs) {
+    public VehicleStopLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TrainStopLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public VehicleStopLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -82,7 +82,7 @@ public class TrainStopLayout extends LinearLayout implements RecyclerViewItemVie
 
 
     @Override
-    public void bind(final Context context, final TrainStop stop, final Train train, final int position) {
+    public void bind(final Context context, final VehicleStop stop, final Vehicle train, final int position) {
 
         vDestination.setText(stop.getStation().getLocalizedName());
 

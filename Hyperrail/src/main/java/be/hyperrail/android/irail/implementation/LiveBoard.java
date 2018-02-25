@@ -25,11 +25,11 @@ import be.hyperrail.android.irail.db.Station;
  */
 public class LiveBoard extends Station implements Serializable {
 
-    private TrainStop[] mStops;
+    private VehicleStop[] mStops;
     private DateTime mSearchTime;
     private final RouteTimeDefinition mTimeDefinition;
 
-    LiveBoard(Station station, TrainStop[] stops, DateTime searchTime, RouteTimeDefinition timeDefinition) {
+    LiveBoard(Station station, VehicleStop[] stops, DateTime searchTime, RouteTimeDefinition timeDefinition) {
         super(
                 station.getId(),
                 station.getName(),
@@ -47,7 +47,7 @@ public class LiveBoard extends Station implements Serializable {
         mTimeDefinition = timeDefinition;
     }
 
-    public TrainStop[] getStops() {
+    public VehicleStop[] getStops() {
         return mStops;
     }
 

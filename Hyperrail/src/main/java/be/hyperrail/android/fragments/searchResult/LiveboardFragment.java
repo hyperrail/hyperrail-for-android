@@ -21,8 +21,8 @@ import org.joda.time.DateTime;
 import java.io.FileNotFoundException;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.TrainstopContextMenu;
-import be.hyperrail.android.activities.searchResult.TrainActivity;
+import be.hyperrail.android.VehiclePopupContextMenu;
+import be.hyperrail.android.activities.searchResult.VehicleActivity;
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
@@ -34,15 +34,15 @@ import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.LiveboardAppendHelper;
-import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * A fragment for showing liveboard results
  */
-public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implements InfiniteScrollingDataSource, ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<TrainStop>, OnRecyclerItemLongClickListener<TrainStop> {
+public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implements InfiniteScrollingDataSource, ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
 
     private LiveBoard mCurrentLiveboard;
     private LiveboardCardAdapter mLiveboardCardAdapter;
@@ -244,14 +244,14 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        Intent i = TrainActivity.createIntent(getActivity(), new IrailTrainRequest(object.getTrain().getId(), object.getDepartureTime()));
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
+        Intent i = VehicleActivity.createIntent(getActivity(), new IrailVehicleRequest(object.getTrain().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, TrainStop object) {
-        (new TrainstopContextMenu(getActivity(), object)).show();
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, VehicleStop object) {
+        (new VehiclePopupContextMenu(getActivity(), object)).show();
     }
 
 }

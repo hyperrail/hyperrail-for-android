@@ -48,11 +48,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.searchResult.TrainActivity;
+import be.hyperrail.android.activities.searchResult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
-import be.hyperrail.android.adapter.TrainSuggestionsCardAdapter;
-import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.adapter.VehicleSuggestionsCardAdapter;
+import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
@@ -60,21 +60,21 @@ import be.hyperrail.android.persistence.SuggestionType;
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class TrainSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailTrainRequest>>, OnRecyclerItemLongClickListener<Suggestion<IrailTrainRequest>> {
+public class VehicleSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailVehicleRequest>>, OnRecyclerItemLongClickListener<Suggestion<IrailVehicleRequest>> {
 
     private RecyclerView recentTrainsRecyclerView;
     private EditText vTrainSearchField;
 
     private PersistentQueryProvider persistentQueryProvider;
-    private Suggestion<IrailTrainRequest> mLastSelectedQuery;
-    private TrainSuggestionsCardAdapter mIrailTrainRequestAdapter;
+    private Suggestion<IrailVehicleRequest> mLastSelectedQuery;
+    private VehicleSuggestionsCardAdapter mIrailTrainRequestAdapter;
 
-    public TrainSearchFragment() {
+    public VehicleSearchFragment() {
         // Required empty public constructor
     }
 
-    public static TrainSearchFragment newInstance() {
-        return new TrainSearchFragment();
+    public static VehicleSearchFragment newInstance() {
+        return new VehicleSearchFragment();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_train_search, container, false);
+        return inflater.inflate(R.layout.fragment_vehicle_search, container, false);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
         recentTrainsRecyclerView.setItemAnimator(new DefaultItemAnimator());
         registerForContextMenu(recentTrainsRecyclerView);
 
-        mIrailTrainRequestAdapter = new TrainSuggestionsCardAdapter(this.getActivity());
+        mIrailTrainRequestAdapter = new VehicleSuggestionsCardAdapter(this.getActivity());
         mIrailTrainRequestAdapter.setOnItemClickListener(this);
         mIrailTrainRequestAdapter.setOnLongItemClickListener(this);
         recentTrainsRecyclerView.setAdapter(mIrailTrainRequestAdapter);
@@ -141,9 +141,9 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
      * @param id The train id which should be loaded
      */
     private void openTrain(String id) {
-        IrailTrainRequest request = new IrailTrainRequest(id, null);
+        IrailVehicleRequest request = new IrailVehicleRequest(id, null);
         persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
-        Intent i = TrainActivity.createIntent(getActivity(), request);
+        Intent i = VehicleActivity.createIntent(getActivity(), request);
         startActivity(i);
     }
 
@@ -165,12 +165,12 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailTrainRequest> object) {
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailVehicleRequest> object) {
         openTrain(object.getData().getTrainId());
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailTrainRequest> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailVehicleRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -199,26 +199,26 @@ public class TrainSearchFragment extends Fragment implements OnRecyclerItemClick
         return super.onContextItemSelected(item);
     }
 
-    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailTrainRequest>>> {
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailVehicleRequest>>> {
 
-        private WeakReference<TrainSearchFragment> fragmentReference;
+        private WeakReference<VehicleSearchFragment> fragmentReference;
 
         // only retain a weak reference to the activity
-        LoadSuggestionsTask(TrainSearchFragment context) {
+        LoadSuggestionsTask(VehicleSearchFragment context) {
             fragmentReference = new WeakReference<>(context);
         }
 
         @Override
-        protected List<Suggestion<IrailTrainRequest>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<IrailVehicleRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllTrains();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<IrailTrainRequest>> suggestions) {
+        protected void onPostExecute(List<Suggestion<IrailVehicleRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there
-            TrainSearchFragment fragment = fragmentReference.get();
+            VehicleSearchFragment fragment = fragmentReference.get();
             if (fragment == null) return;
 
             fragment.mIrailTrainRequestAdapter.setSuggestedTrains(suggestions);

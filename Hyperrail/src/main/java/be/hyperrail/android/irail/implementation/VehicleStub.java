@@ -21,10 +21,10 @@ import java.util.regex.Pattern;
 import be.hyperrail.android.irail.db.Station;
 
 /**
- * Train information, except its stops.
+ * Vehicle information, except its stops.
  * This data is typically present in the API without requiring a second API call.
  */
-public class TrainStub implements Serializable {
+public class VehicleStub implements Serializable {
 
     private final String uri;
 
@@ -33,7 +33,7 @@ public class TrainStub implements Serializable {
     protected Station direction;
 
     // Direction is required, since we need to display something
-    public TrainStub(@NonNull String id, @NonNull Station direction, String uri) {
+    public VehicleStub(@NonNull String id, @NonNull Station direction, String uri) {
 
         // TODO: all ids should have a correct prefix already, should not be tightly coupled to iRail
         if (!id.startsWith("BE.NMBS.")) {
@@ -75,14 +75,14 @@ public class TrainStub implements Serializable {
     }
 
     public static String getTrainName(String id){
-        return getTrainType(id) + " " + getTrainNumber(id);
+        return getTrainType(id) + " " + getVehicleNumber(id);
     }
     /**
      * ID without leading BE.NMBS, for example IC4516
      *
      * @return ID without leading BE.NMBS
      */
-    private String getReducedId() {
+    private String getReducedVehicleId() {
         return this.id.substring(8);
     }
 
@@ -96,18 +96,23 @@ public class TrainStub implements Serializable {
             return uri;
         }
         // Calculate if unknown
-        return "http://irail.be/vehicle/" + getReducedId();
+        return "http://irail.be/vehicle/" + getReducedVehicleId();
     }
 
     /**
-     * Train type, for example S, IC, L, P
+     * Vehicle type, for example S, IC, L, P
      *
      * @return The type of this train
      */
     public String getType() {
-        return getTrainType(getReducedId());
+        return getTrainType(getReducedVehicleId());
     }
 
+    /**
+     * Route/trip type, for example S, IC, L, P
+     *
+     * @return The route/trip type for this vehicle
+     */
     public static String getTrainType(String id){
         // S trains are special
         if (id.startsWith("S")) {
@@ -128,18 +133,23 @@ public class TrainStub implements Serializable {
     }
 
     /**
-     * Train number, for example 4516
+     * Vehicle number, for example 4516
      *
      * @return The number of this train
      */
     public String getNumber() {
-        return getTrainNumber(getReducedId());
+        return getVehicleNumber(getReducedVehicleId());
     }
 
-    public static String getTrainNumber(String id){
+    /**
+     * Deduct the number of a vehicle from its ID
+     * @param vehicleId The ID of a vehicle, e.g. IC538
+     * @return The number of a vehicle, e.g. 538
+     */
+    public static String getVehicleNumber(String vehicleId){
         // S trains are special
-        if (id.startsWith("S")) {
-            return id.substring(id.length() - 4);
+        if (vehicleId.startsWith("S")) {
+            return vehicleId.substring(vehicleId.length() - 4);
         }
 
         String pattern = "(\\w+?)(\\d+)";
@@ -148,7 +158,7 @@ public class TrainStub implements Serializable {
         Pattern r = Pattern.compile(pattern);
 
         // Now create matcher object.
-        Matcher m = r.matcher(id);
+        Matcher m = r.matcher(vehicleId);
         if (m.find()) {
             return m.group(2);
         }

@@ -22,25 +22,25 @@ import be.hyperrail.android.irail.db.Station;
 
 /**
  * This class represents a train entity.
- * This class extends a TrainStub with its stops.
+ * This class extends a VehicleStub with its stops.
  */
-public class Train extends TrainStub implements Serializable {
+public class Vehicle extends VehicleStub implements Serializable {
 
     private final double longitude;
     private final double latitude;
     private final Station origin;
 
-    private final TrainStop[] stops;
-    private TrainStop lastHaltedStop;
+    private final VehicleStop[] stops;
+    private VehicleStop lastHaltedStop;
 
-    public Train(String id, String uri, Station destination, Station origin, double longitude, double latitude, TrainStop[] stops) {
+    public Vehicle(String id, String uri, Station destination, Station origin, double longitude, double latitude, VehicleStop[] stops) {
         super(id, destination, uri);
         this.origin = origin;
         this.longitude = longitude;
         this.latitude = latitude;
         this.stops = stops;
 
-        for (TrainStop stop : stops) {
+        for (VehicleStop stop : stops) {
             if (stop.hasLeft()) {
                 lastHaltedStop = stop;
             }
@@ -51,15 +51,15 @@ public class Train extends TrainStub implements Serializable {
         return origin;
     }
 
-    public TrainStop[] getStops() {
+    public VehicleStop[] getStops() {
         return stops;
     }
 
-    public TrainStop getLastHaltedStop() {
+    public VehicleStop getLastHaltedStop() {
         return lastHaltedStop;
     }
 
-    public IrailDataResponse<Train> getTrain() {
+    public IrailDataResponse<Vehicle> getTrain() {
         // override stub method
         return new ApiResponse<>(this);
     }

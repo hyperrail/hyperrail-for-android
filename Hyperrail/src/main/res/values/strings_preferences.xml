@@ -10,7 +10,7 @@
     <string name="pref_number_recent_searches">Number of recent searches to show</string>
     <string name="order_of_routes">Order of routes</string>
     <string name="order_of_stations">Order of stations</string>
-    <string name="order_of_trains">Order of trains</string>
+    <string name="order_of_trains">Order of legs</string>
     <string name="number_nearby_stations">Number of nearby stations to show</string>
     <string name="show_nearby_stations">Show stations around me</string>
     <string name="number_recent_searches">Amount of recent searches to show</string>

@@ -36,16 +36,16 @@ import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchResult.LiveboardActivity;
-import be.hyperrail.android.activities.searchResult.TrainActivity;
+import be.hyperrail.android.activities.searchResult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
-import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.VehicleStub;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.util.DurationFormatter;
 
 public class RouteListItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<RouteResult, Route> {
@@ -129,7 +129,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
             vArrivalDelay.setText("");
         }
 
-        vDirection.setText(route.getOrigin().getDepartingTrain().getDirection().getLocalizedName());
+        vDirection.setText(route.getOrigin().getDepartingRouteLeg().getVehicleInformation().getDirection().getLocalizedName());
 
         Duration routeWithDelays = route.getDurationIncludingDelays();
         Duration routeWithoutDelays = route.getDuration();
@@ -147,7 +147,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
 
         vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
 
-        vTrainCount.setText(String.valueOf(route.getTrains().length));
+        vTrainCount.setText(String.valueOf(route.getLegs().length));
 
         vPlatform.setText(route.getDeparturePlatform());
 
@@ -197,9 +197,9 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
             public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
                 Intent i = null;
                 if (object instanceof Bundle) {
-                    i = TrainActivity.createIntent(context,
-                            new IrailTrainRequest(
-                                    ((TrainStub) ((Bundle) object).getSerializable("train")).getId(),
+                    i = VehicleActivity.createIntent(context,
+                                                     new IrailVehicleRequest(
+                                    ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
                                     (DateTime) ((Bundle) object).getSerializable("date")
                             ));
 

@@ -19,22 +19,22 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchResult.LiveboardActivity;
-import be.hyperrail.android.activities.searchResult.TrainActivity;
+import be.hyperrail.android.activities.searchResult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.TrainStop;
-import be.hyperrail.android.irail.implementation.TrainStub;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.android.irail.implementation.VehicleStub;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 
 /**
  * A fragment for showing liveboard results
  */
-public class RouteFragment extends RecyclerViewFragment<Route> implements ResultFragment<IrailRouteRequest>, OnRecyclerItemClickListener<TrainStop>{
+public class RouteFragment extends RecyclerViewFragment<Route> implements ResultFragment<IrailRouteRequest>, OnRecyclerItemClickListener<VehicleStop>{
 
     private IrailRouteRequest mRequest;
     /**
@@ -103,9 +103,9 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
             public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
                 Intent i = null;
                 if (object instanceof Bundle) {
-                    i = TrainActivity.createIntent(getActivity(),
-                            new IrailTrainRequest(
-                                    ((TrainStub) ((Bundle) object).getSerializable("train")).getId(),
+                    i = VehicleActivity.createIntent(getActivity(),
+                                                     new IrailVehicleRequest(
+                                    ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
                                     (DateTime) ((Bundle) object).getSerializable("date")
                             )
                     );
@@ -138,8 +138,8 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
 
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, TrainStop object) {
-        Intent i = TrainActivity.createIntent(getActivity().getApplicationContext(), new IrailTrainRequest(object.getTrain().getId(), object.getDepartureTime()));
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
+        Intent i = VehicleActivity.createIntent(getActivity().getApplicationContext(), new IrailVehicleRequest(object.getTrain().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 

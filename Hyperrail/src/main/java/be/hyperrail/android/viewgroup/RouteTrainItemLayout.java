@@ -27,17 +27,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Objects;
-
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.Message;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.RouteLeg;
+import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
 
-public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route,TrainStub> {
+public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route,RouteLeg> {
 
     protected TextView vDirection;
     protected TextView vDuration;
@@ -92,13 +91,12 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
     }
 
     @Override
-    public void bind(final Context context, final TrainStub train, final Route route, final int position) {
+    public void bind(final Context context, final RouteLeg routeLeg, final Route route, final int position) {
 
         final Transfer transferBefore = route.getTransfers()[position];
         final Transfer transferAfter = route.getTransfers()[position+1];
-        boolean isWalking = Objects.equals(train.getId(), "WALK");
 
-        if (isWalking) {
+        if (routeLeg.getType() == RouteLegType.WALK) {
             vDirection.setText(R.string.walk_heading);
             vTrainType.setVisibility(View.GONE);
             vTrainNumber.setText(R.string.walk_description);
@@ -109,11 +107,11 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
                 vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_hollow));
             }
         } else {
-            vTrainNumber.setText(train.getNumber());
-            vTrainType.setText(train.getType());
+            vTrainNumber.setText(routeLeg.getVehicleInformation().getNumber());
+            vTrainType.setText(routeLeg.getVehicleInformation().getType());
             vOccupancy.setVisibility(View.VISIBLE);
             vTrainType.setVisibility(View.VISIBLE);
-            vDirection.setText(train.getDirection().getLocalizedName());
+            vDirection.setText(routeLeg.getVehicleInformation().getDirection().getLocalizedName());
 
             if (transferBefore.hasLeft()) {
                 if (transferAfter.hasArrived()) {

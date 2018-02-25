@@ -19,7 +19,7 @@ import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 
 /**
  * Retrieve (realtime) data according from the iRail API, or any API which provides similar data.
@@ -38,7 +38,7 @@ public interface IrailDataProvider {
 
     void getRoute(@NonNull IrailRouteRequest... request);
 
-    void getTrain(@NonNull IrailTrainRequest... request);
+    void getTrain(@NonNull IrailVehicleRequest... request);
 
     void postOccupancy(@NonNull IrailPostOccupancyRequest... request);
 

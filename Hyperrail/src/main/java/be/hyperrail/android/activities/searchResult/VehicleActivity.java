@@ -20,29 +20,29 @@ import android.view.View;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.searchResult.TrainFragment;
+import be.hyperrail.android.fragments.searchResult.VehicleFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.TrainStub;
-import be.hyperrail.android.irail.implementation.requests.IrailTrainRequest;
+import be.hyperrail.android.irail.implementation.VehicleStub;
+import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
 /**
  * Activity to show a train
  */
-public class TrainActivity extends ResultActivity {
+public class VehicleActivity extends ResultActivity {
 
-    private IrailTrainRequest mRequest;
-    private TrainFragment fragment;
+    private IrailVehicleRequest mRequest;
+    private VehicleFragment fragment;
 
-    public static Intent createIntent(Context context, IrailTrainRequest request) {
-        Intent i = new Intent(context, TrainActivity.class);
+    public static Intent createIntent(Context context, IrailVehicleRequest request) {
+        Intent i = new Intent(context, VehicleActivity.class);
         i.putExtra("request", request);
         return i;
     }
 
     public Intent createShortcutIntent() {
-        Intent i = new Intent(this, TrainActivity.class);
+        Intent i = new Intent(this, VehicleActivity.class);
         i.putExtra("shortcut", true);
         i.putExtra("id", mRequest.getTrainId());
         return i;
@@ -53,18 +53,18 @@ public class TrainActivity extends ResultActivity {
 
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
-            mRequest = new IrailTrainRequest(getIntent().getStringExtra("id"), null);
+            mRequest = new IrailVehicleRequest(getIntent().getStringExtra("id"), null);
         } else {
-            mRequest = (IrailTrainRequest) getIntent().getSerializableExtra("request");
+            mRequest = (IrailVehicleRequest) getIntent().getSerializableExtra("request");
         }
 
         super.onCreate(savedInstanceState);
 
-        fragment = TrainFragment.createInstance(mRequest);
+        fragment = VehicleFragment.createInstance(mRequest);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         setTitle(R.string.title_train);
-        setSubTitle(TrainStub.getTrainName(mRequest.getTrainId()));
+        setSubTitle(VehicleStub.getTrainName(mRequest.getTrainId()));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class TrainActivity extends ResultActivity {
                 ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getTrainId());
                 mShortcutInfoBuilder.setShortLabel(mRequest.getTrainId());
 
-                mShortcutInfoBuilder.setLongLabel("Train " + mRequest.getTrainId());
+                mShortcutInfoBuilder.setLongLabel("Vehicle " + mRequest.getTrainId());
                 mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_shortcut_train));
                 shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                 mShortcutInfoBuilder.setIntent(shortcutIntent);
@@ -130,7 +130,7 @@ public class TrainActivity extends ResultActivity {
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            TrainActivity.this.markFavorite(false);
+                            VehicleActivity.this.markFavorite(false);
                         }
                     })
                     .show();
@@ -141,7 +141,7 @@ public class TrainActivity extends ResultActivity {
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            TrainActivity.this.markFavorite(true);
+                            VehicleActivity.this.markFavorite(true);
                         }
                     })
                     .show();
@@ -160,7 +160,7 @@ public class TrainActivity extends ResultActivity {
      *
      * @param request The new request
      */
-    public void setRequest(IrailTrainRequest request) {
+    public void setRequest(IrailVehicleRequest request) {
         mRequest = request;
     }
 }

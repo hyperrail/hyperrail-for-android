@@ -11,15 +11,14 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.VehicleStub;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TrainSuggestionTest {
 
     Station station1 = new Station("BE.NMBS.1", "Brussels", "Brussel", "fr", "de", "en", "Brussel", "BE", 1, 2, 3);
-    TrainStub train = new TrainStub("IC537",station1,"http://uri");
+    VehicleStub train = new VehicleStub("IC537",station1,"http://uri");
     TrainSuggestion s = new TrainSuggestion(train);
 
     @Test

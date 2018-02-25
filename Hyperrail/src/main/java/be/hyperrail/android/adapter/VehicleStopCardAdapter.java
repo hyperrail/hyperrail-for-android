@@ -14,21 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Train;
-import be.hyperrail.android.irail.implementation.TrainStop;
-import be.hyperrail.android.viewgroup.TrainStopLayout;
+import be.hyperrail.android.irail.implementation.Vehicle;
+import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.android.viewgroup.VehicleStopLayout;
 
 /**
  * Recyclerview adapter which shows stops of a train
  */
-public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdapter.TrainStopViewHolder> {
+public class VehicleStopCardAdapter extends RecyclerView.Adapter<VehicleStopCardAdapter.TrainStopViewHolder> {
 
-    private Train mTrain;
+    private Vehicle mTrain;
     private final Context context;
-    private OnRecyclerItemClickListener<TrainStop> clickListener;
-    private OnRecyclerItemLongClickListener<TrainStop> longClickListener;
+    private OnRecyclerItemClickListener<VehicleStop> clickListener;
+    private OnRecyclerItemLongClickListener<VehicleStop> longClickListener;
 
-    public TrainStopCardAdapter(Context context, Train train) {
+    public VehicleStopCardAdapter(Context context, Vehicle train) {
         this.context = context;
         this.mTrain = train;
     }
@@ -38,24 +38,24 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
         View itemView;
 
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_trainstop, parent, false);
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_vehiclestop, parent, false);
         } else {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_trainstop, parent, false);
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_vehiclestop, parent, false);
         }
         return new TrainStopViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(TrainStopViewHolder holder, int position) {
-        final TrainStop stop = mTrain.getStops()[position];
+        final VehicleStop stop = mTrain.getStops()[position];
 
-        holder.trainStopLayout.bind(context, stop, mTrain, position);
+        holder.mVehicleStopLayout.bind(context, stop, mTrain, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (clickListener != null) {
-                    clickListener.onRecyclerItemClick(TrainStopCardAdapter.this, stop);
+                    clickListener.onRecyclerItemClick(VehicleStopCardAdapter.this, stop);
                 }
             }
         });
@@ -64,7 +64,7 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(TrainStopCardAdapter.this, stop);
+                    longClickListener.onRecyclerItemLongClick(VehicleStopCardAdapter.this, stop);
                 }
                 return false;
             }
@@ -79,26 +79,26 @@ public class TrainStopCardAdapter extends RecyclerView.Adapter<TrainStopCardAdap
         return mTrain.getStops().length;
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<TrainStop> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<VehicleStop> listener) {
         this.clickListener = listener;
     }
 
-    public void setOnItemLongClickListener(OnRecyclerItemLongClickListener<TrainStop> listener) {
+    public void setOnItemLongClickListener(OnRecyclerItemLongClickListener<VehicleStop> listener) {
         this.longClickListener = listener;
     }
 
-    public void updateTrain(Train train) {
+    public void updateTrain(Vehicle train) {
         this.mTrain = train;
         notifyDataSetChanged();
     }
 
     class TrainStopViewHolder extends RecyclerView.ViewHolder {
 
-        TrainStopLayout trainStopLayout;
+        VehicleStopLayout mVehicleStopLayout;
 
         TrainStopViewHolder(View view) {
             super(view);
-            trainStopLayout = view.findViewById(R.id.binder);
+            mVehicleStopLayout = view.findViewById(R.id.binder);
         }
     }
 }

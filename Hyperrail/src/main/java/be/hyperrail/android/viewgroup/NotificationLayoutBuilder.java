@@ -15,19 +15,19 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.TrainStop;
 import be.hyperrail.android.irail.implementation.Transfer;
+import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.util.DurationFormatter;
 
 public class NotificationLayoutBuilder {
 
-    public static RemoteViews createNotificationLayout(Context context, TrainStop stop) {
+    public static RemoteViews createNotificationLayout(Context context, VehicleStop stop) {
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
         boolean hasArrivalInfo = (stop.getArrivalTime() != null);
         boolean hasDepartureInfo = (stop.getDepartureTime() != null);
 
-        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_trainstop);
+        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_vehiclestop);
 
         if (!stop.isDepartureCanceled() && !stop.isArrivalCanceled()) {
             contentView.setViewVisibility(R.id.layout_train_status_container, View.INVISIBLE);
@@ -100,8 +100,8 @@ public class NotificationLayoutBuilder {
 
     public static RemoteViews createNotificationLayout(Context context, Transfer transfer) {
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-        boolean hasDepartureInfo = transfer.getDepartingTrain() != null;
-        boolean hasArrivalInfo = transfer.getArrivingTrain() != null;
+        boolean hasDepartureInfo = transfer.getDepartingRouteLeg() != null;
+        boolean hasArrivalInfo = transfer.getArrivingRouteLeg() != null;
 
         RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_transfer);
 

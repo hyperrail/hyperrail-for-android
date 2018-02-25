@@ -23,10 +23,10 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.TrainStop;
-import be.hyperrail.android.irail.implementation.TrainStopType;
+import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.android.irail.implementation.VehicleStopType;
 
-public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<LiveBoard, TrainStop> {
+public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<LiveBoard, VehicleStop> {
 
     protected TextView vDestination;
     protected TextView vTrainType;
@@ -77,7 +77,7 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
     }
 
     @Override
-    public void bind(final Context context, final TrainStop stop, final LiveBoard liveboard, final int position) {
+    public void bind(final Context context, final VehicleStop stop, final LiveBoard liveboard, final int position) {
 
         vDestination.setText(stop.getDestination().getLocalizedName());
 
@@ -86,7 +86,7 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
 
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
-        if (stop.getType() == TrainStopType.DEPARTURE) {
+        if (stop.getType() == VehicleStopType.DEPARTURE) {
             vTime.setText(df.print(stop.getDepartureTime()));
             if (stop.getDepartureDelay().getStandardSeconds() > 0) {
                 vDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));

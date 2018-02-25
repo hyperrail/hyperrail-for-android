@@ -66,7 +66,7 @@
 
         <include
             android:id="@+id/container_train_number"
-            layout="@layout/include_text_train_type_number"
+            layout="@layout/include_text_vehicle_type_number"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/listitem_content_height_single"
             android:layout_below="@id/text_destination"
@@ -82,7 +82,7 @@
             android:layout_toRightOf="@id/container_train_number"/>
 
         <include
-            layout="@layout/include_text_train_status"
+            layout="@layout/include_text_vehicle_status"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/listitem_content_height_single"
             android:layout_below="@id/text_destination"

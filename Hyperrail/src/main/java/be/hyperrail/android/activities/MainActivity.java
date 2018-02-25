@@ -48,7 +48,7 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.FeedbackFragment;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.fragments.RouteSearchFragment;
-import be.hyperrail.android.fragments.TrainSearchFragment;
+import be.hyperrail.android.fragments.VehicleSearchFragment;
 import be.hyperrail.android.fragments.searchResult.DisturbanceListFragment;
 
 /**
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 setSubTitle(R.string.title_route);
                 break;
             case VIEW_TYPE_TRAIN:
-                frg = TrainSearchFragment.newInstance();
+                frg = VehicleSearchFragment.newInstance();
                 setSubTitle(R.string.title_train);
                 break;
             case VIEW_TYPE_DISTURBANCE:

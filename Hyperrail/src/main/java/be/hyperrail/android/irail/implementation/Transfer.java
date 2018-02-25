@@ -24,14 +24,14 @@ import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.db.Station;
 
 /**
- * A transfer between two trains
+ * A transfer between two route legs
  */
 public class Transfer implements Serializable {
 
     @Nullable
-    private final TrainStub arrivingTrain;
+    private final RouteLeg arrivingRouteLeg;
     @Nullable
-    private final TrainStub departingTrain;
+    private final RouteLeg departingRouteLeg;
     @Nullable
     private final DateTime arrivalTime;
     @Nullable
@@ -64,10 +64,15 @@ public class Transfer implements Serializable {
 
     private final TransferType type;
 
-    public Transfer(@NonNull Station station, @Nullable TrainStub arrivingTrain, @Nullable TrainStub departingTrain, @Nullable String arrivalPlatform, boolean arrivalNormal, boolean arrived, boolean departureNormal, boolean left, @Nullable String departurePlatform, @Nullable Duration arrivalDelay, boolean arrivalCanceled, @Nullable Duration departureDelay, boolean departureCanceled, @Nullable DateTime arrivalTime, @Nullable DateTime departureTime, @Nullable String departureSemanticId, @Nullable OccupancyLevel departureOccupancy, TransferType type) {
+    public Transfer(@NonNull Station station, @Nullable RouteLeg arrivingRouteLeg, @Nullable DateTime arrivalTime,
+                    @Nullable String arrivalPlatform, boolean arrivalNormal, @Nullable Duration arrivalDelay,
+                    boolean arrivalCanceled, boolean arrived, @Nullable RouteLeg departingRouteLeg, @Nullable DateTime departureTime,
+                    @Nullable String departurePlatform, boolean departureNormal, @Nullable Duration departureDelay,
+                    boolean departureCanceled, boolean left, @Nullable String departureSemanticId,
+                    @Nullable OccupancyLevel departureOccupancy, TransferType type) {
         this.station = station;
-        this.arrivingTrain = arrivingTrain;
-        this.departingTrain = departingTrain;
+        this.arrivingRouteLeg = arrivingRouteLeg;
+        this.departingRouteLeg = departingRouteLeg;
         this.arrived = arrived;
         this.left = left;
         this.arrivalTime = arrivalTime;
@@ -86,13 +91,13 @@ public class Transfer implements Serializable {
     }
 
     @Nullable
-    public TrainStub getArrivingTrain() {
-        return arrivingTrain;
+    public RouteLeg getArrivingRouteLeg() {
+        return arrivingRouteLeg;
     }
 
     @Nullable
-    public TrainStub getDepartingTrain() {
-        return departingTrain;
+    public RouteLeg getDepartingRouteLeg() {
+        return departingRouteLeg;
     }
 
     @Nullable
