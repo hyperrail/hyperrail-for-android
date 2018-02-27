@@ -26,6 +26,7 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/backgroundMaterialLight"
         />
 
 
@@ -36,7 +37,7 @@
         android:gravity="center"
         android:background="@color/backgroundMaterialLight"
         android:textColor="@color/colorTextDark"
-        android:text="Loading data..."
+        android:text="Still loading data..."
         android:textSize="@dimen/listitem_content_primary_textsize" />
 
 </LinearLayout>

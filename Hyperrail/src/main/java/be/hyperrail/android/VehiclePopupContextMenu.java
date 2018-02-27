@@ -326,7 +326,6 @@ public class VehiclePopupContextMenu {
 
                 mBuilder.setStyle(new NotificationCompat.DecoratedCustomViewStyle());
 
-
                 PendingIntent resultPendingIntent =
                         PendingIntent.getActivity(
                                 mContext,

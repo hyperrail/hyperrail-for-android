@@ -34,6 +34,7 @@ public class NotificationLayoutBuilder {
         } else {
             contentView.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
         }
+
         contentView.setViewVisibility(R.id.container_occupancy, View.INVISIBLE);
 
         if (hasArrivalInfo && hasDepartureInfo) {
@@ -54,6 +55,7 @@ public class NotificationLayoutBuilder {
             } else {
                 contentView.setViewVisibility(R.id.text_delay2, View.INVISIBLE);
             }
+
         } else if (hasDepartureInfo) {
             // only departure info
             contentView.setTextViewText(R.id.text_time1, df.print(stop.getDepartureTime()));
