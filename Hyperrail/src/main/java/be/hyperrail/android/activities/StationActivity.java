@@ -71,6 +71,8 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
                 }
         );
 
+        setTitle(mStation.getLocalizedName());
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -93,10 +95,26 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         ((TextView) findViewById(R.id.text_station)).setText(station.getLocalizedName());
         ((TextView) findViewById(R.id.text_address)).setText(String.format("%s %s %s", facilities.getStreet(), facilities.getZip(), facilities.getCity()));
 
-        findViewById(R.id.image_tram).setVisibility(facilities.hasTram() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.image_bus).setVisibility(facilities.hasBus() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.image_subway).setVisibility(facilities.hasMetro() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.image_ticket).setVisibility(facilities.hasTicketVendingMachines() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_ticket).setVisibility(facilities.hasTicketVendingMachines() ? View.VISIBLE : View.GONE);
 
+        findViewById(R.id.image_tram).setVisibility(facilities.hasTram() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_tram).setVisibility(facilities.hasTram() ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.image_bus).setVisibility(facilities.hasBus() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_bus).setVisibility(facilities.hasBus() ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.image_subway).setVisibility(facilities.hasMetro() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_subway).setVisibility(facilities.hasMetro() ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.image_taxi).setVisibility(facilities.hasTaxi() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_taxi).setVisibility(facilities.hasTaxi() ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.image_bike).setVisibility(facilities.hasBike() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_bike).setVisibility(facilities.hasBike() ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.image_blue_bike).setVisibility(facilities.hasBlue_bike() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_blue_bike).setVisibility(facilities.hasBlue_bike() ? View.VISIBLE : View.GONE);
         // TODO: display information on accessibility
     }
 

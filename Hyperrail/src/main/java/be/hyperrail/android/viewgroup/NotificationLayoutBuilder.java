@@ -149,7 +149,7 @@ public class NotificationLayoutBuilder {
             contentView.setViewVisibility(R.id.text_time2, View.INVISIBLE);
             contentView.setViewVisibility(R.id.text_delay2, View.INVISIBLE);
 
-            if (transfer.getArrivalDelay().getStandardMinutes() > 0) {
+            if (transfer.getDepartureDelay().getStandardMinutes() > 0) {
                 contentView.setViewVisibility(R.id.text_delay1, View.VISIBLE);
                 contentView.setTextViewText(R.id.text_time2, df.print(transfer.getDepartureTime().withDurationAdded(transfer.getDepartureDelay(), 1)));
                 contentView.setViewVisibility(R.id.text_time2, View.VISIBLE);

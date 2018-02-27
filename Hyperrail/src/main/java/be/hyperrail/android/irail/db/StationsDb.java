@@ -781,7 +781,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             } else {
                 openingHours[i] = new LocalTime[2];
                 openingHours[i][0] = LocalTime.parse(c.getString(indices[i][0]), localTimeFormatter);
-                openingHours[i][1] = LocalTime.parse(c.getString(indices[i][0]), localTimeFormatter);
+                openingHours[i][1] = LocalTime.parse(c.getString(indices[i][1]), localTimeFormatter);
             }
         }
 
