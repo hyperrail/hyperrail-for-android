@@ -86,4 +86,28 @@
     <string name="title_activity_station">Station</string>
 
     <string name="menu_group_settings">Parametres</string>
+    <string name="facility_blue_bikes">Blue bikes</string>
+    <string name="title_station_opening_hours">Heures d \'ouverture</string>
+    <string name="facility_bicycle_parking">Stockage de vélos</string>
+    <string name="facility_taxi_stop">Taxi</string>
+    <string name="facility_subway_stop">Métro</string>
+    <string name="facility_tram_stop">Tram</string>
+    <string name="facility_bus_stop">Bus</string>
+    <string name="facility_ticket_vending_machines">Distributeurs de billets</string>
+    <string name="title_station_facilities">Equipements</string>
+    <string name="title_arrivals">Arrivées</string>
+    <string name="shortcut_label_station_short">Départs</string>
+    <string name="shortcut_label_route_short">Route</string>
+    <string name="title_pick_station">Choisissez une station</string>
+    <string name="action_details">Plus d\'informations</string>
+    <string name="action_share_arrival_eta">Partager l\'heure de départ prévue</string>
+    <string name="action_share_departure_ETA">Partager l\'heure d\'arrivée prévue</string>
+    <string name="shortcut_label_route_long">Planifier un voyage</string>
+    <string name="shortcut_label_station_long">Voir les départs et les arrivées</string>
+    <string name="show_as_notification">Pin comme notification</string>
+    <string name="ETA_stop_arrival">À %s j\'arriverai dans %s avec %s</string>
+    <string name="ETA_transfer_arrival">À %s j\'arriverai dans %s avec %s</string>
+    <string name="ETA_stop_departure">À %s je partirai de %s avec %s</string>
+    <string name="ETA_transfer_departure">À %s je partirai de %s avec %s</string>
+    <string name="list_day_names">Lundi\nMardi\nMercredi\nJeudi\nVendredi\nSamedi\nDimanche</string>
 </resources>

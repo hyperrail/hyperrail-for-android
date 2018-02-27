@@ -39,8 +39,7 @@
                 android:layout_marginBottom="@dimen/activity_horizontal_margin"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_horizontal_margin"
-                >
+                android:layout_marginTop="@dimen/activity_horizontal_margin">
 
                 <TextView
                     android:id="@+id/text_station"
@@ -48,14 +47,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:gravity="center_vertical"
-                    android:text="Brussel-Zuid" />
+                    android:text="Brussel-Zuid"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/text_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/text_station"
-                    android:text="Fonsnylaan 1 1000 Brussel" />
+                    android:text="Fonsnylaan 1 1000 Brussel"
+                    tools:ignore="HardcodedText" />
 
                 <android.support.v7.widget.CardView
                     android:id="@+id/container_facilities"
@@ -77,7 +78,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:gravity="center_vertical"
-                            android:text="Facilities" />
+                            android:text="@string/title_station_facilities" />
 
                         <ImageView
                             android:id="@+id/image_ticket"
@@ -85,6 +86,7 @@
                             android:layout_height="@dimen/listitem_content_height_single"
                             android:layout_alignWithParentIfMissing="true"
                             android:layout_below="@+id/title_facilities"
+                            android:contentDescription="@string/facility_ticket_vending_machines"
                             android:padding="2dp"
                             android:src="@drawable/ic_action_ticket" />
 
@@ -95,13 +97,14 @@
                             android:layout_below="@id/title_facilities"
                             android:layout_toRightOf="@id/image_ticket"
                             android:padding="2dp"
-                            android:text="Ticket vending machines" />
+                            android:text="@string/facility_ticket_vending_machines" />
 
                         <ImageView
                             android:id="@+id/image_bus"
                             android:layout_width="@dimen/listitem_content_height_single"
                             android:layout_height="@dimen/listitem_content_height_single"
                             android:layout_below="@+id/image_ticket"
+                            android:contentDescription="@string/facility_bus_stop"
                             android:padding="2dp"
                             android:src="@drawable/ic_directions_bus" />
 
@@ -112,13 +115,14 @@
                             android:layout_below="@id/text_ticket"
                             android:layout_toRightOf="@id/image_bus"
                             android:padding="2dp"
-                            android:text="Bus stop" />
+                            android:text="@string/facility_bus_stop" />
 
                         <ImageView
                             android:id="@+id/image_tram"
                             android:layout_width="@dimen/listitem_content_height_single"
                             android:layout_height="@dimen/listitem_content_height_single"
                             android:layout_below="@id/image_bus"
+                            android:contentDescription="@string/facility_tram_stop"
                             android:padding="2dp"
                             android:src="@drawable/ic_tram" />
 
@@ -129,13 +133,14 @@
                             android:layout_below="@id/text_bus"
                             android:layout_toRightOf="@id/image_tram"
                             android:padding="2dp"
-                            android:text="Tram stop" />
+                            android:text="@string/facility_tram_stop" />
 
                         <ImageView
                             android:id="@+id/image_subway"
                             android:layout_width="@dimen/listitem_content_height_single"
                             android:layout_height="@dimen/listitem_content_height_single"
                             android:layout_below="@id/image_tram"
+                            android:contentDescription="@string/facility_subway_stop"
                             android:padding="2dp"
                             android:src="@drawable/ic_subway" />
 
@@ -146,7 +151,7 @@
                             android:layout_below="@id/text_tram"
                             android:layout_toRightOf="@id/image_subway"
                             android:padding="2dp"
-                            android:text="Subway stop" />
+                            android:text="@string/facility_subway_stop" />
 
 
                         <ImageView
@@ -154,6 +159,7 @@
                             android:layout_width="@dimen/listitem_content_height_single"
                             android:layout_height="@dimen/listitem_content_height_single"
                             android:layout_below="@id/image_subway"
+                            android:contentDescription="@string/facility_taxi_stop"
                             android:padding="2dp"
                             android:src="@drawable/ic_local_taxi" />
 
@@ -164,13 +170,14 @@
                             android:layout_below="@id/text_subway"
                             android:layout_toRightOf="@id/image_taxi"
                             android:padding="2dp"
-                            android:text="Taxi stop" />
+                            android:text="@string/facility_taxi_stop" />
 
                         <ImageView
                             android:id="@+id/image_bike"
                             android:layout_width="@dimen/listitem_content_height_single"
                             android:layout_height="@dimen/listitem_content_height_single"
                             android:layout_below="@id/image_taxi"
+                            android:contentDescription="@string/facility_bicycle_parking"
                             android:padding="2dp"
                             android:src="@drawable/ic_action_bike" />
 
@@ -181,16 +188,17 @@
                             android:layout_below="@id/text_taxi"
                             android:layout_toRightOf="@id/image_bike"
                             android:padding="2dp"
-                            android:text="Bicycle parking" />
+                            android:text="@string/facility_bicycle_parking" />
 
                         <ImageView
                             android:id="@+id/image_blue_bike"
                             android:layout_width="@dimen/listitem_content_height_single"
                             android:layout_height="@dimen/listitem_content_height_single"
                             android:layout_below="@id/image_bike"
+                            android:contentDescription="@string/facility_blue_bikes"
                             android:padding="2dp"
-                            android:tint="#0d47a1"
-                            android:src="@drawable/ic_action_bike" />
+                            android:src="@drawable/ic_action_bike"
+                            android:tint="#0d47a1" />
 
                         <TextView
                             android:id="@+id/text_blue_bike"
@@ -199,7 +207,7 @@
                             android:layout_below="@id/text_bike"
                             android:layout_toRightOf="@id/image_blue_bike"
                             android:padding="2dp"
-                            android:text="Blue bikes" />
+                            android:text="@string/facility_blue_bikes" />
                     </RelativeLayout>
                 </android.support.v7.widget.CardView>
 
@@ -221,7 +229,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:gravity="center_vertical"
-                            android:text="Opening Hours" />
+                            android:text="@string/title_station_opening_hours" />
 
                         <TextView
                             android:id="@+id/text_days"
@@ -237,7 +245,8 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/title_opening_hours"
                             android:layout_toRightOf="@+id/text_days"
-                            android:text="07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n08:30-16:00\n08:30-16:00\n" />
+                            android:text="07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n07:30-16:00\n08:30-16:00\n08:30-16:00\n"
+                            tools:ignore="HardcodedText" />
                     </RelativeLayout>
 
                 </android.support.v7.widget.CardView>
