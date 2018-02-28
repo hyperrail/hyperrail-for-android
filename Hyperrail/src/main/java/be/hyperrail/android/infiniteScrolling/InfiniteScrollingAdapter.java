@@ -59,7 +59,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param recyclerView                The recyclerview in which this adapter will be used
      * @param infiniteScrollingDataSource The listener which should be notified when new data should be loaded
      */
-    protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, final InfiniteScrollingDataSource infiniteScrollingDataSource) {
+    protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource infiniteScrollingDataSource) {
 
         this.context = context;
 

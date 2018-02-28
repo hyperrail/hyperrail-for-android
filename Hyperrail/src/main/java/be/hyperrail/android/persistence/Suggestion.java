@@ -6,16 +6,19 @@
 
 package be.hyperrail.android.persistence;
 
+import be.hyperrail.android.irail.contracts.IrailRequest;
+
 /**
  * A suggestion wraps a suggestable object together with the reason why it was suggested
+ *
  * @param <T>
  */
-public class Suggestion<T extends Suggestable> {
+public class Suggestion<T extends IrailRequest>  {
 
     private final T data;
     private final SuggestionType type;
 
-    public Suggestion(T data, SuggestionType type){
+    public Suggestion(T data, SuggestionType type) {
 
         this.data = data;
         this.type = type;

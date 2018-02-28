@@ -14,12 +14,10 @@ package be.hyperrail.android.util;
 
 import org.joda.time.DateTime;
 
-import java.io.Serializable;
-
 /**
  * Listener for {@link DateTimePicker}
  */
-public interface OnDateTimeSetListener extends Serializable {
+public interface OnDateTimeSetListener {
 
     /**
      * Callback which is called when a user filled both a date and time in a DateTimePicker

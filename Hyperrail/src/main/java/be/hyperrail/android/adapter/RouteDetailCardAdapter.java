@@ -12,7 +12,7 @@
 
 package be.hyperrail.android.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,12 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Objects;
-
-import be.hyperrail.android.OccupancyDialog;
 import be.hyperrail.android.R;
+import be.hyperrail.android.VehiclePopupContextMenu;
 import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.RouteLeg;
+import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.viewgroup.RouteTrainItemLayout;
 import be.hyperrail.android.viewgroup.RouteTransferItemLayout;
@@ -46,13 +45,15 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     private final Route route;
 
-    private final Context context;
+    // We need to keep the context as an activity in order to be able to open the contextmenu here
+    // TODO: check if this "deep nesting" can be prevented
+    private final Activity context;
     private OnRecyclerItemClickListener<Object> listener;
 
     private final int VIEW_TYPE_TRANSFER = 0;
     private final int VIEW_TYPE_TRAIN = 1;
 
-    public RouteDetailCardAdapter(Context context, Route route, boolean embedded) {
+    public RouteDetailCardAdapter(Activity context, Route route, boolean embedded) {
         this.context = context;
         this.route = route;
         this.embedded = embedded;
@@ -106,7 +107,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * Note: since recyclerview recyclers, either set or unset fields, but don't leave them as-is!
      */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof RouteTransferViewHolder) {
             // Create a transfer ViewHolder
@@ -125,69 +126,38 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 }
             });
 
-            if (transfer.getDepartingTrain() != null) {
-                if (transfer.getArrivingTrain() != null) {
-                    holder.itemView.setOnLongClickListener(
-                            new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
-                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                            transfer,route)
-                                    ).show();
-                                    return false;
-                                }
+            holder.itemView.setOnLongClickListener(
+                    new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
+                                                         transfer)
+                            ).show();
+                            return false;
+                        }
 
-                            }
-                    );
-                } else {
-                    holder.itemView.setOnLongClickListener(
-                            new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
-                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                            transfer, null,route)
-                                    ).show();
-                                    return false;
-                                }
+                    }
+            );
 
-                            }
-                    );
-                }
-            } else {
-                if (transfer.getArrivingTrain() != null) {
-                    holder.itemView.setOnLongClickListener(
-                            new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
-                                    (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                            null, transfer,route)
-                                    ).show();
-                                    return false;
-                                }
-
-                            }
-                    );
-                }
-            }
 
         } else if (holder instanceof RouteTrainViewHolder) {
             // odd (1,3,...) : route between stations
             final Transfer transferBefore = route.getTransfers()[(position - 1) / 2];
             final Transfer transferAfter = route.getTransfers()[(position + 1) / 2];
-            final TrainStub train = route.getTrains()[(position - 1) / 2];
 
-            boolean isWalking = Objects.equals(train.getId(), "WALK");
+            final RouteLeg leg =route.getLegs()[(position - 1) / 2];
 
-            ((RouteTrainViewHolder)holder).routeTrainItemLayout.bind(context,train,route,(position - 1) / 2);
+            ((RouteTrainViewHolder) holder).routeTrainItemLayout.bind(context, leg, route, (position - 1) / 2);
 
-            if (!isWalking) {
+            if (leg.getType() != RouteLegType.WALK) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("train", train);
+                        bundle.putSerializable("train", leg.getVehicleInformation());
                         // Get the departure date (day) of this train
                         bundle.putSerializable("date", transferBefore.getDepartureTime());
+                        // TODO: consider if these should be included
                         bundle.putSerializable("from", transferBefore.getStation());
                         bundle.putSerializable("to", transferAfter.getStation());
 
@@ -201,8 +171,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
-                                (new OccupancyDialog(RouteDetailCardAdapter.this.context,
-                                        transferBefore, transferAfter,route)
+                                (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
+                                                             transferBefore, transferAfter)
                                 ).show();
                                 return false;
                             }
@@ -220,9 +190,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             return 0;
         }
         if (route.getTransfers() == null) {
-            return route.getTrains().length;
+            return route.getLegs().length;
         }
-        return route.getTrains().length + route.getTransfers().length;
+        return route.getLegs().length + route.getTransfers().length;
     }
 
     public void setOnItemClickListener(OnRecyclerItemClickListener<Object> listener) {
@@ -230,7 +200,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     /**
-     * Train ViewHolder, showing train, status, duration, direction
+     * Vehicle ViewHolder, showing train, status, duration, direction
      */
     private class RouteTrainViewHolder extends RecyclerView.ViewHolder {
 

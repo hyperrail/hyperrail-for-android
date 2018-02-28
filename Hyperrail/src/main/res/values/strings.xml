@@ -103,4 +103,21 @@
     <string name="action_share_departure_ETA">Share departure ETA</string>
     <string name="title_pick_station">Pick a station</string>
     <string name="menu_group_settings">Settings</string>
+
+
+    <string name="shortcut_label_route_short">Route</string>
+    <string name="shortcut_label_route_long">Plan a trip</string>
+    <string name="shortcut_label_station_short">Departures</string>
+    <string name="shortcut_label_station_long">View departures and arrivals</string>
+    <string name="title_arrivals">Arrivals</string>
+    <string name="title_station_facilities">Facilities</string>
+    <string name="facility_ticket_vending_machines">Ticket vending machines</string>
+    <string name="facility_bus_stop">Bus stop</string>
+    <string name="facility_tram_stop">Tram stop</string>
+    <string name="facility_subway_stop">Subway stop</string>
+    <string name="facility_taxi_stop">Taxi stop</string>
+    <string name="facility_bicycle_parking">Bicycle parking</string>
+    <string name="facility_blue_bikes">Blue bikes</string>
+    <string name="title_station_opening_hours">Opening Hours</string>
+
 </resources>

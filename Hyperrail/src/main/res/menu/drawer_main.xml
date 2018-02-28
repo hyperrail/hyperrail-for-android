@@ -3,33 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <item
-        android:id="@+id/action_liveboard"
-        android:icon="@drawable/ic_format_list_bulleted"
-        android:title="@string/title_liveboard"
-        app:showAsAction="ifRoom|collapseActionView" />
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_liveboard"
+            android:icon="@drawable/ic_format_list_bulleted"
+            android:title="@string/title_liveboard"
+            app:showAsAction="ifRoom|collapseActionView" />
 
-    <item
-        android:id="@+id/action_route"
-        android:icon="@drawable/ic_swap_vert"
-        android:title="@string/title_route"
-        app:showAsAction="ifRoom|collapseActionView" />
+        <item
+            android:id="@+id/action_route"
+            android:icon="@drawable/ic_swap_vert"
+            android:title="@string/title_route"
+            app:showAsAction="ifRoom|collapseActionView" />
 
-    <item
-        android:id="@+id/action_train"
-        android:icon="@drawable/ic_directions_railway_white"
-        android:title="@string/title_train"
-        app:showAsAction="ifRoom|collapseActionView" />
+        <item
+            android:id="@+id/action_train"
+            android:icon="@drawable/ic_directions_railway_white"
+            android:title="@string/title_train"
+            app:showAsAction="ifRoom|collapseActionView" />
 
-    <item
-        android:id="@+id/action_disturbances"
-        android:icon="@android:drawable/stat_sys_warning"
-        android:title="@string/title_disturbances"
-        app:showAsAction="ifRoom|collapseActionView" />
+        <item
+            android:id="@+id/action_disturbances"
+            android:icon="@android:drawable/stat_sys_warning"
+            android:title="@string/title_disturbances"
+            app:showAsAction="ifRoom|collapseActionView" />
 
-    <item android:title="@string/menu_group_settings">
-        <menu>
-            <group android:checkableBehavior="single">
+        <item android:title="@string/menu_group_settings">
+            <menu>
                 <item
                     android:id="@+id/action_settings"
                     android:icon="@drawable/ic_settings_white"
@@ -41,8 +41,7 @@
                     android:icon="@drawable/ic_feedback"
                     android:title="@string/title_feedback"
                     app:showAsAction="ifRoom|collapseActionView" />
-            </group>
-        </menu>
-    </item>
-
+            </menu>
+        </item>
+    </group>
 </menu>

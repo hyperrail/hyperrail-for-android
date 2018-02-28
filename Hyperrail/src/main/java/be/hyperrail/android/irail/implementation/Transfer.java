@@ -12,6 +12,9 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
@@ -21,35 +24,55 @@ import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.db.Station;
 
 /**
- * A transfer between two trains
+ * A transfer between two route legs
  */
 public class Transfer implements Serializable {
 
-    private final TrainStub arrivingTrain;
-    private final TrainStub departingTrain;
+    @Nullable
+    private final RouteLeg arrivingRouteLeg;
+    @Nullable
+    private final RouteLeg departingRouteLeg;
+    @Nullable
     private final DateTime arrivalTime;
+    @Nullable
     private final DateTime departureTime;
 
+    @NonNull
     private final Station station;
+
+    @Nullable
     private final String departurePlatform;
     private final boolean isDeparturePlatformNormal;
+    @Nullable
     private final String arrivalPlatform;
     private final boolean isArrivalPlatformNormal;
+    @Nullable
     private final Duration arrivalDelay;
     private final boolean arrivalCanceled;
+    @Nullable
     private final Duration departureDelay;
     private final boolean departureCanceled;
 
     private final boolean left;
     private final boolean arrived;
 
+    @Nullable
     private final OccupancyLevel departureOccupancy;
-    private final String departureConnectionSemanticId;
 
-    public Transfer(Station station, TrainStub arrivingTrain, TrainStub departingTrain, String arrivalPlatform, boolean arrivalNormal, boolean arrived, boolean departureNormal, boolean left, String departurePlatform, Duration arrivalDelay, boolean arrivalCanceled, Duration departureDelay, boolean departureCanceled, DateTime arrivalTime, DateTime departureTime, String departureConnectionSemanticId, OccupancyLevel departureOccupancy) {
+    @Nullable
+    private final String departureSemanticId;
+
+    private final TransferType type;
+
+    public Transfer(@NonNull Station station, @Nullable RouteLeg arrivingRouteLeg, @Nullable DateTime arrivalTime,
+                    @Nullable String arrivalPlatform, boolean arrivalNormal, @Nullable Duration arrivalDelay,
+                    boolean arrivalCanceled, boolean arrived, @Nullable RouteLeg departingRouteLeg, @Nullable DateTime departureTime,
+                    @Nullable String departurePlatform, boolean departureNormal, @Nullable Duration departureDelay,
+                    boolean departureCanceled, boolean left, @Nullable String departureSemanticId,
+                    @Nullable OccupancyLevel departureOccupancy, TransferType type) {
         this.station = station;
-        this.arrivingTrain = arrivingTrain;
-        this.departingTrain = departingTrain;
+        this.arrivingRouteLeg = arrivingRouteLeg;
+        this.departingRouteLeg = departingRouteLeg;
         this.arrived = arrived;
         this.left = left;
         this.arrivalTime = arrivalTime;
@@ -62,46 +85,61 @@ public class Transfer implements Serializable {
         this.departureCanceled = departureCanceled;
         this.isDeparturePlatformNormal = departureNormal;
         this.isArrivalPlatformNormal = arrivalNormal;
-        this.departureConnectionSemanticId = departureConnectionSemanticId;
+        this.departureSemanticId = departureSemanticId;
         this.departureOccupancy = departureOccupancy;
+        this.type = type;
     }
 
-    public TrainStub getArrivingTrain() {
-        return arrivingTrain;
+    @Nullable
+    public RouteLeg getArrivingRouteLeg() {
+        return arrivingRouteLeg;
     }
 
-    public TrainStub getDepartingTrain() {
-        return departingTrain;
+    @Nullable
+    public RouteLeg getDepartingRouteLeg() {
+        return departingRouteLeg;
     }
 
+    @Nullable
     public DateTime getArrivalTime() {
         return arrivalTime;
     }
 
+    @Nullable
     public DateTime getDepartureTime() {
         return departureTime;
     }
 
     public DateTime getDelayedDepartureTime() {
+        if (departureTime == null) {
+            return null;
+        }
         return departureTime.plus(departureDelay);
     }
 
     public DateTime getDelayedArrivalTime() {
+        if (arrivalTime == null) {
+            return null;
+        }
         return arrivalTime.plus(arrivalDelay);
     }
 
+    @NonNull
     public Station getStation() {
         return station;
     }
 
+    @Nullable
     public String getDeparturePlatform() {
         return departurePlatform;
     }
 
+    @Nullable
     public String getArrivalPlatform() {
         return arrivalPlatform;
     }
 
+    @Nullable
     public Duration getArrivalDelay() {
         return arrivalDelay;
     }
@@ -110,6 +148,7 @@ public class Transfer implements Serializable {
         return arrivalCanceled;
     }
 
+    @Nullable
     public Duration getDepartureDelay() {
         return departureDelay;
     }
@@ -126,12 +165,14 @@ public class Transfer implements Serializable {
         return isDeparturePlatformNormal;
     }
 
+    @Nullable
     public OccupancyLevel getDepartureOccupancy() {
         return departureOccupancy;
     }
 
-    public String getDepartureConnectionSemanticId() {
-        return departureConnectionSemanticId;
+    @Nullable
+    public String getDepartureSemanticId() {
+        return departureSemanticId;
     }
 
     public boolean hasLeft() {
@@ -140,5 +181,9 @@ public class Transfer implements Serializable {
 
     public boolean hasArrived() {
         return arrived;
+    }
+
+    public TransferType getType() {
+        return type;
     }
 }

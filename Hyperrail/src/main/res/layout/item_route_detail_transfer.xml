@@ -110,7 +110,7 @@
                 tools:ignore="HardcodedText"/>
 
             <LinearLayout
-                android:id="@+id/cardview_detail_1"
+                android:id="@+id/layout_transfer_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/listitem_content_height_single"
                 android:orientation="horizontal">

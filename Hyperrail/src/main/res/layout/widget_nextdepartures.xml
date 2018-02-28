@@ -6,12 +6,13 @@
   -->
 
 <LinearLayout
-    android:id="@+id/binder"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
+        android:id="@+id/text_station"
         android:layout_width="match_parent"
         android:layout_height="@dimen/listitem_content_height_double"
         android:gravity="center_vertical"
@@ -20,4 +21,23 @@
         android:text="Gent-Sint-Pieters"
         android:textSize="18sp"
         android:theme="@style/HyperrailAccentSearchContainer"/>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backgroundMaterialLight"
+        />
+
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/placeholder_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@color/backgroundMaterialLight"
+        android:textColor="@color/colorTextDark"
+        android:text="Still loading data..."
+        android:textSize="@dimen/listitem_content_primary_textsize" />
+
 </LinearLayout>

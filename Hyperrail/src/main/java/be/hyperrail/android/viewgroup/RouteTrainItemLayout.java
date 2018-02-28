@@ -27,17 +27,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Objects;
-
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.Message;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.TrainStub;
+import be.hyperrail.android.irail.implementation.RouteLeg;
+import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
 
-public class RouteTrainItemLayout extends LinearLayout implements ListDataViewGroup<Route,TrainStub> {
+public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route,RouteLeg> {
 
     protected TextView vDirection;
     protected TextView vDuration;
@@ -92,44 +91,54 @@ public class RouteTrainItemLayout extends LinearLayout implements ListDataViewGr
     }
 
     @Override
-    public void bind(final Context context, final TrainStub train, final Route route, final int position) {
+    public void bind(Context context, RouteLeg routeLeg, Route route, int position) {
+        Transfer transferBefore = route.getTransfers()[position];
+        Transfer transferAfter = route.getTransfers()[position+1];
 
-        final Transfer transferBefore = route.getTransfers()[position];
-        final Transfer transferAfter = route.getTransfers()[position+1];
-        boolean isWalking = Objects.equals(train.getId(), "WALK");
-
-        if (isWalking) {
-            vDirection.setText(R.string.walk_heading);
-            vTrainType.setVisibility(View.GONE);
-            vTrainNumber.setText(R.string.walk_description);
-            vOccupancy.setVisibility(View.GONE);
-            if (transferBefore.hasArrived()) {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_filled));
-            } else {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_hollow));
-            }
+        if (routeLeg.getType() == RouteLegType.WALK) {
+            bindWalk(context, transferBefore,transferAfter);
         } else {
-            vTrainNumber.setText(train.getNumber());
-            vTrainType.setText(train.getType());
-            vOccupancy.setVisibility(View.VISIBLE);
-            vTrainType.setVisibility(View.VISIBLE);
-            vDirection.setText(train.getDirection().getLocalizedName());
+            bindVehicle(context, routeLeg, transferBefore, transferAfter, route, position);
+        }
+    }
 
-            if (transferBefore.hasLeft()) {
-                if (transferAfter.hasArrived()) {
-                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
-                    vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
-                } else {
-                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
-                    vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-                }
-            } else {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
-                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-            }
+    private void bindWalk(Context context, Transfer transferBefore, Transfer transferAfter) {
+
+        vDirection.setText(R.string.walk_heading);
+        vTrainType.setVisibility(View.GONE);
+        vTrainNumber.setText(R.string.walk_description);
+        vOccupancy.setVisibility(View.GONE);
+
+        if (transferBefore.hasArrived()) {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_filled));
+        } else {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_hollow));
         }
 
-        vDuration.setText(DurationFormatter.formatDuration(transferBefore.getDepartureTime(), transferBefore.getDepartureDelay(), transferAfter.getArrivalTime(), transferAfter.getArrivalDelay()));
+        bindDuration(transferBefore, transferAfter);
+    }
+
+    private void bindVehicle(Context context, RouteLeg routeLeg, Transfer transferBefore, Transfer transferAfter, Route route, int position) {
+        vTrainNumber.setText(routeLeg.getVehicleInformation().getNumber());
+        vTrainType.setText(routeLeg.getVehicleInformation().getType());
+        vOccupancy.setVisibility(View.VISIBLE);
+        vTrainType.setVisibility(View.VISIBLE);
+        vDirection.setText(routeLeg.getVehicleInformation().getDirection().getLocalizedName());
+
+        if (transferBefore.hasLeft()) {
+            if (transferAfter.hasArrived()) {
+                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
+                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
+            } else {
+                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+            }
+        } else {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
+            vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+        }
+
+        bindDuration(transferBefore, transferAfter);
 
         if (transferBefore.isDepartureCanceled()) {
             vStatusText.setText(R.string.status_cancelled);
@@ -159,6 +168,10 @@ public class RouteTrainItemLayout extends LinearLayout implements ListDataViewGr
         }
 
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+    }
 
+    private void bindDuration(Transfer transferBefore, Transfer transferAfter) {
+        vDuration.setText(
+                DurationFormatter.formatDuration(transferBefore.getDepartureTime(), transferBefore.getDepartureDelay(), transferAfter.getArrivalTime(), transferAfter.getArrivalDelay()));
     }
 }

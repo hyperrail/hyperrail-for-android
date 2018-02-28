@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/binder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/backgroundMaterialLight"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="left|center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/listitem_horizontal_margin"
+    android:paddingLeft="@dimen/listitem_horizontal_margin"
+    android:paddingRight="@dimen/listitem_horizontal_margin"
+    android:paddingTop="@dimen/listitem_horizontal_margin"
+    android:baselineAligned="false">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        >
+
+        <TextView
+            android:id="@+id/text_time1"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:gravity="center_vertical|left"
+            android:text="00:00"
+            android:textColor="@color/colorTextDark"
+            android:textSize="@dimen/listitem_content_primary_textsize"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/text_delay1"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginLeft="@dimen/activity_tiny_margin"
+            android:layout_toRightOf="@id/text_time1"
+            android:gravity="center_vertical|right"
+            android:minWidth="@dimen/listitem_delay_width"
+            android:padding="0dp"
+            android:text="51'"
+            android:textColor="@color/colorDelay"
+            android:textSize="@dimen/listitem_content_secondary_textsize"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/text_delay_time"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_time1"
+            android:gravity="center_vertical|left"
+            android:text="00:51"
+            android:textColor="@color/colorDelay"
+            android:textSize="@dimen/listitem_content_primary_textsize"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/text_destination"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_marginLeft="@dimen/margin_include_item"
+            android:layout_toRightOf="@id/text_delay1"
+            android:gravity="center_vertical"
+            android:text="Brussel-Zuid"
+            android:textColor="@color/colorTextDark"
+            android:textSize="@dimen/listitem_content_primary_textsize"
+            tools:ignore="HardcodedText"/>
+
+
+        <include
+            android:id="@+id/container_train_number"
+            layout="@layout/include_text_vehicle_type_number"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_destination"
+            android:layout_marginLeft="@dimen/margin_include_item"
+            android:layout_toRightOf="@id/text_delay1"/>
+
+        <include
+            android:id="@+id/image_occupancy"
+            layout="@layout/include_occupancy"
+            android:layout_width="@dimen/listitem_content_height_single"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_destination"
+            android:layout_toRightOf="@id/container_train_number"/>
+
+        <include
+            layout="@layout/include_text_vehicle_status"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/listitem_content_height_single"
+            android:layout_below="@id/text_destination"
+            android:layout_toRightOf="@id/image_occupancy"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_platform_container"
+        android:layout_width="@dimen/listitem_content_height_onehalf"
+        android:layout_height="@dimen/listitem_content_height_onehalf"
+        android:background="@drawable/platform_train"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/text_platform"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5"
+            android:textAlignment="center"
+            android:textColor="@color/colorTextLight"
+            android:textSize="@dimen/listitem_content_primary_textsize"
+            tools:ignore="HardcodedText"/>
+
+    </LinearLayout>
+</LinearLayout>

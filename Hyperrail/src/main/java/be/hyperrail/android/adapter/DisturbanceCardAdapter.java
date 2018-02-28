@@ -80,7 +80,7 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public void onBindViewHolder(RecyclerView.ViewHolder viewholder, int position) {
 
         if (viewholder instanceof DisturbanceViewHolder) {
-            final DisturbanceViewHolder holder = (DisturbanceViewHolder) viewholder;
+            DisturbanceViewHolder holder = (DisturbanceViewHolder) viewholder;
             final Disturbance disturbance = disturbances[position];
 
             holder.vTitle.setText(disturbance.getTitle());

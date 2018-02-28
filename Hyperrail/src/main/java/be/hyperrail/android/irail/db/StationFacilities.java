@@ -24,7 +24,7 @@ public class StationFacilities implements Serializable {
     private boolean freeParking;
     private boolean blue_bike;
     private boolean bike;
-    private boolean taxy;
+    private boolean taxi;
     private boolean bus;
     private boolean tram;
     private boolean metro;
@@ -38,7 +38,7 @@ public class StationFacilities implements Serializable {
     private int disabled_parking_spots;
 
     public StationFacilities(LocalTime[][] openingHours, String street, String zip, String city, boolean ticketVendingMachines,
-                             boolean luggageLockers, boolean freeParking, boolean blue_bike, boolean bike, boolean taxy, boolean bus,
+                             boolean luggageLockers, boolean freeParking, boolean blue_bike, boolean bike, boolean taxi, boolean bus,
                              boolean tram, boolean metro, boolean wheelchair_available, boolean ramp, int disabled_parking_spots, boolean elevated_platform,
                              boolean escalator_up, boolean escalator_down, boolean elevator_platform, boolean hearing_aid_signal
     ) {
@@ -51,7 +51,7 @@ public class StationFacilities implements Serializable {
         this.freeParking = freeParking;
         this.blue_bike = blue_bike;
         this.bike = bike;
-        this.taxy = taxy;
+        this.taxi = taxi;
         this.bus = bus;
         this.tram = tram;
         this.metro = metro;
@@ -106,8 +106,8 @@ public class StationFacilities implements Serializable {
         return bike;
     }
 
-    public boolean hasTaxy() {
-        return taxy;
+    public boolean hasTaxi() {
+        return taxi;
     }
 
     public boolean hasBus() {

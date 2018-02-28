@@ -101,10 +101,25 @@
     <string name="ETA_transfer_arrival">Om %s zal ik aankomen in %s met %s</string>
     <string name="ETA_transfer_departure">Om %s zal ik vertrekken uit %s met %s</string>
     <string name="title_activity_station">Station</string>
-    <string name="action_details">Details weergeven</string>
-    <string name="action_share_departure_ETA">Deel verwachte aankomsttijd...</string>
+    <string name="action_details">Meer informatie</string>
+    <string name="action_share_departure_ETA">Deel verwachte aankomsttijd</string>
     <string name="action_share_arrival_eta">Deel verwachte vertrektijd</string>
     <string name="show_as_notification">Pin als notificatie</string>
 
     <string name="menu_group_settings">Instellingen</string>
+    <string name="title_pick_station">Kies een station</string>
+    <string name="shortcut_label_route_short">Route</string>
+    <string name="shortcut_label_route_long">Plan een reis</string>
+    <string name="shortcut_label_station_short">Vertrekken</string>
+    <string name="shortcut_label_station_long">Bekijk vertrekken en aankomsten</string>
+    <string name="title_arrivals">Aankomsten</string>
+    <string name="title_station_facilities">Diensten</string>
+    <string name="facility_ticket_vending_machines">Ticket automaat</string>
+    <string name="facility_bus_stop">Bushalte</string>
+    <string name="facility_tram_stop">Tramhalte</string>
+    <string name="facility_subway_stop">Metro</string>
+    <string name="facility_taxi_stop">Taxi</string>
+    <string name="facility_bicycle_parking">Fietsenstalling</string>
+    <string name="facility_blue_bikes">Blue bikes</string>
+    <string name="title_station_opening_hours">Openingsuren</string>
 </resources>

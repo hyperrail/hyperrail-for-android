@@ -166,7 +166,7 @@
                             tools:ignore="HardcodedText"/>
                     </LinearLayout>
 
-                    <include layout="@layout/include_text_train_status"/>
+                    <include layout="@layout/include_text_vehicle_status"/>
 
                 </LinearLayout>
             </LinearLayout>

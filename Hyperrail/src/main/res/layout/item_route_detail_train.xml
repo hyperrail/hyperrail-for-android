@@ -47,7 +47,7 @@
                 android:layout_height="@dimen/listitem_content_height_single"
                 android:orientation="horizontal">
 
-                <include layout="@layout/include_text_train_type_number"/>
+                <include layout="@layout/include_text_vehicle_type_number"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
 
                 <include layout="@layout/include_occupancy"/>
 
-                <include layout="@layout/include_text_train_status"/>
+                <include layout="@layout/include_text_vehicle_status"/>
 
             </LinearLayout>
         </LinearLayout>

@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import be.hyperrail.android.irail.contracts.IrailParser;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
@@ -24,7 +23,7 @@ import be.hyperrail.android.irail.implementation.IrailApiParser;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
-import be.hyperrail.android.irail.implementation.Train;
+import be.hyperrail.android.irail.implementation.Vehicle;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -37,13 +36,13 @@ import static org.junit.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class IrailParserInstrumentedTest {
 
-    IrailParser parser = new IrailApiParser(new StationsDb(InstrumentationRegistry.getTargetContext()));
+    IrailApiParser parser = new IrailApiParser(new StationsDb(InstrumentationRegistry.getTargetContext()));
 
     @Test
     public void liveboardParsingTest() throws Exception {
         // Context of the app under test.
         DateTime searchTime = new DateTime(2017, 11, 16, 13, 0);
-        LiveBoard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime);
+        LiveBoard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime,RouteTimeDefinition.DEPART);
 
         assertEquals(searchTime, liveboard.getSearchTime());
         assertEquals("BE.NMBS.008892007", liveboard.getId());
@@ -77,7 +76,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(false, liveboard.getStops()[1].hasLeft());
 
         assertEquals("http://irail.be/vehicle/L783", liveboard.getStops()[1].getTrain().getSemanticId());
-        assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getSemanticDepartureConnection());
+        assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getDepartureSemanticId());
         assertEquals(OccupancyLevel.HIGH, liveboard.getStops()[1].getOccupancyLevel());
         // END tests stop 1
     }
@@ -86,7 +85,7 @@ public class IrailParserInstrumentedTest {
     public void trainParsingTest() throws Exception {
         // Context of the app under test.
         DateTime searchTime = new DateTime(2017, 11, 16, 13, 0);
-        Train train = parser.parseTrain(new JSONObject(TRAIN_RESPONSE), searchTime);
+        Vehicle train = parser.parseTrain(new JSONObject(TRAIN_RESPONSE), searchTime);
 
         assertEquals("BE.NMBS.008841004", train.getLastHaltedStop().getStation().getId());
         assertEquals(train.getLastHaltedStop().getStation().getLatitude(), train.getLatitude(), 0);
@@ -107,7 +106,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(new DateTime((long) 1510839540 * 1000), train.getStops()[2].getDepartureTime());
         assertEquals(new Duration(60 * 1000), train.getStops()[2].getDepartureDelay());
         assertEquals(true, train.getStops()[2].hasLeft());
-        assertEquals("http://irail.be/connections/8844008/20171116/IC537", train.getStops()[2].getSemanticDepartureConnection());
+        assertEquals("http://irail.be/connections/8844008/20171116/IC537", train.getStops()[2].getDepartureSemanticId());
     }
 
     @Test
@@ -147,20 +146,20 @@ public class IrailParserInstrumentedTest {
 
         assertEquals("4", route.getTransfers()[1].getArrivalPlatform());
         assertEquals(true, route.getTransfers()[1].hasArrived());
-        assertEquals("BE.NMBS.IC713", route.getTransfers()[1].getArrivingTrain().getId());
-        assertEquals(stationProvider.getStationByName("Poperinge").getId(), route.getTransfers()[1].getArrivingTrain().getDirection().getId());
+        assertEquals("BE.NMBS.IC713", route.getTransfers()[1].getArrivingRouteLeg().getVehicleInformation().getId());
+        assertEquals(stationProvider.getStationByName("Poperinge").getId(), route.getTransfers()[1].getArrivingRouteLeg().getVehicleInformation().getDirection().getId());
         assertEquals(new DateTime((long) 1510839180 * 1000), route.getTransfers()[1].getArrivalTime());
 
         assertEquals(true, route.getTransfers()[1].hasLeft());
         assertEquals("11", route.getTransfers()[1].getDeparturePlatform());
-        assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartingTrain().getId());
-        assertEquals(stationProvider.getStationByName("Genk").getId(), route.getTransfers()[1].getDepartingTrain().getDirection().getId());
+        assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartingRouteLeg().getVehicleInformation().getId());
+        assertEquals(stationProvider.getStationByName("Genk").getId(), route.getTransfers()[1].getDepartingRouteLeg().getVehicleInformation().getDirection().getId());
         assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime());
 
-        assertEquals("BE.NMBS.IC713", route.getTrains()[0].getId());
-        assertEquals(stationProvider.getStationByName("Poperinge"), route.getTrains()[0].getDirection());
-        assertEquals("BE.NMBS.IC1513", route.getTrains()[1].getId());
-        assertEquals(stationProvider.getStationByName("Genk"), route.getTrains()[1].getDirection());
+        assertEquals("BE.NMBS.IC713", route.getLegs()[0].getVehicleInformation().getId());
+        assertEquals(stationProvider.getStationByName("Poperinge"), route.getLegs()[0].getVehicleInformation().getDirection());
+        assertEquals("BE.NMBS.IC1513", route.getLegs()[1].getVehicleInformation().getId());
+        assertEquals(stationProvider.getStationByName("Genk"), route.getLegs()[1].getVehicleInformation().getDirection());
     }
 
     private static final String LIVEBOARD_RESPONSE = "{\n" +

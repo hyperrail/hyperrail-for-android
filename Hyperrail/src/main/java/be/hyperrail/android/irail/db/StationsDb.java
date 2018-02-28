@@ -23,12 +23,16 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 
+import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
+import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_ID;
+import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_NAME;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_TABLE_FACILITIES;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_TABLE_STATIONS;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_DELETE_TABLE_FACILITIES;
@@ -46,7 +50,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 17121200;
+    private static final int DATABASE_VERSION = 18012505;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -56,9 +60,14 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     private final Context context;
 
-    public StationsDb(Context applicationContext) {
-        super(applicationContext, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = applicationContext;
+    HashMap<String, Station> mStationIdCache = new HashMap<>();
+    HashMap<String, Station> mStationNameCache = new HashMap<>();
+
+    Station[] stationsOrderedBySizeCache;
+
+    public StationsDb(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     /**
@@ -66,26 +75,35 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      *
      * @param db Handle in which the database should be created.
      */
+    @AddTrace(name = "StationsDb.onCreate")
     public void onCreate(SQLiteDatabase db) {
         FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Creating stations database");
 
         db.execSQL(SQL_CREATE_TABLE_STATIONS);
         db.execSQL(SQL_CREATE_TABLE_FACILITIES);
+        db.execSQL(SQL_CREATE_INDEX_ID);
+        db.execSQL(SQL_CREATE_INDEX_NAME);
+        db.execSQL(SQL_CREATE_INDEX_FACILITIES_ID);
 
         FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Filling stations database");
-        fill(db);
+        fillStations(db);
+        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations table ready");
+        fillFacilities(db);
+        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations facilities table ready");
         FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations database ready");
     }
 
     /**
      * Fill the database with data from the embedded CSV file (raw resource).
      *
-     * @param db The database to fill
+     * @param db The database to fillStations
      */
-    @AddTrace(name = "fillStationsDb")
-    private void fill(SQLiteDatabase db) {
+    @AddTrace(name = "StationsDb.fillStations")
+    private void fillStations(SQLiteDatabase db) {
 
+        db.beginTransaction();
         try (Scanner lines = new Scanner(context.getResources().openRawResource(R.raw.stations))) {
+
             lines.useDelimiter("\n");
 
             while (lines.hasNext()) {
@@ -107,23 +125,44 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     // Store ID as BE.NMBS.XXXXXXXX
                     values.put(StationsDataColumns._ID, id);
                     // Replace special characters (for search purposes)
-                    values.put(StationsDataContract.StationsDataColumns.COLUMN_NAME_NAME, cleanAccents(fields.next()));
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR, cleanAccents(fields.next()));
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL, cleanAccents(fields.next()));
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE, cleanAccents(fields.next()));
-                    values.put(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN, cleanAccents(fields.next()));
+                    values.put(
+                            StationsDataColumns.COLUMN_NAME_NAME,
+                            cleanAccents(fields.next())
+                    );
+                    values.put(
+                            StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
+                            cleanAccents(fields.next())
+                    );
+                    values.put(
+                            StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
+                            cleanAccents(fields.next())
+                    );
+                    values.put(
+                            StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
+                            cleanAccents(fields.next())
+                    );
+                    values.put(
+                            StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
+                            cleanAccents(fields.next())
+                    );
                     values.put(StationsDataColumns.COLUMN_NAME_COUNTRY_CODE, fields.next());
 
                     String field = fields.next();
                     if (field != null && !field.isEmpty()) {
-                        values.put(StationsDataColumns.COLUMN_NAME_LONGITUDE, Double.parseDouble(field));
+                        values.put(
+                                StationsDataColumns.COLUMN_NAME_LONGITUDE,
+                                Double.parseDouble(field)
+                        );
                     } else {
                         values.put(StationsDataColumns.COLUMN_NAME_LONGITUDE, 0);
                     }
 
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
-                        values.put(StationsDataColumns.COLUMN_NAME_LATITUDE, Double.parseDouble(field));
+                        values.put(
+                                StationsDataColumns.COLUMN_NAME_LATITUDE,
+                                Double.parseDouble(field)
+                        );
                     } else {
                         values.put(StationsDataColumns.COLUMN_NAME_LATITUDE, 0);
                     }
@@ -131,7 +170,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
                         try {
-                            values.put(StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES, Double.parseDouble(field));
+                            values.put(
+                                    StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES,
+                                    Double.parseDouble(field)
+                            );
                         } catch (NumberFormatException e) {
                             values.put(StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES, 0);
                         }
@@ -145,7 +187,18 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             }
         }
 
-        try (Scanner lines = new Scanner(context.getResources().openRawResource(R.raw.stationfacilities))) {
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+    }
+
+    @AddTrace(name = "StationsDb.fillFacilities")
+    public void fillFacilities(SQLiteDatabase db) {
+
+        db.beginTransaction();
+
+        try (Scanner lines = new Scanner(
+                context.getResources().openRawResource(R.raw.stationfacilities))) {
             lines.useDelimiter("\n");
 
             while (lines.hasNext()) {
@@ -200,21 +253,24 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
                         values.put(StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY, field);
-                        values.put(StationFacilityColumns.COLUMN_SALES_CLOSE_TUESDAY, fields.next());
+                        values.put(
+                                StationFacilityColumns.COLUMN_SALES_CLOSE_TUESDAY, fields.next());
                     } else {
                         fields.next();
                     }
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
                         values.put(StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY, field);
-                        values.put(StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY, fields.next());
+                        values.put(
+                                StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY, fields.next());
                     } else {
                         fields.next();
                     }
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
                         values.put(StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY, field);
-                        values.put(StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY, fields.next());
+                        values.put(
+                                StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY, fields.next());
                     } else {
                         fields.next();
                     }
@@ -228,7 +284,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
                         values.put(StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY, field);
-                        values.put(StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY, fields.next());
+                        values.put(
+                                StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY, fields.next());
                     } else {
                         fields.next();
                     }
@@ -245,6 +302,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 }
             }
         }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -261,14 +321,20 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 .replaceAll("[üÜ]", "u");
     }
 
+
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache from a local file, so just recreate it
         onUpgrade(db, oldVersion, newVersion);
     }
 
     @Override
-    @AddTrace(name="StationsDb.getStationsOrderBySize")
+    @AddTrace(name = "StationsDb.getStationsOrderBySize")
     public Station[] getStationsOrderBySize() {
+
+        if (stationsOrderedBySizeCache != null) {
+            return stationsOrderedBySizeCache;
+        }
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
@@ -293,7 +359,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+
+
+        stationsOrderedBySizeCache = stations;
+
         return stations;
     }
 
@@ -301,10 +370,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsByNameOrderBySize")
+    @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
     public Station[] getStationsByNameOrderBySize(String name) {
-        name = cleanAccents(name);
         SQLiteDatabase db = this.getReadableDatabase();
+        name = cleanAccents(name);
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 new String[]{
@@ -328,7 +397,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+
         return stations;
     }
 
@@ -336,7 +405,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsOrderByLocation")
+    @AddTrace(name = "StationsDb.getStationsOrderByLocation")
     public Station[] getStationsOrderByLocation(Location location) {
         return this.getStationsByNameOrderByLocation("", location);
     }
@@ -345,7 +414,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsByNameOrderByLocation")
+    @AddTrace(name = "StationsDb.getStationsByNameOrderByLocation")
     public Station[] getStationsByNameOrderByLocation(String name, Location location) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -387,7 +456,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationsOrderByLocationAndSize")
+    @AddTrace(name = "StationsDb.getStationsOrderByLocationAndSize")
     public Station[] getStationsOrderByLocationAndSize(Location location, int limit) {
         SQLiteDatabase db = this.getReadableDatabase();
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
@@ -441,11 +510,14 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationNames")
+    @AddTrace(name = "StationsDb.getStationNames")
     public String[] getStationNames(Station[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
-            FirebaseCrash.logcat(WARNING.intValue(), LOGTAG, "Tried to load station names on empty station list!");
+            FirebaseCrash.logcat(
+                    WARNING.intValue(), LOGTAG,
+                    "Tried to load station names on empty station list!"
+            );
             return new String[0];
         }
 
@@ -460,11 +532,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationById")
+    @AddTrace(name = "StationsDb.getStationById")
     public Station getStationById(String id) {
-
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        if (mStationIdCache.containsKey(id)) {
+            return mStationIdCache.get(id);
+        }
+        SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 new String[]{
@@ -484,7 +557,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 null,
                 null,
                 null,
-                "1");
+                "1"
+        );
 
         Station[] results = loadStationCursor(c);
 
@@ -492,9 +566,11 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         db.close();
 
         if (results == null) {
+            FirebaseCrash.report(
+                    new IllegalStateException("ID Not found in station database! " + id));
             return null;
         }
-
+        mStationIdCache.put(id, results[0]);
         return results[0];
     }
 
@@ -502,10 +578,13 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name="StationsDb.getStationByName")
+    @AddTrace(name = "StationsDb.getStationByName")
     public Station getStationByName(String name) {
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        if (mStationNameCache.containsKey(name)) {
+            return mStationNameCache.get(name);
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
         String wcName = name.replaceAll("[^A-Za-z]", "%");
@@ -529,22 +608,32 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 null,
                 null,
                 StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC",
-                "1");
+                "1"
+        );
         if (c.getCount() < 1) {
 
             c.close();
-            db.close();
+
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/") - 1);
-                FirebaseCrash.logcat(WARNING.intValue(), "SQLiteStationProvider", "Station not found: " + name + ", replacement search " + newname);
+                FirebaseCrash.logcat(
+                        WARNING.intValue(), "SQLiteStationProvider",
+                        "Station not found: " + name + ", replacement search " + newname
+                );
                 return getStationByName(newname);
             } else if (name.contains("(")) {
                 String newname = name.substring(0, name.indexOf("(") - 1);
-                FirebaseCrash.logcat(WARNING.intValue(), "SQLiteStationProvider", "Station not found: " + name + ", replacement search " + newname);
+                FirebaseCrash.logcat(
+                        WARNING.intValue(), "SQLiteStationProvider",
+                        "Station not found: " + name + ", replacement search " + newname
+                );
                 return getStationByName(newname);
             } else {
-                FirebaseCrash.logcat(SEVERE.intValue(), "SQLiteStationProvider", "Station not found: " + name + ", cleaned search " + wcName);
+                FirebaseCrash.logcat(
+                        SEVERE.intValue(), "SQLiteStationProvider",
+                        "Station not found: " + name + ", cleaned search " + wcName
+                );
                 return null;
             }
         }
@@ -558,13 +647,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             return null;
         }
 
+        mStationNameCache.put(name, results[0]);
         return results[0];
     }
 
     public StationFacilities getStationFacilitiesById(String id) {
-
-        SQLiteOpenHelper StationsDbHelper = new StationsDb(context);
-        SQLiteDatabase db = StationsDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationFacilityColumns.TABLE_NAME,
                 new String[]{
@@ -609,11 +697,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 null,
                 null,
                 null,
-                "1");
+                "1"
+        );
 
         if (c.getCount() == 0) {
             c.close();
-            db.close();
+
             return null;
         }
 
@@ -646,20 +735,26 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         int i = 0;
         while (!c.isAfterLast()) {
 
-            String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+            String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
+                    "pref_stations_language", "");
             if (locale.isEmpty()) {
                 // Only get locale when needed
                 locale = Locale.getDefault().getISO3Language();
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putString("pref_stations_language", locale).apply();
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putString(
+                        "pref_stations_language", locale).apply();
             }
 
             String name = c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_NAME));
             String localizedName = null;
 
-            String nl = c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL));
-            String fr = c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR));
-            String de = c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE));
-            String en = c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN));
+            String nl = c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL));
+            String fr = c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR));
+            String de = c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE));
+            String en = c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN));
 
             switch (locale) {
                 case "nld":
@@ -691,7 +786,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_COUNTRY_CODE)),
                     c.getDouble(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_LATITUDE)),
                     c.getDouble(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_LONGITUDE)),
-                    c.getFloat(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES)));
+                    c.getFloat(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES))
+            );
 
             c.moveToNext();
             result[i] = s;
@@ -720,13 +816,27 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         c.moveToFirst();
 
         int[][] indices = new int[][]{
-                new int[]{c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_OPEN_MONDAY), c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY)},
-                new int[]{c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY), c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY)},
-                new int[]{c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY), c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY)},
-                new int[]{c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY), c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY)},
-                new int[]{c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY), c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY)},
-                new int[]{c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY), c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY)},
-                new int[]{c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY), c.getColumnIndex(StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY)},
+                new int[]{c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_OPEN_MONDAY), c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY)},
+                new int[]{c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY), c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY)},
+                new int[]{c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY), c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY)},
+                new int[]{c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY), c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY)},
+                new int[]{c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY), c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY)},
+                new int[]{c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY), c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY)},
+                new int[]{c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY), c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY)},
         };
 
         LocalTime[][] openingHours = new LocalTime[7][];
@@ -736,16 +846,20 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 openingHours[i] = null;
             } else {
                 openingHours[i] = new LocalTime[2];
-                openingHours[i][0] = LocalTime.parse(c.getString(indices[i][0]), localTimeFormatter);
-                openingHours[i][1] = LocalTime.parse(c.getString(indices[i][0]), localTimeFormatter);
+                openingHours[i][0] = LocalTime.parse(
+                        c.getString(indices[i][0]), localTimeFormatter);
+                openingHours[i][1] = LocalTime.parse(
+                        c.getString(indices[i][1]), localTimeFormatter);
             }
         }
 
-        return new StationFacilities(openingHours,
+        return new StationFacilities(
+                openingHours,
                 c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_STREET)),
                 c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_ZIP)),
                 c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_CITY)),
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_TICKET_VENDING_MACHINE)) == 1,
+                c.getInt(c.getColumnIndex(
+                        StationFacilityColumns.COLUMN_TICKET_VENDING_MACHINE)) == 1,
                 c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_LUGGAGE_LOCKERS)) == 1,
                 c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_FREE_PARKING)) == 1,
                 c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_TAXI)) == 1,
@@ -761,7 +875,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_ESCALATOR_UP)) == 1,
                 c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_ESCALATOR_DOWN)) == 1,
                 c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_ELEVATOR_PLATFORM)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_HEARING_AID_SIGNAL)) == 1);
+                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_HEARING_AID_SIGNAL)) == 1
+        );
 
     }
 }

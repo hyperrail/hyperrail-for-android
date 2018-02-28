@@ -23,15 +23,16 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.TrainStop;
+import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.android.irail.implementation.VehicleStopType;
 
-public class LiveboardStopLayout extends LinearLayout implements ListDataViewGroup<LiveBoard,TrainStop> {
-  
+public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<LiveBoard, VehicleStop> {
+
     protected TextView vDestination;
     protected TextView vTrainType;
     protected TextView vTrainNumber;
-    protected TextView vDeparture;
-    protected TextView vDepartureDelay;
+    protected TextView vTime;
+    protected TextView vDelay;
     protected TextView vDelayTime;
     protected TextView vPlatform;
     protected LinearLayout vPlatformContainer;
@@ -64,8 +65,8 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
         vDestination = findViewById(be.hyperrail.android.R.id.text_destination);
         vTrainNumber = findViewById(be.hyperrail.android.R.id.text_train_number);
         vTrainType = findViewById(be.hyperrail.android.R.id.text_train_type);
-        vDeparture = findViewById(be.hyperrail.android.R.id.text_departure_time);
-        vDepartureDelay = findViewById(be.hyperrail.android.R.id.text_departure_delay);
+        vTime = findViewById(R.id.text_time1);
+        vDelay = findViewById(R.id.text_delay1);
         vDelayTime = findViewById(be.hyperrail.android.R.id.text_delay_time);
         vPlatform = findViewById(be.hyperrail.android.R.id.text_platform);
         vPlatformContainer = findViewById(be.hyperrail.android.R.id.layout_platform_container);
@@ -76,30 +77,51 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
     }
 
     @Override
-    public void bind(final Context context,final TrainStop stop, final LiveBoard liveboard, final int position) {
-
+    public void bind(Context context, VehicleStop stop, LiveBoard liveboard, int position) {
         vDestination.setText(stop.getDestination().getLocalizedName());
 
         vTrainNumber.setText(stop.getTrain().getNumber());
         vTrainType.setText(stop.getTrain().getType());
 
-        DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-
-        vDeparture.setText(df.print(stop.getDepartureTime()));
-        if (stop.getDepartureDelay().getStandardSeconds() > 0) {
-            vDepartureDelay.setText(context.getString(be.hyperrail.android.R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
-            vDelayTime.setText(df.print(stop.getDelayedDepartureTime()));
-        } else {
-            vDepartureDelay.setText("");
-            vDelayTime.setText("");
-        }
+        bindTimeAndDelay(context, stop);
 
         vPlatform.setText(String.valueOf(stop.getPlatform()));
 
+        bindDetails(context, stop);
+
+        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
+    }
+
+    private void bindTimeAndDelay(Context context, VehicleStop stop) {
+        DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
+
+        if (stop.getType() == VehicleStopType.DEPARTURE) {
+            vTime.setText(df.print(stop.getDepartureTime()));
+            if (stop.getDepartureDelay().getStandardSeconds() > 0) {
+                vDelay.setText(context.getString(R.string.delay, stop.getDepartureDelay().getStandardMinutes()));
+                vDelayTime.setText(df.print(stop.getDelayedDepartureTime()));
+            } else {
+                vDelay.setText("");
+                vDelayTime.setText("");
+            }
+        } else {
+            // support for arrivals
+            vTime.setText(df.print(stop.getArrivalTime()));
+            if (stop.getArrivalDelay().getStandardSeconds() > 0) {
+                vDelay.setText(context.getString(R.string.delay, stop.getArrivalDelay().getStandardMinutes()));
+                vDelayTime.setText(df.print(stop.getDelayedArrivalTime()));
+            } else {
+                vDelay.setText("");
+                vDelayTime.setText("");
+            }
+        }
+    }
+
+    private void bindDetails(Context context, VehicleStop stop) {
         if (stop.isDepartureCanceled()) {
             vPlatform.setText("");
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.platform_train_canceled));
-            vStatusText.setText(be.hyperrail.android.R.string.status_cancelled);
+            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
+            vStatusText.setText(R.string.status_cancelled);
             vStatusContainer.setVisibility(View.VISIBLE);
             vOccupancy.setVisibility(View.GONE);
             setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
@@ -107,17 +129,13 @@ public class LiveboardStopLayout extends LinearLayout implements ListDataViewGro
             setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
             vOccupancy.setVisibility(View.VISIBLE);
             vStatusContainer.setVisibility(View.GONE);
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.platform_train));
+            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
             if (!stop.isPlatformNormal()) {
                 Drawable drawable = vPlatformContainer.getBackground();
                 drawable.mutate();
-                drawable.setColorFilter(ContextCompat.getColor(context, be.hyperrail.android.R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+                drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
             }
         }
-
-        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
     }
-
-    
 
 }

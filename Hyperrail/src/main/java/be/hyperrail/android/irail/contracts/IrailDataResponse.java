@@ -12,6 +12,9 @@
 
 package be.hyperrail.android.irail.contracts;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.joda.time.DateTime;
 
 /**
@@ -27,6 +30,7 @@ public interface IrailDataResponse<T> {
      *
      * @return The returned data object
      */
+    @Nullable
     T getData();
 
     /**
@@ -41,6 +45,7 @@ public interface IrailDataResponse<T> {
      *
      * @return The exception thrown by the data provider
      */
+    @Nullable
     Exception getException();
 
     /**
@@ -48,6 +53,7 @@ public interface IrailDataResponse<T> {
      *
      * @return The time when the response was received
      */
+    @NonNull
     DateTime getTime();
 
     boolean isOffline();

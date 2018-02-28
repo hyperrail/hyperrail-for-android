@@ -19,6 +19,67 @@ import android.provider.BaseColumns;
  */
 class StationsDataContract {
 
+    static final String SQL_CREATE_INDEX_NAME = " CREATE INDEX stations_station_name ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns.COLUMN_NAME_NAME + ");";
+    static final String SQL_CREATE_INDEX_ID = " CREATE INDEX stations_station_id ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns._ID + ");";
+    static final String SQL_CREATE_INDEX_FACILITIES_ID = " CREATE INDEX facilities_station_id ON " + StationFacilityColumns.TABLE_NAME + " (" + StationFacilityColumns._ID + ");";
+    static final String SQL_DELETE_TABLE_STATIONS =
+            "DROP TABLE IF EXISTS " + StationsDataColumns.TABLE_NAME + ";";
+
+    static final String SQL_DELETE_TABLE_FACILITIES = "DROP TABLE IF EXISTS " + StationFacilityColumns.TABLE_NAME;
+    /**
+     * Create table + index for lookup by name. No index for sort since little performance gains.
+     */
+    static final String SQL_CREATE_TABLE_STATIONS =
+            // Stations table
+            "CREATE TABLE " + StationsDataColumns.TABLE_NAME + " (" +
+                    StationsDataColumns._ID + " TEXT PRIMARY KEY," +
+                    StationsDataColumns.COLUMN_NAME_NAME + " TEXT COLLATE NOCASE," +
+                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL + " TEXT COLLATE NOCASE," +
+                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " TEXT COLLATE NOCASE," +
+                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " TEXT COLLATE NOCASE," +
+                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " TEXT COLLATE NOCASE," +
+                    StationsDataColumns.COLUMN_NAME_COUNTRY_CODE + " TEXT," +
+                    StationsDataColumns.COLUMN_NAME_LONGITUDE + " REAL," +
+                    StationsDataColumns.COLUMN_NAME_LATITUDE + " REAL," +
+                    StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " REAL); ";
+
+    static final String SQL_CREATE_TABLE_FACILITIES = " CREATE TABLE " + StationFacilityColumns.TABLE_NAME + " (" +
+            StationFacilityColumns._ID + " TEXT PRIMARY KEY," +
+            StationFacilityColumns.COLUMN_STREET + " TEXT," +
+            StationFacilityColumns.COLUMN_ZIP + " TEXT," +
+            StationFacilityColumns.COLUMN_CITY + " TEXT," +
+            StationFacilityColumns.COLUMN_TICKET_VENDING_MACHINE + " NUMERIC," +
+            StationFacilityColumns.COLUMN_LUGGAGE_LOCKERS + " NUMERIC," +
+            StationFacilityColumns.COLUMN_FREE_PARKING + " NUMERIC," +
+            StationFacilityColumns.COLUMN_TAXI + " NUMERIC," +
+            StationFacilityColumns.COLUMN_BICYCLE_SPOTS + " NUMERIC," +
+            StationFacilityColumns.COLUMN_BLUE_BIKE + " NUMERIC," +
+            StationFacilityColumns.COLUMN_BUS + " NUMERIC," +
+            StationFacilityColumns.COLUMN_TRAM + " NUMERIC," +
+            StationFacilityColumns.COLUMN_METRO + " NUMERIC," +
+            StationFacilityColumns.COLUMN_WHEELCHAIR_AVAILABLE + " NUMERIC," +
+            StationFacilityColumns.COLUMN_RAMP + " NUMERIC," +
+            StationFacilityColumns.COLUMN_DISABLED_PARKING_SPOTS + " NUMERIC," +
+            StationFacilityColumns.COLUMN_ELEVATED_PLATFORM + " NUMERIC," +
+            StationFacilityColumns.COLUMN_ESCALATOR_UP + " NUMERIC," +
+            StationFacilityColumns.COLUMN_ESCALATOR_DOWN + " NUMERIC," +
+            StationFacilityColumns.COLUMN_ELEVATOR_PLATFORM + " NUMERIC," +
+            StationFacilityColumns.COLUMN_HEARING_AID_SIGNAL + " NUMERIC," +
+            StationFacilityColumns.COLUMN_SALES_OPEN_MONDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_CLOSE_TUESDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY + " TEXT," +
+            StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY + " TEXT); ";
+
     private StationsDataContract() {
         // don't instantiate
     }
@@ -78,65 +139,5 @@ class StationsDataContract {
         protected static final String COLUMN_SALES_CLOSE_SUNDAY = "sales_close_sunday";
     }
 
-    /**
-     * Create table + index for lookup by name. No index for sort since little performance gains.
-     */
-    static final String SQL_CREATE_TABLE_STATIONS =
-            // Stations table
-            "CREATE TABLE " + StationsDataColumns.TABLE_NAME + " (" +
-                    StationsDataColumns._ID + " TEXT PRIMARY KEY," +
-                    StationsDataColumns.COLUMN_NAME_NAME + " TEXT COLLATE NOCASE," +
-                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL + " TEXT COLLATE NOCASE," +
-                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " TEXT COLLATE NOCASE," +
-                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " TEXT COLLATE NOCASE," +
-                    StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " TEXT COLLATE NOCASE," +
-                    StationsDataColumns.COLUMN_NAME_COUNTRY_CODE + " TEXT," +
-                    StationsDataColumns.COLUMN_NAME_LONGITUDE + " REAL," +
-                    StationsDataColumns.COLUMN_NAME_LATITUDE + " REAL," +
-                    StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " REAL); " +
-                    " CREATE INDEX stations_station_name ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns.COLUMN_NAME_NAME + ");" +
-                    " CREATE INDEX stations_station_id ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns._ID + ");";
-
-    static final String SQL_CREATE_TABLE_FACILITIES =   " CREATE TABLE " + StationFacilityColumns.TABLE_NAME + " (" +
-                    StationFacilityColumns._ID + " TEXT PRIMARY KEY," +
-                    StationFacilityColumns.COLUMN_STREET + " TEXT," +
-                    StationFacilityColumns.COLUMN_ZIP + " TEXT," +
-                    StationFacilityColumns.COLUMN_CITY + " TEXT," +
-                    StationFacilityColumns.COLUMN_TICKET_VENDING_MACHINE + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_LUGGAGE_LOCKERS + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_FREE_PARKING + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_TAXI + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_BICYCLE_SPOTS + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_BLUE_BIKE + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_BUS + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_TRAM + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_METRO + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_WHEELCHAIR_AVAILABLE + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_RAMP + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_DISABLED_PARKING_SPOTS + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_ELEVATED_PLATFORM + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_ESCALATOR_UP + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_ESCALATOR_DOWN + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_ELEVATOR_PLATFORM + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_HEARING_AID_SIGNAL + " NUMERIC," +
-                    StationFacilityColumns.COLUMN_SALES_OPEN_MONDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_CLOSE_TUESDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY + " TEXT," +
-                    StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY + " TEXT); ";
-
-    static final String SQL_DELETE_TABLE_STATIONS =
-            "DROP TABLE IF EXISTS " + StationsDataColumns.TABLE_NAME + ";" ;
-
-    static final String SQL_DELETE_TABLE_FACILITIES ="DROP TABLE IF EXISTS " + StationFacilityColumns.TABLE_NAME;
 
 }

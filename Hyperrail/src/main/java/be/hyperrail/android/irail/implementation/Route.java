@@ -38,13 +38,13 @@ public class Route implements Serializable {
     private final String arrivalPlatform;
     private final boolean isArrivalDeparturePlatformNormal;
 
-    private final TrainStub[] trains;
+    private final RouteLeg[] legs;
     private final Transfer[] transfers;
 
     private final Message[] alerts;
     private final Message[][] trainalerts;
     private final Message[] remarks;
-    Route(Station departureStation, Station arrivalStation, DateTime departureTime, Duration departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, DateTime arrivalTime, Duration arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, TrainStub[] trains, Transfer[] transfers, Message[] alerts, Message[][] trainalerts, Message[] remarks) {
+    Route(Station departureStation, Station arrivalStation, DateTime departureTime, Duration departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, DateTime arrivalTime, Duration arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, RouteLeg[] legs, Transfer[] transfers, Message[] alerts, Message[][] trainalerts, Message[] remarks) {
         this.departureStation = departureStation;
         this.arrivalStation = arrivalStation;
 
@@ -58,7 +58,7 @@ public class Route implements Serializable {
         this.arrivalPlatform = arrivalPlatform;
 
         this.isArrivalDeparturePlatformNormal = isArrivalDeparturePlatformNormal;
-        this.trains = trains;
+        this.legs = legs;
         this.transfers = transfers;
         this.alerts = alerts;
         this.trainalerts = trainalerts;
@@ -98,8 +98,8 @@ public class Route implements Serializable {
         return transfers.length;
     }
 
-    public TrainStub[] getTrains() {
-        return trains;
+    public RouteLeg[] getLegs() {
+        return legs;
     }
 
     public Transfer[] getTransfers() {
