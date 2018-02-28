@@ -48,11 +48,6 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
      */
     protected boolean mShowDividers = true;
 
-
-    public RecyclerViewFragment() {
-        // Default constructor, actual work is done in lifecycle methods
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

@@ -62,11 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment mCurrentFragment;
     private int mCurrentView;
 
-    // Define this as an enumeration type, so compilers can give better advice on possible errors
-    @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE, VIEW_TYPE_TRAIN, VIEW_TYPE_SETTINGS, VIEW_TYPE_FEEDBACK})
-    public @interface ViewType {
-    }
-
     private static final int VIEW_TYPE_LIVEBOARD = 0;
     private static final int VIEW_TYPE_ROUTE = 10;
     private static final int VIEW_TYPE_DISTURBANCE = 20;
@@ -77,6 +72,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean mDualPane = false;
 
     private final Handler mDrawerNavigationHandler = new Handler();
+
+    // Define this as an enumeration type, so compilers can give better advice on possible errors
+    @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE, VIEW_TYPE_TRAIN, VIEW_TYPE_SETTINGS, VIEW_TYPE_FEEDBACK})
+    public @interface ViewType {
+    }
 
     /**
      * Create a new intent to open the main activity on the route page, with the 'to' field filled in.
@@ -163,13 +163,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         // Get configured default view
-        SharedPreferences defaultPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        int defaultView = Integer.parseInt(defaultPreferences.getString("pref_startup_screen", String.valueOf(VIEW_TYPE_LIVEBOARD)));
+        SharedPreferences defaultPreferences = PreferenceManager.getDefaultSharedPreferences(
+                this.getApplicationContext());
+        int defaultView = Integer.parseInt(defaultPreferences.getString("pref_startup_screen",
+                                                                        String.valueOf(
+                                                                                VIEW_TYPE_LIVEBOARD)));
 
         // Decide which view to show
         if (savedInstanceState == null && this.getIntent().hasExtra("view")) {
             // Based on intent
-            setView(this.getIntent().getIntExtra("view", defaultView), this.getIntent().getExtras());
+            setView(this.getIntent().getIntExtra("view", defaultView),
+                    this.getIntent().getExtras());
             // mCurrentFragment.setParameters(this.getIntent().getExtras());
 
         } else if (savedInstanceState == null) {
@@ -228,7 +232,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void run() {
                 if (!MainActivity.this.isFinishing()) {*/
-                    MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
+        MainActivity.this.getSupportFragmentManager().beginTransaction().replace(
+                R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(
+                android.R.animator.fade_in, android.R.animator.fade_out).commit();
         /*        }
             }
         }, 200);*/
@@ -287,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.action_feedback:
                 setView(VIEW_TYPE_FEEDBACK, null);
                 break;
+            default:
+                // Do nothing
         }
         if (!mDualPane) {
             mDrawerLayout.closeDrawers();

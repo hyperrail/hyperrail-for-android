@@ -29,11 +29,7 @@ public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> imp
 
     @Override
     public boolean equals(Object obj) {
-        if (! (obj instanceof IrailDisturbanceRequest)){
-            return false;
-        }
-        // All requests are identical as no data fields are stored
-        return true;
+        return (obj instanceof IrailDisturbanceRequest);
     }
 
     @Override

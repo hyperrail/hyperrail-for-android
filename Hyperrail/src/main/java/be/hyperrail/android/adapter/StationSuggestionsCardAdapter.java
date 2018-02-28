@@ -71,10 +71,13 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
     public StationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
 
-        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_station, parent, false);
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout",
+                                                                               false)) {
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_station,
+                                                                        parent, false);
         } else {
-            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_station, parent, false);
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_station,
+                                                                        parent, false);
         }
 
         return new StationViewHolder(itemView);
@@ -98,22 +101,25 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
     }
 
     private void bindNearbyViewHolder(StationViewHolder holder, int position, int suggestedStationsLength) {
+        final Station station;
+
         if (!nearbyOnTop) {
-            position = position - suggestedStationsLength;
+            station = stations[position - suggestedStationsLength];
+        } else {
+            station = stations[position];
         }
-
-        final Station station = stations[position];
-
         holder.vStation.setText(station.getLocalizedName());
 
         switch (currentDisplayType) {
             case NEARBY:
                 holder.vIcon.setVisibility(View.VISIBLE);
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_location_on_white));
+                holder.vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.ic_location_on_white));
                 break;
             case SEARCHED:
                 holder.vIcon.setVisibility(View.VISIBLE);
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_search_white));
+                holder.vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.ic_action_search_white));
                 break;
             default:
             case UNDEFINED:
@@ -125,7 +131,11 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new IrailLiveboardRequest(station, RouteTimeDefinition.DEPART, null), SuggestionType.LIST));
+                    IrailLiveboardRequest request = new IrailLiveboardRequest(station,
+                                                                              RouteTimeDefinition.DEPART,
+                                                                              null);
+                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this,
+                                                 new Suggestion<>(request, SuggestionType.LIST));
                 }
             }
         });
@@ -134,7 +144,13 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, new Suggestion<>(new IrailLiveboardRequest(station, RouteTimeDefinition.DEPART, null), SuggestionType.LIST));
+                    IrailLiveboardRequest request = new IrailLiveboardRequest(station,
+                                                                              RouteTimeDefinition.DEPART,
+                                                                              null);
+                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
+                                                              new Suggestion<>(
+                                                                      request,
+                                                                      SuggestionType.LIST));
                 }
                 return false;
             }
@@ -153,11 +169,13 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         switch (q.getType()) {
             case FAVORITE:
                 holder.vIcon.setVisibility(View.VISIBLE);
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star));
+                holder.vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.ic_star));
                 break;
             case HISTORY:
                 holder.vIcon.setVisibility(View.VISIBLE);
-                holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_history));
+                holder.vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.ic_history));
                 break;
             default:
                 // No default icon
@@ -177,7 +195,8 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, q);
+                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
+                                                              q);
                 }
                 return false;
             }

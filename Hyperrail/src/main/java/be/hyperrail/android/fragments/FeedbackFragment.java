@@ -30,10 +30,6 @@ import be.hyperrail.android.R;
  */
 public class FeedbackFragment extends Fragment {
 
-    public FeedbackFragment() {
-        // Required empty public constructor
-    }
-
     public static FeedbackFragment newInstance() {
         return new FeedbackFragment();
     }
@@ -57,7 +53,8 @@ public class FeedbackFragment extends Fragment {
                 String version = "unknown";
 
                 try {
-                    PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                    PackageInfo pInfo = context.getPackageManager().getPackageInfo(
+                            context.getPackageName(), 0);
                     version = pInfo.versionName;
                 } catch (Exception e) {
                     // Ignored

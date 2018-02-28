@@ -69,10 +69,6 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     private Suggestion<IrailVehicleRequest> mLastSelectedQuery;
     private VehicleSuggestionsCardAdapter mIrailTrainRequestAdapter;
 
-    public VehicleSearchFragment() {
-        // Required empty public constructor
-    }
-
     public static VehicleSearchFragment newInstance() {
         return new VehicleSearchFragment();
     }

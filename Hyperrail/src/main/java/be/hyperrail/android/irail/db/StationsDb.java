@@ -63,6 +63,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     HashMap<String, Station> mStationIdCache = new HashMap<>();
     HashMap<String, Station> mStationNameCache = new HashMap<>();
 
+    Station[] stationsOrderedBySizeCache;
+
     public StationsDb(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
@@ -319,13 +321,11 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 .replaceAll("[üÜ]", "u");
     }
 
+
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache from a local file, so just recreate it
         onUpgrade(db, oldVersion, newVersion);
     }
-
-
-    Station[] stationsOrderedBySizeCache;
 
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderBySize")

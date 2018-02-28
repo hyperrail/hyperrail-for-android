@@ -21,7 +21,7 @@ package be.hyperrail.android.fragments;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -87,13 +87,10 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     private RouteSuggestionsCardAdapter mSuggestionsAdapter;
     private LoadSuggestionsTask activeSuggestionsUpdateTask;
 
-    public RouteSearchFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     @AddTrace(name = "RouteSearchFragment.onCreateView")
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
@@ -102,7 +99,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
     @Override
     @AddTrace(name = "RouteSearchFragment.onViewCreated")
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         vFromText = view.findViewById(R.id.input_from);
@@ -216,10 +213,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         vArriveDepartContainer = view.findViewById(R.id.container_arrivedepart);
 
-        if (!PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getBoolean("routes_always_datetime", true)) {
-            hideDateTimeRow();
-        }
-
         if (this.getArguments() != null && (this.getArguments().containsKey("from") || this.getArguments().containsKey("to"))) {
             vFromText.setText(this.getArguments().getString("from", ""), false);
             vToText.setText(this.getArguments().getString("to", ""), false);
@@ -233,14 +226,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             vFromText.setText(savedInstanceState.getString("from", ""), false);
             vToText.setText(savedInstanceState.getString("to", ""), false);
         }
-    }
-
-    private void showDateTimeRow() {
-        vArriveDepartContainer.setVisibility(View.VISIBLE);
-    }
-
-    private void hideDateTimeRow() {
-        vArriveDepartContainer.setVisibility(View.GONE);
     }
 
     @Override
@@ -283,15 +268,8 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
     }
 
-    private void setSuggestions() {
-        RecyclerView suggestions = this.getActivity().findViewById(R.id.recyclerview_primary);
-
-        mSuggestionsAdapter.setSuggestedRoutes(persistentQueryProvider.getAllRoutes());
-
-    }
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString("from", vFromText.getText().toString());
@@ -349,7 +327,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             return;
         }
 
-        if (from == to) {
+        if (from.equals(to)) {
             ErrorDialogFactory.showDepartureEqualsArrivalStationError(this.getActivity(), false);
             return;
         }
