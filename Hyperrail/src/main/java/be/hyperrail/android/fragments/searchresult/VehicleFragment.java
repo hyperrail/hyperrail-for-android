@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.fragments.searchResult;
+package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,8 +19,8 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.VehiclePopupContextMenu;
-import be.hyperrail.android.activities.searchResult.LiveboardActivity;
-import be.hyperrail.android.activities.searchResult.VehicleActivity;
+import be.hyperrail.android.activities.searchresult.LiveboardActivity;
+import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.VehicleStopCardAdapter;
@@ -55,8 +55,8 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("request")){
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
             mRequest = (IrailVehicleRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
@@ -119,7 +119,8 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
         IrailFactory.getDataProviderInstance().abortAllQueries();
 
-        IrailVehicleRequest request = new IrailVehicleRequest(mRequest.getTrainId(), mRequest.getSearchTime());
+        IrailVehicleRequest request = new IrailVehicleRequest(mRequest.getTrainId(),
+                                                              mRequest.getSearchTime());
         request.setCallback(new IRailSuccessResponseListener<Vehicle>() {
             @Override
             public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
@@ -151,7 +152,8 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
             ((VehicleActivity) getActivity()).setRequest(mRequest);
         }
 
-        PersistentQueryProvider.getInstance(getActivity()).store(new Suggestion<>(mRequest, SuggestionType.HISTORY));
+        PersistentQueryProvider.getInstance(getActivity()).store(
+                new Suggestion<>(mRequest, SuggestionType.HISTORY));
 
         if (!mRequest.isNow()) {
             int i = train.getStopnumberForDepartureTime(mRequest.getSearchTime());
@@ -178,7 +180,10 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
         if (queryTime == null) {
             queryTime = object.getDepartureTime();
         }
-        Intent i = LiveboardActivity.createIntent(getActivity(), new IrailLiveboardRequest(object.getStation(), RouteTimeDefinition.DEPART, queryTime));
+        Intent i = LiveboardActivity.createIntent(getActivity(),
+                                                  new IrailLiveboardRequest(object.getStation(),
+                                                                            RouteTimeDefinition.DEPART,
+                                                                            queryTime));
         startActivity(i);
     }
 

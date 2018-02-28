@@ -51,7 +51,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.searchResult.RouteActivity;
+import be.hyperrail.android.activities.searchresult.RouteActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteSuggestionsCardAdapter;

@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.activities.searchResult;
+package be.hyperrail.android.activities.searchresult;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +20,7 @@ import android.view.View;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.searchResult.VehicleFragment;
+import be.hyperrail.android.fragments.searchresult.VehicleFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.VehicleStub;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;

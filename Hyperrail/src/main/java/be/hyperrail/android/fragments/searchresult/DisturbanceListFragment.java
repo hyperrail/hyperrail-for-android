@@ -11,7 +11,7 @@
  */
 
 
-package be.hyperrail.android.fragments.searchResult;
+package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -46,23 +46,19 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     DisturbanceCardAdapter disturbanceCardAdapter;
     private IrailDisturbanceRequest mRequest;
 
-    public static DisturbanceListFragment createInstance() {
-        DisturbanceListFragment frg = new DisturbanceListFragment();
-        frg.setRequest(new IrailDisturbanceRequest());
-        return frg;
-    }
-
     public DisturbanceListFragment() {
         // Required empty public constructor
         mRequest = new IrailDisturbanceRequest();
     }
 
     public static DisturbanceListFragment newInstance() {
-        return new DisturbanceListFragment();
+        DisturbanceListFragment frg = new DisturbanceListFragment();
+        frg.setRequest(new IrailDisturbanceRequest());
+        return frg;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
             mRequest = (IrailDisturbanceRequest) savedInstanceState.getSerializable("request");
@@ -121,7 +117,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (lastUpdate != null) {
             outState.putSerializable("request", mRequest);

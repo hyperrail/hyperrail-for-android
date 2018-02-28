@@ -49,7 +49,7 @@ import be.hyperrail.android.fragments.FeedbackFragment;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.fragments.RouteSearchFragment;
 import be.hyperrail.android.fragments.VehicleSearchFragment;
-import be.hyperrail.android.fragments.searchResult.DisturbanceListFragment;
+import be.hyperrail.android.fragments.searchresult.DisturbanceListFragment;
 
 /**
  * The main activity contains a drawer layout and fragments for search, disturbances and settings

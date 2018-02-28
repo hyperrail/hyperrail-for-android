@@ -55,7 +55,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.searchResult.LiveboardActivity;
+import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.StationSuggestionsCardAdapter;
@@ -92,7 +92,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     UpdateSuggestionsTask activeSuggestionsUpdateTask;
 
     /**
-     * This alternative onclicklistener allows to "catch" clicks. This way we can reuse this fragment for purposes other than just showing liveboards
+     * This alternative onclicklistener allows to "catch" clicks. This way we can reuse this fragment for purposes other than just searching to show liveboards
      */
     private OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> alternativeOnClickListener;
 
@@ -106,7 +106,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     @Override
     @AddTrace(name = "LiveboardSearchFragment.onCreateView")
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
@@ -116,7 +116,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     @Override
     @AddTrace(name = "LiveboardSearchFragment.onViewCreated")
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         stationRecyclerView = view.findViewById(R.id.recyclerview_primary);
@@ -182,7 +182,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("station", vStationSearchField.getText().toString());
     }
@@ -257,6 +257,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      */
     private void setStations(Station[] stations, StationSuggestionsCardAdapter.stationType type) {
         mStationAdapter.setSearchResultStations(stations);
+        mStationAdapter.setSearchResultType(type);
     }
 
     @Override

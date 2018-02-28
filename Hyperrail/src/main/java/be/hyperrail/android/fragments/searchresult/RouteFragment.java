@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.fragments.searchResult;
+package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,8 +18,8 @@ import android.view.ViewGroup;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.searchResult.LiveboardActivity;
-import be.hyperrail.android.activities.searchResult.VehicleActivity;
+import be.hyperrail.android.activities.searchresult.LiveboardActivity;
+import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
@@ -50,7 +50,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")){
             mRequest = (IrailRouteRequest) savedInstanceState.getSerializable("request");
         }

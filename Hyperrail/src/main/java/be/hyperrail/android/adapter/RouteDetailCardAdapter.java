@@ -131,7 +131,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         @Override
                         public boolean onLongClick(View view) {
                             (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
-                                                         transfer, route)
+                                                         transfer)
                             ).show();
                             return false;
                         }
@@ -172,7 +172,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             @Override
                             public boolean onLongClick(View view) {
                                 (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
-                                                             transferBefore, transferAfter, route)
+                                                             transferBefore, transferAfter)
                                 ).show();
                                 return false;
                             }

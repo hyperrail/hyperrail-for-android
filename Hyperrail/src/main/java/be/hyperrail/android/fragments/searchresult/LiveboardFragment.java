@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.fragments.searchResult;
+package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,7 +22,7 @@ import java.io.FileNotFoundException;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.VehiclePopupContextMenu;
-import be.hyperrail.android.activities.searchResult.VehicleActivity;
+import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
@@ -57,7 +57,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")){
             mRequest = (IrailLiveboardRequest) savedInstanceState.getSerializable("request");
         }

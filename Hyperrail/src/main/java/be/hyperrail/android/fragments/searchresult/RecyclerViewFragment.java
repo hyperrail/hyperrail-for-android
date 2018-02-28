@@ -10,7 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.fragments.searchResult;
+package be.hyperrail.android.fragments.searchresult;
 
 
 import android.os.Bundle;
@@ -50,7 +50,7 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
 
 
     public RecyclerViewFragment() {
-
+        // Default constructor, actual work is done in lifecycle methods
     }
 
     @Override
@@ -82,9 +82,12 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
         vRecyclerView.setLayoutManager(mLayoutManager);
 
         // Show dividers in case wanted & not using the card layout
-        if (mShowDividers && !PreferenceManager.getDefaultSharedPreferences(this.getActivity().getApplication()).getBoolean("use_card_layout", false)) {
+        boolean useCardLayout = PreferenceManager.getDefaultSharedPreferences(
+                this.getActivity().getApplication()).getBoolean("use_card_layout", false);
+        if (mShowDividers && !useCardLayout) {
             // Cards have their own division by margin, others need a divider
-            vRecyclerView.addItemDecoration(new DividerItemDecoration(this.getActivity(), DividerItemDecoration.VERTICAL));
+            vRecyclerView.addItemDecoration(
+                    new DividerItemDecoration(this.getActivity(), DividerItemDecoration.VERTICAL));
         }
 
         // Get & set the adapter

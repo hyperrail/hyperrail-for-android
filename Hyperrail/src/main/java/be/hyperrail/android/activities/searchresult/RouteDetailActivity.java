@@ -5,7 +5,7 @@
  */
 
 
-package be.hyperrail.android.activities.searchResult;
+package be.hyperrail.android.activities.searchresult;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.fragments.searchResult.RouteFragment;
+import be.hyperrail.android.fragments.searchresult.RouteFragment;
 import be.hyperrail.android.irail.implementation.Route;
 
 /**

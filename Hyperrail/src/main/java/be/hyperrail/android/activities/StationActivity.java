@@ -33,7 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.joda.time.LocalTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.searchResult.LiveboardActivity;
+import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.db.StationFacilities;

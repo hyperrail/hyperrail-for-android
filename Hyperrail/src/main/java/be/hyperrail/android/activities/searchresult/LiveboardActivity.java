@@ -4,14 +4,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.activities.searchResult;
+package be.hyperrail.android.activities.searchresult;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.Intent.ShortcutIconResource;
 import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutInfo.Builder;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
-import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -20,15 +23,22 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.analytics.FirebaseAnalytics.Event;
+import com.google.firebase.analytics.FirebaseAnalytics.Param;
 
 import org.joda.time.DateTime;
 
-import be.hyperrail.android.R;
+import be.hyperrail.android.R.id;
+import be.hyperrail.android.R.layout;
+import be.hyperrail.android.R.menu;
+import be.hyperrail.android.R.mipmap;
+import be.hyperrail.android.R.string;
 import be.hyperrail.android.activities.MainActivity;
 import be.hyperrail.android.activities.StationActivity;
-import be.hyperrail.android.fragments.searchResult.LiveboardFragment;
+import be.hyperrail.android.fragments.searchresult.LiveboardFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
@@ -45,8 +55,6 @@ public class LiveboardActivity extends ResultActivity {
     LiveboardFragment fragment;
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
-    private DeparturesArrivalsAdapter mDeparturesArrivalsAdapter;
-    private ViewPager mViewPager;
 
     public static Intent createIntent(Context context, IrailLiveboardRequest request) {
         Intent i = new Intent(context, LiveboardActivity.class);
@@ -57,7 +65,8 @@ public class LiveboardActivity extends ResultActivity {
     private Intent createShortcutIntent() {
         Intent i = new Intent(this, LiveboardActivity.class);
         i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
-        i.putExtra("station", mRequest.getStation().getId()); // shortcut intents should not contain application specific classes - only pass the station ID
+        i.putExtra("station",
+                   mRequest.getStation().getId()); // shortcut intents should not contain application specific classes - only pass the station ID
         return i;
     }
 
@@ -67,11 +76,15 @@ public class LiveboardActivity extends ResultActivity {
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
-            this.mRequest = new IrailLiveboardRequest(IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART, null);
+            this.mRequest = new IrailLiveboardRequest(
+                    IrailFactory.getStationsProviderInstance().getStationById(
+                            getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART,
+                    null);
         } else {
             // Validate a normal intent
             if (!getIntent().hasExtra("request")) {
-                throw new IllegalStateException("A liveboard activity should be created by passing a valid request");
+                throw new IllegalStateException(
+                        "A liveboard activity should be created by passing a valid request");
             }
 
             this.mRequest = (IrailLiveboardRequest) getIntent().getSerializableExtra("request");
@@ -81,64 +94,75 @@ public class LiveboardActivity extends ResultActivity {
 
         // Title and subtitle belong to the activity, and are therefore a responsibility of this class
         setTitle(mRequest.getStation().getLocalizedName());
-        setSubTitle(mRequest.isNow() ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
+        setSubTitle(
+                mRequest.isNow() ? getString(string.time_now) : mRequest.getSearchTime().toString(
+                        getString(string.warning_not_realtime_datetime)));
 
-        mDeparturesArrivalsAdapter =
-                new DeparturesArrivalsAdapter(getSupportFragmentManager());
-        mViewPager = findViewById(R.id.pager);
-        mViewPager.setAdapter(mDeparturesArrivalsAdapter);
+        DeparturesArrivalsAdapter departuresArrivalsAdapter = new DeparturesArrivalsAdapter(
+                getSupportFragmentManager());
+        ViewPager viewPager = findViewById(id.pager);
+        viewPager.setAdapter(departuresArrivalsAdapter);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setElevation(0);
-            }
+        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP && getSupportActionBar() != null) {
+            getSupportActionBar().setElevation(0);
         }
+
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getStation().getId());
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, mRequest.getStation().getName());
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "liveboard");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
+        bundle.putString(Param.ITEM_ID, mRequest.getStation().getId());
+        bundle.putString(Param.ITEM_NAME, mRequest.getStation().getName());
+        bundle.putString(Param.CONTENT_TYPE, "liveboard");
+        mFirebaseAnalytics.logEvent(Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     @Override
     protected int getLayout() {
-        return R.layout.activity_result_tabbed;
+        return layout.activity_result_tabbed;
     }
 
     @Override
     protected int getMenuLayout() {
-        return R.menu.actionbar_searchresult_liveboard;
+        return menu.actionbar_searchresult_liveboard;
     }
 
     @Override
     public void onDateTimePicked(DateTime date) {
-        setSubTitle(date == null ? getString(R.string.time_now) : mRequest.getSearchTime().toString(getString(R.string.warning_not_realtime_datetime)));
+        setSubTitle(date == null ? getString(string.time_now) : mRequest.getSearchTime().toString(
+                getString(string.warning_not_realtime_datetime)));
         fragment.onDateTimePicked(date);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_from:
-                startActivity(MainActivity.createRouteFromIntent(getApplicationContext(), mRequest.getStation().getName()));
+            case id.action_from:
+                startActivity(MainActivity.createRouteFromIntent(getApplicationContext(),
+                                                                 mRequest.getStation().getName()));
                 return true;
-            case R.id.action_to:
-                startActivity(MainActivity.createRouteToIntent(getApplicationContext(), mRequest.getStation().getName()));
+
+            case id.action_to:
+                startActivity(MainActivity.createRouteToIntent(getApplicationContext(),
+                                                               mRequest.getStation().getName()));
                 return true;
-            case R.id.action_details:
-                startActivity(StationActivity.createIntent(getApplicationContext(), mRequest.getStation()));
+
+            case id.action_details:
+                startActivity(StationActivity.createIntent(getApplicationContext(),
+                                                           mRequest.getStation()));
                 return true;
-            case R.id.action_shortcut:
+
+            case id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getStation().getId());
+                if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                    Builder mShortcutInfoBuilder = new Builder(this,
+                                                               mRequest.getStation().getId());
                     mShortcutInfoBuilder.setShortLabel(mRequest.getStation().getLocalizedName());
 
-                    mShortcutInfoBuilder.setLongLabel("Departures from " + mRequest.getStation().getLocalizedName());
-                    mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher));
+                    mShortcutInfoBuilder.setLongLabel(
+                            "Departures from " + mRequest.getStation().getLocalizedName());
+                    mShortcutInfoBuilder.setIcon(
+                            Icon.createWithResource(this, mipmap.ic_launcher));
                     shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                     mShortcutInfoBuilder.setIntent(shortcutIntent);
                     ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
@@ -150,26 +174,28 @@ public class LiveboardActivity extends ResultActivity {
                 } else {
                     Intent addIntent = new Intent();
                     addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mRequest.getStation().getLocalizedName());
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
+                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
+                                       mRequest.getStation().getLocalizedName());
+                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
+                                       ShortcutIconResource.fromContext(
+                                               getApplicationContext(), mipmap.ic_launcher));
                     addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
                     getApplicationContext().sendBroadcast(addIntent);
                 }
-                Snackbar.make(vLayoutRoot, R.string.shortcut_created, Snackbar.LENGTH_LONG).show();
-
+                Snackbar.make(vLayoutRoot, string.shortcut_created, Snackbar.LENGTH_LONG).show();
                 return true;
 
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        // If none of the custom menu items match, pass this to the parent
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void markFavorite(boolean favorite) {
         if (favorite) {
             mPersistentQueryProvider.store(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
-            Snackbar.make(vLayoutRoot, R.string.marked_station_favorite, Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.undo, new View.OnClickListener() {
+            Snackbar.make(vLayoutRoot, string.marked_station_favorite, Snackbar.LENGTH_SHORT)
+                    .setAction(string.undo, new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             LiveboardActivity.this.markFavorite(false);
@@ -178,8 +204,8 @@ public class LiveboardActivity extends ResultActivity {
                     .show();
         } else {
             mPersistentQueryProvider.delete(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
-            Snackbar.make(vLayoutRoot, R.string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.undo, new View.OnClickListener() {
+            Snackbar.make(vLayoutRoot, string.unmarked_station_favorite, Snackbar.LENGTH_SHORT)
+                    .setAction(string.undo, new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             LiveboardActivity.this.markFavorite(true);
@@ -207,9 +233,11 @@ public class LiveboardActivity extends ResultActivity {
         @Override
         public Fragment getItem(int i) {
             if (i == 0 && fragments[i] == null) {
-                fragments[0] = LiveboardFragment.createInstance(mRequest.withTimeDefinition(RouteTimeDefinition.DEPART));
+                fragments[0] = LiveboardFragment.createInstance(
+                        mRequest.withTimeDefinition(RouteTimeDefinition.DEPART));
             } else if (i == 1 && fragments[1] == null) {
-                fragments[1] = LiveboardFragment.createInstance(mRequest.withTimeDefinition(RouteTimeDefinition.ARRIVE));
+                fragments[1] = LiveboardFragment.createInstance(
+                        mRequest.withTimeDefinition(RouteTimeDefinition.ARRIVE));
             }
             return fragments[i];
         }
@@ -222,9 +250,9 @@ public class LiveboardActivity extends ResultActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             if (position == 0) {
-                return LiveboardActivity.this.getString(R.string.title_departures);
+                return LiveboardActivity.this.getString(string.title_departures);
             } else {
-                return LiveboardActivity.this.getString(R.string.title_arrivals);
+                return LiveboardActivity.this.getString(string.title_arrivals);
             }
         }
     }

@@ -10,7 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.activities.searchResult;
+package be.hyperrail.android.activities.searchresult;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -73,15 +73,17 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mPersistentQueryProvider = PersistentQueryProvider.getInstance(this.getApplicationContext());
+        mPersistentQueryProvider = PersistentQueryProvider.getInstance(
+                this.getApplicationContext());
     }
 
     /**
      * Get the layout for this acitivity
+     *
      * @return The ID of the layout to use for this activity. By default a simple FrameLayout with toolbar is used.
      */
     @LayoutRes
-    protected int getLayout(){
+    protected int getLayout() {
         return R.layout.activity_result;
     }
 
@@ -98,8 +100,9 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
                 // Mark or unmark as favorite
                 markFavorite(!isFavorite());
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -163,7 +166,8 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
     private void tintDrawable(Drawable drawable, @ColorRes int color) {
         if (drawable != null) {
             drawable.mutate();
-            drawable.setColorFilter(ContextCompat.getColor(this.getApplicationContext(), color), PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(ContextCompat.getColor(this.getApplicationContext(), color),
+                                    PorterDuff.Mode.SRC_ATOP);
         }
     }
 

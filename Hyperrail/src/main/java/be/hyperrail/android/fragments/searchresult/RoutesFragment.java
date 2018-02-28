@@ -11,7 +11,7 @@
  */
 
 
-package be.hyperrail.android.fragments.searchResult;
+package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.searchResult.RouteDetailActivity;
+import be.hyperrail.android.activities.searchresult.RouteDetailActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteCardAdapter;
@@ -60,7 +60,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
             mRequest = (IrailRoutesRequest) savedInstanceState.getSerializable("request");
         }
@@ -70,7 +70,6 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
     }
 
     @Override
@@ -91,7 +90,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("result", mCurrentRouteResult);
         outState.putSerializable("request", mRequest);
@@ -132,7 +131,10 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         api.abortAllQueries();
 
-        IrailRoutesRequest request = new IrailRoutesRequest(mRequest.getOrigin(), mRequest.getDestination(), mRequest.getTimeDefinition(), mRequest.getSearchTime());
+        IrailRoutesRequest request = new IrailRoutesRequest(mRequest.getOrigin(),
+                                                            mRequest.getDestination(),
+                                                            mRequest.getTimeDefinition(),
+                                                            mRequest.getSearchTime());
         request.setCallback(new IRailSuccessResponseListener<RouteResult>() {
                                 @Override
                                 public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
@@ -141,7 +143,8 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                                     showData(mCurrentRouteResult);
 
                                     // Scroll past the load earlier item
-                                    ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+                                    ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(
+                                            1, 0);
                                 }
                             }, new IRailErrorResponseListener() {
                                 @Override
@@ -151,7 +154,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                                     ErrorDialogFactory.showErrorDialog(e, getActivity(), mCurrentRouteResult == null);
                                 }
                             },
-                null);
+                            null);
 
         api.getRoutes(request);
     }
@@ -163,37 +166,38 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         }
 
         RouteAppendHelper appendHelper = new RouteAppendHelper();
-        appendHelper.appendRouteResult(mCurrentRouteResult, new IRailSuccessResponseListener<RouteResult>() {
-            @Override
-            public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
-                // data consists of both old and new routes
+        appendHelper.appendRouteResult(mCurrentRouteResult,
+                                       new IRailSuccessResponseListener<RouteResult>() {
+                                           @Override
+                                           public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
+                                               // data consists of both old and new routes
 
-                if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                    ((
-                            InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
-                    // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
-                }
+                                               if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
+                                                   ((
+                                                           InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
+                                                   // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                                               }
 
-                mCurrentRouteResult = data;
-                showData(mCurrentRouteResult);
+                                               mCurrentRouteResult = data;
+                                               showData(mCurrentRouteResult);
 
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+                                               ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
 
-                // Scroll past the "load earlier"
-                LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
-                if (mgr.findFirstVisibleItemPosition() == 0) {
-                    mgr.scrollToPositionWithOffset(1, 0);
-                }
+                                               // Scroll past the "load earlier"
+                                               LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
+                                               if (mgr.findFirstVisibleItemPosition() == 0) {
+                                                   mgr.scrollToPositionWithOffset(1, 0);
+                                               }
 
-            }
-        }, new IRailErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-            }
-        });
+                                           }
+                                       }, new IRailErrorResponseListener() {
+                    @Override
+                    public void onErrorResponse(@NonNull Exception e, Object tag) {
+                        ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                    }
+                });
     }
 
     public void loadPreviousRecyclerviewItems() {
@@ -203,31 +207,33 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         }
 
         RouteAppendHelper appendHelper = new RouteAppendHelper();
-        appendHelper.prependRouteResult(mCurrentRouteResult, new IRailSuccessResponseListener<RouteResult>() {
-            @Override
-            public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
-                // data consists of both old and new routes
-                if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                    // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
-                }
+        appendHelper.prependRouteResult(mCurrentRouteResult,
+                                        new IRailSuccessResponseListener<RouteResult>() {
+                                            @Override
+                                            public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
+                                                // data consists of both old and new routes
+                                                if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
+                                                    // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                                                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
+                                                }
 
-                mCurrentRouteResult = data;
-                showData(mCurrentRouteResult);
+                                                mCurrentRouteResult = data;
+                                                showData(mCurrentRouteResult);
 
-                // Scroll past the load earlier item
-                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+                                                // Scroll past the load earlier item
+                                                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(
+                                                        1, 0);
 
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
-            }
-        }, new IRailErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-                ((RouteCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
-            }
-        });
+                                                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+                                            }
+                                        }, new IRailErrorResponseListener() {
+                    @Override
+                    public void onErrorResponse(@NonNull Exception e, Object tag) {
+                        ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+                        ((RouteCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+                    }
+                });
     }
 
     protected void showData(RouteResult routeList) {
@@ -236,7 +242,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Route object) {
-
+        // Nothing to do, collapsing/expanding of items is handled by the adapter.
     }
 
     @Override

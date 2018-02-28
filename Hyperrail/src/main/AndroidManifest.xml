@@ -36,15 +36,15 @@
 
         </activity>
         <activity
-            android:name=".activities.searchResult.LiveboardActivity"
+            android:name=".activities.searchresult.LiveboardActivity"
             android:exported="true"
             android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".activities.searchResult.RouteActivity"
+            android:name=".activities.searchresult.RouteActivity"
             android:exported="true"
             android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".activities.searchResult.VehicleActivity"
+            android:name=".activities.searchresult.VehicleActivity"
             android:exported="true"
             android:parentActivityName=".activities.MainActivity" />
         <activity
@@ -52,7 +52,7 @@
             android:label="@string/title_activity_settings"
             android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".activities.searchResult.RouteDetailActivity"
+            android:name=".activities.searchresult.RouteDetailActivity"
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.StationActivity"
