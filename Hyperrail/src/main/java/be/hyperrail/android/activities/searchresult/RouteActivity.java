@@ -59,7 +59,6 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
             Station origin = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("from"));
@@ -70,15 +69,16 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
             this.mRequest = (IrailRoutesRequest) getIntent().getSerializableExtra("request");
         }
         super.onCreate(savedInstanceState);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         this.setHeader();
 
         mFragment = RoutesFragment.createInstance(mRequest);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment).commit();
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getId() + mRequest.getOrigin().getId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getId() + mRequest.getDestination().getId());
         bundle.putString(FirebaseAnalytics.Param.ORIGIN, mRequest.getOrigin().getName());
         bundle.putString(FirebaseAnalytics.Param.DESTINATION, mRequest.getDestination().getName());
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "route");

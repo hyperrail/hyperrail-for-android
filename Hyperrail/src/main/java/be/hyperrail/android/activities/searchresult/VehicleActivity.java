@@ -17,6 +17,8 @@ import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
@@ -32,6 +34,9 @@ import be.hyperrail.android.persistence.SuggestionType;
  */
 public class VehicleActivity extends ResultActivity {
 
+    @SuppressWarnings("FieldCanBeLocal")
+    private FirebaseAnalytics mFirebaseAnalytics;
+    
     private IrailVehicleRequest mRequest;
     private VehicleFragment fragment;
 
@@ -65,6 +70,14 @@ public class VehicleActivity extends ResultActivity {
 
         setTitle(R.string.title_train);
         setSubTitle(VehicleStub.getTrainName(mRequest.getTrainId()));
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getTrainId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, mRequest.getTrainId());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "vehicle");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     @Override
