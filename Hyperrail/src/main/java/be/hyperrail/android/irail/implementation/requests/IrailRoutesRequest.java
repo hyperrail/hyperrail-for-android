@@ -42,7 +42,6 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
      */
     // TODO: support vias
     public IrailRoutesRequest(@NonNull Station origin, @NonNull Station destination, @NonNull RouteTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
-        super();
         this.origin = origin;
         this.destination = destination;
         this.timeDefinition = timeDefinition;

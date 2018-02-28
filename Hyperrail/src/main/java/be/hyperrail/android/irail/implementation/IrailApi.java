@@ -69,33 +69,39 @@ public class IrailApi implements IrailDataProvider {
     private static final String UA = "HyperRail for Android - " + BuildConfig.VERSION_NAME;
     private final RetryPolicy requestPolicy;
 
-    public IrailApi(Context context) {
-        this.context = context;
-        this.parser = new IrailApiParser(IrailFactory.getStationsProviderInstance());
-        this.requestQueue = Volley.newRequestQueue(context);
-        this.requestPolicy = new DefaultRetryPolicy(3000,
-                4,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-    }
-
     private final Context context;
     private final IrailApiParser parser;
 
     private final int TAG_IRAIL_API_GET = 0;
+
+    public IrailApi(Context context) {
+        this.context = context;
+        this.parser = new IrailApiParser(IrailFactory.getStationsProviderInstance());
+        this.requestQueue = Volley.newRequestQueue(context);
+        this.requestPolicy = new DefaultRetryPolicy(
+                3000,
+                4,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        );
+    }
 
 
     @Override
     public void getRoute(@NonNull IrailRouteRequest... requests) {
         for (final IrailRouteRequest request : requests
                 ) {
-            IrailRoutesRequest routesRequest = new IrailRoutesRequest(request.getOrigin(), request.getDestination(), request.getTimeDefinition(), request.getSearchTime());
+            IrailRoutesRequest routesRequest = new IrailRoutesRequest(
+                    request.getOrigin(), request.getDestination(), request.getTimeDefinition(),
+                    request.getSearchTime()
+            );
 
             // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
             routesRequest.setCallback(new IRailSuccessResponseListener<RouteResult>() {
                 @Override
                 public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
                     for (Route r : data.getRoutes()) {
-                        if (r.getTransfers()[0].getDepartureSemanticId() != null && r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
+                        if (r.getTransfers()[0].getDepartureSemanticId() != null && r.getTransfers()[0].getDepartureSemanticId().equals(
+                                request.getDepartureSemanticId())) {
                             request.notifySuccessListeners(r);
                         }
                     }
@@ -126,7 +132,8 @@ public class IrailApi implements IrailDataProvider {
         DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
-        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
+                "pref_stations_language", "");
         if (locale.isEmpty()) {
             // Only get locale when needed
             locale = Locale.getDefault().getISO3Language();
@@ -151,9 +158,13 @@ public class IrailApi implements IrailDataProvider {
                     public void onResponse(JSONObject response) {
                         RouteResult routeResult;
                         try {
-                            routeResult = parser.parseRouteResult(response, request.getOrigin(), request.getDestination(), request.getSearchTime(), request.getTimeDefinition());
+                            routeResult = parser.parseRouteResult(
+                                    response, request.getOrigin(), request.getDestination(),
+                                    request.getSearchTime(), request.getTimeDefinition()
+                            );
                         } catch (JSONException e) {
-                            FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse routes", e.getMessage());
+                            FirebaseCrash.logcat(
+                                    WARNING.intValue(), "Failed to parse routes", e.getMessage());
                             FirebaseCrash.report(e);
                             request.notifyErrorListeners(e);
                             return;
@@ -163,7 +174,8 @@ public class IrailApi implements IrailDataProvider {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
-                        FirebaseCrash.logcat(WARNING.intValue(), "Failed to get routes", e.getMessage());
+                        FirebaseCrash.logcat(
+                                WARNING.intValue(), "Failed to get routes", e.getMessage());
                         request.notifyErrorListeners(e);
                     }
                 }) {
@@ -205,9 +217,13 @@ public class IrailApi implements IrailDataProvider {
                     public void onResponse(JSONObject response) {
                         LiveBoard result;
                         try {
-                            result = parser.parseLiveboard(response, request.getSearchTime(), request.getTimeDefinition());
+                            result = parser.parseLiveboard(
+                                    response, request.getSearchTime(), request.getTimeDefinition());
                         } catch (JSONException e) {
-                            FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
+                            FirebaseCrash.logcat(
+                                    WARNING.intValue(), "Failed to parse liveboard",
+                                    e.getMessage()
+                            );
                             FirebaseCrash.report(e);
                             request.notifyErrorListeners(e);
                             return;
@@ -218,8 +234,12 @@ public class IrailApi implements IrailDataProvider {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
-                        Log.w(LOGTAG, "Tried loading liveboard from " + url + " failed with error " + e);
-                        FirebaseCrash.logcat(WARNING.intValue(), "Failed to get liveboard", e.getMessage());
+                        Log.w(
+                                LOGTAG,
+                                "Tried loading liveboard from " + url + " failed with error " + e
+                        );
+                        FirebaseCrash.logcat(
+                                WARNING.intValue(), "Failed to get liveboard", e.getMessage());
                         request.notifyErrorListeners(e);
                     }
                 }) {
@@ -244,7 +264,8 @@ public class IrailApi implements IrailDataProvider {
     }
 
     public void getLiveboardBefore(final IrailLiveboardRequest request) {
-        final IrailLiveboardRequest actualRequest =  request.withSearchTime(request.getSearchTime().minusHours(1));
+        final IrailLiveboardRequest actualRequest = request.withSearchTime(
+                request.getSearchTime().minusHours(1));
         actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
@@ -254,7 +275,10 @@ public class IrailApi implements IrailDataProvider {
                         stops.add(s);
                     }
                 }
-                request.notifySuccessListeners(new LiveBoard(data, stops.toArray(new VehicleStop[]{}), data.getSearchTime(), actualRequest.getTimeDefinition()));
+                request.notifySuccessListeners(
+                        new LiveBoard(data, stops.toArray(new VehicleStop[]{}),
+                                      data.getSearchTime(), actualRequest.getTimeDefinition()
+                        ));
             }
         }, new IRailErrorResponseListener() {
             @Override
@@ -266,7 +290,7 @@ public class IrailApi implements IrailDataProvider {
     }
 
     @Override
-    public void getTrain(@NonNull final IrailVehicleRequest... requests) {
+    public void getTrain(@NonNull IrailVehicleRequest... requests) {
         for (IrailVehicleRequest request :
                 requests) {
             getTrain(request);
@@ -277,7 +301,8 @@ public class IrailApi implements IrailDataProvider {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
-                + "&id=" + request.getTrainId() + "&date=" + dateTimeformat.print(request.getSearchTime());
+                + "&id=" + request.getTrainId() + "&date=" + dateTimeformat.print(
+                request.getSearchTime());
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -287,7 +312,8 @@ public class IrailApi implements IrailDataProvider {
                         try {
                             result = parser.parseTrain(response, new DateTime());
                         } catch (JSONException e) {
-                            FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse train", e.getMessage());
+                            FirebaseCrash.logcat(
+                                    WARNING.intValue(), "Failed to parse train", e.getMessage());
                             FirebaseCrash.report(e);
                             request.notifyErrorListeners(e);
                             return;
@@ -297,7 +323,8 @@ public class IrailApi implements IrailDataProvider {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
-                        FirebaseCrash.logcat(WARNING.intValue(), "Failed to get train", e.getMessage());
+                        FirebaseCrash.logcat(
+                                WARNING.intValue(), "Failed to get train", e.getMessage());
                         request.notifyErrorListeners(e);
                     }
                 })
@@ -317,7 +344,7 @@ public class IrailApi implements IrailDataProvider {
     }
 
     @Override
-    public void getDisturbances(@NonNull final IrailDisturbanceRequest... requests) {
+    public void getDisturbances(@NonNull IrailDisturbanceRequest... requests) {
         for (IrailDisturbanceRequest request :
                 requests) {
             getDisturbances(request);
@@ -326,13 +353,15 @@ public class IrailApi implements IrailDataProvider {
 
     public void getDisturbances(final IrailDisturbanceRequest request) {
 
-        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
+                "pref_stations_language", "");
         if (locale.isEmpty()) {
             // Only get locale when needed
             locale = Locale.getDefault().getISO3Language();
         }
 
-        String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(0, 2);
+        String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(
+                0, 2);
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -342,7 +371,10 @@ public class IrailApi implements IrailDataProvider {
                         try {
                             result = parser.parseDisturbances(response);
                         } catch (JSONException e) {
-                            FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
+                            FirebaseCrash.logcat(
+                                    WARNING.intValue(), "Failed to parse disturbances",
+                                    e.getMessage()
+                            );
                             FirebaseCrash.report(e);
                             request.notifyErrorListeners(e);
                             return;
@@ -352,7 +384,8 @@ public class IrailApi implements IrailDataProvider {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
-                        FirebaseCrash.logcat(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
+                        FirebaseCrash.logcat(
+                                WARNING.intValue(), "Failed to get disturbances", e.getMessage());
                         request.notifyErrorListeners(e);
                     }
                 }) {
@@ -379,16 +412,19 @@ public class IrailApi implements IrailDataProvider {
 
     public void postOccupancy(IrailPostOccupancyRequest request) {
 
-        final String url = "https://api.irail.be/feedback/occupancy.php";
+        String url = "https://api.irail.be/feedback/occupancy.php";
 
         try {
-            final JSONObject payload = new JSONObject();
+            JSONObject payload = new JSONObject();
 
             payload.put("connection", request.getDepartureSemanticId());
             payload.put("from", request.getStationSemanticId());
             payload.put("date", DateTimeFormat.forPattern("YYYYMMdd").print(request.getDate()));
             payload.put("vehicle", request.getVehicleSemanticId());
-            payload.put("occupancy", "http://api.irail.be/terms/" + request.getOccupancy().name().toLowerCase());
+            payload.put(
+                    "occupancy",
+                    "http://api.irail.be/terms/" + request.getOccupancy().name().toLowerCase()
+            );
 
             Log.d(LOGTAG, "Posting feedback: " + url + " : " + payload);
 
@@ -426,13 +462,15 @@ public class IrailApi implements IrailDataProvider {
 
             //Write
             OutputStream outputStream = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(outputStream, "UTF-8"));
             writer.write(json);
             writer.close();
             outputStream.close();
 
             //Read
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
 
             String line;
             StringBuilder sb = new StringBuilder();

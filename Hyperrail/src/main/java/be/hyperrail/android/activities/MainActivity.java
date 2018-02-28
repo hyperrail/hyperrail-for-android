@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param args The parameters for the fragment
      */
     private void setView(@ViewType int i, Bundle args) {
-        final Fragment frg;
+        Fragment frg;
         switch (i) {
             default:
             case VIEW_TYPE_SETTINGS:

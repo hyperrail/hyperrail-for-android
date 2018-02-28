@@ -86,7 +86,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Create an instance of GoogleAPIClient.
         persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());

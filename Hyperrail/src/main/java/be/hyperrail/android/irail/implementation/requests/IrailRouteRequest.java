@@ -47,7 +47,6 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
      */
     // TODO: support vias
     public IrailRouteRequest(@NonNull String departureSemanticId, @NonNull Station origin, @NonNull Station destination, @NonNull RouteTimeDefinition timeDefinition, @NonNull DateTime searchTime) {
-        super();
         this.origin = origin;
         this.destination = destination;
         this.timeDefinition = timeDefinition;
@@ -61,7 +60,6 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
      * @param route The route for which fresh data should be retrieved
      */
     public IrailRouteRequest(@NonNull Route route) {
-        super();
         this.origin = route.getDepartureStation();
         this.destination = route.getArrivalStation();
         this.timeDefinition = RouteTimeDefinition.DEPART;

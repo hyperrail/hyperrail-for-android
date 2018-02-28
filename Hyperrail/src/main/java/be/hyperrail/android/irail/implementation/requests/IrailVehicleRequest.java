@@ -55,7 +55,6 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
      */
     // TODO: support between stations, target scroll station as optional (display) parameters
     public IrailVehicleRequest(@NonNull String trainId, @Nullable DateTime searchTime) {
-        super();
         this.mTrainId = trainId;
         this.mSearchTime = searchTime;
     }

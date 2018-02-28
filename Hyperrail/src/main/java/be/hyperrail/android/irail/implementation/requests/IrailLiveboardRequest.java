@@ -53,7 +53,6 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
      * @param searchTime     The time for which should be searched
      */
     public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
-        super();
         this.station = station;
         this.timeDefinition = timeDefinition;
         this.searchTime = searchTime;

@@ -82,10 +82,70 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
 
 
     @Override
-    public void bind(final Context context, final VehicleStop stop, final Vehicle train, final int position) {
+    public void bind(Context context, VehicleStop stop, Vehicle train, int position) {
 
         vDestination.setText(stop.getStation().getLocalizedName());
 
+        bindTimeAndDelay(context, stop);
+
+        bindPlatform(context, stop);
+
+        bindTimelineDrawable(context, stop, train, position);
+
+        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
+    }
+
+    private void bindTimelineDrawable(Context context, VehicleStop stop, Vehicle train, int position) {
+        if (stop.hasLeft()) {
+            if (position == 0) {
+                vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
+            } else if (position == train.getStops().length - 1) {
+                vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
+            } else {
+                vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+            }
+        } else {
+            if (position == 0) {
+                vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
+            } else if (position == train.getStops().length - 1) {
+                vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
+            } else {
+                vIcon.setImageDrawable(
+                        ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
+            }
+        }
+    }
+
+    private void bindPlatform(Context context, VehicleStop stop) {
+        vPlatform.setText(String.valueOf(stop.getPlatform()));
+
+        if (stop.isDepartureCanceled()) {
+            vPlatform.setText("");
+            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
+            vStatusText.setText(R.string.status_cancelled);
+            vStatusContainer.setVisibility(View.VISIBLE);
+            vOccupancy.setVisibility(View.GONE);
+            setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
+        } else {
+            setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
+            vStatusContainer.setVisibility(View.GONE);
+            vOccupancy.setVisibility(View.VISIBLE);
+            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
+
+            if (!stop.isPlatformNormal()) {
+                Drawable drawable = vPlatformContainer.getBackground();
+                drawable.mutate();
+                drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+    }
+
+    private void bindTimeAndDelay(Context context, VehicleStop stop) {
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
         if (stop.getDepartureTime() != null) {
@@ -111,47 +171,5 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
             vArrivalTime.setText("--:--");
             vArrivalDelay.setText("");
         }
-
-        vPlatform.setText(String.valueOf(stop.getPlatform()));
-
-        if (stop.isDepartureCanceled()) {
-            vPlatform.setText("");
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
-            vStatusText.setText(R.string.status_cancelled);
-            vStatusContainer.setVisibility(View.VISIBLE);
-            vOccupancy.setVisibility(View.GONE);
-            setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
-        } else {
-            setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
-            vStatusContainer.setVisibility(View.GONE);
-            vOccupancy.setVisibility(View.VISIBLE);
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
-
-            if (!stop.isPlatformNormal()) {
-                Drawable drawable = vPlatformContainer.getBackground();
-                drawable.mutate();
-                drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
-            }
-        }
-
-        if (stop.hasLeft()) {
-            if (position == 0) {
-                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
-            } else if (position == train.getStops().length - 1) {
-                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
-            } else {
-                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
-            }
-        } else {
-            if (position == 0) {
-                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
-            } else if (position == train.getStops().length - 1) {
-                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
-            } else {
-                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
-            }
-        }
-
-        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
     }
 }

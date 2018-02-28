@@ -135,12 +135,12 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
     public void onBindItemViewHolder(RecyclerView.ViewHolder genericHolder, int position) {
 
         if (genericHolder instanceof DateSeparatorViewHolder) {
-            final DateSeparatorViewHolder holder = (DateSeparatorViewHolder) genericHolder;
+            DateSeparatorViewHolder holder = (DateSeparatorViewHolder) genericHolder;
             holder.bind((DateTime) displayList[position]);
             return;
         }
 
-        final RouteViewHolder holder = (RouteViewHolder) genericHolder;
+        RouteViewHolder holder = (RouteViewHolder) genericHolder;
         final Route route = (Route) displayList[position];
 
         holder.routeListItemLayout.bind(context,route,null,position);

@@ -39,7 +39,6 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> impleme
      * Create a request  to post occupancy data
      */
     public IrailPostOccupancyRequest(@NonNull String departureSemanticId, @NonNull String stationSemanticId, @NonNull String vehicleSemanticId, @NonNull DateTime date, @NonNull OccupancyLevel occupancy) {
-        super();
 
         this.departureSemanticId = departureSemanticId;
         this.stationSemanticId = stationSemanticId;

@@ -39,8 +39,8 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
 
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
-    public void appendLiveboard(@NonNull final LiveBoard liveBoard, final IRailSuccessResponseListener<LiveBoard> successResponseListener,
-                                final IRailErrorResponseListener errorResponseListener) {
+    public void appendLiveboard(@NonNull LiveBoard liveBoard, IRailSuccessResponseListener<LiveBoard> successResponseListener,
+                                IRailErrorResponseListener errorResponseListener) {
 
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
@@ -62,8 +62,8 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         api.getLiveboard(request);
     }
 
-    public void prependLiveboard(@NonNull final LiveBoard liveBoard, final IRailSuccessResponseListener<LiveBoard> successResponseListener,
-                                 final IRailErrorResponseListener errorResponseListener) {
+    public void prependLiveboard(@NonNull LiveBoard liveBoard, IRailSuccessResponseListener<LiveBoard> successResponseListener,
+                                 IRailErrorResponseListener errorResponseListener) {
         this.successResponseListener = successResponseListener;
         this.errorResponseListener = errorResponseListener;
 

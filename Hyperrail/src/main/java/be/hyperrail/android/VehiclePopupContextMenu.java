@@ -134,16 +134,16 @@ public class VehiclePopupContextMenu {
         LinearLayout vSetNotification = vDialog.findViewById(id.button_notification);
 
         if (type == TYPE_TRAIN_STOP) {
-            updateDialogTrainStopView(vDialog, mApiInstance);
+            bindTrainStop(vDialog, mApiInstance);
         } else if (type == TYPE_TRANSFER) {
-            updateDialogTransferView(vDialog, mApiInstance);
+            bindTransfer(vDialog, mApiInstance);
         } else if (type == TYPE_ROUTE_TRAIN) {
-            updateDialogTrainOnRouteView(vDialog, mApiInstance);
+            bindTrain(vDialog, mApiInstance);
         }
 
         // When this contextmenu was called on a train stop or transfer in a route (but not on a train in a route!)
         if (type == TYPE_TRAIN_STOP || type == TYPE_TRANSFER) {
-            updateNotificationButtonListener(vDialog, vSetNotification);
+            bindNotificationButton(vDialog, vSetNotification);
         } else {
             vSetNotification.setVisibility(View.GONE);
         }
@@ -158,7 +158,7 @@ public class VehiclePopupContextMenu {
      * @param vDialog      The dialog view
      * @param mApiInstance An instance of a data provider
      */
-    private void updateDialogTrainOnRouteView(Dialog vDialog, IrailDataProvider mApiInstance) {
+    private void bindTrain(Dialog vDialog, IrailDataProvider mApiInstance) {
         LinearLayout vShareDepartureEta = vDialog.findViewById(
                 id.button_share_departure_ETA);
         LinearLayout vShareArrivalEta = vDialog.findViewById(id.button_share_arrival_ETA);
@@ -182,8 +182,8 @@ public class VehiclePopupContextMenu {
             mStationSemanticId = mDepartureTransfer.getStation().getSemanticId();
             mVehicleSemanticId = mDepartureTransfer.getDepartingRouteLeg().getVehicleInformation().getSemanticId();
             mDateTime = mDepartureTransfer.getDepartureTime();
-            updateOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
-                                   mVehicleSemanticId, mDateTime);
+            bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
+                                 mVehicleSemanticId, mDateTime);
 
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
@@ -205,8 +205,8 @@ public class VehiclePopupContextMenu {
             mArrivalEtaText = null;
         }
 
-        updateETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
-                         mDepartureEtaText);
+        bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
+                       mDepartureEtaText);
     }
 
     /**
@@ -215,7 +215,7 @@ public class VehiclePopupContextMenu {
      * @param vDialog      The dialog view
      * @param mApiInstance An instance of a data provider
      */
-    private void updateDialogTransferView(Dialog vDialog, IrailDataProvider mApiInstance) {
+    private void bindTransfer(Dialog vDialog, IrailDataProvider mApiInstance) {
         LinearLayout vShareDepartureEta = vDialog.findViewById(
                 id.button_share_departure_ETA);
         LinearLayout vShareArrivalEta = vDialog.findViewById(id.button_share_arrival_ETA);
@@ -231,9 +231,9 @@ public class VehiclePopupContextMenu {
             String mVehicleSemanticId = mDepartureTransfer.getDepartingRouteLeg().getVehicleInformation().getSemanticId();
             DateTime mDateTime = mDepartureTransfer.getDepartureTime();
 
-            updateOccupancyButtons(vDialog, mApiInstance, mDepartureConnection,
-                                   mStationSemanticId,
-                                   mVehicleSemanticId, mDateTime);
+            bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection,
+                                 mStationSemanticId,
+                                 mVehicleSemanticId, mDateTime);
 
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
@@ -255,8 +255,8 @@ public class VehiclePopupContextMenu {
             mArrivalEtaText = null;
         }
 
-        updateETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
-                         mDepartureEtaText);
+        bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
+                       mDepartureEtaText);
     }
 
     /**
@@ -265,7 +265,7 @@ public class VehiclePopupContextMenu {
      * @param vDialog      The dialog view
      * @param mApiInstance An instance of a data provider
      */
-    private void updateDialogTrainStopView(Dialog vDialog, IrailDataProvider mApiInstance) {
+    private void bindTrainStop(Dialog vDialog, IrailDataProvider mApiInstance) {
         LinearLayout vShareDepartureEta = vDialog.findViewById(
                 id.button_share_departure_ETA);
         LinearLayout vShareArrivalEta = vDialog.findViewById(id.button_share_arrival_ETA);
@@ -277,8 +277,8 @@ public class VehiclePopupContextMenu {
         String mVehicleSemanticId = mVehicleStop.getTrain().getSemanticId();
         DateTime mDateTime = mVehicleStop.getDepartureTime();
 
-        updateOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
-                               mVehicleSemanticId, mDateTime);
+        bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
+                             mVehicleSemanticId, mDateTime);
 
         vDialog.setTitle(mVehicleStop.getTrain().getName() + " " +
                                  mVehicleStop.getStation().getLocalizedName());
@@ -297,8 +297,8 @@ public class VehiclePopupContextMenu {
                                                mVehicleStop.getStation().getLocalizedName(),
                                                mVehicleStop.getTrain().getName());
 
-        updateETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
-                         mDepartureEtaText);
+        bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
+                       mDepartureEtaText);
     }
 
     /**
@@ -310,7 +310,7 @@ public class VehiclePopupContextMenu {
      * @param mArrivalEtaText    The arrival ETA text
      * @param mDepartureEtaText  The departure ETA text
      */
-    private void updateETAButtons(final Dialog vDialog, LinearLayout vShareDepartureEta, LinearLayout vShareArrivalEta, final String mArrivalEtaText, final String mDepartureEtaText) {
+    private void bindETAButtons(final Dialog vDialog, LinearLayout vShareDepartureEta, LinearLayout vShareArrivalEta, final String mArrivalEtaText, final String mDepartureEtaText) {
         if (mArrivalEtaText == null) {
             vShareArrivalEta.setVisibility(View.GONE);
         } else {
@@ -348,7 +348,7 @@ public class VehiclePopupContextMenu {
      * @param vDialog          The dialog view
      * @param vSetNotification The pin notification button
      */
-    private void updateNotificationButtonListener(final Dialog vDialog, LinearLayout vSetNotification) {
+    private void bindNotificationButton(final Dialog vDialog, LinearLayout vSetNotification) {
         vSetNotification.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -448,7 +448,7 @@ public class VehiclePopupContextMenu {
      * @param mVehicleSemanticId   The vehicle semantic id for which to update the occupancy
      * @param mDateTime            The datetime for which to update the occupancy
      */
-    private void updateOccupancyButtons(final Dialog vDialog, final IrailDataProvider mApiInstance, final String mDepartureConnection, final String mStationSemanticId, final String mVehicleSemanticId, final DateTime mDateTime) {
+    private void bindOccupancyButtons(final Dialog vDialog, final IrailDataProvider mApiInstance, final String mDepartureConnection, final String mStationSemanticId, final String mVehicleSemanticId, final DateTime mDateTime) {
         LinearLayout vLowOccupancy = vDialog.findViewById(id.button_low_occupancy);
         LinearLayout vMediumOccupancy = vDialog.findViewById(id.button_medium_occupancy);
         LinearLayout vHighOccupancy = vDialog.findViewById(id.button_high_occupancy);

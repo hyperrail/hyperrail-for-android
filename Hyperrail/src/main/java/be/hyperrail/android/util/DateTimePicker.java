@@ -55,7 +55,7 @@ public class DateTimePicker implements DatePickerDialog.OnDateSetListener, TimeP
      * Show the time picker dialog
      */
     private void pickTime() {
-        final Calendar c = Calendar.getInstance();
+        Calendar c = Calendar.getInstance();
         TimePickerDialog dialog = new TimePickerDialog(context, this, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true);
         dialog.show();
     }
@@ -64,7 +64,7 @@ public class DateTimePicker implements DatePickerDialog.OnDateSetListener, TimeP
      * Show the date picker dialog
      */
     private void pickDate() {
-        final Calendar c = Calendar.getInstance();
+        Calendar c = Calendar.getInstance();
         DatePickerDialog dialog = new DatePickerDialog(context, this, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
         dialog.show();
     }

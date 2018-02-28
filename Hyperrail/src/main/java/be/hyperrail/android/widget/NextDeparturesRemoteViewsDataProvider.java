@@ -81,7 +81,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
 
     @Override
     public void onDestroy() {
-
+        // Nothing to do, cursors would be closed here
     }
 
     @Override
@@ -99,11 +99,38 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.listview_liveboard_widget);
         VehicleStop stop = mLiveboard.getStops()[position];
 
+        bindTimeAndDelays(rv, stop);
+
         rv.setTextViewText(R.id.text_destination, stop.getDestination().getLocalizedName());
 
         rv.setTextViewText(R.id.text_train_number, stop.getTrain().getNumber());
         rv.setTextViewText(R.id.text_train_type, stop.getTrain().getType());
+        rv.setTextViewText(R.id.text_platform, stop.getPlatform());
 
+        if (stop.isDepartureCanceled()) {
+            rv.setTextViewText(R.id.text_platform, "X");
+
+            rv.setTextViewText(R.id.text_train_status,
+                               mContext.getString(R.string.status_cancelled));
+            rv.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
+            rv.setViewVisibility(R.id.container_occupancy, View.GONE);
+        } else {
+            rv.setViewVisibility(R.id.layout_train_status_container, View.GONE);
+            rv.setViewVisibility(R.id.container_occupancy, View.VISIBLE);
+        }
+
+        rv.setBitmap(R.id.container_occupancy, "setImageDrawable",
+                     ((BitmapDrawable) ContextCompat.getDrawable(mContext,
+                                                                 OccupancyHelper.getOccupancyDrawable(
+                                                                         stop.getOccupancyLevel())
+                     )).getBitmap()
+        );
+
+        // Return the remote views object.
+        return rv;
+    }
+
+    private void bindTimeAndDelays(RemoteViews rv, VehicleStop stop) {
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
 
         if (stop.getDepartureTime() != null) {
@@ -130,30 +157,6 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
                 rv.setTextViewText(R.id.text_delay_time, "");
             }
         }
-
-        rv.setTextViewText(R.id.text_platform, stop.getPlatform());
-
-        if (stop.isDepartureCanceled()) {
-            rv.setTextViewText(R.id.text_platform, "X");
-
-            rv.setTextViewText(R.id.text_train_status,
-                               mContext.getString(R.string.status_cancelled));
-            rv.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
-            rv.setViewVisibility(R.id.container_occupancy, View.GONE);
-        } else {
-            rv.setViewVisibility(R.id.layout_train_status_container, View.GONE);
-            rv.setViewVisibility(R.id.container_occupancy, View.VISIBLE);
-        }
-
-        rv.setBitmap(R.id.container_occupancy, "setImageDrawable",
-                     ((BitmapDrawable) ContextCompat.getDrawable(mContext,
-                                                                 OccupancyHelper.getOccupancyDrawable(
-                                                                         stop.getOccupancyLevel())
-                     )).getBitmap()
-        );
-
-        // Return the remote views object.
-        return rv;
     }
 
     @Override

@@ -111,82 +111,23 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
     }
 
     @Override
-    public void bind(final Context context, final Route route, final RouteResult allRoutes, final int position) {
+    public void bind(final Context context, Route route, RouteResult allRoutes, int position) {
 
         DateTimeFormatter hhmm = DateTimeFormat.forPattern("HH:mm");
 
-        vDepartureTime.setText(hhmm.print(route.getDepartureTime()));
-        if (route.getDepartureDelay().getStandardSeconds() > 0) {
-            vDepartureDelay.setText(context.getString(R.string.delay, route.getDepartureDelay().getStandardMinutes()));
-        } else {
-            vDepartureDelay.setText("");
-        }
-
-        vArrivalTime.setText(hhmm.print(route.getArrivalTime()));
-        if (route.getArrivalDelay().getStandardSeconds() > 0) {
-            vArrivalDelay.setText(context.getString(R.string.delay, route.getArrivalDelay().getStandardMinutes()));
-        } else {
-            vArrivalDelay.setText("");
-        }
+        bindTimeAndDelay(context, route, hhmm);
 
         vDirection.setText(route.getOrigin().getDepartingRouteLeg().getVehicleInformation().getDirection().getLocalizedName());
 
-        Duration routeWithDelays = route.getDurationIncludingDelays();
-        Duration routeWithoutDelays = route.getDuration();
 
-        if (routeWithDelays.equals(routeWithoutDelays)) {
-            vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorMuted));
-            vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorMuted));
-        } else if (routeWithDelays.isLongerThan(routeWithoutDelays)) {
-            vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorDelay));
-            vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay));
-        } else {
-            vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorFaster));
-            vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorFaster));
-        }
 
         vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
 
         vTrainCount.setText(String.valueOf(route.getLegs().length));
 
-        vPlatform.setText(route.getDeparturePlatform());
+        bindPlatformAndStatus(context, route);
 
-        if (route.getOrigin().isDepartureCanceled()) {
-            vPlatform.setText("");
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
-            vStatusText.setText(R.string.status_cancelled);
-            vStatusContainer.setVisibility(View.VISIBLE);
-        } else if (route.isPartiallyCanceled()) {
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
-            vStatusText.setText(R.string.status_partially_cancelled);
-            vStatusContainer.setVisibility(View.VISIBLE);
-        } else {
-            vStatusContainer.setVisibility(View.GONE);
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
-        }
-
-        if (!route.isDeparturePlatformNormal()) {
-            Drawable drawable = vPlatformContainer.getBackground();
-            drawable.mutate();
-            drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
-        }
-
-        if (route.getAlerts() != null && route.getAlerts().length > 0) {
-            vAlertsText.setVisibility(View.VISIBLE);
-
-            StringBuilder text = new StringBuilder();
-            int n = route.getAlerts().length;
-            for (int i = 0; i < n; i++) {
-                text.append(route.getAlerts()[i].getHeader());
-                if (i < n - 1) {
-                    text.append("\n");
-                }
-            }
-
-            vAlertsText.setText(text.toString());
-        } else {
-            vAlertsText.setVisibility(View.GONE);
-        }
+        bindAlerts(route);
 
         // The initial call from an activity to the adapter responsible for this layout should pass the context in an activity!
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter((Activity) context, route, true);
@@ -233,5 +174,79 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
                 return false;
             }
         });
+    }
+
+    private void bindAlerts(Route route) {
+        if (route.getAlerts() != null && route.getAlerts().length > 0) {
+            vAlertsText.setVisibility(View.VISIBLE);
+
+            StringBuilder text = new StringBuilder();
+            int n = route.getAlerts().length;
+            for (int i = 0; i < n; i++) {
+                text.append(route.getAlerts()[i].getHeader());
+                if (i < n - 1) {
+                    text.append("\n");
+                }
+            }
+
+            vAlertsText.setText(text.toString());
+        } else {
+            vAlertsText.setVisibility(View.GONE);
+        }
+    }
+
+    private void bindPlatformAndStatus(Context context, Route route) {
+        vPlatform.setText(route.getDeparturePlatform());
+
+        if (route.getOrigin().isDepartureCanceled()) {
+            vPlatform.setText("");
+            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
+            vStatusText.setText(R.string.status_cancelled);
+            vStatusContainer.setVisibility(View.VISIBLE);
+        } else if (route.isPartiallyCanceled()) {
+            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
+            vStatusText.setText(R.string.status_partially_cancelled);
+            vStatusContainer.setVisibility(View.VISIBLE);
+        } else {
+            vStatusContainer.setVisibility(View.GONE);
+            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
+        }
+
+
+        if (!route.isDeparturePlatformNormal()) {
+            Drawable drawable = vPlatformContainer.getBackground();
+            drawable.mutate();
+            drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+        }
+    }
+
+    private void bindTimeAndDelay(Context context, Route route, DateTimeFormatter hhmm) {
+        vDepartureTime.setText(hhmm.print(route.getDepartureTime()));
+        if (route.getDepartureDelay().getStandardSeconds() > 0) {
+            vDepartureDelay.setText(context.getString(R.string.delay, route.getDepartureDelay().getStandardMinutes()));
+        } else {
+            vDepartureDelay.setText("");
+        }
+
+        vArrivalTime.setText(hhmm.print(route.getArrivalTime()));
+        if (route.getArrivalDelay().getStandardSeconds() > 0) {
+            vArrivalDelay.setText(context.getString(R.string.delay, route.getArrivalDelay().getStandardMinutes()));
+        } else {
+            vArrivalDelay.setText("");
+        }
+
+        Duration routeWithDelays = route.getDurationIncludingDelays();
+        Duration routeWithoutDelays = route.getDuration();
+
+        if (routeWithDelays.equals(routeWithoutDelays)) {
+            vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorMuted));
+            vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorMuted));
+        } else if (routeWithDelays.isLongerThan(routeWithoutDelays)) {
+            vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorDelay));
+            vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay));
+        } else {
+            vDuration.setTextColor(ContextCompat.getColor(context, R.color.colorFaster));
+            vDurationIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorFaster));
+        }
     }
 }

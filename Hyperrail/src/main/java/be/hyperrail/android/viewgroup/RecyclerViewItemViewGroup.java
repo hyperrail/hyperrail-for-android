@@ -22,5 +22,5 @@ public interface RecyclerViewItemViewGroup<C, T> {
      * @param listData Contextual data, giving information on the larger object of which data is part
      * @param position The position of this item in the list
      */
-    void bind(final Context context,final T itemData,final C listData, final int position);
+    void bind(Context context, T itemData, C listData, int position);
 }

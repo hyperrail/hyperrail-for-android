@@ -40,7 +40,7 @@ public class NextDeparturesWidgetConfiguration extends AppCompatActivity impleme
 
         setContentView(R.layout.activity_station_picker);
 
-        final Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         setTitle(R.string.title_pick_station);

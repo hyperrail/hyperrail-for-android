@@ -21,7 +21,6 @@ import be.hyperrail.android.irail.implementation.Disturbance;
 public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> implements IrailRequest<Disturbance[]> {
 
     public IrailDisturbanceRequest(){
-        super();
     }
 
     public IrailDisturbanceRequest(@NonNull JSONObject json) throws JSONException {

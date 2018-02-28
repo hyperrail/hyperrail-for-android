@@ -107,7 +107,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * Note: since recyclerview recyclers, either set or unset fields, but don't leave them as-is!
      */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof RouteTransferViewHolder) {
             // Create a transfer ViewHolder
