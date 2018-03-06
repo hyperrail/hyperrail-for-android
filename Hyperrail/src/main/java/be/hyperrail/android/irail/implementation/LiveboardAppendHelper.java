@@ -138,18 +138,28 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                 }
                 break;
             case TAG_PREPEND:
+                // If there is new data
                 if (data.getStops().length > 0) {
                     // TODO: prevent duplicates by checking arrival time
                     // Both arrays are sorted chronologically
                     // Scanning back-to-front in the original array is O(n), which is acceptable for now
                     // Binary search would be tricky since trains might have a new delay, they are chronologically based on the actual real departure time!
+
+                    // The original stops which should be retained
                     VehicleStop[] originalStops = null;
                     for (int i = originalLiveboard.getStops().length - 1; i >= 0 && originalStops == null; i--) {
                         VehicleStop s = originalLiveboard.getStops()[i];
+
                         if (Objects.equals(s.getDepartureSemanticId(), data.getStops()[data.getStops().length - 1].getDepartureSemanticId())) {
-                            // All before this stop are duplicates
-                            // TODO: investigate if this code is totally bug free: aren't we ignoring too much?
-                            originalStops = Arrays.copyOfRange(originalLiveboard.getStops(), i + 1, originalLiveboard.getStops().length - 1);
+                            // All before this stop in the original liveboard are duplicates
+                            if (i == originalLiveboard.getStops().length - 1){
+                                originalStops = new VehicleStop[0];
+                            } else {
+                                // TODO: investigate if this code is totally bug free: aren't we ignoring too much?
+                                originalStops = Arrays.copyOfRange(originalLiveboard.getStops(),
+                                                                   i + 1,
+                                                                   originalLiveboard.getStops().length - 1);
+                            }
                         }
                     }
                     if (originalStops == null) {
