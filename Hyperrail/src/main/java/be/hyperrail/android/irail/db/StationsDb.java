@@ -50,7 +50,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 18012505;
+    private static final int DATABASE_VERSION = 18030601;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -448,7 +448,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        db.close();
+        
         return stations;
     }
 
@@ -490,7 +490,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] stations = loadStationCursor(c);
 
         c.close();
-        db.close();
+        
 
         if (stations == null) {
             return null;
@@ -537,6 +537,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         if (mStationIdCache.containsKey(id)) {
             return mStationIdCache.get(id);
         }
+
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
@@ -563,7 +564,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        db.close();
+        
 
         if (results == null) {
             FirebaseCrash.report(
@@ -641,7 +642,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        db.close();
+        
 
         if (results == null) {
             return null;
@@ -708,7 +709,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         StationFacilities result = loadFacilitiesCursor(c);
         c.close();
-        db.close();
+        
         return result;
 
     }
