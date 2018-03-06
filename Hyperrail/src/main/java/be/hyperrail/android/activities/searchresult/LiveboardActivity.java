@@ -52,9 +52,9 @@ public class LiveboardActivity extends ResultActivity {
 
     private IrailLiveboardRequest mRequest;
 
-    LiveboardFragment fragment;
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
+    private DeparturesArrivalsAdapter departuresArrivalsAdapter;
 
     public static Intent createIntent(Context context, IrailLiveboardRequest request) {
         Intent i = new Intent(context, LiveboardActivity.class);
@@ -98,7 +98,8 @@ public class LiveboardActivity extends ResultActivity {
                 mRequest.isNow() ? getString(string.time_now) : mRequest.getSearchTime().toString(
                         getString(string.warning_not_realtime_datetime)));
 
-        DeparturesArrivalsAdapter departuresArrivalsAdapter = new DeparturesArrivalsAdapter(
+
+        departuresArrivalsAdapter = new DeparturesArrivalsAdapter(
                 getSupportFragmentManager());
         ViewPager viewPager = findViewById(id.pager);
         viewPager.setAdapter(departuresArrivalsAdapter);
@@ -129,9 +130,15 @@ public class LiveboardActivity extends ResultActivity {
 
     @Override
     public void onDateTimePicked(DateTime date) {
-        setSubTitle(date == null ? getString(string.time_now) : mRequest.getSearchTime().toString(
+        setSubTitle(date == null ? getString(string.time_now) : date.toString(
                 getString(string.warning_not_realtime_datetime)));
-        fragment.onDateTimePicked(date);
+        if (departuresArrivalsAdapter.getFragments()[0] != null) {
+            departuresArrivalsAdapter.getFragments()[0].onDateTimePicked(date);
+        }
+        if (departuresArrivalsAdapter.getFragments()[1] != null) {
+            departuresArrivalsAdapter.getFragments()[1].onDateTimePicked(date);
+        }
+        mRequest.setSearchTime(date);
     }
 
     @Override
@@ -224,7 +231,7 @@ public class LiveboardActivity extends ResultActivity {
 
     private class DeparturesArrivalsAdapter extends FragmentPagerAdapter {
 
-        Fragment[] fragments = new Fragment[2];
+        LiveboardFragment[] fragments = new LiveboardFragment[2];
 
         DeparturesArrivalsAdapter(FragmentManager fm) {
             super(fm);
@@ -255,5 +262,11 @@ public class LiveboardActivity extends ResultActivity {
                 return LiveboardActivity.this.getString(string.title_arrivals);
             }
         }
+
+        public LiveboardFragment[] getFragments() {
+            return fragments;
+        }
+
+
     }
 }

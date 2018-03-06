@@ -147,6 +147,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
     @Override
     public void onDateTimePicked(DateTime date) {
         setSubTitle(date == null ? getString(R.string.time_now) : date.toString(getString(R.string.warning_not_realtime_datetime)));
+        mRequest.setSearchTime(date);
         mFragment.onDateTimePicked(date);
     }
 
