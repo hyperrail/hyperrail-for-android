@@ -27,6 +27,7 @@ import be.hyperrail.android.irail.implementation.Vehicle;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -146,14 +147,18 @@ public class IrailParserInstrumentedTest {
 
         assertEquals("4", route.getTransfers()[1].getArrivalPlatform());
         assertEquals(true, route.getTransfers()[1].hasArrived());
-        assertEquals("BE.NMBS.IC713", route.getTransfers()[1].getArrivingRouteLeg().getVehicleInformation().getId());
-        assertEquals(stationProvider.getStationByName("Poperinge").getId(), route.getTransfers()[1].getArrivingRouteLeg().getVehicleInformation().getDirection().getId());
+        assertEquals("BE.NMBS.IC713", route.getLegs()[0].getVehicleInformation().getId());
+        assertEquals(route.getLegs()[0], route.getTransfers()[0].getDepartureLeg());
+        assertEquals(stationProvider.getStationByName("Poperinge").getId(), route.getLegs()[0].getVehicleInformation().getDirection().getId());
+        assertEquals(new DateTime((long) 1510839180 * 1000), route.getLegs()[0].getArrival().getTime());
         assertEquals(new DateTime((long) 1510839180 * 1000), route.getTransfers()[1].getArrivalTime());
 
         assertEquals(true, route.getTransfers()[1].hasLeft());
         assertEquals("11", route.getTransfers()[1].getDeparturePlatform());
-        assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartingRouteLeg().getVehicleInformation().getId());
-        assertEquals(stationProvider.getStationByName("Genk").getId(), route.getTransfers()[1].getDepartingRouteLeg().getVehicleInformation().getDirection().getId());
+        assertNotNull( route.getTransfers()[1].getDepartureLeg());
+        assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
+        assertEquals("BE.NMBS.IC1513", route.getLegs()[1].getVehicleInformation().getId());
+        assertEquals(stationProvider.getStationByName("Genk").getId(), route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getDirection().getId());
         assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime());
 
         assertEquals("BE.NMBS.IC713", route.getLegs()[0].getVehicleInformation().getId());
