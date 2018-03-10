@@ -124,6 +124,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
 
         // Clear the view
         showData(null);
+        mCurrentRouteResult = null;
 
         // Restore infinite scrolling
         ((RouteCardAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
@@ -217,12 +218,13 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                                                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
                                                 }
 
+                                                int newItems = data.getRoutes().length - mCurrentRouteResult.getRoutes().length;
                                                 mCurrentRouteResult = data;
                                                 showData(mCurrentRouteResult);
 
                                                 // Scroll past the load earlier item
-                                                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(
-                                                        1, 0);
+                                                // TODO: take the number of new day separators into account. Any way to read this from the adapter?
+                                                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newItems, 0);
 
                                                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
                                             }

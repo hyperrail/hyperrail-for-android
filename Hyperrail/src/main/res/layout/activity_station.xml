@@ -63,7 +63,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/text_address"
-                    android:layout_marginTop="@dimen/activity_vertical_margin">
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:elevation="4dp"
+                    tools:ignore="UnusedAttribute">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -216,7 +218,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/container_facilities"
-                    android:layout_marginTop="@dimen/activity_vertical_margin">
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:elevation="4dp"
+                    tools:ignore="UnusedAttribute">
 
                     <RelativeLayout
                         android:layout_width="match_parent"

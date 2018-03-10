@@ -118,14 +118,17 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     protected void getData() {
-        if (this.vRefreshLayout.isRefreshing()) {
-            // Disable infinite scrolling for now to prevent having 2 loading icons
-            // Also prevents the loadNext method from trying to load all the time during initial load
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-        }
 
         mCurrentLiveboard = null;
         showData(null);
+
+        if (this.vRefreshLayout.isRefreshing()) {
+            // Disable infinite scrolling for now to prevent having 2 loading icons
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+        } else {
+            // Restore if it was disabled earlier on. Will still be blocked since currentLiveboard == null
+            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
+        }
 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         // Don't abort all queries: there might be multiple fragments at the same screen!
@@ -220,11 +223,13 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), false);
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
                 }
+                int newItems = data.getStops().length - mCurrentLiveboard.getStops().length;
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
 
                 // Scroll past the load earlier item
-                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+                // TODO: take the number of new day separators into account. Any way to read this from the adapter?
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newItems, 0);
 
                 ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
             }
