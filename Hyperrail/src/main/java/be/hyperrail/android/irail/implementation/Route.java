@@ -24,45 +24,23 @@ import be.hyperrail.android.irail.db.Station;
  * A route between 2 stations, which might consist of multiple vehicles with transfers in between
  */
 public class Route implements Serializable {
-
-    private final Station departureStation;
-    private final Station arrivalStation;
-    private final DateTime departureTime;
-    private final DateTime arrivalTime;
-
-    private final Duration departureDelay;
-    private final Duration arrivalDelay;
-
-    private final String departurePlatform;
-    private final boolean isDeparturePlatformNormal;
-    private final String arrivalPlatform;
-    private final boolean isArrivalDeparturePlatformNormal;
-
     private final RouteLeg[] legs;
     private final Transfer[] transfers;
+    private Message[] alerts;
+    private Message[][] trainalerts;
+    private Message[] remarks;
 
-    private final Message[] alerts;
-    private final Message[][] trainalerts;
-    private final Message[] remarks;
-    Route(Station departureStation, Station arrivalStation, DateTime departureTime, Duration departureDelay, String departurePlatform, boolean isDeparturePlatformNormal, DateTime arrivalTime, Duration arrivalDelay, String arrivalPlatform, boolean isArrivalDeparturePlatformNormal, RouteLeg[] legs, Transfer[] transfers, Message[] alerts, Message[][] trainalerts, Message[] remarks) {
-        this.departureStation = departureStation;
-        this.arrivalStation = arrivalStation;
-
-        this.departureTime = departureTime;
-        this.departureDelay = departureDelay;
-        this.isDeparturePlatformNormal = isDeparturePlatformNormal;
-        this.arrivalTime = arrivalTime;
-        this.arrivalDelay = arrivalDelay;
-
-        this.departurePlatform = departurePlatform;
-        this.arrivalPlatform = arrivalPlatform;
-
-        this.isArrivalDeparturePlatformNormal = isArrivalDeparturePlatformNormal;
+    Route(RouteLeg[] legs) {
         this.legs = legs;
-        this.transfers = transfers;
-        this.alerts = alerts;
-        this.trainalerts = trainalerts;
-        this.remarks = remarks;
+
+        // Calculate transfers for easier access to the right data
+        this.transfers = new Transfer[legs.length + 1];
+        this.transfers[0] = new Transfer(null, legs[0]);
+        this.transfers[legs.length] = new Transfer(legs[legs.length - 1], null);
+
+        for (int i = 1; i < legs.length; i++) {
+            this.transfers[i] = new Transfer(legs[i - 1], legs[i]);
+        }
     }
 
     public Duration getDuration() {
@@ -70,72 +48,68 @@ public class Route implements Serializable {
     }
 
     public Duration getDurationIncludingDelays() {
-        return new Period(getDepartureTime().plus(departureDelay), getArrivalTime().plus(arrivalDelay)).toStandardDuration();
+        return new Period(getDepartureTime().plus(getDepartureDelay()), getArrivalTime().plus(getArrivalDelay())).toStandardDuration();
     }
 
     public DateTime getDepartureTime() {
-        return departureTime;
+        return getDeparture().getDepartureTime();
     }
 
     public DateTime getArrivalTime() {
-        return arrivalTime;
-    }
-
-    public Transfer getOrigin() {
-        return transfers[0];
-    }
-
-    public Transfer getDestination() {
-        return transfers[transfers.length - 1];
+        return getArrival().getArrivalTime();
     }
 
     public int getTransferCount() {
         // minus origin and destination
-        return transfers.length - 2;
+        return legs.length - 1;
     }
 
     public int getStationCount() {
-        return transfers.length;
+        return legs.length + 1;
     }
 
     public RouteLeg[] getLegs() {
         return legs;
     }
 
-    public Transfer[] getTransfers() {
-        return transfers;
+    public Transfer getDeparture() {
+        return transfers[0];
+    }
+
+    public Transfer getArrival() {
+        return transfers[transfers.length - 1];
     }
 
     public Duration getArrivalDelay() {
-        return arrivalDelay;
+        return getArrival().getArrivalDelay();
     }
 
     public Duration getDepartureDelay() {
-        return departureDelay;
+        return getDeparture().getDepartureDelay();
     }
 
     public String getDeparturePlatform() {
-        return departurePlatform;
+        return getDeparture().getDeparturePlatform();
     }
 
     public String getArrivalPlatform() {
-        return arrivalPlatform;
+        return getArrival().getArrivalPlatform();
     }
 
     public boolean isArrivalDeparturePlatformNormal() {
-        return isArrivalDeparturePlatformNormal;
+        return getArrival().isArrivalPlatformNormal();
     }
 
     public boolean isDeparturePlatformNormal() {
-        return isDeparturePlatformNormal;
+        return getDeparture().isDeparturePlatformNormal();
     }
 
     public Station getDepartureStation() {
-        return departureStation;
+        return getDeparture().getStation();
     }
 
     public Station getArrivalStation() {
-        return arrivalStation;
+        return getArrival().getStation();
     }
 
     public Message[] getRemarks() {
@@ -146,17 +120,33 @@ public class Route implements Serializable {
         return alerts;
     }
 
-    public Message[][] getTrainalerts() {
+    public Message[][] getVehicleAlerts() {
         return trainalerts;
     }
 
     public boolean isPartiallyCanceled() {
-        for (Transfer t :
-                getTransfers()) {
-            if (t.isDepartureCanceled()){
+        for (RouteLeg l :
+                getLegs()) {
+            if (l.getDeparture().isCanceled()) {
                 return true;
             }
         }
         return false;
+    }
+
+    public Transfer[] getTransfers() {
+        return transfers;
+    }
+
+    public void setTrainalerts(Message[][] trainalerts) {
+        this.trainalerts = trainalerts;
+    }
+
+    public void setAlerts(Message[] alerts) {
+        this.alerts = alerts;
+    }
+
+    public void setRemarks(Message[] remarks) {
+        this.remarks = remarks;
     }
 }

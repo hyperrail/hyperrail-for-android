@@ -149,7 +149,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
             vStatusContainer.setVisibility(View.GONE);
         }
 
-        Message[] trainAlerts = route.getTrainalerts()[position];
+        Message[] trainAlerts = route.getVehicleAlerts()[position];
         if (trainAlerts != null && trainAlerts.length > 0) {
             vAlertContainer.setVisibility(View.VISIBLE);
 

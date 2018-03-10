@@ -117,9 +117,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
 
         bindTimeAndDelay(context, route, hhmm);
 
-        vDirection.setText(route.getOrigin().getDepartingRouteLeg().getVehicleInformation().getDirection().getLocalizedName());
-
-
+        vDirection.setText(route.getLegs()[0].getVehicleInformation().getDirection().getLocalizedName());
 
         vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
 
@@ -198,7 +196,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
     private void bindPlatformAndStatus(Context context, Route route) {
         vPlatform.setText(route.getDeparturePlatform());
 
-        if (route.getOrigin().isDepartureCanceled()) {
+        if (route.getDeparture().isDepartureCanceled()) {
             vPlatform.setText("");
             vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
             vStatusText.setText(R.string.status_cancelled);

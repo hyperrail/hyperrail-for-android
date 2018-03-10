@@ -11,16 +11,19 @@ import java.io.Serializable;
 
 /**
  * A leg of a route
- *
- * TODO: consider if a leg should also include its departure and arrival station
  */
 public class RouteLeg implements Serializable {
     private final RouteLegType type;
     private final VehicleStub vehicleInformation;
 
-    public RouteLeg(RouteLegType type, VehicleStub vehicleInformation) {
+    private final RouteLegEnd departure;
+    private final RouteLegEnd arrival;
+
+    public RouteLeg(RouteLegType type, VehicleStub vehicleInformation, RouteLegEnd departure, RouteLegEnd arrival) {
         this.type = type;
         this.vehicleInformation = vehicleInformation;
+        this.departure = departure;
+        this.arrival = arrival;
     }
 
     public RouteLegType getType() {
@@ -29,5 +32,13 @@ public class RouteLeg implements Serializable {
 
     public VehicleStub getVehicleInformation() {
         return vehicleInformation;
+    }
+
+    public RouteLegEnd getDeparture() {
+        return departure;
+    }
+
+    public RouteLegEnd getArrival() {
+        return arrival;
     }
 }

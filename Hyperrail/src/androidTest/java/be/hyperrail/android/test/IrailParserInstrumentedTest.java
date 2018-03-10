@@ -135,11 +135,11 @@ public class IrailParserInstrumentedTest {
         assertEquals("Reizigers tussen Brussel-Zuid en Brussel-Noord mogen met hun MIVB-ticket gebruik maken van de treinen van NMBS.", route.getAlerts()[0].getDescription());
         assertEquals("Probleem bovenleiding  MIVB", route.getAlerts()[0].getLead());
 
-        assertArrayEquals(null, route.getTrainalerts()[0]);
-        assertEquals(1, route.getTrainalerts()[1].length);
-        assertEquals("Probleem bovenleiding  MIVB", route.getTrainalerts()[1][0].getHeader());
-        assertEquals("Reizigers tussen Brussel-Zuid en Brussel-Noord mogen met hun MIVB-ticket gebruik maken van de treinen van NMBS.", route.getTrainalerts()[1][0].getDescription());
-        assertEquals("Probleem bovenleiding  MIVB", route.getTrainalerts()[1][0].getLead());
+        assertArrayEquals(null, route.getVehicleAlerts()[0]);
+        assertEquals(1, route.getVehicleAlerts()[1].length);
+        assertEquals("Probleem bovenleiding  MIVB", route.getVehicleAlerts()[1][0].getHeader());
+        assertEquals("Reizigers tussen Brussel-Zuid en Brussel-Noord mogen met hun MIVB-ticket gebruik maken van de treinen van NMBS.", route.getVehicleAlerts()[1][0].getDescription());
+        assertEquals("Probleem bovenleiding  MIVB", route.getVehicleAlerts()[1][0].getLead());
 
         assertEquals(1, route.getTransferCount());
         assertEquals("BE.NMBS.008892007", route.getTransfers()[1].getStation().getId());

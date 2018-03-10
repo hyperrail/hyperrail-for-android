@@ -102,8 +102,8 @@ public class NotificationLayoutBuilder {
 
     public static RemoteViews createNotificationLayout(Context context, Transfer transfer) {
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-        boolean hasDepartureInfo = transfer.getDepartingRouteLeg() != null;
-        boolean hasArrivalInfo = transfer.getArrivingRouteLeg() != null;
+        boolean hasDepartureInfo = transfer.getDepartureLeg() != null;
+        boolean hasArrivalInfo = transfer.getArrivalLeg() != null;
 
         RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_transfer);
 
