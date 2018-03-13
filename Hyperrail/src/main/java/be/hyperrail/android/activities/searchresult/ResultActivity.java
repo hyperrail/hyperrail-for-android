@@ -119,6 +119,12 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(getMenuLayout(), menu);
 
+        for (int i = 0; i < menu.size(); i++) {
+            if (menu.getItem(i).getIcon() != null) {
+                tintDrawable(menu.getItem(i).getIcon(), R.color.colorWhite);
+            }
+        }
+
         vFavoriteMenuItem = menu.findItem(R.id.action_favorite);
         if (vFavoriteMenuItem != null) {
             setFavoriteDisplayState(isFavorite());
