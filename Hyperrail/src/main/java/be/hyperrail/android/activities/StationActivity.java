@@ -86,7 +86,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         for (int i = 0; i < 7; i++) {
             LocalTime[] openingHours = facilities.getOpeningHours(i);
             if (openingHours == null) {
-                openingHoursString.append("Closed");
+                openingHoursString.append("Closed").append("\n");
             } else {
                 openingHoursString.append(openingHours[0].toString("HH:mm")).append(" - ").append(openingHours[1].toString("HH:mm")).append("\n");
             }
