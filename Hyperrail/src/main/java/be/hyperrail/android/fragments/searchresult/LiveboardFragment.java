@@ -181,7 +181,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), data.getStops().length == 0);
-                    mLiveboardCardAdapter.setNextError(true);
+                    mLiveboardCardAdapter.disableInfiniteNext();
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);

@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import java.io.Serializable;
+
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.db.Station;
 
@@ -19,7 +21,7 @@ import be.hyperrail.android.irail.db.Station;
  * The end of a route leg (either a departure or an arrival)
  */
 
-public class RouteLegEnd {
+public class RouteLegEnd implements Serializable {
 
     @NonNull
     private DateTime time;

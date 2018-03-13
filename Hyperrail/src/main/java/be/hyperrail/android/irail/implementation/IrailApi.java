@@ -198,15 +198,17 @@ public class IrailApi implements IrailDataProvider {
             }
         };
 
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError e) {
+                FirebaseCrash.logcat(
+                        WARNING.intValue(), "Failed to get routes", e.getMessage());
+                request.notifyErrorListeners(e);
+            }
+        };
+
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, successListener, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        FirebaseCrash.logcat(
-                                WARNING.intValue(), "Failed to get routes", e.getMessage());
-                        request.notifyErrorListeners(e);
-                    }
-                }) {
+                (Request.Method.GET, url, null, successListener, errorListener) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
@@ -217,18 +219,7 @@ public class IrailApi implements IrailDataProvider {
         jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
 
-        if (isInternetAvailable()) {
-            requestQueue.add(jsObjRequest);
-        } else {
-            if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
-                try {
-                    successListener.onResponse(new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data)));
-                } catch (JSONException e) {
-                    FirebaseCrash.logcat(WARNING.intValue(), "Failed to get routes from cache", e.getMessage());
-                    request.notifyErrorListeners(e);
-                }
-            }
-        }
+        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
 
     @Override

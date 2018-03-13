@@ -25,6 +25,7 @@
         android:id="@+id/text_status_offline"
         android:layout_width="match_parent"
         android:layout_height="@dimen/listitem_content_height_double"
+        android:animateLayoutChanges="true"
         android:background="@color/backgroundMaterialDark"
         android:gravity="center"
         android:text="@string/warning_offline"

@@ -173,7 +173,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                         // data consists of both old and new routes
 
                         if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                            mRouteCardAdapter.disableInfiniteNext();
+                            mRouteCardAdapter.disableInfiniteNext(); // Nothing new anymore
                             // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
                         }
 
@@ -193,8 +193,8 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                     @Override
                     public void onErrorResponse(@NonNull Exception e, Object tag) {
                         ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
+                        mRouteCardAdapter.setNextError(true);
                         mRouteCardAdapter.setNextLoaded();
-                        mRouteCardAdapter.setInfiniteScrolling(false);
                     }
                 }, null);
         IrailFactory.getDataProviderInstance().extendRoutes(request);
@@ -227,13 +227,12 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                         // Scroll past the load earlier item
                         ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newLength - oldLength, 0);
 
-                       mRouteCardAdapter.setPrevLoaded();
+                        mRouteCardAdapter.setPrevLoaded();
                     }
                 }, new IRailErrorResponseListener() {
                     @Override
                     public void onErrorResponse(@NonNull Exception e, Object tag) {
                         ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
-                        mRouteCardAdapter.setInfiniteScrolling(false);
                         mRouteCardAdapter.setPrevLoaded();
                     }
                 }, null);

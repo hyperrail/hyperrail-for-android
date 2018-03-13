@@ -63,6 +63,7 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
      */
     protected View vLayoutRoot;
     private ConnectivityManager mConnectivityManager;
+    private NetworkStateChangeReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +87,21 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
 
         mConnectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        registerReceiver(new NetworkStateChangeReceiver(this), new IntentFilter(CONNECTIVITY_ACTION));
+        mReceiver = new NetworkStateChangeReceiver(this);
 
         onNetworkConnectionChanged(isInternetAvailable());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(mReceiver, new IntentFilter(CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mReceiver);
     }
 
     private boolean isInternetAvailable() {
