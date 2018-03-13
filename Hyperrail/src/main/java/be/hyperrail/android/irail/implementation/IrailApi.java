@@ -7,12 +7,15 @@
 package be.hyperrail.android.irail.implementation;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -75,7 +78,7 @@ public class IrailApi implements IrailDataProvider {
 
     private final Context context;
     private final IrailApiParser parser;
-
+    private final ConnectivityManager mConnectivityManager;
     private final int TAG_IRAIL_API_GET = 0;
 
     public IrailApi(Context context) {
@@ -87,6 +90,16 @@ public class IrailApi implements IrailDataProvider {
                 4,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         );
+        mConnectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+
+    }
+
+    private boolean isInternetAvailable() {
+        NetworkInfo activeNetwork = mConnectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 
 
@@ -165,26 +178,28 @@ public class IrailApi implements IrailDataProvider {
             url += "&timeSel=arrive";
         }
 
+        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                RouteResult routeResult;
+                try {
+                    routeResult = parser.parseRouteResult(
+                            response, request.getOrigin(), request.getDestination(),
+                            request.getSearchTime(), request.getTimeDefinition()
+                    );
+                } catch (JSONException e) {
+                    FirebaseCrash.logcat(
+                            WARNING.intValue(), "Failed to parse routes", e.getMessage());
+                    FirebaseCrash.report(e);
+                    request.notifyErrorListeners(e);
+                    return;
+                }
+                request.notifySuccessListeners(routeResult);
+            }
+        };
+
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        RouteResult routeResult;
-                        try {
-                            routeResult = parser.parseRouteResult(
-                                    response, request.getOrigin(), request.getDestination(),
-                                    request.getSearchTime(), request.getTimeDefinition()
-                            );
-                        } catch (JSONException e) {
-                            FirebaseCrash.logcat(
-                                    WARNING.intValue(), "Failed to parse routes", e.getMessage());
-                            FirebaseCrash.report(e);
-                            request.notifyErrorListeners(e);
-                            return;
-                        }
-                        request.notifySuccessListeners(routeResult);
-                    }
-                }, new Response.ErrorListener() {
+                (Request.Method.GET, url, null, successListener, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError e) {
                         FirebaseCrash.logcat(
@@ -201,7 +216,19 @@ public class IrailApi implements IrailDataProvider {
         };
         jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
-        requestQueue.add(jsObjRequest);
+
+        if (isInternetAvailable()) {
+            requestQueue.add(jsObjRequest);
+        } else {
+            if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
+                try {
+                    successListener.onResponse(new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data)));
+                } catch (JSONException e) {
+                    FirebaseCrash.logcat(WARNING.intValue(), "Failed to get routes from cache", e.getMessage());
+                    request.notifyErrorListeners(e);
+                }
+            }
+        }
     }
 
     @Override
@@ -233,38 +260,35 @@ public class IrailApi implements IrailDataProvider {
                 + "&time=" + timeformat.print(request.getSearchTime())
                 + "&arrdep=" + ((request.getTimeDefinition() == RouteTimeDefinition.DEPART) ? "dep" : "arr");
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        LiveBoard result;
-                        try {
-                            result = parser.parseLiveboard(
-                                    response, request.getSearchTime(), request.getTimeDefinition());
-                        } catch (JSONException e) {
-                            FirebaseCrash.logcat(
-                                    WARNING.intValue(), "Failed to parse liveboard",
-                                    e.getMessage()
-                            );
-                            FirebaseCrash.report(e);
-                            request.notifyErrorListeners(e);
-                            return;
-                        }
+        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                LiveBoard result;
+                try {
+                    result = parser.parseLiveboard(response, request.getSearchTime(), request.getTimeDefinition());
+                } catch (JSONException e) {
+                    FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
+                    FirebaseCrash.report(e);
+                    request.notifyErrorListeners(e);
+                    return;
+                }
 
-                        request.notifySuccessListeners(result);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        Log.w(
-                                LOGTAG,
-                                "Tried loading liveboard from " + url + " failed with error " + e
-                        );
-                        FirebaseCrash.logcat(
-                                WARNING.intValue(), "Failed to get liveboard", e.getMessage());
-                        request.notifyErrorListeners(e);
-                    }
-                }) {
+                request.notifySuccessListeners(result);
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError e) {
+                Log.w(LOGTAG, "Tried loading liveboard from " + url + " failed with error " + e);
+                FirebaseCrash.logcat(
+                        WARNING.intValue(), "Failed to get liveboard", e.getMessage());
+                request.notifyErrorListeners(e);
+            }
+        };
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, successListener, errorListener) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
@@ -275,7 +299,8 @@ public class IrailApi implements IrailDataProvider {
 
         jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
-        requestQueue.add(jsObjRequest);
+
+        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
 
     public void getLiveboardBefore(@NonNull IrailLiveboardRequest... requests) {
@@ -326,30 +351,33 @@ public class IrailApi implements IrailDataProvider {
                 + "&id=" + request.getTrainId() + "&date=" + dateTimeformat.print(
                 request.getSearchTime());
 
+        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Vehicle result;
+                try {
+                    result = parser.parseTrain(response, new DateTime());
+                } catch (JSONException e) {
+                    FirebaseCrash.logcat(
+                            WARNING.intValue(), "Failed to parse train", e.getMessage());
+                    FirebaseCrash.report(e);
+                    request.notifyErrorListeners(e);
+                    return;
+                }
+                request.notifySuccessListeners(result);
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError e) {
+                FirebaseCrash.logcat(
+                        WARNING.intValue(), "Failed to get train", e.getMessage());
+                request.notifyErrorListeners(e);
+            }
+        };
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Vehicle result;
-                        try {
-                            result = parser.parseTrain(response, new DateTime());
-                        } catch (JSONException e) {
-                            FirebaseCrash.logcat(
-                                    WARNING.intValue(), "Failed to parse train", e.getMessage());
-                            FirebaseCrash.report(e);
-                            request.notifyErrorListeners(e);
-                            return;
-                        }
-                        request.notifySuccessListeners(result);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        FirebaseCrash.logcat(
-                                WARNING.intValue(), "Failed to get train", e.getMessage());
-                        request.notifyErrorListeners(e);
-                    }
-                })
+                (Request.Method.GET, url, null, successListener, errorListener)
 
         {
             @Override
@@ -362,7 +390,8 @@ public class IrailApi implements IrailDataProvider {
 
         jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
-        requestQueue.add(jsObjRequest);
+
+        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
 
     @Override
@@ -385,32 +414,33 @@ public class IrailApi implements IrailDataProvider {
         String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(
                 0, 2);
 
+
+        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Disturbance[] result;
+                try {
+                    result = parser.parseDisturbances(response);
+                } catch (JSONException e) {
+                    FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
+                    FirebaseCrash.report(e);
+                    request.notifyErrorListeners(e);
+                    return;
+                }
+                request.notifySuccessListeners(result);
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError e) {
+                FirebaseCrash.logcat(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
+                request.notifyErrorListeners(e);
+            }
+        };
+
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Disturbance[] result;
-                        try {
-                            result = parser.parseDisturbances(response);
-                        } catch (JSONException e) {
-                            FirebaseCrash.logcat(
-                                    WARNING.intValue(), "Failed to parse disturbances",
-                                    e.getMessage()
-                            );
-                            FirebaseCrash.report(e);
-                            request.notifyErrorListeners(e);
-                            return;
-                        }
-                        request.notifySuccessListeners(result);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        FirebaseCrash.logcat(
-                                WARNING.intValue(), "Failed to get disturbances", e.getMessage());
-                        request.notifyErrorListeners(e);
-                    }
-                }) {
+                (Request.Method.GET, url, null, successListener, errorListener) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
@@ -421,7 +451,35 @@ public class IrailApi implements IrailDataProvider {
 
         jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
-        requestQueue.add(jsObjRequest);
+        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+    }
+
+    /**
+     * If internet is available, make a request. Otherwise, check the cache
+     *
+     * @param jsObjRequest    The request which should be made to the server
+     * @param successListener The listener for successful responses, which will be used by the cache
+     * @param errorListener   The listener for unsuccessful responses
+     */
+    private void tryOnlineOrServerCache(JsonObjectRequest jsObjRequest, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
+        if (isInternetAvailable()) {
+            requestQueue.add(jsObjRequest);
+        } else {
+            if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
+                try {
+                    JSONObject cache;
+                    cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
+                    successListener.onResponse(cache);
+                } catch (JSONException e) {
+                    FirebaseCrash.logcat(
+                            WARNING.intValue(), "Failed to get result from cache", e.getMessage());
+                    errorListener.onErrorResponse(new NoConnectionError());
+                }
+
+            } else {
+                errorListener.onErrorResponse(new NoConnectionError());
+            }
+        }
     }
 
     @Override

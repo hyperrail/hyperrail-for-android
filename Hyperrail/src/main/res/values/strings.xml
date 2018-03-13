@@ -119,5 +119,6 @@
     <string name="facility_bicycle_parking">Bicycle parking</string>
     <string name="facility_blue_bikes">Blue bikes</string>
     <string name="title_station_opening_hours">Opening Hours</string>
+    <string name="warning_offline">You are offline. Data might not be up to date.</string>
 
 </resources>

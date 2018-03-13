@@ -266,7 +266,5 @@ public class LiveboardActivity extends ResultActivity {
         public LiveboardFragment[] getFragments() {
             return fragments;
         }
-
-
     }
 }
