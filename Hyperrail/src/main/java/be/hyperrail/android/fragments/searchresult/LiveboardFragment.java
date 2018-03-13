@@ -26,7 +26,6 @@ import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
-import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
@@ -124,10 +123,10 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
         if (this.vRefreshLayout.isRefreshing()) {
             // Disable infinite scrolling for now to prevent having 2 loading icons
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
+            mLiveboardCardAdapter.setInfiniteScrolling(false);
         } else {
             // Restore if it was disabled earlier on. Will still be blocked since currentLiveboard == null
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
+            mLiveboardCardAdapter.setInfiniteScrolling(true);
         }
 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
@@ -148,7 +147,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                     LiveboardFragment.this.loadNextRecyclerviewItems();
                 } else {
                     // Enable infinite scrolling again
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
+                    mLiveboardCardAdapter.setInfiniteScrolling(true);
                 }
 
                 // Scroll past the load earlier item
@@ -171,7 +170,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
         // When not yet initialized with the first data, don't load more
         // mCurrentLiveboard won't be empty after the first response: its stops array might be empty, but the object will be NonNull
         if (mCurrentLiveboard == null) {
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+            mLiveboardCardAdapter.setNextLoaded();
             return;
         }
 
@@ -181,9 +180,8 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
             public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), data.getStops().length == 0);
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
+                    mLiveboardCardAdapter.setNextError(true);
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
@@ -195,12 +193,12 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                 if (mgr.findFirstVisibleItemPosition() == 0) {
                     mgr.scrollToPositionWithOffset(1, 0);
                 }
-
             }
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), false);
+                mLiveboardCardAdapter.setNextError(true);
                 mLiveboardCardAdapter.setNextLoaded();
             }
         }, null);
@@ -211,7 +209,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     public void loadPreviousRecyclerviewItems() {
         // When not yet initialized with the first data, don't load previous
         if (mCurrentLiveboard == null) {
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            mLiveboardCardAdapter.setPrevLoaded();
             return;
         }
 
@@ -222,7 +220,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), false);
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
+                    mLiveboardCardAdapter.disableInfinitePrevious();
                 }
 
                 int oldLength = mLiveboardCardAdapter.getItemCount();

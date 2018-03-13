@@ -120,5 +120,6 @@
     <string name="facility_blue_bikes">Blue bikes</string>
     <string name="title_station_opening_hours">Opening Hours</string>
     <string name="warning_offline">You are offline. Data might not be up to date.</string>
+    <string name="tap_to_retry">Failed to load results. Tap to retry.</string>
 
 </resources>
