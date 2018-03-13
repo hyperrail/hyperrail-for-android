@@ -4,7 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.irail.implementation;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package be.hyperrail.android.irail.implementation.irailapi;
 
 import android.support.annotation.NonNull;
 
@@ -18,12 +24,15 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.android.irail.implementation.VehicleStopType;
+import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.util.ArrayUtils;
 
 /**
  * A class which allows to append liveboards.
- * TODO: move to IrailApi API implementation as this is API specific
  */
 public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveBoard>, IRailErrorResponseListener {
 
@@ -33,52 +42,56 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
     private int attempt = 0;
     private DateTime lastSearchTime;
     private LiveBoard originalLiveboard;
-
-    private IRailSuccessResponseListener<LiveBoard> successResponseListener;
-    private IRailErrorResponseListener errorResponseListener;
+    private ExtendLiveboardRequest mExtendRequest;
 
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
 
-    public void appendLiveboard(@NonNull LiveBoard liveBoard, IRailSuccessResponseListener<LiveBoard> successResponseListener,
-                                IRailErrorResponseListener errorResponseListener) {
+    public void extendLiveboard(@NonNull ExtendLiveboardRequest extendRequest) {
+        switch (extendRequest.getAction()) {
+            default:
+            case APPEND:
+                appendLiveboard(extendRequest);
+                break;
+            case PREPEND:
+                prependLiveboard(extendRequest);
+                break;
+        }
+    }
 
-        this.successResponseListener = successResponseListener;
-        this.errorResponseListener = errorResponseListener;
+    private void appendLiveboard(@NonNull ExtendLiveboardRequest extendRequest) {
 
-        this.originalLiveboard = liveBoard;
+        this.originalLiveboard = extendRequest.getLiveboard();
+        mExtendRequest = extendRequest;
 
-        if (liveBoard.getStops().length > 0) {
-            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
-                this.lastSearchTime = liveBoard.getStops()[liveBoard.getStops().length - 1].getDepartureTime().plusMinutes(1);
+        if (originalLiveboard.getStops().length > 0) {
+            if (originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
+                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getDepartureTime().plusMinutes(1);
             } else {
-                this.lastSearchTime = liveBoard.getStops()[liveBoard.getStops().length - 1].getArrivalTime().plusMinutes(1);
+                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getArrivalTime().plusMinutes(1);
             }
         } else {
-            this.lastSearchTime = liveBoard.getSearchTime().plusHours(1);
+            this.lastSearchTime = originalLiveboard.getSearchTime().plusHours(1);
         }
 
-        IrailLiveboardRequest request = new IrailLiveboardRequest(liveBoard, liveBoard.getTimeDefinition(), lastSearchTime);
+        IrailLiveboardRequest request = new IrailLiveboardRequest(originalLiveboard, originalLiveboard.getTimeDefinition(), lastSearchTime);
         request.setCallback(this, this, TAG_APPEND);
         api.getLiveboard(request);
     }
 
-    public void prependLiveboard(@NonNull LiveBoard liveBoard, IRailSuccessResponseListener<LiveBoard> successResponseListener,
-                                 IRailErrorResponseListener errorResponseListener) {
-        this.successResponseListener = successResponseListener;
-        this.errorResponseListener = errorResponseListener;
+    private void prependLiveboard(@NonNull ExtendLiveboardRequest extendRequest) {
+        this.originalLiveboard = extendRequest.getLiveboard();
+        mExtendRequest = extendRequest;
 
-        this.originalLiveboard = liveBoard;
-
-        if (liveBoard.getStops().length > 0) {
-            if (liveBoard.getStops()[liveBoard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
-                this.lastSearchTime = liveBoard.getStops()[0].getDepartureTime().minusHours(1);
+        if (originalLiveboard.getStops().length > 0) {
+            if (originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
+                this.lastSearchTime = originalLiveboard.getStops()[0].getDepartureTime().minusHours(1);
             } else {
-                this.lastSearchTime = liveBoard.getStops()[0].getArrivalTime().minusHours(1);
+                this.lastSearchTime = originalLiveboard.getStops()[0].getArrivalTime().minusHours(1);
             }
         } else {
-            this.lastSearchTime = liveBoard.getSearchTime().minusHours(1);
+            this.lastSearchTime = originalLiveboard.getSearchTime().minusHours(1);
         }
-        IrailLiveboardRequest request = new IrailLiveboardRequest(liveBoard, liveBoard.getTimeDefinition(), lastSearchTime);
+        IrailLiveboardRequest request = new IrailLiveboardRequest(originalLiveboard, originalLiveboard.getTimeDefinition(), lastSearchTime);
         request.setCallback(this, this, TAG_PREPEND);
         api.getLiveboardBefore(request);
     }
@@ -119,7 +132,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
 
                     VehicleStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), newStops);
                     LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getTimeDefinition());
-                    this.successResponseListener.onSuccessResponse(merged, tag);
+                    mExtendRequest.notifySuccessListeners(merged);
                 } else {
                     // No results, search two hours further in case this day doesn't have results.
                     // Skip 2 hours at once, possible due to large API pages.
@@ -131,9 +144,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                         request.setCallback(this, this, TAG_APPEND);
                         api.getLiveboard(request);
                     } else {
-                        if (this.successResponseListener != null) {
-                            this.successResponseListener.onSuccessResponse(originalLiveboard, this);
-                        }
+                        mExtendRequest.notifySuccessListeners(originalLiveboard);
                     }
                 }
                 break;
@@ -152,7 +163,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
 
                         if (Objects.equals(s.getDepartureSemanticId(), data.getStops()[data.getStops().length - 1].getDepartureSemanticId())) {
                             // All before this stop in the original liveboard are duplicates
-                            if (i == originalLiveboard.getStops().length - 1){
+                            if (i == originalLiveboard.getStops().length - 1) {
                                 originalStops = new VehicleStop[0];
                             } else {
                                 // TODO: investigate if this code is totally bug free: aren't we ignoring too much?
@@ -167,7 +178,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                     }
                     VehicleStop[] mergedStops = ArrayUtils.concatenate(data.getStops(), originalStops);
                     LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getTimeDefinition());
-                    this.successResponseListener.onSuccessResponse(merged, tag);
+                    mExtendRequest.notifySuccessListeners(merged);
                 } else {
                     attempt++;
                     lastSearchTime = lastSearchTime.minusHours(1);
@@ -177,9 +188,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
                         request.setCallback(this, this, TAG_PREPEND);
                         api.getLiveboardBefore(request);
                     } else {
-                        if (this.successResponseListener != null) {
-                            this.successResponseListener.onSuccessResponse(originalLiveboard, this);
-                        }
+                        mExtendRequest.notifySuccessListeners(originalLiveboard);
                     }
                 }
                 break;
@@ -188,8 +197,6 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
 
     @Override
     public void onErrorResponse(@NonNull Exception e, Object tag) {
-        if (this.errorResponseListener != null) {
-            this.errorResponseListener.onErrorResponse(e, this);
-        }
+        mExtendRequest.notifyErrorListeners(e);
     }
 }

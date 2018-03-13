@@ -29,7 +29,7 @@ public class LiveBoard extends Station implements Serializable {
     private DateTime mSearchTime;
     private final RouteTimeDefinition mTimeDefinition;
 
-    LiveBoard(Station station, VehicleStop[] stops, DateTime searchTime, RouteTimeDefinition timeDefinition) {
+    public LiveBoard(Station station, VehicleStop[] stops, DateTime searchTime, RouteTimeDefinition timeDefinition) {
         super(
                 station.getId(),
                 station.getName(),

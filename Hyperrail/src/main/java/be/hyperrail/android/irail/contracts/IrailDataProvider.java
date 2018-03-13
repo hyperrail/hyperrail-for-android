@@ -14,6 +14,8 @@ package be.hyperrail.android.irail.contracts;
 
 import android.support.annotation.NonNull;
 
+import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.ExtendRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
@@ -32,9 +34,13 @@ public interface IrailDataProvider {
 
     void getLiveboard(@NonNull IrailLiveboardRequest... request);
 
+    void extendLiveboard(@NonNull ExtendLiveboardRequest... requests);
+
     void getLiveboardBefore(@NonNull IrailLiveboardRequest... request);
 
     void getRoutes(@NonNull IrailRoutesRequest... request);
+
+    void extendRoutes(@NonNull ExtendRoutesRequest... requests);
 
     void getRoute(@NonNull IrailRouteRequest... request);
 

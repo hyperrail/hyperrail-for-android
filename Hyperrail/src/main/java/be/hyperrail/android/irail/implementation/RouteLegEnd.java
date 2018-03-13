@@ -44,9 +44,9 @@ public class RouteLegEnd {
     private String uri;
 
     protected RouteLegEnd(@NonNull Station station,
-                          @NonNull DateTime time, @NonNull String platform, boolean normal, @NonNull Duration delay,
-                          boolean canceled, boolean passed, @Nullable String semanticId,
-                          @Nullable OccupancyLevel occupancy) {
+                       @NonNull DateTime time, @NonNull String platform, boolean normal, @NonNull Duration delay,
+                       boolean canceled, boolean passed, @Nullable String semanticId,
+                       @Nullable OccupancyLevel occupancy) {
         this.station = station;
         this.passed = passed;
 

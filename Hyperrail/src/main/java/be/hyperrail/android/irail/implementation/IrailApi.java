@@ -48,6 +48,10 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.irailapi.LiveboardAppendHelper;
+import be.hyperrail.android.irail.implementation.irailapi.RouteAppendHelper;
+import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.ExtendRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
@@ -125,6 +129,15 @@ public class IrailApi implements IrailDataProvider {
         }
     }
 
+    @Override
+    public void extendRoutes(@NonNull ExtendRoutesRequest... requests) {
+        for (ExtendRoutesRequest request :
+                requests) {
+            RouteAppendHelper helper = new RouteAppendHelper();
+            helper.extendRoutesRequest(request);
+        }
+    }
+
     public void getRoutes(final IrailRoutesRequest request) {
 
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
@@ -195,6 +208,15 @@ public class IrailApi implements IrailDataProvider {
     public void getLiveboard(@NonNull IrailLiveboardRequest... requests) {
         for (IrailLiveboardRequest request : requests) {
             getLiveboard(request);
+        }
+    }
+
+    @Override
+    public void extendLiveboard(@NonNull ExtendLiveboardRequest... requests) {
+        for (ExtendLiveboardRequest request :
+                requests) {
+            LiveboardAppendHelper helper = new LiveboardAppendHelper();
+            helper.extendLiveboard(request);
         }
     }
 
