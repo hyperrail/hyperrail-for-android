@@ -188,7 +188,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
 
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+                mLiveboardCardAdapter.setNextLoaded();
 
                 // Scroll past the "load earlier"
                 LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
@@ -201,7 +201,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+                mLiveboardCardAdapter.setNextLoaded();
             }
         }, null);
         IrailFactory.getDataProviderInstance().extendLiveboard(request);
@@ -224,21 +224,23 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), false);
                     ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
                 }
-                int newItems = data.getStops().length - mCurrentLiveboard.getStops().length;
+
+                int oldLength = mLiveboardCardAdapter.getItemCount();
+
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
 
+                int newLength = mLiveboardCardAdapter.getItemCount();
                 // Scroll past the load earlier item
-                // TODO: take the number of new day separators into account. Any way to read this from the adapter?
-                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newItems, 0);
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newLength - oldLength, 0);
 
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+                mLiveboardCardAdapter.setPrevLoaded();
             }
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+                mLiveboardCardAdapter.setPrevLoaded();
             }
         }, null);
         IrailFactory.getDataProviderInstance().extendLiveboard(request);
