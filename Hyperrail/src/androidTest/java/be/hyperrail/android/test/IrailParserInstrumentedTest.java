@@ -27,6 +27,7 @@ import be.hyperrail.android.irail.implementation.Vehicle;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -54,14 +55,14 @@ public class IrailParserInstrumentedTest {
         assertEquals("BE.NMBS.008892338", liveboard.getStops()[0].getDestination().getId());
         assertEquals(new Duration(1860 * 1000), liveboard.getStops()[0].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833300 * 1000), liveboard.getStops()[0].getDepartureTime());
-        assertEquals("BE.NMBS.IC3634", liveboard.getStops()[0].getTrain().getId());
+        assertEquals("BE.NMBS.IC3634", liveboard.getStops()[0].getVehicle().getId());
 
         assertEquals("6", liveboard.getStops()[0].getPlatform());
         assertEquals(false, liveboard.getStops()[0].isPlatformNormal());
         assertEquals(false, liveboard.getStops()[0].hasLeft());
 
         // URI's should be parsed, not computed. This unique URI will test this.
-        assertEquals("http://irail.be/vehicle/TESTPARSEURI", liveboard.getStops()[0].getTrain().getSemanticId());
+        assertEquals("http://irail.be/vehicle/TESTPARSEURI", liveboard.getStops()[0].getVehicle().getSemanticId());
         assertEquals(OccupancyLevel.UNKNOWN, liveboard.getStops()[0].getOccupancyLevel());
         // END tests stop 0
         // START tests stop 1
@@ -69,13 +70,13 @@ public class IrailParserInstrumentedTest {
         assertEquals("BE.NMBS.008892908", liveboard.getStops()[1].getDestination().getId());
         assertEquals(new Duration(60 * 1000), liveboard.getStops()[1].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833600 * 1000), liveboard.getStops()[1].getDepartureTime());
-        assertEquals("BE.NMBS.L783", liveboard.getStops()[1].getTrain().getId());
+        assertEquals("BE.NMBS.L783", liveboard.getStops()[1].getVehicle().getId());
 
         assertEquals("4", liveboard.getStops()[1].getPlatform());
         assertEquals(true, liveboard.getStops()[1].isPlatformNormal());
         assertEquals(false, liveboard.getStops()[1].hasLeft());
 
-        assertEquals("http://irail.be/vehicle/L783", liveboard.getStops()[1].getTrain().getSemanticId());
+        assertEquals("http://irail.be/vehicle/L783", liveboard.getStops()[1].getVehicle().getSemanticId());
         assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getDepartureSemanticId());
         assertEquals(OccupancyLevel.HIGH, liveboard.getStops()[1].getOccupancyLevel());
         // END tests stop 1
@@ -135,25 +136,29 @@ public class IrailParserInstrumentedTest {
         assertEquals("Reizigers tussen Brussel-Zuid en Brussel-Noord mogen met hun MIVB-ticket gebruik maken van de treinen van NMBS.", route.getAlerts()[0].getDescription());
         assertEquals("Probleem bovenleiding  MIVB", route.getAlerts()[0].getLead());
 
-        assertArrayEquals(null, route.getTrainalerts()[0]);
-        assertEquals(1, route.getTrainalerts()[1].length);
-        assertEquals("Probleem bovenleiding  MIVB", route.getTrainalerts()[1][0].getHeader());
-        assertEquals("Reizigers tussen Brussel-Zuid en Brussel-Noord mogen met hun MIVB-ticket gebruik maken van de treinen van NMBS.", route.getTrainalerts()[1][0].getDescription());
-        assertEquals("Probleem bovenleiding  MIVB", route.getTrainalerts()[1][0].getLead());
+        assertArrayEquals(null, route.getVehicleAlerts()[0]);
+        assertEquals(1, route.getVehicleAlerts()[1].length);
+        assertEquals("Probleem bovenleiding  MIVB", route.getVehicleAlerts()[1][0].getHeader());
+        assertEquals("Reizigers tussen Brussel-Zuid en Brussel-Noord mogen met hun MIVB-ticket gebruik maken van de treinen van NMBS.", route.getVehicleAlerts()[1][0].getDescription());
+        assertEquals("Probleem bovenleiding  MIVB", route.getVehicleAlerts()[1][0].getLead());
 
         assertEquals(1, route.getTransferCount());
         assertEquals("BE.NMBS.008892007", route.getTransfers()[1].getStation().getId());
 
         assertEquals("4", route.getTransfers()[1].getArrivalPlatform());
         assertEquals(true, route.getTransfers()[1].hasArrived());
-        assertEquals("BE.NMBS.IC713", route.getTransfers()[1].getArrivingRouteLeg().getVehicleInformation().getId());
-        assertEquals(stationProvider.getStationByName("Poperinge").getId(), route.getTransfers()[1].getArrivingRouteLeg().getVehicleInformation().getDirection().getId());
+        assertEquals("BE.NMBS.IC713", route.getLegs()[0].getVehicleInformation().getId());
+        assertEquals(route.getLegs()[0], route.getTransfers()[0].getDepartureLeg());
+        assertEquals(stationProvider.getStationByName("Poperinge").getId(), route.getLegs()[0].getVehicleInformation().getDirection().getId());
+        assertEquals(new DateTime((long) 1510839180 * 1000), route.getLegs()[0].getArrival().getTime());
         assertEquals(new DateTime((long) 1510839180 * 1000), route.getTransfers()[1].getArrivalTime());
 
         assertEquals(true, route.getTransfers()[1].hasLeft());
         assertEquals("11", route.getTransfers()[1].getDeparturePlatform());
-        assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartingRouteLeg().getVehicleInformation().getId());
-        assertEquals(stationProvider.getStationByName("Genk").getId(), route.getTransfers()[1].getDepartingRouteLeg().getVehicleInformation().getDirection().getId());
+        assertNotNull( route.getTransfers()[1].getDepartureLeg());
+        assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
+        assertEquals("BE.NMBS.IC1513", route.getLegs()[1].getVehicleInformation().getId());
+        assertEquals(stationProvider.getStationByName("Genk").getId(), route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getDirection().getId());
         assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime());
 
         assertEquals("BE.NMBS.IC713", route.getLegs()[0].getVehicleInformation().getId());

@@ -14,12 +14,15 @@ package be.hyperrail.android.irail.contracts;
 
 import android.support.annotation.NonNull;
 
+import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
+import be.hyperrail.android.irail.implementation.requests.ExtendRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
+import be.hyperrail.android.irail.implementation.requests.VehicleStopRequest;
 
 /**
  * Retrieve (realtime) data according from the iRail API, or any API which provides similar data.
@@ -28,19 +31,25 @@ import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
  */
 public interface IrailDataProvider {
 
-    void getDisturbances(@NonNull IrailDisturbanceRequest... request);
+    void getDisturbances(@NonNull IrailDisturbanceRequest... requests);
 
-    void getLiveboard(@NonNull IrailLiveboardRequest... request);
+    void getLiveboard(@NonNull IrailLiveboardRequest... requests);
 
-    void getLiveboardBefore(@NonNull IrailLiveboardRequest... request);
+    void extendLiveboard(@NonNull ExtendLiveboardRequest... requests);
 
-    void getRoutes(@NonNull IrailRoutesRequest... request);
+    void getLiveboardBefore(@NonNull IrailLiveboardRequest... requests);
 
-    void getRoute(@NonNull IrailRouteRequest... request);
+    void getRoutes(@NonNull IrailRoutesRequest... requests);
 
-    void getTrain(@NonNull IrailVehicleRequest... request);
+    void extendRoutes(@NonNull ExtendRoutesRequest... requests);
 
-    void postOccupancy(@NonNull IrailPostOccupancyRequest... request);
+    void getRoute(@NonNull IrailRouteRequest... requests);
+
+    void getStop(@NonNull VehicleStopRequest... requests);
+    
+    void getVehicle(@NonNull IrailVehicleRequest... requests);
+
+    void postOccupancy(@NonNull IrailPostOccupancyRequest... requests);
 
     void abortAllQueries();
 

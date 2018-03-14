@@ -142,10 +142,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         } else if (holder instanceof RouteTrainViewHolder) {
             // odd (1,3,...) : route between stations
-            final Transfer transferBefore = route.getTransfers()[(position - 1) / 2];
-            final Transfer transferAfter = route.getTransfers()[(position + 1) / 2];
 
-            final RouteLeg leg =route.getLegs()[(position - 1) / 2];
+            final RouteLeg leg = route.getLegs()[(position - 1) / 2];
 
             ((RouteTrainViewHolder) holder).routeTrainItemLayout.bind(context, leg, route, (position - 1) / 2);
 
@@ -156,10 +154,10 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("train", leg.getVehicleInformation());
                         // Get the departure date (day) of this train
-                        bundle.putSerializable("date", transferBefore.getDepartureTime());
+                        bundle.putSerializable("date", leg.getDeparture().getTime());
                         // TODO: consider if these should be included
-                        bundle.putSerializable("from", transferBefore.getStation());
-                        bundle.putSerializable("to", transferAfter.getStation());
+                        bundle.putSerializable("from", leg.getDeparture().getStation());
+                        bundle.putSerializable("to", leg.getArrival().getStation());
 
                         if (listener != null) {
                             listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
@@ -172,7 +170,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             @Override
                             public boolean onLongClick(View view) {
                                 (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
-                                                             transferBefore, transferAfter)
+                                                             leg)
                                 ).show();
                                 return false;
                             }
@@ -189,10 +187,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (route == null) {
             return 0;
         }
-        if (route.getTransfers() == null) {
-            return route.getLegs().length;
-        }
-        return route.getLegs().length + route.getTransfers().length;
+
+        return 2 * route.getLegs().length + 1;
     }
 
     public void setOnItemClickListener(OnRecyclerItemClickListener<Object> listener) {

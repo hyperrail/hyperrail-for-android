@@ -24,166 +24,145 @@ import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.db.Station;
 
 /**
- * A transfer between two route legs
+ * A transfer between two route legs.
+ * This is a helper class, to make it easier displaying and using route information. It's constructed based on routeLegs.
  */
 public class Transfer implements Serializable {
+    @Nullable
+    private final RouteLeg mDepartureLeg;
+    @Nullable
+    private final RouteLeg mArrivalLeg;
 
     @Nullable
-    private final RouteLeg arrivingRouteLeg;
+    private final RouteLegEnd mDeparture;
     @Nullable
-    private final RouteLeg departingRouteLeg;
-    @Nullable
-    private final DateTime arrivalTime;
-    @Nullable
-    private final DateTime departureTime;
-
-    @NonNull
-    private final Station station;
-
-    @Nullable
-    private final String departurePlatform;
-    private final boolean isDeparturePlatformNormal;
-    @Nullable
-    private final String arrivalPlatform;
-    private final boolean isArrivalPlatformNormal;
-    @Nullable
-    private final Duration arrivalDelay;
-    private final boolean arrivalCanceled;
-    @Nullable
-    private final Duration departureDelay;
-    private final boolean departureCanceled;
-
-    private final boolean left;
-    private final boolean arrived;
-
-    @Nullable
-    private final OccupancyLevel departureOccupancy;
-
-    @Nullable
-    private final String departureSemanticId;
+    private final RouteLegEnd mArrival;
 
     private final TransferType type;
 
-    public Transfer(@NonNull Station station, @Nullable RouteLeg arrivingRouteLeg, @Nullable DateTime arrivalTime,
-                    @Nullable String arrivalPlatform, boolean arrivalNormal, @Nullable Duration arrivalDelay,
-                    boolean arrivalCanceled, boolean arrived, @Nullable RouteLeg departingRouteLeg, @Nullable DateTime departureTime,
-                    @Nullable String departurePlatform, boolean departureNormal, @Nullable Duration departureDelay,
-                    boolean departureCanceled, boolean left, @Nullable String departureSemanticId,
-                    @Nullable OccupancyLevel departureOccupancy, TransferType type) {
-        this.station = station;
-        this.arrivingRouteLeg = arrivingRouteLeg;
-        this.departingRouteLeg = departingRouteLeg;
-        this.arrived = arrived;
-        this.left = left;
-        this.arrivalTime = arrivalTime;
-        this.departureTime = departureTime;
-        this.departurePlatform = departurePlatform;
-        this.arrivalPlatform = arrivalPlatform;
-        this.arrivalDelay = arrivalDelay;
-        this.departureDelay = departureDelay;
-        this.arrivalCanceled = arrivalCanceled;
-        this.departureCanceled = departureCanceled;
-        this.isDeparturePlatformNormal = departureNormal;
-        this.isArrivalPlatformNormal = arrivalNormal;
-        this.departureSemanticId = departureSemanticId;
-        this.departureOccupancy = departureOccupancy;
-        this.type = type;
-    }
+    protected Transfer(@Nullable RouteLeg arrival, @Nullable RouteLeg departure) {
 
-    @Nullable
-    public RouteLeg getArrivingRouteLeg() {
-        return arrivingRouteLeg;
-    }
+        this.mDepartureLeg = departure;
+        this.mArrivalLeg = arrival;
 
-    @Nullable
-    public RouteLeg getDepartingRouteLeg() {
-        return departingRouteLeg;
+        if (departure != null && arrival != null) {
+            type = TransferType.TRANSFER;
+            this.mDeparture = departure.getDeparture();
+            this.mArrival = arrival.getArrival();
+        } else if (departure != null) {
+            type = TransferType.DEPARTURE;
+            this.mDeparture = departure.getDeparture();
+            this.mArrival = null;
+        } else if (arrival != null) {
+            type = TransferType.ARRIVAL;
+            this.mArrival = arrival.getArrival();
+            this.mDeparture = null;
+        } else {
+            throw new IllegalStateException("A transfer needs at least a departure or arrival!");
+        }
     }
 
     @Nullable
     public DateTime getArrivalTime() {
-        return arrivalTime;
+        return (mArrival != null) ? mArrival.getTime() : null;
     }
 
     @Nullable
     public DateTime getDepartureTime() {
-        return departureTime;
+        return (mDeparture != null) ? mDeparture.getTime() : null;
     }
 
     public DateTime getDelayedDepartureTime() {
-        if (departureTime == null) {
+        if (mDeparture == null) {
             return null;
         }
-        return departureTime.plus(departureDelay);
+        return mDeparture.getTime().plus(mDeparture.getDelay());
     }
 
     public DateTime getDelayedArrivalTime() {
-        if (arrivalTime == null) {
+        if (mArrival == null) {
             return null;
         }
-        return arrivalTime.plus(arrivalDelay);
+        return mArrival.getTime().plus(mArrival.getDelay());
     }
 
     @NonNull
     public Station getStation() {
-        return station;
+        if (mDeparture != null) {
+            return mDeparture.getStation();
+        } else if (mArrival != null) {
+            return mArrival.getStation();
+        } else {
+            throw new IllegalStateException("A transfer needs at least a departure or arrival!");
+        }
     }
 
     @Nullable
     public String getDeparturePlatform() {
-        return departurePlatform;
+        return (mDeparture != null) ? mDeparture.getPlatform() : null;
     }
 
     @Nullable
     public String getArrivalPlatform() {
-        return arrivalPlatform;
+        return (mArrival != null) ? mArrival.getPlatform() : null;
     }
 
-    @Nullable
+    @NonNull
     public Duration getArrivalDelay() {
-        return arrivalDelay;
+        return (mArrival != null) ? mArrival.getDelay() : Duration.ZERO;
     }
 
     public boolean isArrivalCanceled() {
-        return arrivalCanceled;
+        return (mArrival != null) && mArrival.isCanceled();
     }
 
-    @Nullable
+    @NonNull
     public Duration getDepartureDelay() {
-        return departureDelay;
+        return (mDeparture != null) ? mDeparture.getDelay() : Duration.ZERO;
     }
 
     public boolean isDepartureCanceled() {
-        return departureCanceled;
+        return (mDeparture != null) && mDeparture.isCanceled();
     }
 
     public boolean isArrivalPlatformNormal() {
-        return isArrivalPlatformNormal;
+        return (mArrival != null) && mArrival.isPlatformNormal();
     }
 
     public boolean isDeparturePlatformNormal() {
-        return isDeparturePlatformNormal;
+        return (mDeparture != null) && mDeparture.isPlatformNormal();
     }
 
     @Nullable
     public OccupancyLevel getDepartureOccupancy() {
-        return departureOccupancy;
+        return (mDeparture != null) ? mDeparture.getOccupancy() : null;
     }
 
     @Nullable
     public String getDepartureSemanticId() {
-        return departureSemanticId;
+        return (mDeparture != null) ? mDeparture.getUri() : null;
     }
 
     public boolean hasLeft() {
-        return left;
+        return (mDeparture != null) && mDeparture.hasPassed();
     }
 
     public boolean hasArrived() {
-        return arrived;
+        return (mArrival != null) && mArrival.hasPassed();
     }
 
     public TransferType getType() {
         return type;
     }
+
+    @Nullable
+    public RouteLeg getArrivalLeg() {
+        return mArrivalLeg;
+    }
+
+    @Nullable
+    public RouteLeg getDepartureLeg() {
+        return mDepartureLeg;
+    }
+
 }

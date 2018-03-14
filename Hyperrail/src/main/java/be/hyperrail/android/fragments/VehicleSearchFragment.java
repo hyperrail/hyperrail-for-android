@@ -162,7 +162,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailVehicleRequest> object) {
-        openTrain(object.getData().getTrainId());
+        openTrain(object.getData().getVehicleId());
     }
 
     @Override
@@ -175,7 +175,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         super.onCreateContextMenu(menu, v, menuInfo);
         if (mLastSelectedQuery != null) {
             getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
-            menu.setHeaderTitle(mLastSelectedQuery.getData().getTrainId());
+            menu.setHeaderTitle(mLastSelectedQuery.getData().getVehicleId());
         }
     }
 

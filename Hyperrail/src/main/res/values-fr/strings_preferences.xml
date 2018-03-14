@@ -24,7 +24,7 @@
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>
         <item>@string/title_route</item>
-        <item>@string/title_train</item>
+        <item>@string/title_vehicle</item>
         <item>@string/title_disturbances</item>
     </string-array>
 
@@ -52,5 +52,6 @@
         <item>Français</item>
         <item>Allemand</item>
     </string-array>
-
+    <string name="pref_display_vehicle_on_map_summary">Afficher l\'itinéraire des trains sur une carte. Cela pourrait utiliser plus de données.</string>
+    <string name="pref_display_vehicle_on_map">Afficher l\'itinéraire des trains sur une carte</string>
 </resources>

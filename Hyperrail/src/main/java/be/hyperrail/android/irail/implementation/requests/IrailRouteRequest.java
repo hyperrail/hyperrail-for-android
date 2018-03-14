@@ -64,10 +64,10 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
         this.destination = route.getArrivalStation();
         this.timeDefinition = RouteTimeDefinition.DEPART;
         this.searchTime = route.getDepartureTime();
-        if (route.getOrigin().getDepartureSemanticId() == null) {
+        if (route.getDeparture().getDepartureSemanticId() == null) {
             throw new IllegalStateException("Cannot create a route request when no departure semantic id is provided");
         }
-        this.departureSemanticId = route.getOrigin().getDepartureSemanticId();
+        this.departureSemanticId = route.getDeparture().getDepartureSemanticId();
     }
 
     public IrailRouteRequest(@NonNull JSONObject jsonObject) throws JSONException {

@@ -35,29 +35,29 @@ public class ErrorDialogFactory {
      * @param context   The current context
      * @param finish    Whether or not to finish this activity
      */
-    public static void showErrorDialog(Exception exception, Activity context, boolean finish) {
+    public static AlertDialog showErrorDialog(Exception exception, Activity context, boolean finish) {
         if (context == null || context.isFinishing()) {
             // No valid context/activity to show this dialog
-            Log.w("ErrorDialogFactory","Failed to show error dialog: Activity is already finishing or finished");
-            return;
+            Log.w("ErrorDialogFactory", "Failed to show error dialog: Activity is already finishing or finished");
+            return null;
         }
 
         if (exception instanceof ServerError) {
             if (((ServerError) exception).networkResponse != null) {
                 if (((ServerError) exception).networkResponse.statusCode == 404) {
-                    showNotFoundErrorDialog(context, finish);
+                    return showNotFoundErrorDialog(context, finish);
                 } else if (((ServerError) exception).networkResponse.statusCode == 500) {
-                    showServerErrorDialog(context, finish);
+                    return showServerErrorDialog(context, finish);
                 } else {
-                    showServerErrorDialog(context, finish);
+                    return showServerErrorDialog(context, finish);
                 }
             } else {
-                showGeneralErrorDialog(context, finish);
+                return showGeneralErrorDialog(context, finish);
             }
         } else if (exception instanceof NoConnectionError) {
-            showNetworkErrorDialog(context, finish);
+            return showNetworkErrorDialog(context, finish);
         } else {
-            showGeneralErrorDialog(context, finish);
+            return showGeneralErrorDialog(context, finish);
         }
     }
 

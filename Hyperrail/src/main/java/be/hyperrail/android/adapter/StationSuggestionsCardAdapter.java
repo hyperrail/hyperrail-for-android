@@ -14,6 +14,7 @@ package be.hyperrail.android.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -67,8 +68,9 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         this.stations = stations;
     }
 
+    @NonNull
     @Override
-    public StationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public StationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
 
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout",
@@ -84,16 +86,19 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
     }
 
     @Override
-    public void onBindViewHolder(StationViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull StationViewHolder holder, int position) {
 
         int suggestedStationsLength = 0;
+        boolean suggestionsVisible = showSuggestions && suggestedStations != null;
 
-        if (showSuggestions && suggestedStations != null) {
+        if (suggestionsVisible) {
             suggestedStationsLength = suggestedStations.size();
         }
 
-        if ((showSuggestions && suggestedStations != null && position < suggestedStationsLength && !nearbyOnTop) ||
-                (showSuggestions && suggestedStations != null && position >= stations.length && nearbyOnTop)) {
+        if ((suggestionsVisible &&
+                (position < suggestedStationsLength && !nearbyOnTop) ||
+                (position >= stations.length && nearbyOnTop))
+                ) {
             bindSuggestionViewHolder(holder, position);
         } else {
             bindNearbyViewHolder(holder, position, suggestedStationsLength);
@@ -101,7 +106,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
     }
 
     private void bindNearbyViewHolder(StationViewHolder holder, int position, int suggestedStationsLength) {
-        final Station station;
+        Station station;
 
         if (!nearbyOnTop) {
             station = stations[position - suggestedStationsLength];
@@ -127,15 +132,17 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
                 break;
         }
 
+        IrailLiveboardRequest request = new IrailLiveboardRequest(station,
+                                                                  RouteTimeDefinition.DEPART,
+                                                                  null);
+        final Suggestion<IrailLiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    IrailLiveboardRequest request = new IrailLiveboardRequest(station,
-                                                                              RouteTimeDefinition.DEPART,
-                                                                              null);
                     listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this,
-                                                 new Suggestion<>(request, SuggestionType.LIST));
+                                                 suggestion);
                 }
             }
         });
@@ -144,13 +151,8 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    IrailLiveboardRequest request = new IrailLiveboardRequest(station,
-                                                                              RouteTimeDefinition.DEPART,
-                                                                              null);
                     longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
-                                                              new Suggestion<>(
-                                                                      request,
-                                                                      SuggestionType.LIST));
+                                                              suggestion);
                 }
                 return false;
             }
@@ -162,11 +164,11 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             position = position - stations.length;
         }
 
-        final Suggestion<IrailLiveboardRequest> q = suggestedStations.get(position);
+        final Suggestion<IrailLiveboardRequest> suggestion = suggestedStations.get(position);
 
-        holder.vStation.setText(q.getData().getStation().getLocalizedName());
+        holder.vStation.setText(suggestion.getData().getStation().getLocalizedName());
 
-        switch (q.getType()) {
+        switch (suggestion.getType()) {
             case FAVORITE:
                 holder.vIcon.setVisibility(View.VISIBLE);
                 holder.vIcon.setImageDrawable(
@@ -186,7 +188,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, q);
+                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, suggestion);
                 }
             }
         });
@@ -195,8 +197,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             @Override
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
-                                                              q);
+                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, suggestion);
                 }
                 return false;
             }

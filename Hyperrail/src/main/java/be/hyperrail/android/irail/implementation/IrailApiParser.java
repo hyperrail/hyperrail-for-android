@@ -10,6 +10,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package be.hyperrail.android.irail.implementation;
 
 import android.support.annotation.NonNull;
@@ -71,44 +83,31 @@ public class IrailApiParser {
         boolean hasLastTrainArrived = (arrival.has("arrived") && arrival.getInt("arrived") == 1);
         boolean hasFirstTrainLeft = (departure.has("left") && departure.getInt("left") == 1);
 
-        Transfer departureTransfer = new Transfer(
+        RouteLegEnd departureEnd = new RouteLegEnd(
                 stationProvider.getStationById(departure.getJSONObject("stationinfo").getString("id")),
-                null,
-                null, null, true, new Duration(0), false, hasFirstTrainLeft, new RouteLeg(RouteLegType.TRAIN, firstTrain),
                 timestamp2date(departure.getString("time")), departure.getString("platform"), departure.getJSONObject("platforminfo").getInt("normal") == 1,
                 new Duration(departure.getInt("delay") * 1000), departure.getInt("canceled") != 0, hasFirstTrainLeft,
                 departure.getString("departureConnection"),
-                departureOccupancyLevel,
-                TransferType.DEPARTURE);
-        Station departureStation = departureTransfer.getStation();
+                departureOccupancyLevel);
 
-        Transfer arrivalTransfer = new Transfer(
+        RouteLegEnd arrivalEnd = new RouteLegEnd(
                 stationProvider.getStationById(arrival.getJSONObject("stationinfo").getString("id")),
-                new RouteLeg(RouteLegType.TRAIN, lastTrain),
-                timestamp2date(arrival.getString("time")), arrival.getString("platform"), arrival.getJSONObject("platforminfo").getInt("normal") == 1, new Duration(arrival.getInt("delay") * 1000), arrival.getInt("canceled") != 0, hasLastTrainArrived, null,
-                null, null, true,
-                new Duration(0), false, hasLastTrainArrived,
-                null,
-                OccupancyLevel.UNKNOWN,
-                TransferType.ARRIVAL);
+                timestamp2date(arrival.getString("time")), arrival.getString("platform"), arrival.getJSONObject("platforminfo").getInt("normal") == 1,
+                new Duration(arrival.getInt("delay") * 1000), arrival.getInt("canceled") != 0, hasLastTrainArrived, null, null);
 
-        Station arrivalStation = arrivalTransfer.getStation();
 
         RouteLeg[] legs;
-        Transfer[] transfers;
 
         if (routeObject.has("vias")) {
 
             JSONObject vias = routeObject.getJSONObject("vias");
             int viaCount = vias.getInt("number");
 
-            legs = new RouteLeg[1 + viaCount];
-            legs[0] = new RouteLeg(RouteLegType.TRAIN, firstTrain);
-            legs[legs.length - 1] = new RouteLeg(RouteLegType.TRAIN, lastTrain);
 
-            transfers = new Transfer[viaCount + 2];
-            transfers[0] = departureTransfer;
-            transfers[transfers.length - 1] = arrivalTransfer;
+            RouteLegEnd[] departures = new RouteLegEnd[viaCount + 1];
+            RouteLegEnd[] arrivals = new RouteLegEnd[viaCount + 1];
+            departures[0] = departureEnd;
+            arrivals[arrivals.length - 1] = arrivalEnd;
 
             for (int i = 0; i < viaCount; i++) {
 
@@ -116,16 +115,6 @@ public class IrailApiParser {
 
                 JSONObject viaDeparture = via.getJSONObject("departure");
                 JSONObject viaArrival = via.getJSONObject("arrival");
-
-                // first train is already set
-                // Walking should only be between 2 journeys, so only in a via
-                if (viaDeparture.getInt("walking") == 0) {
-                    legs[i + 1] = new RouteLeg(RouteLegType.TRAIN, new VehicleStub(
-                            viaDeparture.getString("vehicle"),
-                            stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")), null));
-                } else {
-                    legs[i + 1] = new RouteLeg(RouteLegType.WALK, null);
-                }
 
                 OccupancyLevel viaOccupancyLevel = OccupancyLevel.UNKNOWN;
                 if (viaDeparture.has("occupancy")) {
@@ -136,24 +125,44 @@ public class IrailApiParser {
                 boolean hasLeft = (viaDeparture.has("left") && viaDeparture.getInt("left") == 1);
 
                 // don't use parseStop function, we have to combine data!
-                Transfer s = new Transfer(
+                arrivals[i] = new RouteLegEnd(
                         stationProvider.getStationById(via.getJSONObject("stationinfo").getString("id")),
-                        legs[i],
-                        timestamp2date(viaArrival.getString("time")), viaArrival.getString("platform"), viaArrival.getJSONObject("platforminfo").getInt("normal") == 1, new Duration(viaArrival.getInt("delay") * 1000), viaArrival.getInt("canceled") != 0, hasArrived, legs[i + 1],
+                        timestamp2date(viaArrival.getString("time")), viaArrival.getString("platform"), viaArrival.getJSONObject("platforminfo").getInt("normal") == 1,
+                        new Duration(viaArrival.getInt("delay") * 1000), viaArrival.getInt("canceled") != 0, hasArrived, null, null);
+                departures[i + 1] = new RouteLegEnd(
+                        stationProvider.getStationById(via.getJSONObject("stationinfo").getString("id")),
                         timestamp2date(viaDeparture.getString("time")), viaDeparture.getString("platform"), viaDeparture.getJSONObject("platforminfo").getInt("normal") == 1,
                         new Duration(viaDeparture.getInt("delay") * 1000), viaDeparture.getInt("canceled") != 0, hasLeft,
-                        viaDeparture.getString("departureConnection"),
-                        viaOccupancyLevel,
-                        TransferType.TRANSFER);
-                transfers[i + 1] = s;
+                        viaDeparture.getString("departureConnection"), viaOccupancyLevel);
             }
+
+            legs = new RouteLeg[viaCount + 1];
+
+            if (departure.getInt("walking") == 0) {
+                legs[0] = new RouteLeg(RouteLegType.TRAIN, new VehicleStub(
+                        departure.getString("vehicle"),
+                        stationProvider.getStationByName(departure.getJSONObject("direction").getString("name")), null), departures[0], arrivals[0]);
+            } else {
+                legs[0] = new RouteLeg(RouteLegType.WALK, null, departures[0], arrivals[0]);
+            }
+
+            for (int i = 0; i < viaCount; i++) {
+                JSONObject via = (JSONObject) routeObject.getJSONObject("vias").getJSONArray("via").get(i);
+                JSONObject viaDeparture = via.getJSONObject("departure");
+                // first train is already set
+                // Walking should only be between 2 journeys, so only in a via
+                if (viaDeparture.getInt("walking") == 0) {
+                    legs[i + 1] = new RouteLeg(RouteLegType.TRAIN, new VehicleStub(
+                            viaDeparture.getString("vehicle"),
+                            stationProvider.getStationByName(viaDeparture.getJSONObject("direction").getString("name")), null), departures[i + 1], arrivals[i + 1]);
+                } else {
+                    legs[i + 1] = new RouteLeg(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
+                }
+            }
+
         } else {
             legs = new RouteLeg[1];
-            legs[0] = new RouteLeg(RouteLegType.TRAIN, firstTrain);
-
-            transfers = new Transfer[2];
-            transfers[0] = departureTransfer;
-            transfers[1] = arrivalTransfer;
+            legs[0] = new RouteLeg(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd);
         }
 
         Message[][] trainalerts = new Message[legs.length][];
@@ -192,19 +201,10 @@ public class IrailApiParser {
             }
         }
 
-        return new Route(
-                departureStation,
-                arrivalStation,
-                timestamp2date(departure.getString("time")),
-                new Duration(departure.getInt("delay") * 1000),
-                departure.getString("platform"),
-                departure.getJSONObject("platforminfo").getInt("normal") == 1,
-                timestamp2date(arrival.getString("time")),
-                new Duration(arrival.getInt("delay") * 1000),
-                arrival.getString("platform"),
-                arrival.getJSONObject("platforminfo").getInt("normal") == 1,
-                legs,
-                transfers, alerts, trainalerts, null);
+        Route r = new Route(legs);
+        r.setAlerts(alerts);
+        r.setTrainalerts(trainalerts);
+        return r;
     }
 
     public Disturbance[] parseDisturbances(JSONObject jsonData) throws JSONException {
@@ -223,10 +223,10 @@ public class IrailApiParser {
 
         for (int i = 0; i < items.length(); i++) {
             result[i] = new Disturbance(i,
-                    timestamp2date(items.getJSONObject(i).getString("timestamp")),
-                    items.getJSONObject(i).getString("title"),
-                    items.getJSONObject(i).getString("description"),
-                    items.getJSONObject(i).getString("link"));
+                                        timestamp2date(items.getJSONObject(i).getString("timestamp")),
+                                        items.getJSONObject(i).getString("title"),
+                                        items.getJSONObject(i).getString("description"),
+                                        items.getJSONObject(i).getString("link"));
         }
 
         return result;
@@ -280,7 +280,7 @@ public class IrailApiParser {
             occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
         }
         if (type == VehicleStopType.DEPARTURE) {
-            return VehicleStop.buildDepartureTrainstop(
+            return VehicleStop.buildDepartureVehicleStop(
                     stop,
                     destination,
                     new VehicleStub(item.getString("vehicle"), destination, item.getJSONObject("vehicleinfo").getString("@id")),
@@ -294,7 +294,7 @@ public class IrailApiParser {
                     occupancyLevel
             );
         } else {
-            return VehicleStop.buildArrivalTrainstop(
+            return VehicleStop.buildArrivalVehicleStop(
                     stop,
                     destination,
                     new VehicleStub(item.getString("vehicle"), destination, item.getJSONObject("vehicleinfo").getString("@id")),

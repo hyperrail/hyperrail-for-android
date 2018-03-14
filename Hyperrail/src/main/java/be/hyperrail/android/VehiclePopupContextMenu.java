@@ -41,6 +41,7 @@ import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.RouteLeg;
 import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.irail.implementation.TransferType;
@@ -63,12 +64,12 @@ public class VehiclePopupContextMenu {
 
     private static final String NOTIFICATION_CHANNEL_GLIMPSE = "glimpse";
     private final View mActivityView;
-    private final Transfer mDepartureTransfer;
     private final VehicleStop mVehicleStop;
-    private final Transfer mArrivalTransfer;
     private final Activity mContext;
 
     private final int type;
+    private final RouteLeg mLeg;
+    private final Transfer mTransfer;
 
     /**
      * Create a popupdialog, with the correct fields for a train stop, either from a liveboard or train schedule.
@@ -81,8 +82,8 @@ public class VehiclePopupContextMenu {
         this.mActivityView = context.getWindow().getDecorView().findViewById(android.R.id.content);
 
         this.mVehicleStop = stop;
-        this.mArrivalTransfer = null;
-        this.mDepartureTransfer = null;
+        this.mLeg = null;
+        this.mTransfer = null;
 
         this.type = TYPE_TRAIN_STOP;
     }
@@ -97,9 +98,9 @@ public class VehiclePopupContextMenu {
         this.mContext = context;
         this.mActivityView = context.getWindow().getDecorView().findViewById(android.R.id.content);
 
-        this.mArrivalTransfer = transfer;
-        this.mDepartureTransfer = transfer;
+        this.mTransfer = transfer;
         this.mVehicleStop = null;
+        this.mLeg = null;
 
         this.type = TYPE_TRANSFER;
     }
@@ -107,16 +108,14 @@ public class VehiclePopupContextMenu {
     /**
      * Create a popupdialog, with the correct fields for a train on a route, identified by the departure before and the arrival after this train.
      *
-     * @param context           The activity which is currently being shown / from where this dialog is requested
-     * @param departureTransfer The transfer before the train
-     * @param arrivalTransfer   The transfer after the train
+     * @param context The activity which is currently being shown / from where this dialog is requested
      */
-    public VehiclePopupContextMenu(@NonNull Activity context, @NonNull Transfer departureTransfer, @NonNull Transfer arrivalTransfer) {
+    public VehiclePopupContextMenu(@NonNull Activity context, @NonNull RouteLeg leg) {
         this.mContext = context;
         this.mActivityView = context.getWindow().getDecorView().findViewById(android.R.id.content);
 
-        this.mArrivalTransfer = arrivalTransfer;
-        this.mDepartureTransfer = departureTransfer;
+        this.mLeg = leg;
+        this.mTransfer = null;
         this.mVehicleStop = null;
 
         this.type = TYPE_ROUTE_TRAIN;
@@ -172,35 +171,35 @@ public class VehiclePopupContextMenu {
         String mArrivalEtaText;
 
         vDialog.setTitle(
-                mDepartureTransfer.getDepartingRouteLeg().getVehicleInformation().getName() + " " +
-                        mDepartureTransfer.getStation().getLocalizedName() + "-" + mArrivalTransfer.getStation().getLocalizedName());
+                mLeg.getVehicleInformation().getName() + " " +
+                        mLeg.getDeparture().getStation().getLocalizedName() + "-" + mLeg.getArrival().getStation().getLocalizedName());
 
         // Occupancy + departure ETA
-        if (mDepartureTransfer.getDepartingRouteLeg().getType() != RouteLegType.WALK) {
+        if (mLeg.getType() != RouteLegType.WALK) {
 
-            mDepartureConnection = mDepartureTransfer.getDepartureSemanticId();
-            mStationSemanticId = mDepartureTransfer.getStation().getSemanticId();
-            mVehicleSemanticId = mDepartureTransfer.getDepartingRouteLeg().getVehicleInformation().getSemanticId();
-            mDateTime = mDepartureTransfer.getDepartureTime();
+            mDepartureConnection = mLeg.getDeparture().getUri();
+            mStationSemanticId = mLeg.getDeparture().getStation().getSemanticId();
+            mVehicleSemanticId = mLeg.getVehicleInformation().getSemanticId();
+            mDateTime = mLeg.getDeparture().getTime();
             bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
                                  mVehicleSemanticId, mDateTime);
 
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
                     DateTimeFormat.forPattern("hh:mm").print(
-                            mDepartureTransfer.getDelayedDepartureTime()),
-                    mDepartureTransfer.getStation().getLocalizedName(),
-                    mDepartureTransfer.getDepartingRouteLeg().getVehicleInformation().getName());
+                            mLeg.getDeparture().getDelayedTime()),
+                    mLeg.getDeparture().getStation().getLocalizedName(),
+                    mLeg.getVehicleInformation().getName());
         } else {
             mDepartureEtaText = null;
         }
 
-        if (mArrivalTransfer.getArrivingRouteLeg().getType() != RouteLegType.WALK) {
+        if (mLeg.getType() != RouteLegType.WALK) {
             mArrivalEtaText = String.format(mContext.getString(string.ETA_transfer_arrival),
                                             DateTimeFormat.forPattern("hh:mm").print(
-                                                    mArrivalTransfer.getDelayedArrivalTime()),
-                                            mArrivalTransfer.getStation().getLocalizedName(),
-                                            mArrivalTransfer.getArrivingRouteLeg().getVehicleInformation().getName());
+                                                    mLeg.getArrival().getDelayedTime()),
+                                            mLeg.getArrival().getStation().getLocalizedName(),
+                                            mLeg.getVehicleInformation().getName());
         } else {
             mArrivalEtaText = null;
         }
@@ -223,13 +222,13 @@ public class VehiclePopupContextMenu {
         String mDepartureEtaText;
         String mArrivalEtaText;
 
-        vDialog.setTitle(mDepartureTransfer.getStation().getLocalizedName());
+        vDialog.setTitle(mTransfer.getStation().getLocalizedName());
 
-        if (mDepartureTransfer.getType() == TransferType.DEPARTURE || mDepartureTransfer.getType() == TransferType.TRANSFER) {
-            String mDepartureConnection = mDepartureTransfer.getDepartureSemanticId();
-            String mStationSemanticId = mDepartureTransfer.getStation().getSemanticId();
-            String mVehicleSemanticId = mDepartureTransfer.getDepartingRouteLeg().getVehicleInformation().getSemanticId();
-            DateTime mDateTime = mDepartureTransfer.getDepartureTime();
+        if (mTransfer.getType() == TransferType.DEPARTURE || mTransfer.getType() == TransferType.TRANSFER) {
+            String mDepartureConnection = mTransfer.getDepartureSemanticId();
+            String mStationSemanticId = mTransfer.getStation().getSemanticId();
+            String mVehicleSemanticId = mTransfer.getDepartureLeg().getVehicleInformation().getSemanticId();
+            DateTime mDateTime = mTransfer.getDepartureTime();
 
             bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection,
                                  mStationSemanticId,
@@ -238,19 +237,19 @@ public class VehiclePopupContextMenu {
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
                     DateTimeFormat.forPattern("hh:mm").print(
-                            mDepartureTransfer.getDelayedDepartureTime()),
-                    mDepartureTransfer.getStation().getLocalizedName(),
-                    mDepartureTransfer.getDepartingRouteLeg().getVehicleInformation().getName());
+                            mTransfer.getDelayedDepartureTime()),
+                    mTransfer.getStation().getLocalizedName(),
+                    mTransfer.getDepartureLeg().getVehicleInformation().getName());
         } else {
             mDepartureEtaText = null;
         }
 
-        if (mDepartureTransfer.getType() == TransferType.ARRIVAL || mDepartureTransfer.getType() == TransferType.TRANSFER) {
+        if (mTransfer.getType() == TransferType.ARRIVAL || mTransfer.getType() == TransferType.TRANSFER) {
             mArrivalEtaText = String.format(mContext.getString(string.ETA_transfer_arrival),
                                             DateTimeFormat.forPattern("hh:mm").print(
-                                                    mArrivalTransfer.getDelayedArrivalTime()),
-                                            mArrivalTransfer.getStation().getLocalizedName(),
-                                            mArrivalTransfer.getArrivingRouteLeg().getVehicleInformation().getName());
+                                                    mTransfer.getDelayedArrivalTime()),
+                                            mTransfer.getStation().getLocalizedName(),
+                                            mTransfer.getArrivalLeg().getVehicleInformation().getName());
         } else {
             mArrivalEtaText = null;
         }
@@ -274,13 +273,13 @@ public class VehiclePopupContextMenu {
 
         String mDepartureConnection = mVehicleStop.getDepartureSemanticId();
         String mStationSemanticId = mVehicleStop.getStation().getSemanticId();
-        String mVehicleSemanticId = mVehicleStop.getTrain().getSemanticId();
+        String mVehicleSemanticId = mVehicleStop.getVehicle().getSemanticId();
         DateTime mDateTime = mVehicleStop.getDepartureTime();
 
         bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
                              mVehicleSemanticId, mDateTime);
 
-        vDialog.setTitle(mVehicleStop.getTrain().getName() + " " +
+        vDialog.setTitle(mVehicleStop.getVehicle().getName() + " " +
                                  mVehicleStop.getStation().getLocalizedName());
 
         String mDepartureEtaText = String.format(mContext.getString(string.ETA_stop_departure),
@@ -288,14 +287,14 @@ public class VehiclePopupContextMenu {
                                                          mVehicleStop.getDelayedDepartureTime()
                                                  ),
                                                  mVehicleStop.getStation().getLocalizedName(),
-                                                 mVehicleStop.getTrain().getName());
+                                                 mVehicleStop.getVehicle().getName());
 
         String mArrivalEtaText = String.format(mContext.getString(string.ETA_stop_arrival),
                                                DateTimeFormat.forPattern("hh:mm").print(
                                                        mVehicleStop.getDelayedArrivalTime()
                                                ),
                                                mVehicleStop.getStation().getLocalizedName(),
-                                               mVehicleStop.getTrain().getName());
+                                               mVehicleStop.getVehicle().getName());
 
         bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
                        mDepartureEtaText);
@@ -386,31 +385,31 @@ public class VehiclePopupContextMenu {
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
                                                                                mVehicleStop));
                     mBuilder.setSubText(
-                            "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getTrain().getDirection().getLocalizedName());
+                            "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getVehicle().getDirection().getLocalizedName());
                     resultIntent = VehicleActivity.createIntent(mContext, new IrailVehicleRequest(
-                            mVehicleStop.getTrain().getId(), mVehicleStop.getDepartureTime()));
+                            mVehicleStop.getVehicle().getId(), mVehicleStop.getDepartureTime()));
 
                 } else {
-                    if (mDepartureTransfer != null) {
+                    if (mTransfer != null) {
                         mBuilder.setSubText(
-                                "Transfer at  " + mDepartureTransfer.getStation().getLocalizedName());
+                                "Transfer at  " + mTransfer.getStation().getLocalizedName());
                         resultIntent = LiveboardActivity.createIntent(mContext,
                                                                       new IrailLiveboardRequest(
-                                                                              mDepartureTransfer.getStation(),
+                                                                              mTransfer.getStation(),
                                                                               RouteTimeDefinition.DEPART,
-                                                                              mDepartureTransfer.getArrivalTime()));
+                                                                              mTransfer.getArrivalTime()));
                     } else {
                         mBuilder.setSubText(
-                                "Transfer at  " + mArrivalTransfer.getStation().getLocalizedName());
+                                "Transfer at  " + mTransfer.getStation().getLocalizedName());
                         resultIntent = LiveboardActivity.createIntent(mContext,
                                                                       new IrailLiveboardRequest(
-                                                                              mArrivalTransfer.getStation(),
+                                                                              mTransfer.getStation(),
                                                                               RouteTimeDefinition.DEPART,
-                                                                              mArrivalTransfer.getArrivalTime()));
+                                                                              mTransfer.getArrivalTime()));
                     }
                     mBuilder.setCustomBigContentView(
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
-                                                                               mArrivalTransfer));
+                                                                               mTransfer));
 
                 }
 

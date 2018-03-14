@@ -25,7 +25,7 @@
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>
         <item>@string/title_route</item>
-        <item>@string/title_train</item>
+        <item>@string/title_vehicle</item>
         <item>@string/title_disturbances</item>
     </string-array>
 
@@ -84,4 +84,6 @@
         <item>deu</item>
     </string-array>
 
+    <string name="pref_display_vehicle_on_map_summary">Display the route of vehicles on a map. This might use more data.</string>
+    <string name="pref_display_vehicle_on_map">Display the route of a vehicle on a map</string>
 </resources>

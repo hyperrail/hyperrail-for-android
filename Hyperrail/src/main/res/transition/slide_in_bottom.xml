@@ -4,19 +4,14 @@
   ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 
-<!--
-  ~ This Source Code Form is subject to the terms of the Mozilla Public
-  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
-  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
-  -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android">
     <translate
         android:duration="@android:integer/config_mediumAnimTime"
-        android:fromXDelta="0"
-        android:toXDelta="-50%p" />
+        android:fromYDelta="-100%p"
+        android:toYDelta="0" />
     <alpha
         android:duration="@android:integer/config_mediumAnimTime"
-        android:fromAlpha="1.0"
-        android:toAlpha="0.0" />
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
 </set>

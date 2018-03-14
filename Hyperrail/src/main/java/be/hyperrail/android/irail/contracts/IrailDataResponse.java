@@ -34,21 +34,6 @@ public interface IrailDataResponse<T> {
     T getData();
 
     /**
-     * Whether or not the request was successful.
-     *
-     * @return Whether or not the request was successful.
-     */
-    boolean isSuccess();
-
-    /**
-     * Get the exception object that occurred during the request
-     *
-     * @return The exception thrown by the data provider
-     */
-    @Nullable
-    Exception getException();
-
-    /**
      * Get the time at which the request was fulfilled.
      *
      * @return The time when the response was received
@@ -56,7 +41,17 @@ public interface IrailDataResponse<T> {
     @NonNull
     DateTime getTime();
 
+    /**
+     * Whether or not internet was available when creating the response
+     *
+     * @return True if the response was created without internet connectivity
+     */
     boolean isOffline();
 
+    /**
+     * Whether or not the response was handled from cache
+     *
+     * @return True if the response was handled from cache
+     */
     boolean isCached();
 }

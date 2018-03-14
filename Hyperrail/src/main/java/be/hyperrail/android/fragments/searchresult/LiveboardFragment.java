@@ -26,15 +26,14 @@ import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
-import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.LiveBoard;
-import be.hyperrail.android.irail.implementation.LiveboardAppendHelper;
 import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.util.ErrorDialogFactory;
@@ -58,7 +57,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("request")){
+        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
             mRequest = (IrailLiveboardRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
@@ -79,7 +78,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     @Override
     protected LiveBoard getRestoredInstanceStateItems(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
-            mCurrentLiveboard =  (LiveBoard) savedInstanceState.getSerializable("result");
+            mCurrentLiveboard = (LiveBoard) savedInstanceState.getSerializable("result");
         }
         return mCurrentLiveboard;
     }
@@ -118,14 +117,17 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     protected void getData() {
-        if (this.vRefreshLayout.isRefreshing()) {
-            // Disable infinite scrolling for now to prevent having 2 loading icons
-            // Also prevents the loadNext method from trying to load all the time during initial load
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
-        }
 
         mCurrentLiveboard = null;
         showData(null);
+
+        if (this.vRefreshLayout.isRefreshing()) {
+            // Disable infinite scrolling for now to prevent having 2 loading icons
+            mLiveboardCardAdapter.setInfiniteScrolling(false);
+        } else {
+            // Restore if it was disabled earlier on. Will still be blocked since currentLiveboard == null
+            mLiveboardCardAdapter.setInfiniteScrolling(true);
+        }
 
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         // Don't abort all queries: there might be multiple fragments at the same screen!
@@ -145,7 +147,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
                     LiveboardFragment.this.loadNextRecyclerviewItems();
                 } else {
                     // Enable infinite scrolling again
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(true);
+                    mLiveboardCardAdapter.setInfiniteScrolling(true);
                 }
 
                 // Scroll past the load earlier item
@@ -168,73 +170,78 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
         // When not yet initialized with the first data, don't load more
         // mCurrentLiveboard won't be empty after the first response: its stops array might be empty, but the object will be NonNull
         if (mCurrentLiveboard == null) {
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+            mLiveboardCardAdapter.setNextLoaded();
             return;
         }
 
-        LiveboardAppendHelper helper = new LiveboardAppendHelper();
-        helper.appendLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
+        ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.APPEND);
+        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setInfiniteScrolling(false);
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), data.getStops().length == 0);
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfiniteNext();
+                    mLiveboardCardAdapter.disableInfiniteNext();
                 }
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
 
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+                mLiveboardCardAdapter.setNextLoaded();
 
                 // Scroll past the "load earlier"
                 LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
                 if (mgr.findFirstVisibleItemPosition() == 0) {
                     mgr.scrollToPositionWithOffset(1, 0);
                 }
-
             }
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setNextLoaded();
+                mLiveboardCardAdapter.setNextError(true);
+                mLiveboardCardAdapter.setNextLoaded();
             }
-        });
+        }, null);
+        IrailFactory.getDataProviderInstance().extendLiveboard(request);
     }
 
     @Override
     public void loadPreviousRecyclerviewItems() {
         // When not yet initialized with the first data, don't load previous
         if (mCurrentLiveboard == null) {
-            ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+            mLiveboardCardAdapter.setPrevLoaded();
             return;
         }
 
-        LiveboardAppendHelper helper = new LiveboardAppendHelper();
-        helper.prependLiveboard(mCurrentLiveboard, new IRailSuccessResponseListener<LiveBoard>() {
+        ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.PREPEND);
+        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
             @Override
             public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), false);
-                    ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).disableInfinitePrevious();
+                    mLiveboardCardAdapter.disableInfinitePrevious();
                 }
+
+                int oldLength = mLiveboardCardAdapter.getItemCount();
+
                 mCurrentLiveboard = data;
                 showData(mCurrentLiveboard);
 
+                int newLength = mLiveboardCardAdapter.getItemCount();
                 // Scroll past the load earlier item
-                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newLength - oldLength, 0);
 
-                ((InfiniteScrollingAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+                mLiveboardCardAdapter.setPrevLoaded();
             }
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), false);
-                ((LiveboardCardAdapter) vRecyclerView.getAdapter()).setPrevLoaded();
+                mLiveboardCardAdapter.setPrevLoaded();
             }
-        });
+        }, null);
+        IrailFactory.getDataProviderInstance().extendLiveboard(request);
     }
 
     @Override
@@ -245,7 +252,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        Intent i = VehicleActivity.createIntent(getActivity(), new IrailVehicleRequest(object.getTrain().getId(), object.getDepartureTime()));
+        Intent i = VehicleActivity.createIntent(getActivity(), new IrailVehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 

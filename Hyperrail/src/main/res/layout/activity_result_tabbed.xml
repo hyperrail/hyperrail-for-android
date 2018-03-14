@@ -5,7 +5,7 @@
     android:id="@+id/activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:gravity="top"
     android:orientation="vertical"
     tools:context="be.hyperrail.android.activities.searchresult.LiveboardActivity">
 
@@ -14,7 +14,8 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <android.support.design.widget.TabLayout
             android:layout_width="match_parent"
@@ -26,4 +27,14 @@
             app:tabTextColor="@color/colorPrimaryDark" />
 
     </android.support.v4.view.ViewPager>
+
+    <TextView
+        android:id="@+id/text_status_offline"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listitem_content_height_double"
+        android:animateLayoutChanges="true"
+        android:background="@color/backgroundMaterialDark"
+        android:gravity="center"
+        android:text="@string/warning_offline"
+        android:textColor="@color/colorTextLight" />
 </LinearLayout>

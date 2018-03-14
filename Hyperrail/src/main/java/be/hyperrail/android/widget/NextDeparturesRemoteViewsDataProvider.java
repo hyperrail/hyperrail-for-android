@@ -103,8 +103,8 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
 
         rv.setTextViewText(R.id.text_destination, stop.getDestination().getLocalizedName());
 
-        rv.setTextViewText(R.id.text_train_number, stop.getTrain().getNumber());
-        rv.setTextViewText(R.id.text_train_type, stop.getTrain().getType());
+        rv.setTextViewText(R.id.text_train_number, stop.getVehicle().getNumber());
+        rv.setTextViewText(R.id.text_train_type, stop.getVehicle().getType());
         rv.setTextViewText(R.id.text_platform, stop.getPlatform());
 
         if (stop.isDepartureCanceled()) {

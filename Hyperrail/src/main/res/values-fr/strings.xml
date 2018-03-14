@@ -44,7 +44,7 @@
     <string name="title_liveboard">Départs</string>
     <string name="title_disturbances">Perturbations</string>
     <string name="title_route">Route</string>
-    <string name="title_train">Train</string>
+    <string name="title_vehicle">Train</string>
     <string name="title_feedback">Feedback</string>
     <string name="undo">Annuler</string>
     <string name="unmarked_route_favorite">Voie non marquée comme favori</string>
@@ -110,4 +110,6 @@
     <string name="ETA_stop_departure">À %s je partirai de %s avec %s</string>
     <string name="ETA_transfer_departure">À %s je partirai de %s avec %s</string>
     <string name="list_day_names">Lundi\nMardi\nMercredi\nJeudi\nVendredi\nSamedi\nDimanche</string>
+    <string name="warning_offline">Vous êtes hors ligne. Les résultats peuvent être dépassés.</string>
+    <string name="tap_to_retry">Le chargement a échoué. Cliquez pour réessayer</string>
 </resources>

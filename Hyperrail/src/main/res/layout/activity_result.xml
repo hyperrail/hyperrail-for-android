@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This Source Code Form is subject to the terms of the Mozilla Public
   ~ License, v. 2.0. If a copy of the MPL was not distributed with this
   ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -10,7 +9,7 @@
     android:id="@+id/activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:gravity="top"
     android:orientation="vertical"
     tools:context="be.hyperrail.android.activities.searchresult.LiveboardActivity">
 
@@ -19,6 +18,16 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
+    <TextView
+        android:id="@+id/text_status_offline"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listitem_content_height_double"
+        android:animateLayoutChanges="true"
+        android:background="@color/backgroundMaterialDark"
+        android:gravity="center"
+        android:text="@string/warning_offline"
+        android:textColor="@color/colorTextLight" />
 </LinearLayout>

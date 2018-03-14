@@ -66,20 +66,20 @@ public class VehicleStop implements Serializable {
     }
 
 
-    protected static VehicleStop buildDepartureTrainstop(Station station, Station destination, VehicleStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
+    protected static VehicleStop buildDepartureVehicleStop(Station station, Station destination, VehicleStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
         return new VehicleStop(station, destination, train, platform, isPlatformNormal,
                                departureTime, null, departureDelay, null,
                                departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.DEPARTURE);
     }
 
-    protected static VehicleStop buildArrivalTrainstop(Station station, Station destination, VehicleStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
+    protected static VehicleStop buildArrivalVehicleStop(Station station, Station destination, VehicleStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, OccupancyLevel occupancyLevel) {
         return new VehicleStop(station, destination, train, platform, isPlatformNormal,
                                null, arrivalTime, null, arrivalDelay,
                                arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.ARRIVAL);
     }
 
 
-    public VehicleStub getTrain() {
+    public VehicleStub getVehicle() {
         return train;
     }
 
@@ -155,6 +155,14 @@ public class VehicleStop implements Serializable {
 
     public VehicleStopType getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof VehicleStop && (
+                (this.getDepartureSemanticId() != null && this.getDepartureSemanticId().equals(((VehicleStop) obj).getDepartureSemanticId())) ||
+                        (this.getStation().equals(((VehicleStop) obj).getStation()) && this.getVehicle().equals(((VehicleStop) obj).getVehicle()))
+        );
     }
 }
 

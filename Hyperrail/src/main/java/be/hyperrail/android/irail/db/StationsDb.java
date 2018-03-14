@@ -327,6 +327,39 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         onUpgrade(db, oldVersion, newVersion);
     }
 
+    private String[] getLocationQueryColumns(double longitude, double latitude) {
+        return new String[]{
+                StationsDataColumns._ID,
+                StationsDataColumns.COLUMN_NAME_NAME,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
+                StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
+                StationsDataColumns.COLUMN_NAME_LATITUDE,
+                StationsDataColumns.COLUMN_NAME_LONGITUDE,
+                StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES,
+                "(" + StationsDataColumns.COLUMN_NAME_LATITUDE + " - " + latitude + ")*(" + StationsDataColumns.COLUMN_NAME_LATITUDE + " - " + latitude
+                        + ")+(" + StationsDataColumns.COLUMN_NAME_LONGITUDE + " - " + longitude + ")*(" + StationsDataColumns.COLUMN_NAME_LONGITUDE + " - " + longitude
+                        + ") AS distance"
+        };
+    }
+
+    private String[] getDefaultQueryColumns() {
+        return new String[]{
+                StationsDataColumns._ID,
+                StationsDataColumns.COLUMN_NAME_NAME,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
+                StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
+                StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
+                StationsDataColumns.COLUMN_NAME_LATITUDE,
+                StationsDataColumns.COLUMN_NAME_LONGITUDE,
+                StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES
+        };
+    }
+
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderBySize")
     public Station[] getStationsOrderBySize() {
@@ -338,18 +371,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
-                new String[]{
-                        StationsDataColumns._ID,
-                        StationsDataColumns.COLUMN_NAME_NAME,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
-                        StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
-                        StationsDataColumns.COLUMN_NAME_LATITUDE,
-                        StationsDataColumns.COLUMN_NAME_LONGITUDE,
-                        StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES
-                },
+                getDefaultQueryColumns(),
                 null,
                 null,
                 null,
@@ -376,18 +398,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         name = cleanAccents(name);
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
-                new String[]{
-                        StationsDataColumns._ID,
-                        StationsDataColumns.COLUMN_NAME_NAME,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
-                        StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
-                        StationsDataColumns.COLUMN_NAME_LATITUDE,
-                        StationsDataColumns.COLUMN_NAME_LONGITUDE,
-                        StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES
-                },
+                getDefaultQueryColumns(),
                 StationsDataColumns.COLUMN_NAME_NAME + " LIKE ?",
                 new String[]{"%" + name + "%"},
                 null,
@@ -424,21 +435,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         name = name.replaceAll("\\(\\w\\)", "");
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
-                new String[]{
-                        StationsDataColumns._ID,
-                        StationsDataColumns.COLUMN_NAME_NAME,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
-                        StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
-                        StationsDataColumns.COLUMN_NAME_LATITUDE,
-                        StationsDataColumns.COLUMN_NAME_LONGITUDE,
-                        StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES,
-                        "(" + StationsDataColumns.COLUMN_NAME_LATITUDE + " - " + latitude + ")*(" + StationsDataColumns.COLUMN_NAME_LATITUDE + " - " + latitude + ")+("
-                                + StationsDataColumns.COLUMN_NAME_LONGITUDE + " - " + longitude + ")*(" + StationsDataColumns.COLUMN_NAME_LONGITUDE + " - " + longitude
-                                + ") AS distance"
-                },
+                getLocationQueryColumns(longitude, latitude),
                 StationsDataColumns.COLUMN_NAME_NAME + " LIKE ?",
                 new String[]{"%" + name + "%"},
                 null,
@@ -448,9 +445,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Station[] stations = loadStationCursor(c);
         c.close();
-        
+
         return stations;
     }
+
 
     /**
      * @inheritDoc
@@ -464,21 +462,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
-                new String[]{
-                        StationsDataColumns._ID,
-                        StationsDataColumns.COLUMN_NAME_NAME,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
-                        StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
-                        StationsDataColumns.COLUMN_NAME_LATITUDE,
-                        StationsDataColumns.COLUMN_NAME_LONGITUDE,
-                        StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES,
-                        "(" + StationsDataColumns.COLUMN_NAME_LATITUDE + " - " + latitude + ")*(" + StationsDataColumns.COLUMN_NAME_LATITUDE + " - " + latitude
-                                + ")+(" + StationsDataColumns.COLUMN_NAME_LONGITUDE + " - " + longitude + ")*(" + StationsDataColumns.COLUMN_NAME_LONGITUDE + " - " + longitude
-                                + ") AS distance"
-                },
+                getLocationQueryColumns(longitude, latitude),
                 null,
                 null,
                 null,
@@ -490,7 +474,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] stations = loadStationCursor(c);
 
         c.close();
-        
+
 
         if (stations == null) {
             return null;
@@ -541,18 +525,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
-                new String[]{
-                        StationsDataColumns._ID,
-                        StationsDataColumns.COLUMN_NAME_NAME,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
-                        StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
-                        StationsDataColumns.COLUMN_NAME_LATITUDE,
-                        StationsDataColumns.COLUMN_NAME_LONGITUDE,
-                        StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES
-                },
+                getDefaultQueryColumns(),
                 StationsDataColumns._ID + "=?",
                 new String[]{id},
                 null,
@@ -564,7 +537,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        
+
 
         if (results == null) {
             FirebaseCrash.report(
@@ -591,18 +564,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         String wcName = name.replaceAll("[^A-Za-z]", "%");
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
-                new String[]{
-                        StationsDataColumns._ID,
-                        StationsDataColumns.COLUMN_NAME_NAME,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE,
-                        StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN,
-                        StationsDataColumns.COLUMN_NAME_COUNTRY_CODE,
-                        StationsDataColumns.COLUMN_NAME_LATITUDE,
-                        StationsDataColumns.COLUMN_NAME_LONGITUDE,
-                        StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES
-                },
+                getDefaultQueryColumns(),
                 StationsDataColumns.COLUMN_NAME_NAME + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL +
                         " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?",
                 new String[]{wcName, wcName, wcName, wcName, wcName},
@@ -642,7 +604,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] results = loadStationCursor(c);
 
         c.close();
-        
+
 
         if (results == null) {
             return null;
@@ -709,7 +671,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         StationFacilities result = loadFacilitiesCursor(c);
         c.close();
-        
+
         return result;
 
     }

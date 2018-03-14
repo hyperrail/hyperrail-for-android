@@ -7,6 +7,7 @@
 package be.hyperrail.android.irail.contracts;
 
 public enum OccupancyLevel {
+    UNSUPPORTED,
     UNKNOWN,
     LOW,
     MEDIUM,

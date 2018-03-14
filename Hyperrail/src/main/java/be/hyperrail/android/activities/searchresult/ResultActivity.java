@@ -12,8 +12,12 @@
 
 package be.hyperrail.android.activities.searchresult;
 
+import android.content.Context;
+import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.LayoutRes;
@@ -34,12 +38,15 @@ import java.io.Serializable;
 import be.hyperrail.android.R;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.util.DateTimePicker;
+import be.hyperrail.android.util.NetworkStateChangeReceiver;
 import be.hyperrail.android.util.OnDateTimeSetListener;
+
+import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 
 /**
  * An abstract class for activities which contain a recyclerview
  */
-public abstract class ResultActivity extends AppCompatActivity implements OnDateTimeSetListener, Serializable {
+public abstract class ResultActivity extends AppCompatActivity implements OnDateTimeSetListener, Serializable, NetworkStateChangeReceiver.ConnectionReceiverListener {
 
     /**
      * History & favorites provider
@@ -55,6 +62,8 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
      * The layout root
      */
     protected View vLayoutRoot;
+    private ConnectivityManager mConnectivityManager;
+    private NetworkStateChangeReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +84,30 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
 
         mPersistentQueryProvider = PersistentQueryProvider.getInstance(
                 this.getApplicationContext());
+
+        mConnectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        mReceiver = new NetworkStateChangeReceiver(this);
+
+        onNetworkConnectionChanged(isInternetAvailable());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(mReceiver, new IntentFilter(CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mReceiver);
+    }
+
+    private boolean isInternetAvailable() {
+        NetworkInfo activeNetwork = mConnectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 
     /**
@@ -118,6 +151,12 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(getMenuLayout(), menu);
+
+        for (int i = 0; i < menu.size(); i++) {
+            if (menu.getItem(i).getIcon() != null) {
+                tintDrawable(menu.getItem(i).getIcon(), R.color.colorWhite);
+            }
+        }
 
         vFavoriteMenuItem = menu.findItem(R.id.action_favorite);
         if (vFavoriteMenuItem != null) {
@@ -217,4 +256,12 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
         }
     }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected) {
+            findViewById(R.id.text_status_offline).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.text_status_offline).setVisibility(View.VISIBLE);
+        }
+    }
 }

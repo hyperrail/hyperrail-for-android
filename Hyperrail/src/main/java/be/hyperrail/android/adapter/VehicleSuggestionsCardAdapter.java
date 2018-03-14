@@ -58,7 +58,7 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
         final Suggestion<IrailVehicleRequest> t = suggestedTrains.get(position);
-        String title = VehicleStub.getTrainName(t.getData().getTrainId());
+        String title = VehicleStub.getVehicleName(t.getData().getVehicleId());
         if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
             title += " - " + df.print(t.getData().getDepartureTime());
