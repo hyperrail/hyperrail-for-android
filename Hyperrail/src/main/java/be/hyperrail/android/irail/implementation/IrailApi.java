@@ -348,7 +348,7 @@ public class IrailApi implements IrailDataProvider {
             public void onResponse(JSONObject response) {
                 Vehicle result;
                 try {
-                    result = parser.parseTrain(response, new DateTime());
+                    result = parser.parseTrain(response, request.getSearchTime());
                 } catch (JSONException e) {
                     FirebaseCrash.logcat(
                             WARNING.intValue(), "Failed to parse vehicle", e.getMessage());

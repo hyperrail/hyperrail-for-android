@@ -95,13 +95,21 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(mReceiver, new IntentFilter(CONNECTIVITY_ACTION));
+        try {
+            registerReceiver(mReceiver, new IntentFilter(CONNECTIVITY_ACTION));
+        } catch (Exception e) {
+            // Ignore
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mReceiver);
+        try {
+            unregisterReceiver(mReceiver);
+        } catch (Exception e) {
+            // Ignore
+        }
     }
 
     private boolean isInternetAvailable() {
