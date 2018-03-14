@@ -30,30 +30,19 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
     private final boolean isCached;
     private final boolean isOffline;
 
-    @Nullable
-    private final Exception exception;
-
     @NonNull
     private final DateTime time;
 
     public ApiResponse(T data) {
-        this(data, false, false, null);
+        this(data, false, false);
     }
 
-    @Deprecated
-    public ApiResponse(@Nullable T data, @Nullable Exception exception) {
-        this.data = data;
-        this.exception = exception;
-        this.isCached = false;
-        this.isOffline = false;
-        this.time = new DateTime();
-    }
 
-    public ApiResponse(@Nullable T data, boolean isCached, boolean isOffline, @Nullable Exception exception) {
+
+    public ApiResponse(@Nullable T data, boolean isCached, boolean isOffline) {
         this.data = data;
         this.isCached = isCached;
         this.isOffline = isOffline;
-        this.exception = exception;
         this.time = new DateTime();
     }
 
@@ -61,17 +50,6 @@ public class ApiResponse<T> implements IrailDataResponse<T> {
     @Override
     public T getData() {
         return data;
-    }
-
-    @Override
-    public boolean isSuccess() {
-        return (exception == null);
-    }
-
-    @Nullable
-    @Override
-    public Exception getException() {
-        return exception;
     }
 
     @NonNull

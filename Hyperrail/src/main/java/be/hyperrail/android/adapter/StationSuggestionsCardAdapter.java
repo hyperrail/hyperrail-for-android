@@ -87,13 +87,16 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
     public void onBindViewHolder(StationViewHolder holder, int position) {
 
         int suggestedStationsLength = 0;
+        boolean suggestionsVisible = showSuggestions && suggestedStations != null;
 
-        if (showSuggestions && suggestedStations != null) {
+        if (suggestionsVisible) {
             suggestedStationsLength = suggestedStations.size();
         }
 
-        if ((showSuggestions && suggestedStations != null && position < suggestedStationsLength && !nearbyOnTop) ||
-                (showSuggestions && suggestedStations != null && position >= stations.length && nearbyOnTop)) {
+        if ((suggestionsVisible &&
+                (position < suggestedStationsLength && !nearbyOnTop) ||
+                (position >= stations.length && nearbyOnTop))
+                ) {
             bindSuggestionViewHolder(holder, position);
         } else {
             bindNearbyViewHolder(holder, position, suggestedStationsLength);

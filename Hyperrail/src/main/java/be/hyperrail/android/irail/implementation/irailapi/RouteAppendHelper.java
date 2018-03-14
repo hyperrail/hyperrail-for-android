@@ -48,8 +48,8 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
     private ExtendRoutesRequest mExtendRoutesRequest;
 
-    public void extendRoutesRequest(@NonNull ExtendRoutesRequest extendRoutesRequest){
-        switch (extendRoutesRequest.getAction()){
+    public void extendRoutesRequest(@NonNull ExtendRoutesRequest extendRoutesRequest) {
+        switch (extendRoutesRequest.getAction()) {
             default:
             case APPEND:
                 appendRouteResult(extendRoutesRequest);
@@ -60,7 +60,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
         }
     }
 
-    private void appendRouteResult(@NonNull ExtendRoutesRequest extendRoutesRequest){
+    private void appendRouteResult(@NonNull ExtendRoutesRequest extendRoutesRequest) {
         mExtendRoutesRequest = extendRoutesRequest;
 
         this.originalRouteResult = extendRoutesRequest.getRoutes();
@@ -75,7 +75,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
         api.getRoutes(request);
     }
 
-    private void prependRouteResult(@NonNull ExtendRoutesRequest extendRoutesRequest){
+    private void prependRouteResult(@NonNull ExtendRoutesRequest extendRoutesRequest) {
         mExtendRoutesRequest = extendRoutesRequest;
 
         this.originalRouteResult = extendRoutesRequest.getRoutes();
@@ -95,39 +95,57 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
     public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
-                if (data.getRoutes().length > 0) {
-                    Route[] mergedRoutes = ArrayUtils.concatenate(originalRouteResult.getRoutes(), data.getRoutes());
-                    RouteResult merged = new RouteResult(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
-                   mExtendRoutesRequest.notifySuccessListeners(merged);
-                } else {
-                    attempt++;
-                    lastSearchTime = lastSearchTime.plusHours(2);
-                    if (attempt < 12) {
-                        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.DEPART, lastSearchTime);
-                        request.setCallback(this, this, TAG_APPEND);
-                        api.getRoutes(request);
-                    } else {
-                        mExtendRoutesRequest.notifySuccessListeners(originalRouteResult);
-                    }
-                }
+                handleAppendSuccessResponse(data);
                 break;
             case TAG_PREPEND:
-                if (data.getRoutes().length > 0) {
-                    Route[] mergedRoutes = ArrayUtils.concatenate(data.getRoutes(), originalRouteResult.getRoutes());
-                    RouteResult merged = new RouteResult(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
-                    mExtendRoutesRequest.notifySuccessListeners(merged);
-                } else {
-                    attempt++;
-                    lastSearchTime = lastSearchTime.minusHours(2);
-                    if (attempt < 12) {
-                        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.ARRIVE, lastSearchTime);
-                        request.setCallback(this, this, TAG_PREPEND);
-                        api.getRoutes(request);
-                    } else {
-                        mExtendRoutesRequest.notifySuccessListeners(originalRouteResult);
-                    }
-                }
+                handlePrependSuccessResponse(data);
                 break;
+        }
+    }
+
+    /**
+     * Handle a successful response when prepending a route result
+     *
+     * @param data The newly received data
+     */
+    private void handlePrependSuccessResponse(@NonNull RouteResult data) {
+        if (data.getRoutes().length > 0) {
+            Route[] mergedRoutes = ArrayUtils.concatenate(data.getRoutes(), originalRouteResult.getRoutes());
+            RouteResult merged = new RouteResult(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
+            mExtendRoutesRequest.notifySuccessListeners(merged);
+        } else {
+            attempt++;
+            lastSearchTime = lastSearchTime.minusHours(2);
+            if (attempt < 12) {
+                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.ARRIVE, lastSearchTime);
+                request.setCallback(this, this, TAG_PREPEND);
+                api.getRoutes(request);
+            } else {
+                mExtendRoutesRequest.notifySuccessListeners(originalRouteResult);
+            }
+        }
+    }
+
+    /**
+     * Handle a successful response when appending a route result
+     *
+     * @param data The newly received data
+     */
+    private void handleAppendSuccessResponse(@NonNull RouteResult data) {
+        if (data.getRoutes().length > 0) {
+            Route[] mergedRoutes = ArrayUtils.concatenate(originalRouteResult.getRoutes(), data.getRoutes());
+            RouteResult merged = new RouteResult(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
+            mExtendRoutesRequest.notifySuccessListeners(merged);
+        } else {
+            attempt++;
+            lastSearchTime = lastSearchTime.plusHours(2);
+            if (attempt < 12) {
+                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.DEPART, lastSearchTime);
+                request.setCallback(this, this, TAG_APPEND);
+                api.getRoutes(request);
+            } else {
+                mExtendRoutesRequest.notifySuccessListeners(originalRouteResult);
+            }
         }
     }
 

@@ -9,8 +9,6 @@ package be.hyperrail.android.irail.implementation;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
-
 import be.hyperrail.android.irail.contracts.IrailDataResponse;
 
 import static org.junit.Assert.assertEquals;
@@ -24,14 +22,12 @@ public class ApiResponseTest {
     private IrailDataResponse<String> correct;
     private IrailDataResponse<String> cached;
     private IrailDataResponse<String> offline;
-    private IrailDataResponse<String> filenotfound;
 
     @Before
     public void setup() {
-        correct = new ApiResponse<>("ok", false, false, null, request);
-        cached = new ApiResponse<>("cached", true, false, null, request);
-        offline = new ApiResponse<>("offline", false, true, null, request);
-        filenotfound = new ApiResponse<>("fnf", false, false, new FileNotFoundException("File not found"), request);
+        correct = new ApiResponse<>("ok", false, false);
+        cached = new ApiResponse<>("cached", true, false);
+        offline = new ApiResponse<>("offline", false, true);
     }
 
     @Test
@@ -39,23 +35,6 @@ public class ApiResponseTest {
         assertEquals("ok", correct.getData());
         assertEquals("cached", cached.getData());
         assertEquals("offline", offline.getData());
-        assertEquals("fnf", filenotfound.getData());
-    }
-
-    @Test
-    public void isSuccess() throws Exception {
-        assertEquals(true, correct.isSuccess());
-        assertEquals(true, cached.isSuccess());
-        assertEquals(true, offline.isSuccess());
-        assertEquals(false, filenotfound.isSuccess());
-    }
-
-    @Test
-    public void getException() throws Exception {
-        assertEquals(null, correct.getException());
-        assertEquals(null, cached.getException());
-        assertEquals(null, offline.getException());
-        assertEquals(FileNotFoundException.class, filenotfound.getException().getClass());
     }
 
     @Test
@@ -63,7 +42,6 @@ public class ApiResponseTest {
         assertTrue(correct.getTime().isBeforeNow() || correct.getTime().isEqualNow());
         assertTrue(cached.getTime().isBeforeNow() || cached.getTime().isEqualNow());
         assertTrue(offline.getTime().isBeforeNow() || offline.getTime().isEqualNow());
-        assertTrue(filenotfound.getTime().isBeforeNow() || filenotfound.getTime().isEqualNow());
     }
 
     @Test
@@ -71,7 +49,6 @@ public class ApiResponseTest {
         assertEquals(false, correct.isOffline());
         assertEquals(false, cached.isOffline());
         assertEquals(true, offline.isOffline());
-        assertEquals(false, filenotfound.isOffline());
     }
 
     @Test
@@ -79,7 +56,6 @@ public class ApiResponseTest {
         assertEquals(false, correct.isCached());
         assertEquals(true, cached.isCached());
         assertEquals(false, offline.isCached());
-        assertEquals(false, filenotfound.isCached());
     }
 
 }
