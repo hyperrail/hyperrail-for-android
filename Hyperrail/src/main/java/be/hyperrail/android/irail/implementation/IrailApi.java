@@ -61,6 +61,7 @@ import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequ
 import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
+import be.hyperrail.android.irail.implementation.requests.VehicleStopRequest;
 
 import static java.util.logging.Level.WARNING;
 
@@ -328,14 +329,14 @@ public class IrailApi implements IrailDataProvider {
     }
 
     @Override
-    public void getTrain(@NonNull IrailVehicleRequest... requests) {
+    public void getVehicle(@NonNull IrailVehicleRequest... requests) {
         for (IrailVehicleRequest request :
                 requests) {
-            getTrain(request);
+            getVehicle(request);
         }
     }
 
-    public void getTrain(final IrailVehicleRequest request) {
+    public void getVehicle(final IrailVehicleRequest request) {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
@@ -350,7 +351,7 @@ public class IrailApi implements IrailDataProvider {
                     result = parser.parseTrain(response, new DateTime());
                 } catch (JSONException e) {
                     FirebaseCrash.logcat(
-                            WARNING.intValue(), "Failed to parse train", e.getMessage());
+                            WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
                     FirebaseCrash.report(e);
                     request.notifyErrorListeners(e);
                     return;
@@ -363,7 +364,7 @@ public class IrailApi implements IrailDataProvider {
             @Override
             public void onErrorResponse(VolleyError e) {
                 FirebaseCrash.logcat(
-                        WARNING.intValue(), "Failed to get train", e.getMessage());
+                        WARNING.intValue(), "Failed to get vehicle", e.getMessage());
                 request.notifyErrorListeners(e);
             }
         };
@@ -383,6 +384,35 @@ public class IrailApi implements IrailDataProvider {
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+    }
+
+    @Override
+    public void getStop(@NonNull VehicleStopRequest... requests) {
+        for (VehicleStopRequest request :
+                requests) {
+            getStop(request);
+        }
+    }
+
+    private void getStop(@NonNull final VehicleStopRequest request) {
+        DateTime time = request.getStop().getDepartureTime();
+        if (time == null) {
+            time = request.getStop().getArrivalTime();
+        }
+        IrailVehicleRequest vehicleRequest = new IrailVehicleRequest(request.getStop().getVehicle().getId(), time);
+        vehicleRequest.setCallback(new IRailSuccessResponseListener<Vehicle>() {
+            @Override
+            public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
+                for (VehicleStop stop :
+                        data.getStops()) {
+                    if (stop.getDepartureSemanticId().equals(request.getStop().getDepartureSemanticId())) {
+                        request.notifySuccessListeners(stop);
+                        return;
+                    }
+                }
+            }
+        }, request.getOnErrorListener(), null);
+        getVehicle(vehicleRequest);
     }
 
     @Override

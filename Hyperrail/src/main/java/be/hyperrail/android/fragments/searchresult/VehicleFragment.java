@@ -167,7 +167,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
                 ErrorDialogFactory.showErrorDialog(e, getActivity(), mCurrentTrain == null);
             }
         }, null);
-        IrailFactory.getDataProviderInstance().getTrain(request);
+        IrailFactory.getDataProviderInstance().getVehicle(request);
     }
 
     protected void showData(Vehicle train) {

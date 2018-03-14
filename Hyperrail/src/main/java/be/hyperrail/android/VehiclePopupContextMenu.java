@@ -273,13 +273,13 @@ public class VehiclePopupContextMenu {
 
         String mDepartureConnection = mVehicleStop.getDepartureSemanticId();
         String mStationSemanticId = mVehicleStop.getStation().getSemanticId();
-        String mVehicleSemanticId = mVehicleStop.getTrain().getSemanticId();
+        String mVehicleSemanticId = mVehicleStop.getVehicle().getSemanticId();
         DateTime mDateTime = mVehicleStop.getDepartureTime();
 
         bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
                              mVehicleSemanticId, mDateTime);
 
-        vDialog.setTitle(mVehicleStop.getTrain().getName() + " " +
+        vDialog.setTitle(mVehicleStop.getVehicle().getName() + " " +
                                  mVehicleStop.getStation().getLocalizedName());
 
         String mDepartureEtaText = String.format(mContext.getString(string.ETA_stop_departure),
@@ -287,14 +287,14 @@ public class VehiclePopupContextMenu {
                                                          mVehicleStop.getDelayedDepartureTime()
                                                  ),
                                                  mVehicleStop.getStation().getLocalizedName(),
-                                                 mVehicleStop.getTrain().getName());
+                                                 mVehicleStop.getVehicle().getName());
 
         String mArrivalEtaText = String.format(mContext.getString(string.ETA_stop_arrival),
                                                DateTimeFormat.forPattern("hh:mm").print(
                                                        mVehicleStop.getDelayedArrivalTime()
                                                ),
                                                mVehicleStop.getStation().getLocalizedName(),
-                                               mVehicleStop.getTrain().getName());
+                                               mVehicleStop.getVehicle().getName());
 
         bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
                        mDepartureEtaText);
@@ -385,9 +385,9 @@ public class VehiclePopupContextMenu {
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
                                                                                mVehicleStop));
                     mBuilder.setSubText(
-                            "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getTrain().getDirection().getLocalizedName());
+                            "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getVehicle().getDirection().getLocalizedName());
                     resultIntent = VehicleActivity.createIntent(mContext, new IrailVehicleRequest(
-                            mVehicleStop.getTrain().getId(), mVehicleStop.getDepartureTime()));
+                            mVehicleStop.getVehicle().getId(), mVehicleStop.getDepartureTime()));
 
                 } else {
                     if (mTransfer != null) {

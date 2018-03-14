@@ -22,6 +22,7 @@ import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequ
 import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
+import be.hyperrail.android.irail.implementation.requests.VehicleStopRequest;
 
 /**
  * Retrieve (realtime) data according from the iRail API, or any API which provides similar data.
@@ -30,23 +31,25 @@ import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
  */
 public interface IrailDataProvider {
 
-    void getDisturbances(@NonNull IrailDisturbanceRequest... request);
+    void getDisturbances(@NonNull IrailDisturbanceRequest... requests);
 
-    void getLiveboard(@NonNull IrailLiveboardRequest... request);
+    void getLiveboard(@NonNull IrailLiveboardRequest... requests);
 
     void extendLiveboard(@NonNull ExtendLiveboardRequest... requests);
 
-    void getLiveboardBefore(@NonNull IrailLiveboardRequest... request);
+    void getLiveboardBefore(@NonNull IrailLiveboardRequest... requests);
 
-    void getRoutes(@NonNull IrailRoutesRequest... request);
+    void getRoutes(@NonNull IrailRoutesRequest... requests);
 
     void extendRoutes(@NonNull ExtendRoutesRequest... requests);
 
-    void getRoute(@NonNull IrailRouteRequest... request);
+    void getRoute(@NonNull IrailRouteRequest... requests);
 
-    void getTrain(@NonNull IrailVehicleRequest... request);
+    void getStop(@NonNull VehicleStopRequest... requests);
+    
+    void getVehicle(@NonNull IrailVehicleRequest... requests);
 
-    void postOccupancy(@NonNull IrailPostOccupancyRequest... request);
+    void postOccupancy(@NonNull IrailPostOccupancyRequest... requests);
 
     void abortAllQueries();
 

@@ -139,7 +139,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        Intent i = VehicleActivity.createIntent(getActivity().getApplicationContext(), new IrailVehicleRequest(object.getTrain().getId(), object.getDepartureTime()));
+        Intent i = VehicleActivity.createIntent(getActivity().getApplicationContext(), new IrailVehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 

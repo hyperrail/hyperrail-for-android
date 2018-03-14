@@ -79,7 +79,7 @@ public class VehicleStop implements Serializable {
     }
 
 
-    public VehicleStub getTrain() {
+    public VehicleStub getVehicle() {
         return train;
     }
 
@@ -155,6 +155,14 @@ public class VehicleStop implements Serializable {
 
     public VehicleStopType getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof VehicleStop && (
+                (this.getDepartureSemanticId() != null && this.getDepartureSemanticId().equals(((VehicleStop) obj).getDepartureSemanticId())) ||
+                        (this.getStation().equals(((VehicleStop) obj).getStation()) && this.getVehicle().equals(((VehicleStop) obj).getVehicle()))
+        );
     }
 }
 

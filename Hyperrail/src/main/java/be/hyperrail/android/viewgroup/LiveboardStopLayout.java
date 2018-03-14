@@ -80,8 +80,8 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
     public void bind(Context context, VehicleStop stop, LiveBoard liveboard, int position) {
         vDestination.setText(stop.getDestination().getLocalizedName());
 
-        vTrainNumber.setText(stop.getTrain().getNumber());
-        vTrainType.setText(stop.getTrain().getType());
+        vTrainNumber.setText(stop.getVehicle().getNumber());
+        vTrainType.setText(stop.getVehicle().getType());
 
         bindTimeAndDelay(context, stop);
 

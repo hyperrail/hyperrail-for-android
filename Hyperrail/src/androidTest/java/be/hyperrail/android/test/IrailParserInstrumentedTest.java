@@ -55,14 +55,14 @@ public class IrailParserInstrumentedTest {
         assertEquals("BE.NMBS.008892338", liveboard.getStops()[0].getDestination().getId());
         assertEquals(new Duration(1860 * 1000), liveboard.getStops()[0].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833300 * 1000), liveboard.getStops()[0].getDepartureTime());
-        assertEquals("BE.NMBS.IC3634", liveboard.getStops()[0].getTrain().getId());
+        assertEquals("BE.NMBS.IC3634", liveboard.getStops()[0].getVehicle().getId());
 
         assertEquals("6", liveboard.getStops()[0].getPlatform());
         assertEquals(false, liveboard.getStops()[0].isPlatformNormal());
         assertEquals(false, liveboard.getStops()[0].hasLeft());
 
         // URI's should be parsed, not computed. This unique URI will test this.
-        assertEquals("http://irail.be/vehicle/TESTPARSEURI", liveboard.getStops()[0].getTrain().getSemanticId());
+        assertEquals("http://irail.be/vehicle/TESTPARSEURI", liveboard.getStops()[0].getVehicle().getSemanticId());
         assertEquals(OccupancyLevel.UNKNOWN, liveboard.getStops()[0].getOccupancyLevel());
         // END tests stop 0
         // START tests stop 1
@@ -70,13 +70,13 @@ public class IrailParserInstrumentedTest {
         assertEquals("BE.NMBS.008892908", liveboard.getStops()[1].getDestination().getId());
         assertEquals(new Duration(60 * 1000), liveboard.getStops()[1].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833600 * 1000), liveboard.getStops()[1].getDepartureTime());
-        assertEquals("BE.NMBS.L783", liveboard.getStops()[1].getTrain().getId());
+        assertEquals("BE.NMBS.L783", liveboard.getStops()[1].getVehicle().getId());
 
         assertEquals("4", liveboard.getStops()[1].getPlatform());
         assertEquals(true, liveboard.getStops()[1].isPlatformNormal());
         assertEquals(false, liveboard.getStops()[1].hasLeft());
 
-        assertEquals("http://irail.be/vehicle/L783", liveboard.getStops()[1].getTrain().getSemanticId());
+        assertEquals("http://irail.be/vehicle/L783", liveboard.getStops()[1].getVehicle().getSemanticId());
         assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getDepartureSemanticId());
         assertEquals(OccupancyLevel.HIGH, liveboard.getStops()[1].getOccupancyLevel());
         // END tests stop 1
