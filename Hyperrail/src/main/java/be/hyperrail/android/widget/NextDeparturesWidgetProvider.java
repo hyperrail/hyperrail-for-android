@@ -20,6 +20,7 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
@@ -56,7 +57,8 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
         // Create an Intent to launch ExampleActivity
         Intent onClickIntent = LiveboardActivity.createIntent(context,
                                                               new IrailLiveboardRequest(mStation,
-                                                                                        RouteTimeDefinition.DEPART,
+                                                                                        RouteTimeDefinition.DEPART_AT,
+                                                                                        LiveBoard.LiveboardType.DEPARTURES,
                                                                                         null));
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, 0);
 

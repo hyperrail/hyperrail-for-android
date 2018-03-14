@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.VehicleStopType;
 import be.hyperrail.android.viewgroup.LiveboardStopLayout;
 
+import static be.hyperrail.android.irail.implementation.LiveBoard.LiveboardType.DEPARTURES;
 import static org.joda.time.Days.daysBetween;
 
 /**
@@ -102,7 +102,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
         while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
             // Keep in mind that position shifts with the number of already placed date separators
             if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                if (liveboard.getTimeDefinition() == RouteTimeDefinition.DEPART) {
+                if (liveboard.getLiveboardType() == DEPARTURES) {
                     this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
                 } else {
                     this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getArrivalTime();

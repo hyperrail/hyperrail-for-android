@@ -16,6 +16,6 @@ package be.hyperrail.android.irail.contracts;
  * Define search times as either time of departure, or time of arrival.
  */
 public enum RouteTimeDefinition {
-    DEPART,
-    ARRIVE
+    DEPART_AT,
+    ARRIVE_AT
 }

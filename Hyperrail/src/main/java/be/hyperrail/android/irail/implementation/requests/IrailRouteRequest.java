@@ -62,7 +62,7 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
     public IrailRouteRequest(@NonNull Route route) {
         this.origin = route.getDepartureStation();
         this.destination = route.getArrivalStation();
-        this.timeDefinition = RouteTimeDefinition.DEPART;
+        this.timeDefinition = RouteTimeDefinition.DEPART_AT;
         this.searchTime = route.getDepartureTime();
         if (route.getDeparture().getDepartureSemanticId() == null) {
             throw new IllegalStateException("Cannot create a route request when no departure semantic id is provided");
@@ -76,7 +76,7 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
         this.origin = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("from"));
         this.destination = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("to"));
 
-        timeDefinition = RouteTimeDefinition.DEPART;
+        timeDefinition = RouteTimeDefinition.DEPART_AT;
         searchTime = new DateTime(jsonObject.getLong("time"));
     }
 

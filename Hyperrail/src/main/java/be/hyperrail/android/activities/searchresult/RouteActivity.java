@@ -64,7 +64,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
             Station origin = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("from"));
             Station destination = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("to"));
 
-            this.mRequest = new IrailRoutesRequest(origin, destination, RouteTimeDefinition.DEPART, null);
+            this.mRequest = new IrailRoutesRequest(origin, destination, RouteTimeDefinition.DEPART_AT, null);
         } else {
             this.mRequest = (IrailRoutesRequest) getIntent().getSerializableExtra("request");
         }

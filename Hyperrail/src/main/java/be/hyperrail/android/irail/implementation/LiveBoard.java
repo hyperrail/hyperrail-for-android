@@ -28,8 +28,9 @@ public class LiveBoard extends Station implements Serializable {
     private VehicleStop[] mStops;
     private DateTime mSearchTime;
     private final RouteTimeDefinition mTimeDefinition;
+    LiveboardType mType;
 
-    public LiveBoard(Station station, VehicleStop[] stops, DateTime searchTime, RouteTimeDefinition timeDefinition) {
+    public LiveBoard(Station station, VehicleStop[] stops, DateTime searchTime, LiveboardType type, RouteTimeDefinition timeDefinition) {
         super(
                 station.getId(),
                 station.getName(),
@@ -45,6 +46,7 @@ public class LiveBoard extends Station implements Serializable {
         mStops = stops;
         mSearchTime = searchTime;
         mTimeDefinition = timeDefinition;
+        mType = type;
     }
 
     public VehicleStop[] getStops() {
@@ -57,5 +59,14 @@ public class LiveBoard extends Station implements Serializable {
 
     public RouteTimeDefinition getTimeDefinition() {
         return mTimeDefinition;
+    }
+
+    public LiveboardType getLiveboardType() {
+        return mType;
+    }
+
+    public enum LiveboardType {
+        DEPARTURES,
+        ARRIVALS
     }
 }

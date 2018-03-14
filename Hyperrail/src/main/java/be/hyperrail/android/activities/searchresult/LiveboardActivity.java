@@ -45,6 +45,9 @@ import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
+import static be.hyperrail.android.irail.implementation.LiveBoard.LiveboardType.ARRIVALS;
+import static be.hyperrail.android.irail.implementation.LiveBoard.LiveboardType.DEPARTURES;
+
 /**
  * Activity to show a liveboard
  */
@@ -78,7 +81,7 @@ public class LiveboardActivity extends ResultActivity {
             // A valid shortcut intent, for which we have to parse the station
             this.mRequest = new IrailLiveboardRequest(
                     IrailFactory.getStationsProviderInstance().getStationById(
-                            getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART,
+                            getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
                     null);
         } else {
             // Validate a normal intent
@@ -241,10 +244,10 @@ public class LiveboardActivity extends ResultActivity {
         public Fragment getItem(int i) {
             if (i == 0 && fragments[i] == null) {
                 fragments[0] = LiveboardFragment.createInstance(
-                        mRequest.withTimeDefinition(RouteTimeDefinition.DEPART));
+                        mRequest.withLiveboardType(DEPARTURES));
             } else if (i == 1 && fragments[1] == null) {
                 fragments[1] = LiveboardFragment.createInstance(
-                        mRequest.withTimeDefinition(RouteTimeDefinition.ARRIVE));
+                        mRequest.withLiveboardType(ARRIVALS));
             }
             return fragments[i];
         }

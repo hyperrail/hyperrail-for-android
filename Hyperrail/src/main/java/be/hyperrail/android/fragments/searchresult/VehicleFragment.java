@@ -52,6 +52,7 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.Vehicle;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
@@ -215,7 +216,8 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
         }
         Intent i = LiveboardActivity.createIntent(getActivity(),
                                                   new IrailLiveboardRequest(object.getStation(),
-                                                                            RouteTimeDefinition.DEPART,
+                                                                            RouteTimeDefinition.DEPART_AT,
+                                                                            LiveBoard.LiveboardType.DEPARTURES,
                                                                             queryTime));
         startActivity(i);
     }
@@ -245,10 +247,10 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
             locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
             if (mCurrentTrain.getStops()[i].hasLeft()) {
                 passedLocations.add(locations[i]);
-                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(colorIcon).anchor(0.5f,0.5f));
+                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(colorIcon).anchor(0.5f, 0.5f));
             } else {
                 futureLocations.add(locations[i]);
-                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(greyIcon).anchor(0.5f,0.5f));
+                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(greyIcon).anchor(0.5f, 0.5f));
             }
             builder.include(locations[i]);
         }

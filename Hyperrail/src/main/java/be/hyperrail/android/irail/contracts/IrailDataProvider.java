@@ -37,8 +37,6 @@ public interface IrailDataProvider {
 
     void extendLiveboard(@NonNull ExtendLiveboardRequest... requests);
 
-    void getLiveboardBefore(@NonNull IrailLiveboardRequest... requests);
-
     void getRoutes(@NonNull IrailRoutesRequest... requests);
 
     void extendRoutes(@NonNull ExtendRoutesRequest... requests);

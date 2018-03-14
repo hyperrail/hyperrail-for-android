@@ -23,6 +23,7 @@ import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.irail.implementation.VehicleStop;
@@ -112,7 +113,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
 
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(getActivity(), new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART, null));
+                    i = LiveboardActivity.createIntent(getActivity(), new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, LiveBoard.LiveboardType.DEPARTURES, null));
                 }
                 startActivity(i);
             }

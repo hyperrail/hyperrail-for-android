@@ -57,7 +57,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
             throw new IllegalArgumentException("Origin or destionation station can't be null");
         }
 
-        timeDefinition = RouteTimeDefinition.DEPART;
+        timeDefinition = RouteTimeDefinition.DEPART_AT;
         searchTime = null;
     }
 

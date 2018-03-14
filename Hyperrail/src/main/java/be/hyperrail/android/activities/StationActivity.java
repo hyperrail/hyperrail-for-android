@@ -37,6 +37,7 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.db.StationFacilities;
+import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 
 public class StationActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -66,7 +67,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(LiveboardActivity.createIntent(StationActivity.this, new IrailLiveboardRequest(mStation, RouteTimeDefinition.DEPART, null)));
+                        startActivity(LiveboardActivity.createIntent(StationActivity.this, new IrailLiveboardRequest(mStation, RouteTimeDefinition.DEPART_AT, LiveBoard.LiveboardType.DEPARTURES, null)));
                     }
                 }
         );

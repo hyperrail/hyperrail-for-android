@@ -173,7 +173,7 @@ public class IrailApi implements IrailDataProvider {
                 + "&time=" + timeformat.print(request.getSearchTime())
                 + "&lang=" + locale.substring(0, 2);
 
-        if (request.getTimeDefinition() == RouteTimeDefinition.DEPART) {
+        if (request.getTimeDefinition() == RouteTimeDefinition.DEPART_AT) {
             url += "&timeSel=depart";
         } else {
             url += "&timeSel=arrive";
@@ -226,7 +226,11 @@ public class IrailApi implements IrailDataProvider {
     @Override
     public void getLiveboard(@NonNull IrailLiveboardRequest... requests) {
         for (IrailLiveboardRequest request : requests) {
-            getLiveboard(request);
+            if (request.getTimeDefinition() == RouteTimeDefinition.DEPART_AT) {
+                getLiveboardAfter(request);
+            } else {
+                getLiveboardBefore(request);
+            }
         }
     }
 
@@ -239,7 +243,34 @@ public class IrailApi implements IrailDataProvider {
         }
     }
 
-    public void getLiveboard(final IrailLiveboardRequest request) {
+    private void getLiveboardBefore(final IrailLiveboardRequest request) {
+        final IrailLiveboardRequest actualRequest = request.withSearchTime(
+                request.getSearchTime().minusHours(1));
+
+        actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+            @Override
+            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
+                List<VehicleStop> stops = new ArrayList<>();
+                for (VehicleStop s : data.getStops()) {
+                    if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
+                        stops.add(s);
+                    }
+                }
+                request.notifySuccessListeners(
+                        new LiveBoard(data, stops.toArray(new VehicleStop[]{}),
+                                      data.getSearchTime(), data.getLiveboardType(), RouteTimeDefinition.ARRIVE_AT
+                        ));
+            }
+        }, new IRailErrorResponseListener() {
+            @Override
+            public void onErrorResponse(@NonNull Exception e, Object tag) {
+                request.notifyErrorListeners(e);
+            }
+        }, actualRequest.getTag());
+        getLiveboardAfter(request);
+    }
+
+    private void getLiveboardAfter(final IrailLiveboardRequest request) {
         // https://api.irail.be/liveboard/?station=Halle&fast=true
 
         // suppress errors, this formatting is for an API call
@@ -250,14 +281,14 @@ public class IrailApi implements IrailDataProvider {
                 + "&id=" + request.getStation().getId()
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime())
-                + "&arrdep=" + ((request.getTimeDefinition() == RouteTimeDefinition.DEPART) ? "dep" : "arr");
+                + "&arrdep=" + ((request.getType() == LiveBoard.LiveboardType.DEPARTURES) ? "dep" : "arr");
 
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 LiveBoard result;
                 try {
-                    result = parser.parseLiveboard(response, request.getSearchTime(), request.getTimeDefinition());
+                    result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
                 } catch (JSONException e) {
                     FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
                     FirebaseCrash.report(e);
@@ -293,39 +324,6 @@ public class IrailApi implements IrailDataProvider {
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
-    }
-
-    public void getLiveboardBefore(@NonNull IrailLiveboardRequest... requests) {
-        for (IrailLiveboardRequest request :
-                requests) {
-            getLiveboardBefore(request);
-        }
-    }
-
-    public void getLiveboardBefore(final IrailLiveboardRequest request) {
-        final IrailLiveboardRequest actualRequest = request.withSearchTime(
-                request.getSearchTime().minusHours(1));
-        actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
-            @Override
-            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
-                List<VehicleStop> stops = new ArrayList<>();
-                for (VehicleStop s : data.getStops()) {
-                    if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
-                        stops.add(s);
-                    }
-                }
-                request.notifySuccessListeners(
-                        new LiveBoard(data, stops.toArray(new VehicleStop[]{}),
-                                      data.getSearchTime(), actualRequest.getTimeDefinition()
-                        ));
-            }
-        }, new IRailErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                request.notifyErrorListeners(e);
-            }
-        }, actualRequest.getTag());
-        getLiveboard(request);
     }
 
     @Override

@@ -42,6 +42,9 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
     @NonNull
     private RouteTimeDefinition timeDefinition;
 
+    @NonNull
+    private LiveBoard.LiveboardType type;
+
     @Nullable
     private DateTime searchTime;
 
@@ -49,27 +52,30 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
      * Create a request for train departures or arrivals in a given station
      *
      * @param station        The station for which departures or arrivals should be retrieved
-     * @param timeDefinition The kind of data which should be retrieved: arrivals or departures
+     * @param timeDefinition The time which timeDefinition implies: arriving at or departing at
+     * @param type           The type of data which should be retrieved: arrivals or departures
      * @param searchTime     The time for which should be searched
      */
-    public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
+    public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @NonNull LiveBoard.LiveboardType type, @Nullable DateTime searchTime) {
         this.station = station;
         this.timeDefinition = timeDefinition;
+        this.type = type;
         this.searchTime = searchTime;
     }
 
     public IrailLiveboardRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-
         this.station = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("id"));
-        timeDefinition = RouteTimeDefinition.DEPART;
+        timeDefinition = RouteTimeDefinition.DEPART_AT;
+        type = LiveBoard.LiveboardType.DEPARTURES;
         searchTime = null;
     }
 
-    public IrailLiveboardRequest(IrailLiveboardRequest copy){
+    public IrailLiveboardRequest(IrailLiveboardRequest copy) {
         this.searchTime = copy.searchTime;
         this.timeDefinition = copy.timeDefinition;
         this.station = copy.station;
+        this.type = copy.type;
     }
 
     @NonNull
@@ -103,6 +109,11 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         return searchTime; // return the actual query time
     }
 
+    @NonNull
+    public LiveBoard.LiveboardType getType() {
+        return type;
+    }
+
     public void setSearchTime(@Nullable DateTime searchTime) {
         this.searchTime = searchTime;
     }
@@ -111,13 +122,19 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         return (this.searchTime == null);
     }
 
-    public IrailLiveboardRequest withTimeDefinition(RouteTimeDefinition timeDefinition){
+    public IrailLiveboardRequest withTimeDefinition(RouteTimeDefinition timeDefinition) {
         IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
         clone.timeDefinition = timeDefinition;
         return clone;
     }
 
-    public IrailLiveboardRequest withSearchTime(DateTime searchTime){
+    public IrailLiveboardRequest withLiveboardType(LiveBoard.LiveboardType type) {
+        IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
+        clone.type = type;
+        return clone;
+    }
+
+    public IrailLiveboardRequest withSearchTime(DateTime searchTime) {
         IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
         clone.searchTime = searchTime;
         return clone;
@@ -142,4 +159,5 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         IrailLiveboardRequest other = (IrailLiveboardRequest) o;
         return getStation().compareTo(other.getStation());
     }
+
 }

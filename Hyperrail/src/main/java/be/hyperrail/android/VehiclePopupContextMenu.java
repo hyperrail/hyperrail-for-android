@@ -41,6 +41,7 @@ import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.LiveBoard;
 import be.hyperrail.android.irail.implementation.RouteLeg;
 import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
@@ -390,23 +391,15 @@ public class VehiclePopupContextMenu {
                             mVehicleStop.getVehicle().getId(), mVehicleStop.getDepartureTime()));
 
                 } else {
-                    if (mTransfer != null) {
-                        mBuilder.setSubText(
-                                "Transfer at  " + mTransfer.getStation().getLocalizedName());
-                        resultIntent = LiveboardActivity.createIntent(mContext,
-                                                                      new IrailLiveboardRequest(
-                                                                              mTransfer.getStation(),
-                                                                              RouteTimeDefinition.DEPART,
-                                                                              mTransfer.getArrivalTime()));
-                    } else {
-                        mBuilder.setSubText(
-                                "Transfer at  " + mTransfer.getStation().getLocalizedName());
-                        resultIntent = LiveboardActivity.createIntent(mContext,
-                                                                      new IrailLiveboardRequest(
-                                                                              mTransfer.getStation(),
-                                                                              RouteTimeDefinition.DEPART,
-                                                                              mTransfer.getArrivalTime()));
-                    }
+                    mBuilder.setSubText(
+                            "Transfer at  " + mTransfer.getStation().getLocalizedName());
+                    resultIntent = LiveboardActivity.createIntent(mContext,
+                                                                  new IrailLiveboardRequest(
+                                                                          mTransfer.getStation(),
+                                                                          RouteTimeDefinition.DEPART_AT,
+                                                                          LiveBoard.LiveboardType.DEPARTURES,
+                                                                          mTransfer.getArrivalTime()));
+
                     mBuilder.setCustomBigContentView(
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
                                                                                mTransfer));

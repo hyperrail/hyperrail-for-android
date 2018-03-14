@@ -70,7 +70,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
         } else {
             lastSearchTime = originalRouteResult.getSearchTime().plusHours(1);
         }
-        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.DEPART, lastSearchTime);
+        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.DEPART_AT, lastSearchTime);
         request.setCallback(this, this, TAG_APPEND);
         api.getRoutes(request);
     }
@@ -86,7 +86,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
             lastSearchTime = originalRouteResult.getSearchTime();
         }
 
-        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.ARRIVE, lastSearchTime);
+        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.ARRIVE_AT, lastSearchTime);
         request.setCallback(this, this, TAG_PREPEND);
         api.getRoutes(request);
     }
@@ -117,7 +117,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
             attempt++;
             lastSearchTime = lastSearchTime.minusHours(2);
             if (attempt < 12) {
-                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.ARRIVE, lastSearchTime);
+                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.ARRIVE_AT, lastSearchTime);
                 request.setCallback(this, this, TAG_PREPEND);
                 api.getRoutes(request);
             } else {
@@ -140,7 +140,7 @@ public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResu
             attempt++;
             lastSearchTime = lastSearchTime.plusHours(2);
             if (attempt < 12) {
-                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.DEPART, lastSearchTime);
+                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), RouteTimeDefinition.DEPART_AT, lastSearchTime);
                 request.setCallback(this, this, TAG_APPEND);
                 api.getRoutes(request);
             } else {

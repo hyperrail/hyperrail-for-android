@@ -232,7 +232,7 @@ public class IrailApiParser {
         return result;
     }
 
-    public LiveBoard parseLiveboard(JSONObject jsonData, DateTime searchDate, RouteTimeDefinition timeDefinition) throws JSONException {
+    public LiveBoard parseLiveboard(JSONObject jsonData, DateTime searchDate, LiveBoard.LiveboardType type, RouteTimeDefinition timeDefinition) throws JSONException {
 
         if (jsonData == null) {
             throw new IllegalArgumentException("JSONObject is null");
@@ -250,13 +250,13 @@ public class IrailApiParser {
             object = jsonData.getJSONObject("arrivals");
             items = object.getJSONArray("arrival");
         } else {
-            return new LiveBoard(s, new VehicleStop[0], searchDate, timeDefinition);
+            return new LiveBoard(s, new VehicleStop[0], searchDate, type, timeDefinition);
         }
 
         VehicleStop[] stops = new VehicleStop[items.length()];
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            if (timeDefinition == RouteTimeDefinition.DEPART) {
+            if (type == LiveBoard.LiveboardType.DEPARTURES) {
                 stops[i] = parseLiveboardStop(s, item, VehicleStopType.DEPARTURE);
             } else {
                 stops[i] = parseLiveboardStop(s, item, VehicleStopType.ARRIVAL);
@@ -267,6 +267,7 @@ public class IrailApiParser {
                 s,
                 stops,
                 searchDate,
+                type,
                 timeDefinition);
     }
 
