@@ -49,7 +49,7 @@ public class VehicleActivity extends ResultActivity {
     public Intent createShortcutIntent() {
         Intent i = new Intent(this, VehicleActivity.class);
         i.putExtra("shortcut", true);
-        i.putExtra("id", mRequest.getTrainId());
+        i.putExtra("id", mRequest.getVehicleId());
         return i;
     }
 
@@ -68,14 +68,14 @@ public class VehicleActivity extends ResultActivity {
         fragment = VehicleFragment.createInstance(mRequest);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
-        setTitle(R.string.title_train);
-        setSubTitle(VehicleStub.getTrainName(mRequest.getTrainId()));
+        setTitle(R.string.title_vehicle);
+        setSubTitle(VehicleStub.getVehicleName(mRequest.getVehicleId()));
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getTrainId());
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, mRequest.getTrainId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getVehicleId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, mRequest.getVehicleId());
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "vehicle");
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
     }
@@ -86,10 +86,10 @@ public class VehicleActivity extends ResultActivity {
             Intent shortcutIntent = this.createShortcutIntent();
             // TODO: replace train ID with a name
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getTrainId());
-                mShortcutInfoBuilder.setShortLabel(mRequest.getTrainId());
+                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getVehicleId());
+                mShortcutInfoBuilder.setShortLabel(mRequest.getVehicleId());
 
-                mShortcutInfoBuilder.setLongLabel("Vehicle " + mRequest.getTrainId());
+                mShortcutInfoBuilder.setLongLabel("Vehicle " + mRequest.getVehicleId());
                 mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_shortcut_train));
                 shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                 mShortcutInfoBuilder.setIntent(shortcutIntent);
@@ -101,7 +101,7 @@ public class VehicleActivity extends ResultActivity {
             } else {
                 Intent addIntent = new Intent();
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mRequest.getTrainId());
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mRequest.getVehicleId());
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_shortcut_train));
                 addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
                 getApplicationContext().sendBroadcast(addIntent);

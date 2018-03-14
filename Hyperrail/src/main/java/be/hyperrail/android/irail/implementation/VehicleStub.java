@@ -71,11 +71,11 @@ public class VehicleStub implements Serializable {
      * @return Human-readable name
      */
     public String getName() {
-        return getTrainName(id);
+        return getVehicleName(id);
     }
 
-    public static String getTrainName(String id){
-        return getTrainType(id) + " " + getVehicleNumber(id);
+    public static String getVehicleName(String id){
+        return getVehicleClass(id) + " " + getVehicleNumber(id);
     }
     /**
      * ID without leading BE.NMBS, for example IC4516
@@ -105,15 +105,15 @@ public class VehicleStub implements Serializable {
      * @return The type of this train
      */
     public String getType() {
-        return getTrainType(getReducedVehicleId());
+        return getVehicleClass(getReducedVehicleId());
     }
 
     /**
-     * Route/trip type, for example S, IC, L, P
+     * Route/trip class, for example S, IC, L, P
      *
      * @return The route/trip type for this vehicle
      */
-    public static String getTrainType(String id){
+    public static String getVehicleClass(String id){
         // S trains are special
         if (id.startsWith("S")) {
             return id.substring(0, id.length() - 4);

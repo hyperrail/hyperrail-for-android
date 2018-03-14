@@ -24,7 +24,7 @@ import be.hyperrail.android.irail.implementation.Vehicle;
 public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements IrailRequest<Vehicle> {
 
     @NonNull
-    private final String mTrainId;
+    private final String mVehicleId;
 
     @Nullable
     private DateTime mSearchTime;
@@ -35,27 +35,27 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
      * The departure station of this train. Additional information for request history/favorites.
      */
     @Nullable
-    private Station mTrainOriginStation;
+    private Station mVehicleOriginStation;
 
     /**
      * The departure time at the departure station for this train. Additional information for request history/favorites.
      */
     @Nullable
-    private DateTime mTrainDepartureTime;
+    private DateTime mVehicleDepartureTime;
 
     @Nullable
-    private Station mTrainDirection;
+    private Station mVehicleDirection;
 
 
     /**
      * Create a request for train departures or arrivals in a given station
      *
-     * @param trainId    The train for which data should be retrieved
+     * @param vehicleId    The train for which data should be retrieved
      * @param searchTime The time for which should be searched
      */
     // TODO: support between stations, target scroll station as optional (display) parameters
-    public IrailVehicleRequest(@NonNull String trainId, @Nullable DateTime searchTime) {
-        this.mTrainId = trainId;
+    public IrailVehicleRequest(@NonNull String vehicleId, @Nullable DateTime searchTime) {
+        this.mVehicleId = vehicleId;
         this.mSearchTime = searchTime;
     }
 
@@ -63,13 +63,13 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
-            this.mTrainDirection = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("direction"));
+            this.mVehicleDirection = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("direction"));
         } else {
-            this.mTrainDirection = null;
+            this.mVehicleDirection = null;
         }
 
         // TODO: ids should not be tightly coupled to irail
-        this.mTrainId = jsonObject.getString("id");
+        this.mVehicleId = jsonObject.getString("id");
     }
 
     @NonNull
@@ -77,7 +77,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
 
-        json.put("id", getTrainId());
+        json.put("id", getVehicleId());
         if (getDirection() != null) {
             json.put("direction", getDirection().getId());
         }
@@ -109,25 +109,25 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
 
     @Nullable
     public Station getOrigin() {
-        return mTrainOriginStation;
+        return mVehicleOriginStation;
     }
 
     public void setOrigin(@Nullable Station origin) {
-        this.mTrainOriginStation = origin;
+        this.mVehicleOriginStation = origin;
     }
 
     @Nullable
     public DateTime getDepartureTime() {
-        return mTrainDepartureTime;
+        return mVehicleDepartureTime;
     }
 
     public void setDepartureTime(@Nullable DateTime departure) {
-        this.mTrainDepartureTime = departure;
+        this.mVehicleDepartureTime = departure;
     }
 
     @NonNull
-    public String getTrainId() {
-        return mTrainId;
+    public String getVehicleId() {
+        return mVehicleId;
     }
 
     @Override
@@ -137,7 +137,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         }
 
         IrailVehicleRequest other = (IrailVehicleRequest) o;
-        return (getTrainId().equals(other.getTrainId()) && getSearchTime().equals(other.getSearchTime()));
+        return (getVehicleId().equals(other.getVehicleId()) && getSearchTime().equals(other.getSearchTime()));
     }
 
     @Override
@@ -147,7 +147,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         }
 
         IrailVehicleRequest other = (IrailVehicleRequest) o;
-        return getTrainId().compareTo(other.getTrainId());
+        return getVehicleId().compareTo(other.getVehicleId());
     }
 
     /**
@@ -155,15 +155,15 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
      */
     @Nullable
     public Station getDirection() {
-        return mTrainDirection;
+        return mVehicleDirection;
     }
 
     public void setDirection(Station direction) {
-        mTrainDirection = direction;
+        mVehicleDirection = direction;
     }
 
     @Override
     public boolean equalsIgnoringTime(IrailRequest other) {
-        return other instanceof IrailVehicleRequest && getTrainId().equals(((IrailVehicleRequest) other).getTrainId());
+        return other instanceof IrailVehicleRequest && getVehicleId().equals(((IrailVehicleRequest) other).getVehicleId());
     }
 }

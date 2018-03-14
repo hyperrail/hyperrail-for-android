@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case VIEW_TYPE_TRAIN:
                 frg = VehicleSearchFragment.newInstance();
-                setSubTitle(R.string.title_train);
+                setSubTitle(R.string.title_vehicle);
                 break;
             case VIEW_TYPE_DISTURBANCE:
                 frg = DisturbanceListFragment.newInstance();

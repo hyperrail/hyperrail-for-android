@@ -127,6 +127,12 @@
             android:summary="%s"
             android:title="@string/order_of_trains"/>
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="trains_map"
+            android:summary="@string/pref_display_vehicle_on_map_summary"
+            android:title="@string/pref_display_vehicle_on_map"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -120,8 +120,6 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
 
     @Override
     public void onMapReady(GoogleMap map) {
-
-        // Add a marker in Sydney, Australia, and move the camera.
         LatLng stationLocation = new LatLng(mStation.getLatitude(), mStation.getLongitude());
         map.addMarker(new MarkerOptions().position(stationLocation).title(mStation.getLocalizedName()));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(stationLocation, 15));

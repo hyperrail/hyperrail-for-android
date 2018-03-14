@@ -17,7 +17,6 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 import java.util.Objects;
 
-import be.hyperrail.android.irail.contracts.IrailDataResponse;
 import be.hyperrail.android.irail.db.Station;
 
 /**
@@ -57,11 +56,6 @@ public class Vehicle extends VehicleStub implements Serializable {
 
     public VehicleStop getLastHaltedStop() {
         return lastHaltedStop;
-    }
-
-    public IrailDataResponse<Vehicle> getTrain() {
-        // override stub method
-        return new ApiResponse<>(this);
     }
 
     public double getLongitude() {

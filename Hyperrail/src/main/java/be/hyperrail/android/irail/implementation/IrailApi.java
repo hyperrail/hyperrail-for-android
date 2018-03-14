@@ -86,7 +86,7 @@ public class IrailApi implements IrailDataProvider {
         this.parser = new IrailApiParser(IrailFactory.getStationsProviderInstance());
         this.requestQueue = Volley.newRequestQueue(context);
         this.requestPolicy = new DefaultRetryPolicy(
-                3000,
+                1500,
                 4,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         );
@@ -339,7 +339,7 @@ public class IrailApi implements IrailDataProvider {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
-                + "&id=" + request.getTrainId() + "&date=" + dateTimeformat.print(
+                + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
                 request.getSearchTime());
 
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {

@@ -236,6 +236,11 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+
+        if (getActivity() == null) {
+            return;
+        }
+
         getActivity().getMenuInflater().inflate(R.menu.context_history, menu);
         if (mLastSelectedQuery != null) {
             menu.setHeaderTitle(mLastSelectedQuery.getData().getOrigin().getLocalizedName() + " - " + mLastSelectedQuery.getData().getDestination().getLocalizedName());
@@ -428,12 +433,11 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
             // get a reference to the activity if it is still there
             RouteSearchFragment fragment = fragmentReference.get();
-            if (fragment == null) return;
+            if (fragment == null || fragment.getActivity() == null) return;
 
             // Initialize autocomplete
-
             ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(fragment.getActivity(),
-                    android.R.layout.simple_dropdown_item_1line, stations);
+                                                                          android.R.layout.simple_dropdown_item_1line, stations);
 
             fragment.vFromText.setAdapter(autocompleteAdapter);
             fragment.vToText.setAdapter(autocompleteAdapter);

@@ -44,7 +44,7 @@
     <string name="title_liveboard">Départs</string>
     <string name="title_disturbances">Perturbations</string>
     <string name="title_route">Route</string>
-    <string name="title_train">Train</string>
+    <string name="title_vehicle">Train</string>
     <string name="title_feedback">Feedback</string>
     <string name="undo">Annuler</string>
     <string name="unmarked_route_favorite">Voie non marquée comme favori</string>
