@@ -15,6 +15,9 @@ package be.hyperrail.android.irail.implementation;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
@@ -23,14 +26,14 @@ import be.hyperrail.android.irail.db.Station;
  * This class represents a liveboard entity, containing departures or arrivals.
  * This class extends a station with its departures.
  */
-public class LiveBoard extends Station implements Serializable {
+public class Liveboard extends Station implements Serializable {
 
     private VehicleStop[] mStops;
     private DateTime mSearchTime;
     private final RouteTimeDefinition mTimeDefinition;
     LiveboardType mType;
 
-    public LiveBoard(Station station, VehicleStop[] stops, DateTime searchTime, LiveboardType type, RouteTimeDefinition timeDefinition) {
+    public Liveboard(Station station, VehicleStop[] stops, DateTime searchTime, LiveboardType type, RouteTimeDefinition timeDefinition) {
         super(
                 station.getId(),
                 station.getName(),
@@ -63,6 +66,43 @@ public class LiveBoard extends Station implements Serializable {
 
     public LiveboardType getLiveboardType() {
         return mType;
+    }
+
+    /**
+     * Append this liveboard with stops from another liveboard
+     *
+     * @param other the other liveboards to merge into this one
+     */
+    public Liveboard withStopsAppended(Liveboard... other) {
+        HashMap<String, VehicleStop> stopsByUri = new HashMap<>();
+        for (VehicleStop stop :
+                mStops) {
+            stopsByUri.put(stop.getDepartureSemanticId(), stop);
+        }
+
+        for (Liveboard liveboard : other
+                ) {
+            for (VehicleStop stop :
+                    liveboard.getStops()) {
+                stopsByUri.put(stop.getDepartureSemanticId(), stop);
+            }
+        }
+
+        VehicleStop[] stops = new VehicleStop[stopsByUri.size()];
+        stops = stopsByUri.values().toArray(stops);
+
+        Arrays.sort(stops, new Comparator<VehicleStop>() {
+            @Override
+            public int compare(VehicleStop o1, VehicleStop o2) {
+                if (Liveboard.this.mType == LiveboardType.DEPARTURES) {
+                    return o1.getDepartureTime().compareTo(o2.getDepartureTime());
+                } else {
+                    return o1.getArrivalTime().compareTo(o2.getArrivalTime());
+                }
+            }
+        });
+
+        return new Liveboard(this, stops, this.getSearchTime(), this.getLiveboardType(), this.getTimeDefinition());
     }
 
     public enum LiveboardType {

@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.VehicleStopType;
 import be.hyperrail.android.viewgroup.LiveboardStopLayout;
 
-import static be.hyperrail.android.irail.implementation.LiveBoard.LiveboardType.DEPARTURES;
+import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.DEPARTURES;
 import static org.joda.time.Days.daysBetween;
 
 /**
@@ -39,7 +39,7 @@ import static org.joda.time.Days.daysBetween;
  */
 public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> {
 
-    private LiveBoard liveboard;
+    private Liveboard liveboard;
     private final Context context;
     private final static int STYLE_LIST = 0;
     private final static int STYLE_CARD = 1;
@@ -53,7 +53,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
         this.context = context;
     }
 
-    public void updateLiveboard(LiveBoard liveBoard) {
+    public void updateLiveboard(Liveboard liveBoard) {
         this.liveboard = liveBoard;
 
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {

@@ -40,7 +40,7 @@ import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.Transfer;
@@ -144,7 +144,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
                             ));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, LiveBoard.LiveboardType.DEPARTURES, null));
+                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null));
                 }
                 context.startActivity(i);
             }

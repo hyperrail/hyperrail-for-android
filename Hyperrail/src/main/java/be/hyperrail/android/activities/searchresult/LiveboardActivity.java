@@ -45,8 +45,8 @@ import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 
-import static be.hyperrail.android.irail.implementation.LiveBoard.LiveboardType.ARRIVALS;
-import static be.hyperrail.android.irail.implementation.LiveBoard.LiveboardType.DEPARTURES;
+import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.ARRIVALS;
+import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.DEPARTURES;
 
 /**
  * Activity to show a liveboard

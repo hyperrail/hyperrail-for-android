@@ -31,7 +31,7 @@ import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
@@ -41,9 +41,9 @@ import be.hyperrail.android.util.ErrorDialogFactory;
 /**
  * A fragment for showing liveboard results
  */
-public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implements InfiniteScrollingDataSource, ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
+public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implements InfiniteScrollingDataSource, ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
 
-    private LiveBoard mCurrentLiveboard;
+    private Liveboard mCurrentLiveboard;
     private LiveboardCardAdapter mLiveboardCardAdapter;
     private IrailLiveboardRequest mRequest;
 
@@ -76,9 +76,9 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     }
 
     @Override
-    protected LiveBoard getRestoredInstanceStateItems(Bundle savedInstanceState) {
+    protected Liveboard getRestoredInstanceStateItems(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
-            mCurrentLiveboard = (LiveBoard) savedInstanceState.getSerializable("result");
+            mCurrentLiveboard = (Liveboard) savedInstanceState.getSerializable("result");
         }
         return mCurrentLiveboard;
     }
@@ -132,9 +132,9 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
         IrailDataProvider api = IrailFactory.getDataProviderInstance();
         // Don't abort all queries: there might be multiple fragments at the same screen!
 
-        mRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+        mRequest.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
-            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 vRefreshLayout.setRefreshing(false);
 
                 // store retrieved data
@@ -175,9 +175,9 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
         }
 
         ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.APPEND);
-        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+        request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
-            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), data.getStops().length == 0);
@@ -214,9 +214,9 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
         }
 
         ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.PREPEND);
-        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+        request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
-            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                     ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), false);
@@ -245,7 +245,7 @@ public class LiveboardFragment extends RecyclerViewFragment<LiveBoard> implement
     }
 
     @Override
-    protected void showData(LiveBoard liveBoard) {
+    protected void showData(Liveboard liveBoard) {
         mLiveboardCardAdapter.updateLiveboard(liveBoard);
     }
 

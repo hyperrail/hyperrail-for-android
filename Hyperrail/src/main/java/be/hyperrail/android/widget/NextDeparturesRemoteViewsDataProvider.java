@@ -23,7 +23,7 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
@@ -33,7 +33,7 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.RemoteViewsFactory {
     private final Context mContext;
     private final Intent mIntent;
-    private LiveBoard mLiveboard;
+    private Liveboard mLiveboard;
 
     public NextDeparturesRemoteViewsDataProvider(Context applicationContext, Intent intent) {
         mContext = applicationContext;
@@ -55,12 +55,12 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         IrailLiveboardRequest request = new IrailLiveboardRequest(
                 IrailFactory.getStationsProviderInstance().getStationById(id),
                 RouteTimeDefinition.DEPART_AT,
-                LiveBoard.LiveboardType.DEPARTURES,
+                Liveboard.LiveboardType.DEPARTURES,
                 null
         );
-        request.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+        request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
-            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 Log.w("widgets", "Received iRail data...");
                 NextDeparturesRemoteViewsDataProvider.this.mLiveboard = data;
             }

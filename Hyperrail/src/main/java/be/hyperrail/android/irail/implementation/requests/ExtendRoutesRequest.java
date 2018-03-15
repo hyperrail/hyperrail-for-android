@@ -12,7 +12,7 @@ import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.implementation.RouteResult;
 
 /**
- * Request to append or prepend a routes result
+ * Request to withStopsAppended or prepend a routes result
  */
 
 public class ExtendRoutesRequest extends IrailBaseRequest<RouteResult> implements IrailRequest<RouteResult> {

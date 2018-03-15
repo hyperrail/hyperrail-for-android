@@ -34,7 +34,7 @@ import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.util.ArrayUtils;
 
 /**
- * A class which allows to append route results.
+ * A class which allows to withStopsAppended route results.
  */
 public class RouteAppendHelper implements IRailSuccessResponseListener<RouteResult>, IRailErrorResponseListener {
 

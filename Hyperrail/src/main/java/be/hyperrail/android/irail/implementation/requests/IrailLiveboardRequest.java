@@ -29,12 +29,12 @@ import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 
 /**
  * A request for a station liveboard
  */
-public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implements IrailRequest<LiveBoard> {
+public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implements IrailRequest<Liveboard> {
 
     @NonNull
     private final Station station;
@@ -43,7 +43,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
     private RouteTimeDefinition timeDefinition;
 
     @NonNull
-    private LiveBoard.LiveboardType type;
+    private Liveboard.LiveboardType type;
 
     @Nullable
     private DateTime searchTime;
@@ -56,7 +56,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
      * @param type           The type of data which should be retrieved: arrivals or departures
      * @param searchTime     The time for which should be searched
      */
-    public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @NonNull LiveBoard.LiveboardType type, @Nullable DateTime searchTime) {
+    public IrailLiveboardRequest(@NonNull Station station, @NonNull RouteTimeDefinition timeDefinition, @NonNull Liveboard.LiveboardType type, @Nullable DateTime searchTime) {
         this.station = station;
         this.timeDefinition = timeDefinition;
         this.type = type;
@@ -67,7 +67,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         super(jsonObject);
         this.station = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("id"));
         timeDefinition = RouteTimeDefinition.DEPART_AT;
-        type = LiveBoard.LiveboardType.DEPARTURES;
+        type = Liveboard.LiveboardType.DEPARTURES;
         searchTime = null;
     }
 
@@ -110,7 +110,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
     }
 
     @NonNull
-    public LiveBoard.LiveboardType getType() {
+    public Liveboard.LiveboardType getType() {
         return type;
     }
 
@@ -128,7 +128,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<LiveBoard> implement
         return clone;
     }
 
-    public IrailLiveboardRequest withLiveboardType(LiveBoard.LiveboardType type) {
+    public IrailLiveboardRequest withLiveboardType(Liveboard.LiveboardType type) {
         IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
         clone.type = type;
         return clone;

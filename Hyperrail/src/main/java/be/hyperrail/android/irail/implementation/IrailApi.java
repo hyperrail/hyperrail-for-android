@@ -247,9 +247,9 @@ public class IrailApi implements IrailDataProvider {
         final IrailLiveboardRequest actualRequest = request.withSearchTime(
                 request.getSearchTime().minusHours(1));
 
-        actualRequest.setCallback(new IRailSuccessResponseListener<LiveBoard>() {
+        actualRequest.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
-            public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
+            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 List<VehicleStop> stops = new ArrayList<>();
                 for (VehicleStop s : data.getStops()) {
                     if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
@@ -257,7 +257,7 @@ public class IrailApi implements IrailDataProvider {
                     }
                 }
                 request.notifySuccessListeners(
-                        new LiveBoard(data, stops.toArray(new VehicleStop[]{}),
+                        new Liveboard(data, stops.toArray(new VehicleStop[]{}),
                                       data.getSearchTime(), data.getLiveboardType(), RouteTimeDefinition.ARRIVE_AT
                         ));
             }
@@ -281,12 +281,12 @@ public class IrailApi implements IrailDataProvider {
                 + "&id=" + request.getStation().getId()
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime())
-                + "&arrdep=" + ((request.getType() == LiveBoard.LiveboardType.DEPARTURES) ? "dep" : "arr");
+                + "&arrdep=" + ((request.getType() == Liveboard.LiveboardType.DEPARTURES) ? "dep" : "arr");
 
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                LiveBoard result;
+                Liveboard result;
                 try {
                     result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
                 } catch (JSONException e) {

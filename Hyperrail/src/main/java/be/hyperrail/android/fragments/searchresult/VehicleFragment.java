@@ -52,7 +52,7 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.Vehicle;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
@@ -217,7 +217,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
         Intent i = LiveboardActivity.createIntent(getActivity(),
                                                   new IrailLiveboardRequest(object.getStation(),
                                                                             RouteTimeDefinition.DEPART_AT,
-                                                                            LiveBoard.LiveboardType.DEPARTURES,
+                                                                            Liveboard.LiveboardType.DEPARTURES,
                                                                             queryTime));
         startActivity(i);
     }

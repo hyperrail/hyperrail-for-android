@@ -21,12 +21,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.VehicleStopType;
 
-public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<LiveBoard, VehicleStop> {
+public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Liveboard, VehicleStop> {
 
     protected TextView vDestination;
     protected TextView vTrainType;
@@ -77,7 +77,7 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
     }
 
     @Override
-    public void bind(Context context, VehicleStop stop, LiveBoard liveboard, int position) {
+    public void bind(Context context, VehicleStop stop, Liveboard liveboard, int position) {
         vDestination.setText(stop.getDestination().getLocalizedName());
 
         vTrainNumber.setText(stop.getVehicle().getNumber());

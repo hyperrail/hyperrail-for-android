@@ -20,7 +20,7 @@ import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.StationsDb;
 import be.hyperrail.android.irail.implementation.IrailApiParser;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.Vehicle;
@@ -43,7 +43,7 @@ public class IrailParserInstrumentedTest {
     public void liveboardParsingTest() throws Exception {
         // Context of the app under test.
         DateTime searchTime = new DateTime(2017, 11, 16, 13, 0);
-        LiveBoard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime,RouteTimeDefinition.DEPART_AT);
+        Liveboard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime,RouteTimeDefinition.DEPART_AT);
 
         assertEquals(searchTime, liveboard.getSearchTime());
         assertEquals("BE.NMBS.008892007", liveboard.getId());

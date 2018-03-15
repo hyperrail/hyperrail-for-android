@@ -28,7 +28,7 @@ import java.util.List;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
@@ -135,7 +135,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
 
         IrailLiveboardRequest request = new IrailLiveboardRequest(station,
                                                                   RouteTimeDefinition.DEPART_AT,
-                                                                  LiveBoard.LiveboardType.DEPARTURES,
+                                                                  Liveboard.LiveboardType.DEPARTURES,
                                                                   null);
         final Suggestion<IrailLiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
 

@@ -9,27 +9,27 @@ package be.hyperrail.android.irail.implementation.requests;
 import android.support.annotation.NonNull;
 
 import be.hyperrail.android.irail.contracts.IrailRequest;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 
 /**
- * Request to append or prepend a mLiveBoard
+ * Request to withStopsAppended or prepend a mLiveboard
  */
 
-public class ExtendLiveboardRequest extends IrailBaseRequest<LiveBoard> implements IrailRequest<LiveBoard> {
+public class ExtendLiveboardRequest extends IrailBaseRequest<Liveboard> implements IrailRequest<Liveboard> {
 
     @NonNull
-    private final LiveBoard mLiveBoard;
+    private final Liveboard mLiveboard;
     @NonNull
     private final Action mAction;
 
-    public ExtendLiveboardRequest(@NonNull LiveBoard liveboard, @NonNull Action action) {
-        this.mLiveBoard = liveboard;
+    public ExtendLiveboardRequest(@NonNull Liveboard liveboard, @NonNull Action action) {
+        this.mLiveboard = liveboard;
         this.mAction = action;
     }
 
     @Override
     public boolean equalsIgnoringTime(IrailRequest other) {
-        return (other instanceof ExtendLiveboardRequest) && mLiveBoard.equals(((ExtendLiveboardRequest) other).getLiveboard());
+        return (other instanceof ExtendLiveboardRequest) && mLiveboard.equals(((ExtendLiveboardRequest) other).getLiveboard());
     }
 
     @Override
@@ -38,8 +38,8 @@ public class ExtendLiveboardRequest extends IrailBaseRequest<LiveBoard> implemen
     }
 
     @NonNull
-    public LiveBoard getLiveboard() {
-        return mLiveBoard;
+    public Liveboard getLiveboard() {
+        return mLiveboard;
     }
 
     @NonNull

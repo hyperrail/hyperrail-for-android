@@ -17,31 +17,29 @@ import android.support.annotation.NonNull;
 import org.joda.time.DateTime;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.LiveBoard;
+import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.VehicleStopType;
 import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.util.ArrayUtils;
 
 /**
- * A class which allows to append liveboards.
+ * A class which allows to withStopsAppended liveboards.
  */
-public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveBoard>, IRailErrorResponseListener {
+public class LiveboardAppendHelper implements IRailSuccessResponseListener<Liveboard>, IRailErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;
 
     private int attempt = 0;
     private DateTime lastSearchTime;
-    private LiveBoard originalLiveboard;
+    private Liveboard originalLiveboard;
     private ExtendLiveboardRequest mExtendRequest;
 
     IrailDataProvider api = IrailFactory.getDataProviderInstance();
@@ -65,9 +63,9 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
 
         if (originalLiveboard.getStops().length > 0) {
             if (originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
-                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getDepartureTime().plusMinutes(1);
+                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getDepartureTime();
             } else {
-                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getArrivalTime().plusMinutes(1);
+                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getArrivalTime();
             }
         } else {
             this.lastSearchTime = originalLiveboard.getSearchTime().plusHours(1);
@@ -97,7 +95,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
     }
 
     @Override
-    public void onSuccessResponse(@NonNull LiveBoard data, Object tag) {
+    public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
                 handleAppendSuccessResponse(data);
@@ -113,37 +111,10 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
      *
      * @param data The newly received data
      */
-    private void handlePrependSuccessResponse(@NonNull LiveBoard data) {
+    private void handlePrependSuccessResponse(@NonNull Liveboard data) {
         // If there is new data
         if (data.getStops().length > 0) {
-            // TODO: prevent duplicates by checking arrival time
-            // Both arrays are sorted chronologically
-            // Scanning back-to-front in the original array is O(n), which is acceptable for now
-            // Binary search would be tricky since trains might have a new delay, they are chronologically based on the actual real departure time!
-
-            // The original stops which should be retained
-            VehicleStop[] originalStops = null;
-            for (int i = originalLiveboard.getStops().length - 1; i >= 0 && originalStops == null; i--) {
-                VehicleStop s = originalLiveboard.getStops()[i];
-
-                if (Objects.equals(s.getDepartureSemanticId(), data.getStops()[data.getStops().length - 1].getDepartureSemanticId())) {
-                    // All before this stop in the original liveboard are duplicates
-                    if (i == originalLiveboard.getStops().length - 1) {
-                        originalStops = new VehicleStop[0];
-                    } else {
-                        // TODO: investigate if this code is totally bug free: aren't we ignoring too much?
-                        originalStops = Arrays.copyOfRange(originalLiveboard.getStops(),
-                                                           i + 1,
-                                                           originalLiveboard.getStops().length - 1);
-                    }
-                }
-            }
-            if (originalStops == null) {
-                originalStops = originalLiveboard.getStops();
-            }
-            VehicleStop[] mergedStops = ArrayUtils.concatenate(data.getStops(), originalStops);
-            LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getLiveboardType(), originalLiveboard.getTimeDefinition());
-            mExtendRequest.notifySuccessListeners(merged);
+            mExtendRequest.notifySuccessListeners(originalLiveboard.withStopsAppended(data));
         } else {
             attempt++;
             lastSearchTime = lastSearchTime.minusHours(1);
@@ -163,7 +134,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
      *
      * @param data The newly received data
      */
-    private void handleAppendSuccessResponse(@NonNull LiveBoard data) {
+    private void handleAppendSuccessResponse(@NonNull Liveboard data) {
         VehicleStop[] newStops = data.getStops();
 
         if (newStops.length > 0) {
@@ -172,7 +143,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
             // the searchdate, and removing all earlier stops.
             int i = 0;
 
-            if (data.getTimeDefinition() == RouteTimeDefinition.DEPART_AT) {
+            if (data.getLiveboardType() == Liveboard.LiveboardType.DEPARTURES) {
                 while (i < newStops.length && newStops[i].getDepartureTime().isBefore(data.getSearchTime())) {
                     i++;
                 }
@@ -192,10 +163,7 @@ public class LiveboardAppendHelper implements IRailSuccessResponseListener<LiveB
         }
 
         if (newStops.length > 0) {
-
-            VehicleStop[] mergedStops = ArrayUtils.concatenate(originalLiveboard.getStops(), newStops);
-            LiveBoard merged = new LiveBoard(originalLiveboard, mergedStops, originalLiveboard.getSearchTime(), originalLiveboard.getLiveboardType(), originalLiveboard.getTimeDefinition());
-            mExtendRequest.notifySuccessListeners(merged);
+            mExtendRequest.notifySuccessListeners(originalLiveboard.withStopsAppended(data));
         } else {
             // No results, search two hours further in case this day doesn't have results.
             // Skip 2 hours at once, possible due to large API pages.
