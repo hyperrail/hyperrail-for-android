@@ -189,8 +189,8 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
 
         } else {
             // no arrival platform
-            vArrivalPlatform.setText("");
-            vArrivalPlatformContainer.setVisibility(View.GONE);
+            textView.setText("");
+            container.setVisibility(View.GONE);
         }
     }
 
