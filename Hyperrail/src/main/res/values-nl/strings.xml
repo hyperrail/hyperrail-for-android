@@ -102,8 +102,8 @@
     <string name="ETA_transfer_departure">Om %s zal ik vertrekken uit %s met %s</string>
     <string name="title_activity_station">Station</string>
     <string name="action_details">Meer informatie</string>
-    <string name="action_share_departure_ETA">Deel verwachte aankomsttijd</string>
-    <string name="action_share_arrival_eta">Deel verwachte vertrektijd</string>
+    <string name="action_share_departure_ETA">Deel verwachte vertrektijd</string>
+    <string name="action_share_arrival_eta">Deel verwachte aankomsttijd</string>
     <string name="show_as_notification">Pin als notificatie</string>
 
     <string name="menu_group_settings">Instellingen</string>

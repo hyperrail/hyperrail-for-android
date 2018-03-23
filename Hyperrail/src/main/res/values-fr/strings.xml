@@ -100,8 +100,8 @@
     <string name="shortcut_label_route_short">Route</string>
     <string name="title_pick_station">Choisissez une station</string>
     <string name="action_details">Plus d\'informations</string>
-    <string name="action_share_arrival_eta">Partager l\'heure de départ prévue</string>
-    <string name="action_share_departure_ETA">Partager l\'heure d\'arrivée prévue</string>
+    <string name="action_share_arrival_eta">Partager l\'heure d\'arrivée prévue</string>
+    <string name="action_share_departure_ETA">Partager l\'heure de départ prévue</string>
     <string name="shortcut_label_route_long">Planifier un voyage</string>
     <string name="shortcut_label_station_long">Voir les départs et les arrivées</string>
     <string name="show_as_notification">Pin comme notification</string>
