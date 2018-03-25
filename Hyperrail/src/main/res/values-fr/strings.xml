@@ -74,7 +74,7 @@
     <string name="marked_train_favorite">Train ajouté aux favoris</string>
     <string name="unmarked_train_favorite">Train retiré des favoris</string>
     <string name="search_train_name">Identification du train (par exemple IC 537)</string>
-    <string name="load_previous_results">Charger les résultats passés</string>
+    <string name="load_previous_results">Appuyez pour charger les résultats précédents</string>
     <string name="error_train_id_invalid">Ce n\'est pas un identifiant de train valide</string>
     <string name="order_of_trains">Séquence de legs</string>
     <string name="No">Non</string>

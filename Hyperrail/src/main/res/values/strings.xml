@@ -77,7 +77,7 @@
     <string name="occupancy_question">How crowded is your train?</string>
     <string name="spitsgids_feedback_sent">Your feedback has been sent!</string>
     <string name="spitsgids_feedback_error">Feedback couldn\'t be saved. Try again later.</string>
-    <string name="load_previous_results">Load previous results</string>
+    <string name="load_previous_results">Tap to load earlier results</string>
     <string name="error_train_id_invalid">This is not a valid train id. Example: IC537.</string>
     <string name="No">No</string>
     <string name="Yes">Yes</string>
@@ -94,6 +94,9 @@
         <item>Leave</item>
         <item>Arrive</item>
     </string-array>
+    <string-array name="firstlaunch_titles" />
+    <string-array name="firstlaunch_descriptions" />
+
     <string name="title_activity_station">Station</string>
 
     <string name="list_day_names">Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday</string>

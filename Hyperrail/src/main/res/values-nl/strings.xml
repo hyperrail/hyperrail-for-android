@@ -85,7 +85,7 @@
     <string name="marked_train_favorite">Trein toegevoegd aan favorieten</string>
     <string name="unmarked_train_favorite">Trein verwijderd uit favorieten</string>
     <string name="search_train_name">Trein ID (vb. IC 537)</string>
-    <string name="load_previous_results">Laad vroegere resultaten</string>
+    <string name="load_previous_results">Tik om vroegere resultaten te laden</string>
     <string name="error_train_id_invalid">Dit is geen geldig trein ID</string>
     <string name="pref_header_trains">Trein</string>
     <string name="order_of_trains">Volgorde van treinen</string>
