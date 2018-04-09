@@ -31,6 +31,7 @@ import com.google.firebase.analytics.FirebaseAnalytics.Param;
 
 import org.joda.time.DateTime;
 
+import be.hyperrail.android.R;
 import be.hyperrail.android.R.id;
 import be.hyperrail.android.R.layout;
 import be.hyperrail.android.R.menu;
@@ -172,7 +173,7 @@ public class LiveboardActivity extends ResultActivity {
                     mShortcutInfoBuilder.setLongLabel(
                             "Departures from " + mRequest.getStation().getLocalizedName());
                     mShortcutInfoBuilder.setIcon(
-                            Icon.createWithResource(this, mipmap.ic_launcher));
+                            Icon.createWithResource(this, R.mipmap.ic_shortcut_liveboard));
                     shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                     mShortcutInfoBuilder.setIntent(shortcutIntent);
                     ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
@@ -188,7 +189,7 @@ public class LiveboardActivity extends ResultActivity {
                                        mRequest.getStation().getLocalizedName());
                     addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
                                        ShortcutIconResource.fromContext(
-                                               getApplicationContext(), mipmap.ic_launcher));
+                                               getApplicationContext(), mipmap.ic_shortcut_liveboard));
                     addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
                     getApplicationContext().sendBroadcast(addIntent);
                 }

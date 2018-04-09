@@ -190,6 +190,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         outState.putInt("view", mCurrentView);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!PreferenceManager.getDefaultSharedPreferences(this).contains("first_launch_guide")) {
+            Intent i = new Intent(this, FirstLaunchGuide.class);
+            startActivity(i);
+        }
+    }
+
     /**
      * Set the view to a certain fragment. Changes the subtitle as well.
      *
@@ -316,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.action_beta_test:
                 Uri betaTestUri = Uri.parse("https://play.google.com/apps/testing/be.hyperrail.android");
-                Intent becomeTester = new Intent(Intent.ACTION_VIEW,betaTestUri);
+                Intent becomeTester = new Intent(Intent.ACTION_VIEW, betaTestUri);
                 startActivity(becomeTester);
                 break;
             default:

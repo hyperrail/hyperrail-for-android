@@ -124,4 +124,12 @@
     <string name="title_station_opening_hours">Openingsuren</string>
     <string name="tap_to_retry">Laden mislukt. Klik om opnieuw te proberen</string>
     <string name="warning_offline">Je bent offline. Resultaten kunnen verouderd zijn.</string>
+    <string name="title_activity_first_launch_guide">Een korte rondleiding</string>
+    <string name="title_rate">Beoordeel de app!</string>
+    <string name="title_beta_test">Test de bètaversie</string>
+    <string name="menu_group_feedback">Feedback</string>
+    <string name="previous">Vorige</string>
+    <string name="next">Volgende</string>
+    <string name="finish">Voltooien</string>
+    <string name="skip">Overslaan</string>
 </resources>

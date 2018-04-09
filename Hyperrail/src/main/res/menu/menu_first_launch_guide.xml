@@ -5,6 +5,6 @@
   -->
 
 <menu xmlns:tools="http://schemas.android.com/tools"
-    tools:context="be.hyperrail.android.FirstLaunchGuide">
+    tools:context="be.hyperrail.android.activities.FirstLaunchGuide">
 
 </menu>

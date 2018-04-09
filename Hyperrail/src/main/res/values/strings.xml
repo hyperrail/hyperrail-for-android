@@ -94,22 +94,6 @@
         <item>Leave</item>
         <item>Arrive</item>
     </string-array>
-    <string-array name="firstlaunch_titles">
-        <item>Liveboards</item>
-        <item>Routes</item>
-        <item>Long click for more</item>
-        <item>Shortcuts</item>
-        <item>Notifications</item>
-        <item>Customize using settings</item>
-    </string-array>
-    <string-array name="firstlaunch_descriptions">
-        <item>Catching a train or waiting for someone? View departures and arrivals</item>
-        <item>Wherever you want to go, plan a route using Hyperrail. Favorites and recent searches are stored for quick access</item>
-        <item>Long click a result to get more possibilities</item>
-        <item>Create a shortcut to a station, route or train to look them up in one touch!</item>
-        <item>Store a result in a notification. Notifications will not update automatically (yet), so keep this in mind!</item>
-        <item>Are you a routes or departures person? Two, Four, or zero favourites? Customize the app however you want using the settings menu</item>
-    </string-array>
 
     <string name="title_activity_station">Station</string>
 
@@ -140,6 +124,11 @@
     <string name="tap_to_retry">Failed to load results. Tap to retry.</string>
     <string name="title_rate">Rate the app!</string>
     <string name="title_beta_test">Test the Beta version</string>
+    <string name="menu_group_feedback">Feedback</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="finish">Finish</string>
+    <string name="skip">Skip</string>
 
 
 </resources>
