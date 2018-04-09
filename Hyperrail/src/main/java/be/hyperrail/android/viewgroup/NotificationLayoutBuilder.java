@@ -116,7 +116,7 @@ public class NotificationLayoutBuilder {
 
         if (hasArrivalInfo && hasDepartureInfo) {
             contentView.setTextViewText(R.id.text_time1, df.print(transfer.getArrivalTime()));
-            contentView.setTextViewText(R.id.text_delay1, String.valueOf(transfer.getArrivalDelay().toStandardMinutes()));
+            contentView.setTextViewText(R.id.text_delay1, String.valueOf(transfer.getArrivalDelay().getStandardMinutes()));
 
             contentView.setViewVisibility(R.id.text_time1, View.VISIBLE);
             if (transfer.getArrivalDelay().getStandardMinutes() > 0) {
