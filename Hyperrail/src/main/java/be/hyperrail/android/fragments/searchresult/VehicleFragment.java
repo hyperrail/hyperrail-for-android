@@ -244,15 +244,17 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
         for (int i = 0; i < mCurrentTrain.getStops().length; i++) {
             Station s = mCurrentTrain.getStops()[i].getStation();
-            locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
-            if (mCurrentTrain.getStops()[i].hasLeft()) {
-                passedLocations.add(locations[i]);
-                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(colorIcon).anchor(0.5f, 0.5f));
-            } else {
-                futureLocations.add(locations[i]);
-                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(greyIcon).anchor(0.5f, 0.5f));
+            if (s != null) {
+                locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
+                if (mCurrentTrain.getStops()[i].hasLeft()) {
+                    passedLocations.add(locations[i]);
+                    map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(colorIcon).anchor(0.5f, 0.5f));
+                } else {
+                    futureLocations.add(locations[i]);
+                    map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(greyIcon).anchor(0.5f, 0.5f));
+                }
+                builder.include(locations[i]);
             }
-            builder.include(locations[i]);
         }
 
         final LatLngBounds bounds = builder.build();
