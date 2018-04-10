@@ -85,7 +85,7 @@
     <string name="marked_train_favorite">Trein toegevoegd aan favorieten</string>
     <string name="unmarked_train_favorite">Trein verwijderd uit favorieten</string>
     <string name="search_train_name">Trein ID (vb. IC 537)</string>
-    <string name="load_previous_results">Laad vroegere resultaten</string>
+    <string name="load_previous_results">Tik om vroegere resultaten te laden</string>
     <string name="error_train_id_invalid">Dit is geen geldig trein ID</string>
     <string name="pref_header_trains">Trein</string>
     <string name="order_of_trains">Volgorde van treinen</string>
@@ -102,8 +102,8 @@
     <string name="ETA_transfer_departure">Om %s zal ik vertrekken uit %s met %s</string>
     <string name="title_activity_station">Station</string>
     <string name="action_details">Meer informatie</string>
-    <string name="action_share_departure_ETA">Deel verwachte aankomsttijd</string>
-    <string name="action_share_arrival_eta">Deel verwachte vertrektijd</string>
+    <string name="action_share_departure_ETA">Deel verwachte vertrektijd</string>
+    <string name="action_share_arrival_eta">Deel verwachte aankomsttijd</string>
     <string name="show_as_notification">Pin als notificatie</string>
 
     <string name="menu_group_settings">Instellingen</string>
@@ -124,4 +124,14 @@
     <string name="title_station_opening_hours">Openingsuren</string>
     <string name="tap_to_retry">Laden mislukt. Klik om opnieuw te proberen</string>
     <string name="warning_offline">Je bent offline. Resultaten kunnen verouderd zijn.</string>
+    <string name="title_activity_first_launch_guide">Een korte rondleiding</string>
+    <string name="title_rate">Beoordeel de app!</string>
+    <string name="title_beta_test">Test de bètaversie</string>
+    <string name="menu_group_feedback">Feedback</string>
+    <string name="previous">Vorige</string>
+    <string name="next">Volgende</string>
+    <string name="finish">Voltooien</string>
+    <string name="skip">Overslaan</string>
+    <string name="station_details_not_available_description">Gedetailleerde informatie is helaas nog niet beschikbaar voor dit station.</string>
+    <string name="station_details_not_available_title">Informatie niet beschikbaar</string>
 </resources>

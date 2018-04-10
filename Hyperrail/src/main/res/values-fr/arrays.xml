@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<resources>
+    <integer-array name="firstlaunch_images">
+        <item>@drawable/firstlaunch_liveboard_framed</item>
+        <item>@drawable/firstlaunch_route_framed</item>
+        <item>@drawable/firstlaunch_popup_framed</item>
+        <item>@drawable/firstlaunch_notification_framed</item>
+        <item>@drawable/firstlaunch_shortcuts_framed</item>
+        <item>@drawable/firstlaunch_settings_framed</item>
+    </integer-array>
+    <string-array name="firstlaunch_titles">
+        <item>Departs &amp; Arrivees</item>
+        <item>Itinéraires</item>
+        <item>Long clic pour plus</item>
+        <item>Notifications</item>
+        <item>Raccourcis</item>
+        <item>Personnaliser en utilisant les paramètres</item>
+    </string-array>
+    <string-array name="firstlaunch_descriptions">
+        <item>Attraper un train ou attendre quelqu'un? Voir les départs et arrivées</item>
+        <item>Partout où vous voulez aller, planifiez un itinéraire en utilisant Hyperrail. Les favoris et les recherches récentes sont stockés pour un accès rapide</item>
+        <item>Cliquez longuement sur un résultat pour obtenir plus de possibilités</item>
+        <item>Stocke un résultat dans une notification. Les notifications ne seront pas mises à jour automatiquement (pour le moment), alors gardez cela à l'esprit!</item>
+        <item>Créez un raccourci vers une station, une itinéraires ou un train pour les rechercher en un clic!</item>
+        <item>Tu préfères des itinéraires ou des départs? Deux, quatre ou zéro favoris? Personnalisez l'application comme vous le souhaitez en utilisant le menu des paramètres</item>
+    </string-array>
+</resources>

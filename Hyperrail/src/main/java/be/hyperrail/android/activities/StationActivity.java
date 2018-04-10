@@ -13,10 +13,12 @@
 package be.hyperrail.android.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -83,6 +85,26 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
 
     private void bind(Station station) {
         StationFacilities facilities = station.getStationFacilities();
+
+        // Catch stations without details
+        if (facilities == null) {
+            AlertDialog errorDialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.station_details_not_available_title)
+                    .setMessage(R.string.station_details_not_available_description)
+                    .setNegativeButton(R.string.action_close, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            StationActivity.this.finish();
+                        }
+                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            StationActivity.this.finish();
+                        }
+                    }).show();
+            return;
+        }
+
         StringBuilder openingHoursString = new StringBuilder();
         for (int i = 0; i < 7; i++) {
             LocalTime[] openingHours = facilities.getOpeningHours(i);

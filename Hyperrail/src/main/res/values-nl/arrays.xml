@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+
+<resources>
+    <integer-array name="firstlaunch_images">
+        <item>@drawable/firstlaunch_liveboard_framed</item>
+        <item>@drawable/firstlaunch_route_framed</item>
+        <item>@drawable/firstlaunch_popup_framed</item>
+        <item>@drawable/firstlaunch_notification_framed</item>
+        <item>@drawable/firstlaunch_shortcuts_framed</item>
+        <item>@drawable/firstlaunch_settings_framed</item>
+    </integer-array>
+    <string-array name="firstlaunch_titles">
+        <item>Vertrekken &amp; Aankomsten</item>
+        <item>Routes</item>
+        <item>Lang tikken voor meer</item>
+        <item>Notificaties</item>
+        <item>Snelkoppelingen</item>
+        <item>Aanpasbaar naar hartelust</item>
+    </string-array>
+    <string-array name="firstlaunch_descriptions">
+        <item>Of je nu een trein wilt halen of iemand wilt opwachten, vertrekken en aankomsten kan je eenvoudig zien.</item>
+        <item>Waar je ook wilt gaan, plan je route met HyperRail. Favorieten en recenten zijn snel toegankelijk voor elke opzoeking</item>
+        <item>Lang klikken op een resultaat geeft je meer opties</item>
+        <item>Toon een resultaat op je vergrendelscherm door het als notificatie te tonen. Notificiaties worden (nog) niet automatisch geupdate, dus vergeet niet af en toe eens te vernieuwen!</item>
+        <item>Veelgebruikte opzoekingen kan je gewoon als snelkoppeling toevoegen op je startscherm, om nog sneller te zoeken.</item>
+        <item>Liever routes of vertrekken? Liever twee, vier of geen recente opzoekingen zien? Pas de app aan naar je persoonlijke voorkeuren in de instellingen</item>
+    </string-array>
+
+</resources>

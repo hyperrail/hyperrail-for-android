@@ -70,6 +70,11 @@ public class ErrorDialogFactory {
      */
 
     private static AlertDialog showGeneralErrorDialog(final Activity context, final boolean finish) {
+        if (context == null || context.isFinishing()) {
+            // No valid context/activity to show this dialog
+            Log.w("ErrorDialogFactory", "Failed to show error dialog: Activity is already finishing or finished");
+            return null;
+        }
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_general_title)
                 .setMessage(R.string.error_general_message)
@@ -93,6 +98,11 @@ public class ErrorDialogFactory {
      * @return The dialog which is shown
      */
     private static AlertDialog showNetworkErrorDialog(final Activity context, final boolean finish) {
+        if (context == null || context.isFinishing()) {
+            // No valid context/activity to show this dialog
+            Log.w("ErrorDialogFactory", "Failed to show error dialog: Activity is already finishing or finished");
+            return null;
+        }
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_network_title)
                 .setMessage(R.string.error_network_message)
@@ -116,6 +126,11 @@ public class ErrorDialogFactory {
      * @return The dialog which is shown
      */
     private static AlertDialog showServerErrorDialog(final Activity context, final boolean finish) {
+        if (context == null || context.isFinishing()) {
+            // No valid context/activity to show this dialog
+            Log.w("ErrorDialogFactory", "Failed to show error dialog: Activity is already finishing or finished");
+            return null;
+        }
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_servererror_title)
                 .setMessage(R.string.error_servererror_message)
@@ -139,6 +154,11 @@ public class ErrorDialogFactory {
      * @return The dialog which is shown
      */
     private static AlertDialog showNotFoundErrorDialog(final Activity context, final boolean finish) {
+        if (context == null || context.isFinishing()) {
+            // No valid context/activity to show this dialog
+            Log.w("ErrorDialogFactory", "Failed to show error dialog: Activity is already finishing or finished");
+            return null;
+        }
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.error_notfound_title)
                 .setMessage(R.string.error_notfound_message)
@@ -192,6 +212,11 @@ public class ErrorDialogFactory {
      * @return The dialog which is shown
      */
     private static AlertDialog showCustomDialog(final Activity context, @StringRes int title, @StringRes int message, final boolean finish) {
+        if (context == null || context.isFinishing()) {
+            // No valid context/activity to show this dialog
+            Log.w("ErrorDialogFactory", "Failed to show error dialog: Activity is already finishing or finished");
+            return null;
+        }
         return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)

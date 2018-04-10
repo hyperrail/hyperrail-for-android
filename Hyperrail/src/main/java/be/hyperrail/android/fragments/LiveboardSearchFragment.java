@@ -91,7 +91,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     private StationSuggestionsCardAdapter mStationAdapter;
 
     UpdateSuggestionsTask activeSuggestionsUpdateTask;
-
+    AlertDialog permissionExplanationDialog;
     /**
      * This alternative onclicklistener allows to "catch" clicks. This way we can reuse this fragment for purposes other than just searching to show liveboards
      */
@@ -320,10 +320,14 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
             /*if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)) */
 
-            AlertDialog explanation = (new AlertDialog.Builder(this.getActivity())).create();
-            explanation.setTitle(R.string.permission_description_location_title);
-            explanation.setMessage(getResources().getString(R.string.permission_description_location_description));
-            explanation.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+            if (permissionExplanationDialog != null && permissionExplanationDialog.isShowing()){
+                // We're already showing an instance
+                return;
+            }
+            permissionExplanationDialog = (new AlertDialog.Builder(this.getActivity())).create();
+            permissionExplanationDialog.setTitle(R.string.permission_description_location_title);
+            permissionExplanationDialog.setMessage(getResources().getString(R.string.permission_description_location_description));
+            permissionExplanationDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     preferences.edit().putBoolean("stations_enable_nearby", true).apply();
@@ -335,7 +339,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
                     }
                 }
             });
-            explanation.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+            permissionExplanationDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // Disable
@@ -343,7 +347,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
                 }
             });
 
-            explanation.show();
+            permissionExplanationDialog.show();
         } else {
             // TODO: update to https://developers.google.com/android/reference/com/google/android/gms/location/FusedLocationProviderClient AFTER updating to Google Play Libraries to 12.0
             // https://stackoverflow.com/a/46482065/1889679

@@ -74,16 +74,26 @@ public class VehicleStub implements Serializable {
         return getVehicleName(id);
     }
 
-    public static String getVehicleName(String id){
+    public static String getVehicleName(String id) {
+        id = getReducedVehicleId(id);
         return getVehicleClass(id) + " " + getVehicleNumber(id);
     }
+
     /**
      * ID without leading BE.NMBS, for example IC4516
      *
      * @return ID without leading BE.NMBS
      */
-    private String getReducedVehicleId() {
-        return this.id.substring(8);
+    public static String getReducedVehicleId(String id) {
+        if (id.startsWith("BE.NMBS.")) {
+            return id.substring(8);
+        } else {
+            return id;
+        }
+    }
+
+    public String getReducedId() {
+        return getReducedVehicleId(this.id);
     }
 
     /**
@@ -96,7 +106,7 @@ public class VehicleStub implements Serializable {
             return uri;
         }
         // Calculate if unknown
-        return "http://irail.be/vehicle/" + getReducedVehicleId();
+        return "http://irail.be/vehicle/" + getReducedId();
     }
 
     /**
@@ -105,7 +115,7 @@ public class VehicleStub implements Serializable {
      * @return The type of this train
      */
     public String getType() {
-        return getVehicleClass(getReducedVehicleId());
+        return getVehicleClass(getReducedId());
     }
 
     /**
@@ -113,7 +123,7 @@ public class VehicleStub implements Serializable {
      *
      * @return The route/trip type for this vehicle
      */
-    public static String getVehicleClass(String id){
+    public static String getVehicleClass(String id) {
         // S trains are special
         if (id.startsWith("S")) {
             return id.substring(0, id.length() - 4);
@@ -138,15 +148,16 @@ public class VehicleStub implements Serializable {
      * @return The number of this train
      */
     public String getNumber() {
-        return getVehicleNumber(getReducedVehicleId());
+        return getVehicleNumber(getReducedId());
     }
 
     /**
      * Deduct the number of a vehicle from its ID
+     *
      * @param vehicleId The ID of a vehicle, e.g. IC538
      * @return The number of a vehicle, e.g. 538
      */
-    public static String getVehicleNumber(String vehicleId){
+    public static String getVehicleNumber(String vehicleId) {
         // S trains are special
         if (vehicleId.startsWith("S")) {
             return vehicleId.substring(vehicleId.length() - 4);

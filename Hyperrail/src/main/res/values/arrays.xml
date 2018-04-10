@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<resources>
+    <integer-array name="firstlaunch_images">
+        <item>@drawable/firstlaunch_liveboard_framed</item>
+        <item>@drawable/firstlaunch_route_framed</item>
+        <item>@drawable/firstlaunch_popup_framed</item>
+        <item>@drawable/firstlaunch_notification_framed</item>
+        <item>@drawable/firstlaunch_shortcuts_framed</item>
+        <item>@drawable/firstlaunch_settings_framed</item>
+    </integer-array>
+    <string-array name="firstlaunch_titles">
+        <item>Liveboards</item>
+        <item>Routes</item>
+        <item>Long click for more</item>
+        <item>Notifications</item>
+        <item>Shortcuts</item>
+        <item>Customize using settings</item>
+    </string-array>
+    <string-array name="firstlaunch_descriptions">
+        <item>Catching a train or waiting for someone? View departures and arrivals</item>
+        <item>Wherever you want to go, plan a route using Hyperrail. Favorites and recent searches are stored for quick access</item>
+        <item>Long click a result to get more possibilities</item>
+        <item>Store a result in a notification. Notifications will not update automatically (yet), so keep this in mind!</item>
+        <item>Create a shortcut to a station, route or train to look them up in one touch!</item>
+        <item>Are you a routes or departures person? Two, Four, or zero favourites? Customize the app however you want using the settings menu</item>
+    </string-array>
+
+</resources>

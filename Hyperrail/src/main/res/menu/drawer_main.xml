@@ -35,12 +35,26 @@
                     android:icon="@drawable/ic_settings_white"
                     android:title="@string/title_activity_settings"
                     app:showAsAction="ifRoom|collapseActionView" />
-
+                <item
+                    android:id="@+id/action_beta_test"
+                    android:icon="@drawable/ic_feedback"
+                    android:title="@string/title_beta_test"
+                    app:showAsAction="ifRoom|collapseActionView" />
+            </menu>
+        </item>
+        <item android:title="@string/menu_group_feedback">
+            <menu>
+                <item
+                    android:id="@+id/action_rate"
+                    android:icon="@drawable/ic_star"
+                    android:title="@string/title_rate"
+                    app:showAsAction="ifRoom|collapseActionView" />
                 <item
                     android:id="@+id/action_feedback"
                     android:icon="@drawable/ic_feedback"
                     android:title="@string/title_feedback"
                     app:showAsAction="ifRoom|collapseActionView" />
+
             </menu>
         </item>
     </group>

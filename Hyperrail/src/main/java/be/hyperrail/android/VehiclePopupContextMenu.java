@@ -159,10 +159,6 @@ public class VehiclePopupContextMenu {
      * @param mApiInstance An instance of a data provider
      */
     private void bindTrain(Dialog vDialog, IrailDataProvider mApiInstance) {
-        LinearLayout vShareDepartureEta = vDialog.findViewById(
-                id.button_share_departure_ETA);
-        LinearLayout vShareArrivalEta = vDialog.findViewById(id.button_share_arrival_ETA);
-
         String mDepartureConnection;
         String mStationSemanticId;
         String mVehicleSemanticId;
@@ -187,7 +183,7 @@ public class VehiclePopupContextMenu {
 
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
-                    DateTimeFormat.forPattern("hh:mm").print(
+                    DateTimeFormat.forPattern("HH:mm").print(
                             mLeg.getDeparture().getDelayedTime()),
                     mLeg.getDeparture().getStation().getLocalizedName(),
                     mLeg.getVehicleInformation().getName());
@@ -197,7 +193,7 @@ public class VehiclePopupContextMenu {
 
         if (mLeg.getType() != RouteLegType.WALK) {
             mArrivalEtaText = String.format(mContext.getString(string.ETA_transfer_arrival),
-                                            DateTimeFormat.forPattern("hh:mm").print(
+                                            DateTimeFormat.forPattern("HH:mm").print(
                                                     mLeg.getArrival().getDelayedTime()),
                                             mLeg.getArrival().getStation().getLocalizedName(),
                                             mLeg.getVehicleInformation().getName());
@@ -205,8 +201,8 @@ public class VehiclePopupContextMenu {
             mArrivalEtaText = null;
         }
 
-        bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
-                       mDepartureEtaText);
+        bindETAButtons(vDialog, mDepartureEtaText, mArrivalEtaText
+        );
     }
 
     /**
@@ -216,10 +212,6 @@ public class VehiclePopupContextMenu {
      * @param mApiInstance An instance of a data provider
      */
     private void bindTransfer(Dialog vDialog, IrailDataProvider mApiInstance) {
-        LinearLayout vShareDepartureEta = vDialog.findViewById(
-                id.button_share_departure_ETA);
-        LinearLayout vShareArrivalEta = vDialog.findViewById(id.button_share_arrival_ETA);
-
         String mDepartureEtaText;
         String mArrivalEtaText;
 
@@ -237,7 +229,7 @@ public class VehiclePopupContextMenu {
 
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
-                    DateTimeFormat.forPattern("hh:mm").print(
+                    DateTimeFormat.forPattern("HH:mm").print(
                             mTransfer.getDelayedDepartureTime()),
                     mTransfer.getStation().getLocalizedName(),
                     mTransfer.getDepartureLeg().getVehicleInformation().getName());
@@ -247,7 +239,7 @@ public class VehiclePopupContextMenu {
 
         if (mTransfer.getType() == TransferType.ARRIVAL || mTransfer.getType() == TransferType.TRANSFER) {
             mArrivalEtaText = String.format(mContext.getString(string.ETA_transfer_arrival),
-                                            DateTimeFormat.forPattern("hh:mm").print(
+                                            DateTimeFormat.forPattern("HH:mm").print(
                                                     mTransfer.getDelayedArrivalTime()),
                                             mTransfer.getStation().getLocalizedName(),
                                             mTransfer.getArrivalLeg().getVehicleInformation().getName());
@@ -255,8 +247,8 @@ public class VehiclePopupContextMenu {
             mArrivalEtaText = null;
         }
 
-        bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
-                       mDepartureEtaText);
+        bindETAButtons(vDialog, mDepartureEtaText, mArrivalEtaText
+        );
     }
 
     /**
@@ -266,10 +258,6 @@ public class VehiclePopupContextMenu {
      * @param mApiInstance An instance of a data provider
      */
     private void bindTrainStop(Dialog vDialog, IrailDataProvider mApiInstance) {
-        LinearLayout vShareDepartureEta = vDialog.findViewById(
-                id.button_share_departure_ETA);
-        LinearLayout vShareArrivalEta = vDialog.findViewById(id.button_share_arrival_ETA);
-
         vDialog.setTitle(mVehicleStop.getStation().getLocalizedName());
 
         String mDepartureConnection = mVehicleStop.getDepartureSemanticId();
@@ -284,33 +272,35 @@ public class VehiclePopupContextMenu {
                                  mVehicleStop.getStation().getLocalizedName());
 
         String mDepartureEtaText = String.format(mContext.getString(string.ETA_stop_departure),
-                                                 DateTimeFormat.forPattern("hh:mm").print(
+                                                 DateTimeFormat.forPattern("HH:mm").print(
                                                          mVehicleStop.getDelayedDepartureTime()
                                                  ),
                                                  mVehicleStop.getStation().getLocalizedName(),
                                                  mVehicleStop.getVehicle().getName());
 
         String mArrivalEtaText = String.format(mContext.getString(string.ETA_stop_arrival),
-                                               DateTimeFormat.forPattern("hh:mm").print(
+                                               DateTimeFormat.forPattern("HH:mm").print(
                                                        mVehicleStop.getDelayedArrivalTime()
                                                ),
                                                mVehicleStop.getStation().getLocalizedName(),
                                                mVehicleStop.getVehicle().getName());
 
-        bindETAButtons(vDialog, vShareDepartureEta, vShareArrivalEta, mArrivalEtaText,
-                       mDepartureEtaText);
+        bindETAButtons(vDialog, mDepartureEtaText, mArrivalEtaText
+        );
     }
 
     /**
      * Update the ETA buttons to share the right text
-     *
-     * @param vDialog            The dialog view
-     * @param vShareDepartureEta The share departure ETA Button
-     * @param vShareArrivalEta   The share arrival ETA button
-     * @param mArrivalEtaText    The arrival ETA text
+     *  @param vDialog            The dialog view
      * @param mDepartureEtaText  The departure ETA text
+     * @param mArrivalEtaText    The arrival ETA text
      */
-    private void bindETAButtons(final Dialog vDialog, LinearLayout vShareDepartureEta, LinearLayout vShareArrivalEta, final String mArrivalEtaText, final String mDepartureEtaText) {
+    private void bindETAButtons(final Dialog vDialog, final String mDepartureEtaText, final String mArrivalEtaText) {
+        LinearLayout vShareDepartureEta = vDialog.findViewById(
+                id.button_share_departure_ETA);
+        LinearLayout vShareArrivalEta = vDialog.findViewById(id.button_share_arrival_ETA);
+
+
         if (mArrivalEtaText == null) {
             vShareArrivalEta.setVisibility(View.GONE);
         } else {

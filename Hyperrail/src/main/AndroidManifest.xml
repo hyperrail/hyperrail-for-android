@@ -12,15 +12,14 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
-
     <application
         android:name=".Launcher"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false"
-        android:theme="@style/Hyperrail"
-        android:fullBackupContent="@xml/backup_descriptor">
+        android:theme="@style/Hyperrail">
         <activity
             android:name=".activities.MainActivity"
             android:hardwareAccelerated="true"
@@ -34,7 +33,6 @@
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
-
         </activity>
         <activity
             android:name=".activities.searchresult.LiveboardActivity"
@@ -80,18 +78,19 @@
                 android:resource="@xml/appwidget_provider" />
         </receiver>
 
-        <activity android:name=".activities.NextDeparturesWidgetConfiguration" >
+        <activity android:name=".activities.NextDeparturesWidgetConfiguration">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
-
         </activity>
 
+        <service
+            android:name=".widget.NextDeparturesWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-
-        <service android:name=".widget.NextDeparturesWidgetService"
-        android:permission="android.permission.BIND_REMOTEVIEWS" />
-
+        <activity
+            android:name=".activities.FirstLaunchGuide"
+            android:label="@string/title_activity_first_launch_guide" />
     </application>
 
 </manifest>

@@ -24,12 +24,13 @@
 
 package be.hyperrail.android.activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -70,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int VIEW_TYPE_FEEDBACK = 50;
 
     private boolean mDualPane = false;
-
-    private final Handler mDrawerNavigationHandler = new Handler();
 
     // Define this as an enumeration type, so compilers can give better advice on possible errors
     @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE, VIEW_TYPE_TRAIN, VIEW_TYPE_SETTINGS, VIEW_TYPE_FEEDBACK})
@@ -169,6 +168,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                                                         String.valueOf(
                                                                                 VIEW_TYPE_LIVEBOARD)));
 
+        if (!PreferenceManager.getDefaultSharedPreferences(this).contains("first_launch_guide")) {
+            Intent i = new Intent(this, FirstLaunchGuide.class);
+            startActivity(i);
+        }
+
         // Decide which view to show
         if (savedInstanceState == null && this.getIntent().hasExtra("view")) {
             // Based on intent
@@ -180,12 +184,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Default
             setView(defaultView, null);
         }
+
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("view", mCurrentView);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     /**
@@ -292,6 +302,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.action_feedback:
                 setView(VIEW_TYPE_FEEDBACK, null);
+                break;
+            case R.id.action_rate:
+                Uri uri = Uri.parse("market://details?id=" + getPackageName());
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                // To count with Play market backstack, After pressing back button,
+                // to taken back to our application, we need to add following flags to intent.
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                                                Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                }
+
+                try {
+                    startActivity(goToMarket);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                                             Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
+                }
+                break;
+            case R.id.action_beta_test:
+                Uri betaTestUri = Uri.parse("https://play.google.com/apps/testing/be.hyperrail.android");
+                Intent becomeTester = new Intent(Intent.ACTION_VIEW, betaTestUri);
+                startActivity(becomeTester);
                 break;
             default:
                 // Do nothing

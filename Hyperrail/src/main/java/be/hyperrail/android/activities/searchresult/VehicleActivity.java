@@ -24,6 +24,7 @@ import org.joda.time.DateTime;
 import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.searchresult.VehicleFragment;
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.irail.implementation.Vehicle;
 import be.hyperrail.android.irail.implementation.VehicleStub;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
@@ -36,7 +37,7 @@ public class VehicleActivity extends ResultActivity {
 
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
-    
+
     private IrailVehicleRequest mRequest;
     private VehicleFragment fragment;
 
@@ -86,10 +87,10 @@ public class VehicleActivity extends ResultActivity {
             Intent shortcutIntent = this.createShortcutIntent();
             // TODO: replace train ID with a name
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getVehicleId());
-                mShortcutInfoBuilder.setShortLabel(mRequest.getVehicleId());
+                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, Vehicle.getVehicleName(mRequest.getVehicleId()));
+                mShortcutInfoBuilder.setShortLabel(Vehicle.getVehicleName(mRequest.getVehicleId()));
 
-                mShortcutInfoBuilder.setLongLabel("Vehicle " + mRequest.getVehicleId());
+                mShortcutInfoBuilder.setLongLabel("Vehicle " + Vehicle.getVehicleName(mRequest.getVehicleId()));
                 mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_shortcut_train));
                 shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                 mShortcutInfoBuilder.setIntent(shortcutIntent);
@@ -101,7 +102,7 @@ public class VehicleActivity extends ResultActivity {
             } else {
                 Intent addIntent = new Intent();
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mRequest.getVehicleId());
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, Vehicle.getVehicleName(mRequest.getVehicleId()));
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_shortcut_train));
                 addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
                 getApplicationContext().sendBroadcast(addIntent);

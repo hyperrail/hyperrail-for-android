@@ -1,0 +1,57 @@
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    android:weightSum="12"
+    tools:context=".activities.FirstLaunchGuide$FirstLaunchFragment">
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_weight="1"
+        android:gravity="center_horizontal|top"
+        android:text="Departures &amp; Arrivals"
+        android:textColor="@color/colorTextLight"
+        android:textSize="24sp" />
+
+
+    <TextView
+        android:id="@+id/text_description"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_weight="2"
+        android:gravity="center_horizontal|top"
+        android:text="Whether you're catching a train or waiting for someone special, we've got you covered"
+        android:textColor="@color/colorTextLight"
+        android:textSize="@dimen/listitem_content_primary_textsize" />
+
+    <be.hyperrail.android.util.ImageViewTopCrop
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="top"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_weight="9"
+        android:contentDescription="First launch illustration"
+        android:src="@drawable/firstlaunch_settings_framed"
+        tools:ignore="UnusedAttribute" />
+
+</LinearLayout>

@@ -43,6 +43,32 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/button_share_departure_ETA"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/listitem_content_height_single"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_action_share"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/action_share_departure_ETA"
+                android:tint="@color/colorTextDark"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/button_share_arrival_ETA"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -68,31 +94,6 @@
                 android:tint="@color/colorTextDark"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/button_share_departure_ETA"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="?android:selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="@dimen/listitem_content_height_single"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="24dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_action_share"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/action_share_departure_ETA"
-                android:tint="@color/colorTextDark"/>
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

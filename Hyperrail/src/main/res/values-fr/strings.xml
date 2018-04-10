@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This Source Code Form is subject to the terms of the Mozilla Public
   ~ License, v. 2.0. If a copy of the MPL was not distributed with this
   ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -14,27 +13,27 @@
     <string name="action_time">Modifier l\'heure</string>
     <string name="action_to">Nouvelle route vers ici</string>
     <string name="action_unmark_as_favorite">Désélectionner comme favori</string>
-    <string name="action_close">Ferme</string>
+    <string name="action_close">Fermer</string>
     <string name="delay">%1$d\'</string>
-    <string name="error_departure_not_found_message">La station de départ n\'a pas pu être trouvée</string>
-    <string name="error_departure_not_found_title">Station de départ invalide</string>
-    <string name="error_destination_not_found_message">La station de destination n\'a pas pu être trouvée</string>
-    <string name="error_destination_not_found_title">Station de destination invalide</string>
+    <string name="error_departure_not_found_message">La gare de départ n\'a pas pu être trouvée</string>
+    <string name="error_departure_not_found_title">Gare de départ invalide</string>
+    <string name="error_destination_not_found_message">La gare de destination n\'a pas pu être trouvée</string>
+    <string name="error_destination_not_found_title">Gare de destination invalide</string>
     <string name="error_general_message">Quelque chose a mal tourné. Réessayez plus tard.</string>
     <string name="error_general_title">Nous sommes désolés</string>
     <string name="error_network_message">Aucune donnée ne peut être chargée. Êtes-vous connecté à Internet?</string>
     <string name="error_network_title">Réseau indisponible</string>
     <string name="error_notfound_message">Votre recherche n\'a donné aucun résultat.</string>
     <string name="error_notfound_title">Aucun résultat</string>
-    <string name="error_route_from_missing">La station de départ ne peut pas être vide</string>
-    <string name="error_route_to_missing">La station d\'arrivée ne peut pas être vide</string>
+    <string name="error_route_from_missing">La gare de départ ne peut pas être vide</string>
+    <string name="error_route_to_missing">La gare d\'arrivée ne peut pas être vide</string>
     <string name="error_servererror_message">Le serveur n\'a pas retourné une réponse valide. Réessayez plus tard.</string>
     <string name="error_servererror_title">Erreur du serveur</string>
     <string name="from">Gare de départ</string>
     <string name="marked_route_favorite">Route marquée comme favori</string>
-    <string name="marked_station_favorite">Station marquée comme favori</string>
+    <string name="marked_station_favorite">Gare marquée comme favori</string>
     <string name="time_now">immédiatement</string>
-    <string name="permission_description_location_description">L’app peut montrer quelles stations soient trouvent à proximité si vous indiquez votre endroit grossier. Votre position n’est jamais envoyée sur internet. Vous voulez montrer à proximité de stations? Vous pouvez changer cela dans les paramètres.</string>
+    <string name="permission_description_location_description">L’app peut montrer quelles gares soient trouvent à proximité si vous indiquez votre endroit grossier. Votre position n’est jamais envoyée sur internet. Vous voulez montrer à proximité de stations? Vous pouvez changer cela dans les paramètres.</string>
     <string name="to">Destination</string>
     <string name="time_today">aujourd\'hui</string>
     <string name="time_tomorrow">demain</string>
@@ -48,13 +47,13 @@
     <string name="title_feedback">Feedback</string>
     <string name="undo">Annuler</string>
     <string name="unmarked_route_favorite">Voie non marquée comme favori</string>
-    <string name="unmarked_station_favorite">Station non marquée comme favori</string>
+    <string name="unmarked_station_favorite">Gare non marquée comme favori</string>
     <string name="warning_not_realtime">Vous voyez les résultats pour</string>
     <string name="warning_not_realtime_datetime">EEE dd/MM/yyyy HH:mm</string>
-    <string name="permission_description_location_title">Localisation des stations à proximité</string>
+    <string name="permission_description_location_title">Localisation des gares à proximité</string>
     <string name="powered_by_irail_be">Propulsé par irail.be</string>
     <string name="action_search">Cherche</string>
-    <string name="search_station_name">Nom de la station</string>
+    <string name="search_station_name">Nom de la gare</string>
     <string name="status_cancelled">Annulé</string>
     <string name="error_departure_equals_destination_message">La gare d\'arrivée doit être différente de la gare de départ</string>
     <string name="error_departure_equals_destination">Recherche non valide</string>
@@ -74,7 +73,7 @@
     <string name="marked_train_favorite">Train ajouté aux favoris</string>
     <string name="unmarked_train_favorite">Train retiré des favoris</string>
     <string name="search_train_name">Identification du train (par exemple IC 537)</string>
-    <string name="load_previous_results">Charger les résultats passés</string>
+    <string name="load_previous_results">Appuyez pour charger les résultats précédents</string>
     <string name="error_train_id_invalid">Ce n\'est pas un identifiant de train valide</string>
     <string name="order_of_trains">Séquence de legs</string>
     <string name="No">Non</string>
@@ -82,8 +81,8 @@
     <string name="action_shortcut">Créer un raccourci</string>
     <string name="shortcut_created">Un raccourci a été ajouté à votre écran d\'accueil</string>
     <string name="walk_heading">A pied</string>
-    <string name="walk_description">Promenez-vous à la station suivante</string>
-    <string name="title_activity_station">Station</string>
+    <string name="walk_description">Promenez-vous à la gare suivante</string>
+    <string name="title_activity_station">Gare</string>
 
     <string name="menu_group_settings">Parametres</string>
     <string name="facility_blue_bikes">Blue bikes</string>
@@ -98,10 +97,10 @@
     <string name="title_arrivals">Arrivées</string>
     <string name="shortcut_label_station_short">Départs</string>
     <string name="shortcut_label_route_short">Route</string>
-    <string name="title_pick_station">Choisissez une station</string>
+    <string name="title_pick_station">Choisissez une gare</string>
     <string name="action_details">Plus d\'informations</string>
-    <string name="action_share_arrival_eta">Partager l\'heure de départ prévue</string>
-    <string name="action_share_departure_ETA">Partager l\'heure d\'arrivée prévue</string>
+    <string name="action_share_arrival_eta">Partager l\'heure d\'arrivée prévue</string>
+    <string name="action_share_departure_ETA">Partager l\'heure de départ prévue</string>
     <string name="shortcut_label_route_long">Planifier un voyage</string>
     <string name="shortcut_label_station_long">Voir les départs et les arrivées</string>
     <string name="show_as_notification">Pin comme notification</string>
@@ -112,4 +111,15 @@
     <string name="list_day_names">Lundi\nMardi\nMercredi\nJeudi\nVendredi\nSamedi\nDimanche</string>
     <string name="warning_offline">Vous êtes hors ligne. Les résultats peuvent être dépassés.</string>
     <string name="tap_to_retry">Le chargement a échoué. Cliquez pour réessayer</string>
+
+    <string name="title_activity_first_launch_guide">Un petit tour</string>
+    <string name="title_rate">Évaluer l\'application!</string>
+    <string name="title_beta_test">Tester la version bêta</string>
+    <string name="menu_group_feedback">Commentaires</string>
+    <string name="précédent">Précédent</string>
+    <string name="next">Suivant</string>
+    <string name="finish">Terminer</string>
+    <string name="skip">Ignorer</string>
+    <string name="station_details_not_available_description">Des informations détaillées ne sont malheureusement pas encore disponibles pour cette station.</string>
+    <string name="station_details_not_available_title">Information non disponible</string>
 </resources>
