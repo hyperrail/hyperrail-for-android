@@ -108,6 +108,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
             while (lines.hasNext()) {
                 String line = lines.next();
+                if (line.startsWith("URI,name")) {
+                    // Header line
+                    continue;
+                }
 
                 try (Scanner fields = new Scanner(line)) {
                     fields.useDelimiter(",");
@@ -149,20 +153,24 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
                     String field = fields.next();
                     if (field != null && !field.isEmpty()) {
+
                         values.put(
                                 StationsDataColumns.COLUMN_NAME_LONGITUDE,
                                 Double.parseDouble(field)
                         );
+
                     } else {
                         values.put(StationsDataColumns.COLUMN_NAME_LONGITUDE, 0);
                     }
 
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
+
                         values.put(
                                 StationsDataColumns.COLUMN_NAME_LATITUDE,
                                 Double.parseDouble(field)
                         );
+
                     } else {
                         values.put(StationsDataColumns.COLUMN_NAME_LATITUDE, 0);
                     }

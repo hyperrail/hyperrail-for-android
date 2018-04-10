@@ -31,7 +31,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -72,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int VIEW_TYPE_FEEDBACK = 50;
 
     private boolean mDualPane = false;
-
-    private final Handler mDrawerNavigationHandler = new Handler();
 
     // Define this as an enumeration type, so compilers can give better advice on possible errors
     @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE, VIEW_TYPE_TRAIN, VIEW_TYPE_SETTINGS, VIEW_TYPE_FEEDBACK})
@@ -171,6 +168,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                                                         String.valueOf(
                                                                                 VIEW_TYPE_LIVEBOARD)));
 
+        if (!PreferenceManager.getDefaultSharedPreferences(this).contains("first_launch_guide")) {
+            Intent i = new Intent(this, FirstLaunchGuide.class);
+            startActivity(i);
+        }
+
         // Decide which view to show
         if (savedInstanceState == null && this.getIntent().hasExtra("view")) {
             // Based on intent
@@ -182,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Default
             setView(defaultView, null);
         }
+
     }
 
     @Override
@@ -193,10 +196,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        if (!PreferenceManager.getDefaultSharedPreferences(this).contains("first_launch_guide")) {
-            Intent i = new Intent(this, FirstLaunchGuide.class);
-            startActivity(i);
-        }
     }
 
     /**

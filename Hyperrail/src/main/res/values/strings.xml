@@ -129,6 +129,8 @@
     <string name="next">Next</string>
     <string name="finish">Finish</string>
     <string name="skip">Skip</string>
+    <string name="station_details_not_available_description">Detailled information is not available for this station</string>
+    <string name="station_details_not_available_title">Station information not available</string>
 
 
 </resources>

@@ -132,4 +132,6 @@
     <string name="next">Volgende</string>
     <string name="finish">Voltooien</string>
     <string name="skip">Overslaan</string>
+    <string name="station_details_not_available_description">Gedetailleerde informatie is helaas nog niet beschikbaar voor dit station.</string>
+    <string name="station_details_not_available_title">Informatie niet beschikbaar</string>
 </resources>

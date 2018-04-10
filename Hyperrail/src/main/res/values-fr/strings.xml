@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This Source Code Form is subject to the terms of the Mozilla Public
   ~ License, v. 2.0. If a copy of the MPL was not distributed with this
   ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -14,7 +13,7 @@
     <string name="action_time">Modifier l\'heure</string>
     <string name="action_to">Nouvelle route vers ici</string>
     <string name="action_unmark_as_favorite">Désélectionner comme favori</string>
-    <string name="action_close">Ferme</string>
+    <string name="action_close">Fermer</string>
     <string name="delay">%1$d\'</string>
     <string name="error_departure_not_found_message">La gare de départ n\'a pas pu être trouvée</string>
     <string name="error_departure_not_found_title">Gare de départ invalide</string>
@@ -112,4 +111,15 @@
     <string name="list_day_names">Lundi\nMardi\nMercredi\nJeudi\nVendredi\nSamedi\nDimanche</string>
     <string name="warning_offline">Vous êtes hors ligne. Les résultats peuvent être dépassés.</string>
     <string name="tap_to_retry">Le chargement a échoué. Cliquez pour réessayer</string>
+
+    <string name="title_activity_first_launch_guide">Un petit tour</string>
+    <string name="title_rate">Évaluer l\'application!</string>
+    <string name="title_beta_test">Tester la version bêta</string>
+    <string name="menu_group_feedback">Commentaires</string>
+    <string name="précédent">Précédent</string>
+    <string name="next">Suivant</string>
+    <string name="finish">Terminer</string>
+    <string name="skip">Ignorer</string>
+    <string name="station_details_not_available_description">Des informations détaillées ne sont malheureusement pas encore disponibles pour cette station.</string>
+    <string name="station_details_not_available_title">Information non disponible</string>
 </resources>
