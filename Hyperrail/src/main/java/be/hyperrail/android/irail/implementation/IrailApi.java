@@ -26,6 +26,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.firebase.crash.FirebaseCrash;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
@@ -170,7 +171,7 @@ public class IrailApi implements IrailDataProvider {
                 + "&to=" + request.getDestination().getId()
                 + "&from=" + request.getOrigin().getId()
                 + "&date=" + dateformat.print(request.getSearchTime())
-                + "&time=" + timeformat.print(request.getSearchTime())
+                + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
                 + "&lang=" + locale.substring(0, 2);
 
         if (request.getTimeDefinition() == RouteTimeDefinition.DEPART_AT) {
@@ -280,7 +281,7 @@ public class IrailApi implements IrailDataProvider {
         final String url = "https://api.irail.be/liveboard/?format=json"
                 + "&id=" + request.getStation().getId()
                 + "&date=" + dateformat.print(request.getSearchTime())
-                + "&time=" + timeformat.print(request.getSearchTime())
+                + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
                 + "&arrdep=" + ((request.getType() == Liveboard.LiveboardType.DEPARTURES) ? "dep" : "arr");
 
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {

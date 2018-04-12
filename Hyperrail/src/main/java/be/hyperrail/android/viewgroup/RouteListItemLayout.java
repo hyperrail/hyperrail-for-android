@@ -118,7 +118,11 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
 
         bindTimeAndDelay(context, route, hhmm);
 
-        vDirection.setText(route.getLegs()[0].getVehicleInformation().getDirection().getLocalizedName());
+        if (route.getLegs()[0].getVehicleInformation().getDirection() != null) {
+            vDirection.setText(route.getLegs()[0].getVehicleInformation().getDirection().getLocalizedName());
+        } else {
+            vDirection.setText(route.getLegs()[0].getVehicleInformation().getName());
+        }
 
         vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
 
