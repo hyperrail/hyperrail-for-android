@@ -630,20 +630,20 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
 
             if (name.contains("/")) {
-                String newname = name.substring(0, name.indexOf("/") - 1);
+                String newname = name.substring(0, name.indexOf("/"));
                 FirebaseCrash.logcat(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
                 return getStationByName(newname);
             } else if (name.contains("(")) {
-                String newname = name.substring(0, name.indexOf("(") - 1);
+                String newname = name.substring(0, name.indexOf("("));
                 FirebaseCrash.logcat(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
                 return getStationByName(newname);
-            } else if (name.startsWith("s ") || name.startsWith("S ")) {
+            } else if (name.toLowerCase().startsWith("s ") || wcName.toLowerCase().startsWith("s%")) {
                 String newname = "'" + name;
                 FirebaseCrash.logcat(
                         WARNING.intValue(), "SQLiteStationProvider",
