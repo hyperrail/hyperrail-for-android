@@ -95,5 +95,6 @@ public class StationsDbInstrumentedTest {
         Station zuid = provider.getStationByIrailId("BE.NMBS.008814001");
         assertEquals(zuid, provider.getStationByHID("008814001"));
         assertEquals(zuid, provider.getStationByUIC("8814001"));
+        assertEquals(zuid, provider.getStationByUri("http://irail.be/stations/NMBS/008814001"));
     }
 }

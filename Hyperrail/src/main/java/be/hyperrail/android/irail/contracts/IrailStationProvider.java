@@ -89,6 +89,24 @@ public interface IrailStationProvider {
     Station getStationByIrailId(String id, boolean suppressErrors);
 
     /**
+     * Get a station by its URI
+     *
+     * @param uri a uri string
+     * @return The station object.
+     */
+    @Nullable
+    Station getStationByUri(String uri);
+
+    /**
+     * Get a station by its URI
+     *
+     * @param uri a uri string
+     * @return The station object.
+     */
+    @Nullable
+    Station getStationByUri(String uri, boolean suppressErrors);
+
+    /**
      * Get a station by its name.
      *
      * @param name The name of the station to find

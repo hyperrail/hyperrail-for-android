@@ -599,6 +599,18 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         return results[0];
     }
 
+    @Nullable
+    @Override
+    public Station getStationByUri(String uri) {
+        return getStationByUri(uri, false);
+    }
+
+    @Nullable
+    @Override
+    public Station getStationByUri(String uri, boolean suppressErrors) {
+        return getStationByIrailId("BE.NMBS." + uri.substring(uri.lastIndexOf('/') + 1), suppressErrors);
+    }
+
     /**
      * @inheritDoc
      */
