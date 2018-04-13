@@ -84,14 +84,14 @@ public class IrailApiParser {
         boolean hasFirstTrainLeft = (departure.has("left") && departure.getInt("left") == 1);
 
         RouteLegEnd departureEnd = new RouteLegEnd(
-                stationProvider.getStationById(departure.getJSONObject("stationinfo").getString("id")),
+                stationProvider.getStationByIrailId(departure.getJSONObject("stationinfo").getString("id")),
                 timestamp2date(departure.getString("time")), departure.getString("platform"), departure.getJSONObject("platforminfo").getInt("normal") == 1,
                 new Duration(departure.getInt("delay") * 1000), departure.getInt("canceled") != 0, hasFirstTrainLeft,
                 departure.getString("departureConnection"),
                 departureOccupancyLevel);
 
         RouteLegEnd arrivalEnd = new RouteLegEnd(
-                stationProvider.getStationById(arrival.getJSONObject("stationinfo").getString("id")),
+                stationProvider.getStationByIrailId(arrival.getJSONObject("stationinfo").getString("id")),
                 timestamp2date(arrival.getString("time")), arrival.getString("platform"), arrival.getJSONObject("platforminfo").getInt("normal") == 1,
                 new Duration(arrival.getInt("delay") * 1000), arrival.getInt("canceled") != 0, hasLastTrainArrived, null, null);
 
@@ -126,11 +126,11 @@ public class IrailApiParser {
 
                 // don't use parseStop function, we have to combine data!
                 arrivals[i] = new RouteLegEnd(
-                        stationProvider.getStationById(via.getJSONObject("stationinfo").getString("id")),
+                        stationProvider.getStationByIrailId(via.getJSONObject("stationinfo").getString("id")),
                         timestamp2date(viaArrival.getString("time")), viaArrival.getString("platform"), viaArrival.getJSONObject("platforminfo").getInt("normal") == 1,
                         new Duration(viaArrival.getInt("delay") * 1000), viaArrival.getInt("canceled") != 0, hasArrived, null, null);
                 departures[i + 1] = new RouteLegEnd(
-                        stationProvider.getStationById(via.getJSONObject("stationinfo").getString("id")),
+                        stationProvider.getStationByIrailId(via.getJSONObject("stationinfo").getString("id")),
                         timestamp2date(viaDeparture.getString("time")), viaDeparture.getString("platform"), viaDeparture.getJSONObject("platforminfo").getInt("normal") == 1,
                         new Duration(viaDeparture.getInt("delay") * 1000), viaDeparture.getInt("canceled") != 0, hasLeft,
                         viaDeparture.getString("departureConnection"), viaOccupancyLevel);
@@ -241,7 +241,7 @@ public class IrailApiParser {
         JSONObject object;
         JSONArray items;
 
-        Station s = stationProvider.getStationById(jsonData.getJSONObject("stationinfo").getString("id"));
+        Station s = stationProvider.getStationByIrailId(jsonData.getJSONObject("stationinfo").getString("id"));
 
         if (jsonData.has("departures")) {
             object = jsonData.getJSONObject("departures");
@@ -274,7 +274,7 @@ public class IrailApiParser {
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
     private VehicleStop parseLiveboardStop(Station stop, JSONObject item, VehicleStopType type) throws JSONException {
-        Station destination = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+        Station destination = stationProvider.getStationByIrailId(item.getJSONObject("stationinfo").getString("id"));
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
         if (item.has("occupancy")) {
@@ -313,7 +313,7 @@ public class IrailApiParser {
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
     private VehicleStop parseTrainStop(Station destination, VehicleStub train, JSONObject item, VehicleStopType type) throws JSONException {
-        Station stop = stationProvider.getStationById(item.getJSONObject("stationinfo").getString("id"));
+        Station stop = stationProvider.getStationByIrailId(item.getJSONObject("stationinfo").getString("id"));
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
         if (item.has("occupancy")) {
@@ -346,7 +346,7 @@ public class IrailApiParser {
         double latitude = jsonData.getJSONObject("vehicleinfo").getDouble("locationY");
 
         JSONArray jsonStops = jsonData.getJSONObject("stops").getJSONArray("stop");
-        Station destination = stationProvider.getStationById(
+        Station destination = stationProvider.getStationByIrailId(
                 jsonStops
                         .getJSONObject(jsonStops.length() - 1)
                         .getJSONObject("stationinfo")

@@ -43,7 +43,7 @@ public class IrailParserInstrumentedTest {
     public void liveboardParsingTest() throws Exception {
         // Context of the app under test.
         DateTime searchTime = new DateTime(2017, 11, 16, 13, 0);
-        Liveboard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime,RouteTimeDefinition.DEPART_AT);
+        Liveboard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime, Liveboard.LiveboardType.DEPARTURES,RouteTimeDefinition.DEPART_AT);
 
         assertEquals(searchTime, liveboard.getSearchTime());
         assertEquals("BE.NMBS.008892007", liveboard.getId());
@@ -98,7 +98,7 @@ public class IrailParserInstrumentedTest {
         assertEquals("http://irail.be/vehicle/PARSETHISVALUE", train.getSemanticId());
 
         assertEquals(11, train.getStops().length);
-        assertEquals(2, train.getStopNumberForStation(new StationsDb(InstrumentationRegistry.getTargetContext()).getStationById("BE.NMBS.008844008")));
+        assertEquals(2, train.getStopNumberForStation(new StationsDb(InstrumentationRegistry.getTargetContext()).getStationByIrailId("BE.NMBS.008844008")));
 
         // Start testing stop 2
         assertEquals("BE.NMBS.008844008", train.getStops()[2].getStation().getId());
@@ -115,8 +115,8 @@ public class IrailParserInstrumentedTest {
         // Context of the app under test.
         IrailStationProvider stationProvider = new StationsDb(InstrumentationRegistry.getTargetContext());
         DateTime searchTime = new DateTime(2017, 11, 16, 14, 0);
-        RouteResult routes = parser.parseRouteResult(new JSONObject(ROUTE_RESPONSE), stationProvider.getStationById("BE.NMBS.008893120"),
-                stationProvider.getStationById("BE.NMBS.008832375"), searchTime, RouteTimeDefinition.DEPART_AT);
+        RouteResult routes = parser.parseRouteResult(new JSONObject(ROUTE_RESPONSE), stationProvider.getStationByIrailId("BE.NMBS.008893120"),
+                                                     stationProvider.getStationByIrailId("BE.NMBS.008832375"), searchTime, RouteTimeDefinition.DEPART_AT);
 
         assertEquals(6, routes.getRoutes().length);
         Route route = routes.getRoutes()[0];

@@ -65,7 +65,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
 
     public IrailLiveboardRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        this.station = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("id"));
+        this.station = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("id"));
         timeDefinition = RouteTimeDefinition.DEPART_AT;
         type = Liveboard.LiveboardType.DEPARTURES;
         searchTime = null;

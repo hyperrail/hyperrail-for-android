@@ -61,8 +61,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
     protected void onCreate(Bundle savedInstanceState) {
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
-            Station origin = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("from"));
-            Station destination = IrailFactory.getStationsProviderInstance().getStationById(getIntent().getStringExtra("to"));
+            Station origin = IrailFactory.getStationsProviderInstance().getStationByIrailId(getIntent().getStringExtra("from"));
+            Station destination = IrailFactory.getStationsProviderInstance().getStationByIrailId(getIntent().getStringExtra("to"));
 
             this.mRequest = new IrailRoutesRequest(origin, destination, RouteTimeDefinition.DEPART_AT, null);
         } else {

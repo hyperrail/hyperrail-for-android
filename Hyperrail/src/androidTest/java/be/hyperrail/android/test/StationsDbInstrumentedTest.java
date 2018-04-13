@@ -26,7 +26,7 @@ public class StationsDbInstrumentedTest {
     @Test
     public void testStationSearch(){
         //BE.NMBS.008811437 	Bosvoorde/Boitsfort 	Boitsfort 	Bosvoorde 			be 	4.408112 	50.794698 	31.947976878613
-        Station bosvoorde = provider.getStationById("BE.NMBS.008811437");
+        Station bosvoorde = provider.getStationByIrailId("BE.NMBS.008811437");
         assertEquals("BE.NMBS.008811437", bosvoorde.getId());
         assertEquals("Bosvoorde/Boitsfort", bosvoorde.getName());
         assertEquals("Bosvoorde", bosvoorde.getAlternativeNl());
@@ -44,7 +44,7 @@ public class StationsDbInstrumentedTest {
             assertEquals(bosvoorde.getId(),provider.getStationByName(name).getId());
         }
         // BE.NMBS.008866001 	Arlon 		Aarlen 	Arel
-        Station arlon = provider.getStationById("BE.NMBS.008866001");
+        Station arlon = provider.getStationByIrailId("BE.NMBS.008866001");
         assertEquals("BE.NMBS.008866001", arlon.getId());
         assertEquals("Arlon", arlon.getName());
         assertEquals("Aarlen", arlon.getAlternativeNl());

@@ -13,6 +13,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.metrics.AddTrace;
@@ -368,6 +370,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         };
     }
 
+    @NonNull
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderBySize")
     public Station[] getStationsOrderBySize() {
@@ -390,6 +393,9 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         Station[] stations = loadStationCursor(c);
         c.close();
 
+        if (stations == null) {
+            return new Station[0];
+        }
 
         stationsOrderedBySizeCache = stations;
 
@@ -423,10 +429,15 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     /**
      * @inheritDoc
      */
+    @NonNull
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderByLocation")
     public Station[] getStationsOrderByLocation(Location location) {
-        return this.getStationsByNameOrderByLocation("", location);
+        Station[] results = this.getStationsByNameOrderByLocation("", location);
+        if (results == null) {
+            return new Station[0];
+        }
+        return results;
     }
 
     /**
@@ -461,6 +472,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     /**
      * @inheritDoc
      */
+    @NonNull
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderByLocationAndSize")
     public Station[] getStationsOrderByLocationAndSize(Location location, int limit) {
@@ -485,7 +497,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
 
         if (stations == null) {
-            return null;
+            return new Station[0];
         }
 
         Arrays.sort(stations, new Comparator<Station>() {
@@ -520,12 +532,42 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         return results;
     }
 
+    @Nullable
+    @Override
+    public Station getStationByUIC(String id) {
+        return getStationByUIC(id, false);
+    }
+
+    @Nullable
+    @Override
+    public Station getStationByUIC(String id, boolean suppressErrors) {
+        return getStationByIrailId("BE.NMBS.00" + id, false);
+    }
+
+    @Nullable
+    @Override
+    public Station getStationByHID(String id) {
+        return getStationByHID(id, false);
+    }
+
+    @Nullable
+    @Override
+    public Station getStationByHID(String id, boolean suppressErrors) {
+        return getStationByIrailId("BE.NMBS." + id, false);
+    }
+
     /**
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "StationsDb.getStationById")
-    public Station getStationById(String id) {
+    @AddTrace(name = "StationsDb.getStationByIrailId")
+    public Station getStationByIrailId(String id) {
+        return getStationByIrailId(id, false);
+    }
+
+    @Nullable
+    @Override
+    public Station getStationByIrailId(String id, boolean suppressErrors) {
         if (mStationIdCache.containsKey(id)) {
             return mStationIdCache.get(id);
         }
@@ -546,10 +588,11 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         c.close();
 
-
         if (results == null) {
-            FirebaseCrash.report(
-                    new IllegalStateException("ID Not found in station database! " + id));
+            if (!suppressErrors) {
+                FirebaseCrash.report(
+                        new IllegalStateException("ID Not found in station database! " + id));
+            }
             return null;
         }
         mStationIdCache.put(id, results[0]);
@@ -595,6 +638,13 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 return getStationByName(newname);
             } else if (name.contains("(")) {
                 String newname = name.substring(0, name.indexOf("(") - 1);
+                FirebaseCrash.logcat(
+                        WARNING.intValue(), "SQLiteStationProvider",
+                        "Station not found: " + name + ", replacement search " + newname
+                );
+                return getStationByName(newname);
+            } else if (name.startsWith("s ") || name.startsWith("S ")) {
+                String newname = "'" + name;
                 FirebaseCrash.logcat(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname

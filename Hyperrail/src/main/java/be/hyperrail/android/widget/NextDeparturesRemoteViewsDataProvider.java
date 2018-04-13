@@ -53,7 +53,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         }
 
         IrailLiveboardRequest request = new IrailLiveboardRequest(
-                IrailFactory.getStationsProviderInstance().getStationById(id),
+                IrailFactory.getStationsProviderInstance().getStationByIrailId(id),
                 RouteTimeDefinition.DEPART_AT,
                 Liveboard.LiveboardType.DEPARTURES,
                 null

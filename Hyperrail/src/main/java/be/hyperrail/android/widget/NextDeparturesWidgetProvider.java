@@ -47,7 +47,7 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
             //throw new IllegalStateException("No station ID found for " + "NextDepartures:" + appWidgetId);
         }
 
-        Station mStation = IrailFactory.getStationsProviderInstance().getStationById(id);
+        Station mStation = IrailFactory.getStationsProviderInstance().getStationByIrailId(id);
 
         // Set up the intent that starts the NextDeparturesWidgetService, which will
         // provide the views for this collection.

@@ -63,7 +63,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
-            this.mVehicleDirection = IrailFactory.getStationsProviderInstance().getStationById(jsonObject.getString("direction"));
+            this.mVehicleDirection = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("direction"));
         } else {
             this.mVehicleDirection = null;
         }

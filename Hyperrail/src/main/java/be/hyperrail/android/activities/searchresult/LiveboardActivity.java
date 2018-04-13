@@ -81,7 +81,7 @@ public class LiveboardActivity extends ResultActivity {
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
             this.mRequest = new IrailLiveboardRequest(
-                    IrailFactory.getStationsProviderInstance().getStationById(
+                    IrailFactory.getStationsProviderInstance().getStationByIrailId(
                             getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
                     null);
         } else {
