@@ -36,7 +36,7 @@ import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
 
-public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route,RouteLeg> {
+public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, RouteLeg> {
 
     protected TextView vDirection;
     protected TextView vDuration;
@@ -93,10 +93,10 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
     @Override
     public void bind(Context context, RouteLeg routeLeg, Route route, int position) {
         Transfer transferBefore = route.getTransfers()[position];
-        Transfer transferAfter = route.getTransfers()[position+1];
+        Transfer transferAfter = route.getTransfers()[position + 1];
 
         if (routeLeg.getType() == RouteLegType.WALK) {
-            bindWalk(context, transferBefore,transferAfter);
+            bindWalk(context, transferBefore, transferAfter);
         } else {
             bindVehicle(context, routeLeg, transferBefore, transferAfter, route, position);
         }
@@ -148,25 +148,25 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
             vOccupancy.setVisibility(View.VISIBLE);
             vStatusContainer.setVisibility(View.GONE);
         }
+        if (route.getVehicleAlerts() != null && route.getVehicleAlerts().length > position) {
+            Message[] trainAlerts = route.getVehicleAlerts()[position];
+            if (trainAlerts != null && trainAlerts.length > 0) {
+                vAlertContainer.setVisibility(View.VISIBLE);
 
-        Message[] trainAlerts = route.getVehicleAlerts()[position];
-        if (trainAlerts != null && trainAlerts.length > 0) {
-            vAlertContainer.setVisibility(View.VISIBLE);
-
-            StringBuilder text = new StringBuilder();
-            int n = trainAlerts.length;
-            for (int i = 0; i < n; i++) {
-                text.append(trainAlerts[i].getHeader());
-                if (i < n - 1) {
-                    text.append("\n");
+                StringBuilder text = new StringBuilder();
+                int n = trainAlerts.length;
+                for (int i = 0; i < n; i++) {
+                    text.append(trainAlerts[i].getHeader());
+                    if (i < n - 1) {
+                        text.append("\n");
+                    }
                 }
+
+                vAlertText.setText(text.toString());
+            } else {
+                vAlertContainer.setVisibility(View.GONE);
             }
-
-            vAlertText.setText(text.toString());
-        } else {
-            vAlertContainer.setVisibility(View.GONE);
         }
-
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
     }
 
