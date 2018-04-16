@@ -368,7 +368,6 @@ http://irail.be/stations/NMBS/008811197,Merode,,,,,be,4.398934,50.839284,20.7716
 http://irail.be/stations/NMBS/008842648,Méry,,,,,be,5.587236,50.54762,25.439306358382
 http://irail.be/stations/NMBS/008866662,Messancy,,,,,be,5.818915,49.592777,14.517341040462
 http://irail.be/stations/NMBS/008886058,Mevergnies-Attre,,,,,be,3.833917,50.600108,21.676300578035
-http://irail.be/stations/NMBS/088022054,Michelau,,,,,lu,6.09251,49.89644,
 http://irail.be/stations/NMBS/008841665,Milmort,,,,,be,5.60009,50.692455,74.132947976879
 http://irail.be/stations/NMBS/008814431,Moensberg,,,,,be,4.330733,50.77832,37.742774566474
 http://irail.be/stations/NMBS/008885704,Mouscron,,Moeskroen,,,be,3.228448,50.741005,55.433526011561
@@ -645,4 +644,14 @@ http://irail.be/stations/NMBS/007015400,London Saint Pancras International,Londr
 http://irail.be/stations/NMBS/008815016,Thurn en Taxis/Tour et Taxis,Tour et Taxis,Thurn en Taxis,Tour et Taxis,Thurn en Taxis,be,4.341090917587279,50.87175167644673,0
 http://irail.be/stations/NMBS/008811403,Mouterij/Germoir,Germoir,Mouterij,Germoir,Mouterij,be,4.37866,50.829929,0
 http://irail.be/stations/NMBS/008814472,Arcaden/Arcades,Arcades,Arcaden,,,be,4.398333,50.809722,0
-http://irail.be/stations/NMBS/008400131,Breda,,,,,nl,4.77640,51.594459,0
+http://irail.be/stations/NMBS/008400131,Breda,,,,,nl,4.7764000000,51.5944590000,0
+http://irail.be/stations/NMBS/008200128,Michelau,,,,,lu,6.09149000,49.8972900,0
+http://irail.be/stations/NMBS/008829009,Essen-Grens,,,,,be,4.44893000,51.4690900,0
+http://irail.be/stations/NMBS/008849023,Hergenrath-Frontiere,,,,,be,6.04126900,50.7189550,0
+http://irail.be/stations/NMBS/008849064,Vise-Frontiere,,,,,be,5.70290300,50.7584130,0
+http://irail.be/stations/NMBS/008849072,Gouvy-Frontiere,,,,,be,5.96861300,50.1716530,0
+http://irail.be/stations/NMBS/008869047,Athus-Frontiere,,,,,be,5.82493200,49.5517490,0
+http://irail.be/stations/NMBS/008869054,Sterpenich-Frontiere,,,,,be,5.90415000,49.6439600,0
+http://irail.be/stations/NMBS/008869088,Aubange-Frontiere-Luxembourg,,,,,be,5.82630700,49.5494550,0
+http://irail.be/stations/NMBS/008889011,Mouscron-Frontiere,,,,,be,3.19608600,50.7217160,0
+http://irail.be/stations/NMBS/008889045,Blandain-Frontiere,,,,,be,3.26373000,50.6174900,0

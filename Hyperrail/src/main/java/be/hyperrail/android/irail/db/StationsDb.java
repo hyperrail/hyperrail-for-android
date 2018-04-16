@@ -52,7 +52,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 18041000;
+    private static final int DATABASE_VERSION = 18041600;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
