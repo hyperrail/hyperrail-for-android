@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Liveboard;
@@ -63,9 +64,13 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         this.searchTime = searchTime;
     }
 
-    public IrailLiveboardRequest(@NonNull JSONObject jsonObject) throws JSONException {
+    public IrailLiveboardRequest(@NonNull JSONObject jsonObject) throws JSONException, StationNotResolvedException {
         super(jsonObject);
-        this.station = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("id"));
+        String id = jsonObject.getString("id");
+        if (id.startsWith("BE.NMBS.")) {
+            id = id.substring(5);
+        }
+        this.station = IrailFactory.getStationsProviderInstance().getStationByHID(id);
         timeDefinition = RouteTimeDefinition.DEPART_AT;
         type = Liveboard.LiveboardType.DEPARTURES;
         searchTime = null;
@@ -82,7 +87,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("id", station.getId());
+        json.put("id", station.getHafasId());
         return json;
     }
 

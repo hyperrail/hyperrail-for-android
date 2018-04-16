@@ -76,7 +76,7 @@ public class NextDeparturesWidgetConfiguration extends AppCompatActivity impleme
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailLiveboardRequest> object) {
         SharedPreferences prefs = getSharedPreferences("widgets", 0);
-        prefs.edit().putString("NextDepartures:" + mAppWidgetId, object.getData().getStation().getId()).commit();
+        prefs.edit().putString("NextDepartures:" + mAppWidgetId, object.getData().getStation().getHafasId()).commit();
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 

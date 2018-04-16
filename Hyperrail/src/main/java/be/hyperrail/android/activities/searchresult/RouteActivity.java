@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -25,6 +26,7 @@ import org.joda.time.DateTime;
 import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.searchresult.RoutesFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
@@ -52,8 +54,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         // They shouldn't contain a search time either, since shortcuts should always show actual information
         Intent i = new Intent(this, RouteActivity.class);
         i.putExtra("shortcut", true);
-        i.putExtra("from", mRequest.getOrigin().getId());
-        i.putExtra("to", mRequest.getDestination().getId());
+        i.putExtra("from", mRequest.getOrigin().getHafasId());
+        i.putExtra("to", mRequest.getDestination().getHafasId());
         return i;
     }
 
@@ -61,9 +63,16 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
     protected void onCreate(Bundle savedInstanceState) {
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
-            Station origin = IrailFactory.getStationsProviderInstance().getStationByIrailId(getIntent().getStringExtra("from"));
-            Station destination = IrailFactory.getStationsProviderInstance().getStationByIrailId(getIntent().getStringExtra("to"));
-
+            Station origin;
+            Station destination;
+            try {
+                origin = IrailFactory.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("from"));
+                destination = IrailFactory.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("to"));
+            } catch (StationNotResolvedException e) {
+                Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
             this.mRequest = new IrailRoutesRequest(origin, destination, RouteTimeDefinition.DEPART_AT, null);
         } else {
             this.mRequest = (IrailRoutesRequest) getIntent().getSerializableExtra("request");
@@ -78,7 +87,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getId() + mRequest.getDestination().getId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getHafasId() + mRequest.getDestination().getHafasId());
         bundle.putString(FirebaseAnalytics.Param.ORIGIN, mRequest.getOrigin().getName());
         bundle.putString(FirebaseAnalytics.Param.DESTINATION, mRequest.getDestination().getName());
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "route");

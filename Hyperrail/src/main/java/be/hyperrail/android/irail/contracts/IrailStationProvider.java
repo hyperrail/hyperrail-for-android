@@ -38,8 +38,8 @@ public interface IrailStationProvider {
      * @param id a 7 digit ID string
      * @return The station object, null if not found
      */
-    @Nullable
-    Station getStationByUIC(String id);
+    @NonNull
+    Station getStationByUIC(@NonNull String id) throws StationNotResolvedException;
 
     /**
      * Get a station by its UIC ID (International Railway Station ID)
@@ -47,8 +47,8 @@ public interface IrailStationProvider {
      * @param id a 7 digit ID string
      * @return The station object, null if not found
      */
-    @Nullable
-    Station getStationByUIC(String id, boolean suppressErrors);
+    @NonNull
+    Station getStationByUIC(@NonNull String id, boolean suppressErrors) throws StationNotResolvedException;
 
     /**
      * Get a station by its Hafas ID (This format is similar to the UIC format, but longer and can include bus stops
@@ -57,8 +57,8 @@ public interface IrailStationProvider {
      * @param id a 9 digit ID String
      * @return The station object.
      */
-    @Nullable
-    Station getStationByHID(String id);
+    @NonNull
+    Station getStationByHID(@NonNull String id) throws StationNotResolvedException;
 
     /**
      * Get a station by its Hafas ID (This format is similar to the UIC format, but longer and can include bus stops
@@ -67,26 +67,18 @@ public interface IrailStationProvider {
      * @param id a 9 digit ID String
      * @return The station object.
      */
-    @Nullable
-    Station getStationByHID(String id, boolean suppressErrors);
+    @NonNull
+    Station getStationByHID(@NonNull String id, boolean suppressErrors) throws StationNotResolvedException;
 
     /**
      * Get a station by its ID
      *
-     * @param id an ID string, in BE.NMBS.XXXXXXXX format
+     * @param id an ID string, in BE.NMBS.XXXXXXXX or Hafas ID format
      * @return The station object.
      */
-    @Nullable
-    Station getStationByIrailId(String id);
-
-    /**
-     * Get a station by its ID
-     *
-     * @param id an ID string, in BE.NMBS.XXXXXXXX format
-     * @return The station object.
-     */
-    @Nullable
-    Station getStationByIrailId(String id, boolean suppressErrors);
+    @Deprecated
+    @NonNull
+    Station getStationByIrailApiId(@NonNull String id) throws StationNotResolvedException;
 
     /**
      * Get a station by its URI
@@ -94,8 +86,8 @@ public interface IrailStationProvider {
      * @param uri a uri string
      * @return The station object.
      */
-    @Nullable
-    Station getStationByUri(String uri);
+    @NonNull
+    Station getStationByUri(@NonNull String uri) throws StationNotResolvedException;
 
     /**
      * Get a station by its URI
@@ -103,8 +95,8 @@ public interface IrailStationProvider {
      * @param uri a uri string
      * @return The station object.
      */
-    @Nullable
-    Station getStationByUri(String uri, boolean suppressErrors);
+    @NonNull
+    Station getStationByUri(@NonNull String uri, boolean suppressErrors) throws StationNotResolvedException;
 
     /**
      * Get a station by its name.
@@ -113,7 +105,7 @@ public interface IrailStationProvider {
      * @return The station object.
      */
     @Nullable
-    Station getStationByName(String name);
+    Station getStationByName(@NonNull String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their size, measured in average train stops per day.
@@ -122,7 +114,7 @@ public interface IrailStationProvider {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
     @Nullable
-    Station[] getStationsByNameOrderBySize(String name);
+    Station[] getStationsByNameOrderBySize(@NonNull String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their distance from a given location
@@ -132,7 +124,7 @@ public interface IrailStationProvider {
      * @return An array of station objects ordered by their distance from the given location
      */
     @Nullable
-    Station[] getStationsByNameOrderByLocation(String name, Location location);
+    Station[] getStationsByNameOrderByLocation(@NonNull String name, @NonNull Location location);
 
     /**
      * Get all stations ordered by their distance from a given location

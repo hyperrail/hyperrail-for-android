@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
@@ -70,11 +71,11 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
         this.departureSemanticId = route.getDeparture().getDepartureSemanticId();
     }
 
-    public IrailRouteRequest(@NonNull JSONObject jsonObject) throws JSONException {
+    public IrailRouteRequest(@NonNull JSONObject jsonObject) throws JSONException, StationNotResolvedException {
         super(jsonObject);
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
-        this.origin = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("from"));
-        this.destination = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("to"));
+        this.origin = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
+        this.destination = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
 
         timeDefinition = RouteTimeDefinition.DEPART_AT;
         searchTime = new DateTime(jsonObject.getLong("time"));
@@ -85,8 +86,8 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
         json.put("departure_semantic_id", getDepartureSemanticId());
-        json.put("from", getOrigin().getId());
-        json.put("to", getDestination().getId());
+        json.put("from", getOrigin().getHafasId());
+        json.put("to", getDestination().getHafasId());
         json.put("time", searchTime.getMillis());
         return json;
     }

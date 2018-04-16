@@ -75,7 +75,7 @@ public class Vehicle extends VehicleStub implements Serializable {
      */
     public int getStopNumberForStation(Station station) {
         for (int i = 0; i < stops.length; i++) {
-            if (Objects.equals(stops[i].getStation().getId(), station.getId())) {
+            if (Objects.equals(stops[i].getStation().getHafasId(), station.getHafasId())) {
                 return i;
             }
         }

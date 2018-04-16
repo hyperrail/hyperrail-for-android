@@ -175,7 +175,7 @@ public class VehiclePopupContextMenu {
         if (mLeg.getType() != RouteLegType.WALK) {
 
             mDepartureConnection = mLeg.getDeparture().getUri();
-            mStationSemanticId = mLeg.getDeparture().getStation().getSemanticId();
+            mStationSemanticId = mLeg.getDeparture().getStation().getUri();
             mVehicleSemanticId = mLeg.getVehicleInformation().getSemanticId();
             mDateTime = mLeg.getDeparture().getTime();
             bindOccupancyButtons(vDialog, mApiInstance, mDepartureConnection, mStationSemanticId,
@@ -219,7 +219,7 @@ public class VehiclePopupContextMenu {
 
         if (mTransfer.getType() == TransferType.DEPARTURE || mTransfer.getType() == TransferType.TRANSFER) {
             String mDepartureConnection = mTransfer.getDepartureSemanticId();
-            String mStationSemanticId = mTransfer.getStation().getSemanticId();
+            String mStationSemanticId = mTransfer.getStation().getUri();
             String mVehicleSemanticId = mTransfer.getDepartureLeg().getVehicleInformation().getSemanticId();
             DateTime mDateTime = mTransfer.getDepartureTime();
 
@@ -261,7 +261,7 @@ public class VehiclePopupContextMenu {
         vDialog.setTitle(mVehicleStop.getStation().getLocalizedName());
 
         String mDepartureConnection = mVehicleStop.getDepartureSemanticId();
-        String mStationSemanticId = mVehicleStop.getStation().getSemanticId();
+        String mStationSemanticId = mVehicleStop.getStation().getUri();
         String mVehicleSemanticId = mVehicleStop.getVehicle().getSemanticId();
         DateTime mDateTime = mVehicleStop.getDepartureTime();
 

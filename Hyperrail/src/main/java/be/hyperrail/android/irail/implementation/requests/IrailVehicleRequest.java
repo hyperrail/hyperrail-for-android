@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailRequest;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Vehicle;
@@ -59,11 +60,11 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         this.mSearchTime = searchTime;
     }
 
-    public IrailVehicleRequest(@NonNull JSONObject jsonObject) throws JSONException {
+    public IrailVehicleRequest(@NonNull JSONObject jsonObject) throws JSONException, StationNotResolvedException {
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
-            this.mVehicleDirection = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("direction"));
+            this.mVehicleDirection = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("direction"));
         } else {
             this.mVehicleDirection = null;
         }
@@ -79,13 +80,13 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
 
         json.put("id", getVehicleId());
         if (getDirection() != null) {
-            json.put("direction", getDirection().getId());
+            json.put("direction", getDirection().getHafasId());
         }
         if (this.getDepartureTime() != null) {
             json.put("departure_time", getDepartureTime().getMillis());
         }
         if (this.getOrigin() != null) {
-            json.put("origin", getOrigin().getId());
+            json.put("origin", getOrigin().getHafasId());
         }
         mSearchTime = null;
         return json;

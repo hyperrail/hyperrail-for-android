@@ -22,6 +22,7 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.OccupancyHelper;
@@ -34,6 +35,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
     private final Context mContext;
     private final Intent mIntent;
     private Liveboard mLiveboard;
+    private boolean mError;
 
     public NextDeparturesRemoteViewsDataProvider(Context applicationContext, Intent intent) {
         mContext = applicationContext;
@@ -49,15 +51,22 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         String id = mContext.getSharedPreferences("widgets", 0).getString(
                 "NextDepartures:" + mIntent.getIntExtra(EXTRA_APPWIDGET_ID, 0), null);
         if (id == null) {
-            throw new IllegalStateException();
+            this.mError = true;
+            return;
         }
 
-        IrailLiveboardRequest request = new IrailLiveboardRequest(
-                IrailFactory.getStationsProviderInstance().getStationByIrailId(id),
-                RouteTimeDefinition.DEPART_AT,
-                Liveboard.LiveboardType.DEPARTURES,
-                null
-        );
+        IrailLiveboardRequest request = null;
+        try {
+            request = new IrailLiveboardRequest(
+                    IrailFactory.getStationsProviderInstance().getStationByIrailApiId(id),
+                    RouteTimeDefinition.DEPART_AT,
+                    Liveboard.LiveboardType.DEPARTURES,
+                    null
+            );
+        } catch (StationNotResolvedException e) {
+            this.mError = true;
+            return;
+        }
         request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
@@ -95,6 +104,11 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
 
     @Override
     public RemoteViews getViewAt(int position) {
+
+        if (mError) {
+            return new RemoteViews(mContext.getPackageName(), R.layout.widget_nextdepartures_error);
+        }
+
         // Construct a remote views item based on the app widget item XML file,
         // and set the text based on the position.
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.listview_liveboard_widget);

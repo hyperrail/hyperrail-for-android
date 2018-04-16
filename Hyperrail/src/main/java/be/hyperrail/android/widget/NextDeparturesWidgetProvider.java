@@ -18,6 +18,7 @@ import android.widget.RemoteViews;
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Liveboard;
@@ -47,7 +48,15 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
             //throw new IllegalStateException("No station ID found for " + "NextDepartures:" + appWidgetId);
         }
 
-        Station mStation = IrailFactory.getStationsProviderInstance().getStationByIrailId(id);
+        Station mStation = null;
+        try {
+            mStation = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(id);
+        } catch (StationNotResolvedException e) {
+            RemoteViews views = new RemoteViews(context.getPackageName(),
+                                                R.layout.widget_nextdepartures_error);
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, android.R.id.list);
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        }
 
         // Set up the intent that starts the NextDeparturesWidgetService, which will
         // provide the views for this collection.

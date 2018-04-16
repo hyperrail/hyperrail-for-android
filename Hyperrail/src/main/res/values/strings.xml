@@ -131,6 +131,8 @@
     <string name="skip">Skip</string>
     <string name="station_details_not_available_description">Detailled information is not available for this station</string>
     <string name="station_details_not_available_title">Station information not available</string>
+    <string name="station_not_found">Station not found</string>
+    <string name="widget_error_cant_load">Can\'t load data. Remove this widget and try again</string>
 
 
 </resources>

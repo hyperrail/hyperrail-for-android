@@ -24,6 +24,7 @@ import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.analytics.FirebaseAnalytics.Event;
@@ -41,6 +42,7 @@ import be.hyperrail.android.activities.MainActivity;
 import be.hyperrail.android.activities.StationActivity;
 import be.hyperrail.android.fragments.searchresult.LiveboardFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
@@ -70,7 +72,7 @@ public class LiveboardActivity extends ResultActivity {
         Intent i = new Intent(this, LiveboardActivity.class);
         i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
         i.putExtra("station",
-                   mRequest.getStation().getId()); // shortcut intents should not contain application specific classes - only pass the station ID
+                   mRequest.getStation().getHafasId()); // shortcut intents should not contain application specific classes - only pass the station ID
         return i;
     }
 
@@ -80,10 +82,16 @@ public class LiveboardActivity extends ResultActivity {
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
-            this.mRequest = new IrailLiveboardRequest(
-                    IrailFactory.getStationsProviderInstance().getStationByIrailId(
-                            getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
-                    null);
+            try {
+                this.mRequest = new IrailLiveboardRequest(
+                        IrailFactory.getStationsProviderInstance().getStationByHID(
+                                getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
+                        null);
+            } catch (StationNotResolvedException e) {
+                Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
         } else {
             // Validate a normal intent
             if (!getIntent().hasExtra("request")) {
@@ -116,7 +124,7 @@ public class LiveboardActivity extends ResultActivity {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Bundle bundle = new Bundle();
-        bundle.putString(Param.ITEM_ID, mRequest.getStation().getId());
+        bundle.putString(Param.ITEM_ID, mRequest.getStation().getHafasId());
         bundle.putString(Param.ITEM_NAME, mRequest.getStation().getName());
         bundle.putString(Param.CONTENT_TYPE, "liveboard");
         mFirebaseAnalytics.logEvent(Event.VIEW_SEARCH_RESULTS, bundle);
@@ -167,7 +175,7 @@ public class LiveboardActivity extends ResultActivity {
                 Intent shortcutIntent = createShortcutIntent();
                 if (VERSION.SDK_INT >= VERSION_CODES.O) {
                     Builder mShortcutInfoBuilder = new Builder(this,
-                                                               mRequest.getStation().getId());
+                                                               mRequest.getStation().getHafasId());
                     mShortcutInfoBuilder.setShortLabel(mRequest.getStation().getLocalizedName());
 
                     mShortcutInfoBuilder.setLongLabel(
