@@ -32,9 +32,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 
 /**
@@ -52,14 +56,20 @@ public class IrailApiParser {
 
     public RouteResult parseRouteResult(JSONObject json, Station origin, Station destination, DateTime searchTime, RouteTimeDefinition timeDefinition) throws JSONException {
         JSONArray routesObject = json.getJSONArray("connection");
-        Route[] routes = new Route[routesObject.length()];
+        List<Route> routeList = new ArrayList<>();
         for (int i = 0; i < routesObject.length(); i++) {
-            routes[i] = parseRoute(routesObject.getJSONObject(i));
+            try {
+                routeList.add(parseRoute(routesObject.getJSONObject(i)));
+            } catch (StationNotResolvedException e) {
+                e.printStackTrace();
+            }
         }
+        Route[] routes = new Route[routeList.size()];
+        routes = routeList.toArray(routes);
         return new RouteResult(origin, destination, searchTime, timeDefinition, routes);
     }
 
-    private Route parseRoute(JSONObject routeObject) throws JSONException {
+    private Route parseRoute(JSONObject routeObject) throws JSONException, StationNotResolvedException {
         JSONObject departure = routeObject.getJSONObject("departure");
         JSONObject arrival = routeObject.getJSONObject("arrival");
 
@@ -232,7 +242,7 @@ public class IrailApiParser {
         return result;
     }
 
-    public Liveboard parseLiveboard(JSONObject jsonData, DateTime searchDate, Liveboard.LiveboardType type, RouteTimeDefinition timeDefinition) throws JSONException {
+    public Liveboard parseLiveboard(JSONObject jsonData, DateTime searchDate, Liveboard.LiveboardType type, RouteTimeDefinition timeDefinition) throws JSONException, StationNotResolvedException {
 
         if (jsonData == null) {
             throw new IllegalArgumentException("JSONObject is null");
@@ -273,7 +283,7 @@ public class IrailApiParser {
 
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
-    private VehicleStop parseLiveboardStop(Station stop, JSONObject item, VehicleStopType type) throws JSONException {
+    private VehicleStop parseLiveboardStop(Station stop, JSONObject item, VehicleStopType type) throws JSONException, StationNotResolvedException {
         Station destination = stationProvider.getStationByIrailApiId(item.getJSONObject("stationinfo").getString("id"));
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
@@ -312,7 +322,7 @@ public class IrailApiParser {
 
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
-    private VehicleStop parseTrainStop(Station destination, VehicleStub train, JSONObject item, VehicleStopType type) throws JSONException {
+    private VehicleStop parseTrainStop(Station destination, VehicleStub train, JSONObject item, VehicleStopType type) throws JSONException, StationNotResolvedException {
         Station stop = stationProvider.getStationByIrailApiId(item.getJSONObject("stationinfo").getString("id"));
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
@@ -338,7 +348,7 @@ public class IrailApiParser {
                 type);
     }
 
-    public Vehicle parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException {
+    public Vehicle parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException, StationNotResolvedException {
 
         String id = jsonData.getString("vehicle");
         String uri = jsonData.getJSONObject("vehicleinfo").getString("@id");

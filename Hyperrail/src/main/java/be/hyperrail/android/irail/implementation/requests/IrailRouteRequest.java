@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Route;
@@ -70,7 +71,7 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
         this.departureSemanticId = route.getDeparture().getDepartureSemanticId();
     }
 
-    public IrailRouteRequest(@NonNull JSONObject jsonObject) throws JSONException {
+    public IrailRouteRequest(@NonNull JSONObject jsonObject) throws JSONException, StationNotResolvedException {
         super(jsonObject);
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
         this.origin = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));

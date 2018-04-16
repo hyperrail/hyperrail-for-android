@@ -484,9 +484,9 @@ public class PersistentQueryProvider implements Serializable {
                 Suggestion<T> s = new Suggestion<>((T) suggestionData, type);
                 results.add(s);
 
-            } catch (JSONException exception) {
+            } catch (Exception exception) {
                 FirebaseCrash.logcat(Level.WARNING.intValue(), "PersistentQuery",
-                                     "Failed to load routequery for type " + type + ": " + exception.getMessage());
+                                     "Failed to load stored request for type " + type + ": " + exception.getMessage());
                 // ignored
             }
         }

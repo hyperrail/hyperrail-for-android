@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.RouteResult;
@@ -49,7 +50,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
         this.searchTime = searchTime;
     }
 
-    public IrailRoutesRequest(JSONObject jsonObject) throws JSONException {
+    public IrailRoutesRequest(JSONObject jsonObject) throws JSONException, StationNotResolvedException {
         String from = jsonObject.getString("from");
         if (from.startsWith("BE.NMBS.")) {
             from = from.substring(8);
@@ -62,10 +63,6 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
 
         this.origin = IrailFactory.getStationsProviderInstance().getStationByHID(from);
         this.destination = IrailFactory.getStationsProviderInstance().getStationByHID(to);
-
-        if (origin == null || destination == null) {
-            throw new IllegalArgumentException("Origin or destionation station can't be null");
-        }
 
         timeDefinition = RouteTimeDefinition.DEPART_AT;
         searchTime = null;

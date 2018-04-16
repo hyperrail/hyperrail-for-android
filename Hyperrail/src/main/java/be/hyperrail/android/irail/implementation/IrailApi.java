@@ -51,6 +51,7 @@ import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.irailapi.LiveboardAppendHelper;
 import be.hyperrail.android.irail.implementation.irailapi.RouteAppendHelper;
@@ -290,7 +291,7 @@ public class IrailApi implements IrailDataProvider {
                 Liveboard result;
                 try {
                     result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
-                } catch (JSONException e) {
+                } catch (JSONException | StationNotResolvedException e) {
                     FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
                     FirebaseCrash.report(e);
                     request.notifyErrorListeners(e);
@@ -348,7 +349,7 @@ public class IrailApi implements IrailDataProvider {
                 Vehicle result;
                 try {
                     result = parser.parseTrain(response, request.getSearchTime());
-                } catch (JSONException e) {
+                } catch (JSONException | StationNotResolvedException e) {
                     FirebaseCrash.logcat(
                             WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
                     FirebaseCrash.report(e);

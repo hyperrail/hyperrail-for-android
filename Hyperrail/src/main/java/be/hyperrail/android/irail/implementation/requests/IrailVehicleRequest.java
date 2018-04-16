@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import be.hyperrail.android.irail.contracts.IrailRequest;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Vehicle;
@@ -59,7 +60,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         this.mSearchTime = searchTime;
     }
 
-    public IrailVehicleRequest(@NonNull JSONObject jsonObject) throws JSONException {
+    public IrailVehicleRequest(@NonNull JSONObject jsonObject) throws JSONException, StationNotResolvedException {
         super(jsonObject);
 
         if (jsonObject.has("direction")) {

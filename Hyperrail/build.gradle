@@ -9,7 +9,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.firebase-crash'
 
 def VERSION_CODE = 31
-def VERSION_NAME = '1.0.7'
+def VERSION_NAME = '1.0.8-dev'
 
 android {
     signingConfigs {

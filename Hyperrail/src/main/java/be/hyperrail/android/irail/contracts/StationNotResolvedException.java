@@ -10,4 +10,7 @@ package be.hyperrail.android.irail.contracts;
  * Thrown when a station id could not be resolved to a station
  */
 public class StationNotResolvedException extends Exception {
+    public StationNotResolvedException(String id) {
+        super("Id not found: " + id);
+    }
 }

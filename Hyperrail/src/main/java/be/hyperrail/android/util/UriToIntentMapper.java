@@ -75,22 +75,27 @@ public class UriToIntentMapper {
         Map<String, String> arrivalParameters = getJourneyStopParameter(uri.getQueryParameter("REQ0JourneyStopsSID"));
 
         if (departureParameters != null && departureParameters.containsKey("L")) {
-            departureStation = stationProvider.getStationByHID(departureParameters.get("L"), true);
-            if (departureStation == null) {
+            try {
+                departureStation = stationProvider.getStationByHID(departureParameters.get("L"), true);
+
                 Location targetLocation = new Location("");//provider name is unnecessary
                 targetLocation.setLatitude(Double.parseDouble(departureParameters.get("Y")) / 1000000);
                 targetLocation.setLongitude(Double.parseDouble(departureParameters.get("X")) / 1000000);
                 departureStation = stationProvider.getStationsOrderByLocation(targetLocation)[0];
+            } catch (Exception e) {
+                // Ignored as we know this variable isn't always present
             }
         }
 
         if (arrivalParameters != null && arrivalParameters.containsKey("L")) {
-            arrivalStation = stationProvider.getStationByHID(arrivalParameters.get("L"), true);
-            if (arrivalStation == null) {
+            try {
+                arrivalStation = stationProvider.getStationByHID(arrivalParameters.get("L"), true);
                 Location targetLocation = new Location("");//provider name is unnecessary
                 targetLocation.setLatitude(Double.parseDouble(arrivalParameters.get("Y")) / 1000000);
                 targetLocation.setLongitude(Double.parseDouble(arrivalParameters.get("X")) / 1000000);
                 arrivalStation = stationProvider.getStationsOrderByLocation(targetLocation)[0];
+            } catch (Exception e) {
+                // Ignored as we know this variable isn't always present
             }
         }
 

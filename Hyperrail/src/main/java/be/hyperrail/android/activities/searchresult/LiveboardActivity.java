@@ -24,6 +24,7 @@ import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.analytics.FirebaseAnalytics.Event;
@@ -41,6 +42,7 @@ import be.hyperrail.android.activities.MainActivity;
 import be.hyperrail.android.activities.StationActivity;
 import be.hyperrail.android.fragments.searchresult.LiveboardFragment;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
@@ -80,10 +82,16 @@ public class LiveboardActivity extends ResultActivity {
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
-            this.mRequest = new IrailLiveboardRequest(
-                    IrailFactory.getStationsProviderInstance().getStationByHID(
-                            getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
-                    null);
+            try {
+                this.mRequest = new IrailLiveboardRequest(
+                        IrailFactory.getStationsProviderInstance().getStationByHID(
+                                getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
+                        null);
+            } catch (StationNotResolvedException e) {
+                Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
         } else {
             // Validate a normal intent
             if (!getIntent().hasExtra("request")) {

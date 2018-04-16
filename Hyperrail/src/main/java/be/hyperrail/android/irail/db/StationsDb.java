@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.metrics.AddTrace;
@@ -30,6 +31,7 @@ import java.util.Scanner;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_ID;
@@ -406,7 +408,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     @Override
     @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
-    public Station[] getStationsByNameOrderBySize(String name) {
+    public Station[] getStationsByNameOrderBySize(@NonNull String name) {
         SQLiteDatabase db = this.getReadableDatabase();
         name = cleanAccents(name);
         Cursor c = db.query(
@@ -444,7 +446,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     @Override
     @AddTrace(name = "StationsDb.getStationsByNameOrderByLocation")
-    public Station[] getStationsByNameOrderByLocation(String name, Location location) {
+    public Station[] getStationsByNameOrderByLocation(@NonNull String name, @NonNull Location location) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
@@ -533,25 +535,25 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     @NonNull
     @Override
-    public Station getStationByUIC(String id) {
+    public Station getStationByUIC(@NonNull String id) throws StationNotResolvedException {
         return getStationByUIC(id, false);
     }
 
     @NonNull
     @Override
-    public Station getStationByUIC(String id, boolean suppressErrors) {
+    public Station getStationByUIC(@NonNull String id, boolean suppressErrors) throws StationNotResolvedException {
         return getStationByHID("00" + id, false);
     }
 
     @NonNull
     @Override
-    public Station getStationByHID(String id) {
+    public Station getStationByHID(@NonNull String id) throws StationNotResolvedException {
         return getStationByHID(id, false);
     }
 
     @NonNull
     @Override
-    public Station getStationByHID(String id, boolean suppressErrors) {
+    public Station getStationByHID(@NonNull String id, boolean suppressErrors) throws StationNotResolvedException {
         if (mStationIdCache.containsKey(id)) {
             return mStationIdCache.get(id);
         }
@@ -577,7 +579,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 FirebaseCrash.report(
                         new IllegalStateException("ID Not found in station database! " + id));
             }
-            return null;
+            throw new StationNotResolvedException(id);
         }
         mStationIdCache.put(id, results[0]);
         return results[0];
@@ -585,7 +587,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     @NonNull
     @Override
-    public Station getStationByIrailApiId(String id) {
+    public Station getStationByIrailApiId(@NonNull String id) throws StationNotResolvedException {
         if (id.startsWith("BE.NMBS.")) {
             id = id.substring(8);
         }
@@ -594,13 +596,13 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     @NonNull
     @Override
-    public Station getStationByUri(String uri) {
+    public Station getStationByUri(@NonNull String uri) throws StationNotResolvedException {
         return getStationByUri(uri, false);
     }
 
     @NonNull
     @Override
-    public Station getStationByUri(String uri, boolean suppressErrors) {
+    public Station getStationByUri(@NonNull String uri, boolean suppressErrors) throws StationNotResolvedException {
         return getStationByHID(uri.substring(uri.lastIndexOf('/') + 1), suppressErrors);
     }
 
@@ -609,7 +611,8 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     @Override
     @AddTrace(name = "StationsDb.getStationByName")
-    public Station getStationByName(String name) {
+    @Nullable
+    public Station getStationByName(@NonNull String name) {
         if (mStationNameCache.containsKey(name)) {
             return mStationNameCache.get(name);
         }

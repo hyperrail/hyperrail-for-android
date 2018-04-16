@@ -39,7 +39,7 @@ public interface IrailStationProvider {
      * @return The station object, null if not found
      */
     @NonNull
-    Station getStationByUIC(String id);
+    Station getStationByUIC(@NonNull String id) throws StationNotResolvedException;
 
     /**
      * Get a station by its UIC ID (International Railway Station ID)
@@ -48,7 +48,7 @@ public interface IrailStationProvider {
      * @return The station object, null if not found
      */
     @NonNull
-    Station getStationByUIC(String id, boolean suppressErrors);
+    Station getStationByUIC(@NonNull String id, boolean suppressErrors) throws StationNotResolvedException;
 
     /**
      * Get a station by its Hafas ID (This format is similar to the UIC format, but longer and can include bus stops
@@ -58,7 +58,7 @@ public interface IrailStationProvider {
      * @return The station object.
      */
     @NonNull
-    Station getStationByHID(String id);
+    Station getStationByHID(@NonNull String id) throws StationNotResolvedException;
 
     /**
      * Get a station by its Hafas ID (This format is similar to the UIC format, but longer and can include bus stops
@@ -68,7 +68,7 @@ public interface IrailStationProvider {
      * @return The station object.
      */
     @NonNull
-    Station getStationByHID(String id, boolean suppressErrors);
+    Station getStationByHID(@NonNull String id, boolean suppressErrors) throws StationNotResolvedException;
 
     /**
      * Get a station by its ID
@@ -78,7 +78,7 @@ public interface IrailStationProvider {
      */
     @Deprecated
     @NonNull
-    Station getStationByIrailApiId(String id);
+    Station getStationByIrailApiId(@NonNull String id) throws StationNotResolvedException;
 
     /**
      * Get a station by its URI
@@ -87,7 +87,7 @@ public interface IrailStationProvider {
      * @return The station object.
      */
     @NonNull
-    Station getStationByUri(String uri);
+    Station getStationByUri(@NonNull String uri) throws StationNotResolvedException;
 
     /**
      * Get a station by its URI
@@ -96,7 +96,7 @@ public interface IrailStationProvider {
      * @return The station object.
      */
     @NonNull
-    Station getStationByUri(String uri, boolean suppressErrors);
+    Station getStationByUri(@NonNull String uri, boolean suppressErrors) throws StationNotResolvedException;
 
     /**
      * Get a station by its name.
@@ -105,7 +105,7 @@ public interface IrailStationProvider {
      * @return The station object.
      */
     @Nullable
-    Station getStationByName(String name);
+    Station getStationByName(@NonNull String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their size, measured in average train stops per day.
@@ -114,7 +114,7 @@ public interface IrailStationProvider {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
     @Nullable
-    Station[] getStationsByNameOrderBySize(String name);
+    Station[] getStationsByNameOrderBySize(@NonNull String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their distance from a given location
@@ -124,7 +124,7 @@ public interface IrailStationProvider {
      * @return An array of station objects ordered by their distance from the given location
      */
     @Nullable
-    Station[] getStationsByNameOrderByLocation(String name, Location location);
+    Station[] getStationsByNameOrderByLocation(@NonNull String name, @NonNull Location location);
 
     /**
      * Get all stations ordered by their distance from a given location
