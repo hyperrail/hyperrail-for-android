@@ -13,6 +13,7 @@
 package be.hyperrail.android.activities;
 
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
@@ -21,9 +22,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +33,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.crash.FirebaseCrash;
+import com.squareup.picasso.Picasso;
 
 import be.hyperrail.android.BuildConfig;
 import be.hyperrail.android.R;
@@ -99,6 +103,8 @@ public class FirstLaunchGuide extends AppCompatActivity {
                 } else {
                     mNext.setText(R.string.next);
                 }
+
+                FirebaseCrash.logcat(Log.INFO, "FirstLaunchGuide", "Switching to tab " + mTabLayout.getSelectedTabPosition() + " " + Picasso.get().getSnapshot().size + Picasso.get().getSnapshot().maxSize);
             }
 
             @Override
@@ -184,7 +190,7 @@ public class FirstLaunchGuide extends AppCompatActivity {
 
             if (getActivity() != null) {
                 ImageView imageView = rootView.findViewById(R.id.image);
-                imageView.setImageDrawable(ContextCompat.getDrawable(getActivity(), getArguments().getInt(ARG_IMG)));
+                Picasso.get().load(getArguments().getInt(ARG_IMG)).config(Bitmap.Config.RGB_565).fit().into(imageView);
             }
 
             TextView descriptionView = rootView.findViewById(R.id.text_description);
