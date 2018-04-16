@@ -10,6 +10,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class IrailParserInstrumentedTest {
         assertEquals("008892007", liveboard.getStops()[0].getStation().getHafasId());
         assertEquals("008892338", liveboard.getStops()[0].getDestination().getHafasId());
         assertEquals(new Duration(1860 * 1000), liveboard.getStops()[0].getDepartureDelay());
-        assertEquals(new DateTime((long) 1510833300 * 1000), liveboard.getStops()[0].getDepartureTime());
+        assertEquals(new DateTime((long) 1510833300 * 1000).withZone(DateTimeZone.forID("Europe/Brussels")), liveboard.getStops()[0].getDepartureTime());
         assertEquals("IC3634", liveboard.getStops()[0].getVehicle().getId());
 
         assertEquals("6", liveboard.getStops()[0].getPlatform());
@@ -92,9 +93,9 @@ public class IrailParserInstrumentedTest {
         assertEquals(train.getLastHaltedStop().getStation().getLatitude(), train.getLatitude(), 0);
         assertEquals(train.getLastHaltedStop().getStation().getLongitude(), train.getLongitude(), 0);
 
-        assertEquals("BE.NMBS.008844628", train.getOrigin().getHafasId());
+        assertEquals("008844628", train.getOrigin().getHafasId());
         assertEquals("Oostende", train.getHeadsign());
-        assertEquals("BE.NMBS.IC537", train.getId());
+        assertEquals("IC537", train.getId());
         assertEquals("http://irail.be/vehicle/PARSETHISVALUE", train.getSemanticId());
 
         assertEquals(11, train.getStops().length);
@@ -156,8 +157,8 @@ public class IrailParserInstrumentedTest {
         assertEquals(true, route.getTransfers()[1].hasLeft());
         assertEquals("11", route.getTransfers()[1].getDeparturePlatform());
         assertNotNull( route.getTransfers()[1].getDepartureLeg());
-        assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
-        assertEquals("BE.NMBS.IC1513", route.getLegs()[1].getVehicleInformation().getId());
+        assertEquals("IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
+        assertEquals("IC1513", route.getLegs()[1].getVehicleInformation().getId());
         assertEquals("Genk", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getHeadsign());
         assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime());
 

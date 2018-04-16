@@ -19,8 +19,6 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import be.hyperrail.android.irail.db.Station;
-
 /**
  * Vehicle information, except its stops.
  * This data is typically present in the API without requiring a second API call.
@@ -68,8 +66,8 @@ public class VehicleStub implements Serializable {
      *
      * @return direction (final stop) of this train
      */
-    public Station getDirection() {
-        return direction;
+    public String getHeadsign() {
+        return headsign;
     }
 
     /**

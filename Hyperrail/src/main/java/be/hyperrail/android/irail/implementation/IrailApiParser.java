@@ -27,6 +27,7 @@ package be.hyperrail.android.irail.implementation;
 import android.support.annotation.NonNull;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -348,7 +349,7 @@ public class IrailApiParser {
 
     public Vehicle parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException, StationNotResolvedException {
 
-        String id = jsonData.getString("vehicle");
+        String id = jsonData.getString("vehicle").substring(8);
         String uri = jsonData.getJSONObject("vehicleinfo").getString("@id");
         double longitude = jsonData.getJSONObject("vehicleinfo").getDouble("locationX");
         double latitude = jsonData.getJSONObject("vehicleinfo").getDouble("locationY");
@@ -384,11 +385,11 @@ public class IrailApiParser {
 
     @NonNull
     private static DateTime timestamp2date(String time) {
-        return timestamp2date(Long.parseLong(time));
+        return timestamp2date(Long.parseLong(time)).withZone(DateTimeZone.forID("Europe/Brussels"));
     }
 
     @NonNull
     private static DateTime timestamp2date(long time) {
-        return new DateTime(time * 1000);
+        return new DateTime(time * 1000).withZone(DateTimeZone.forID("Europe/Brussels"));
     }
 }

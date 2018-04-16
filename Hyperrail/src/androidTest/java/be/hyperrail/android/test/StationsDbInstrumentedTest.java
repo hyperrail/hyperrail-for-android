@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
 import be.hyperrail.android.irail.db.Station;
 import be.hyperrail.android.irail.db.StationsDb;
 
@@ -25,7 +26,7 @@ public class StationsDbInstrumentedTest {
     IrailStationProvider provider = new StationsDb(InstrumentationRegistry.getTargetContext());
 
     @Test
-    public void testStationSearch() {
+    public void testStationSearch() throws StationNotResolvedException {
         //008811437 	Bosvoorde/Boitsfort 	Boitsfort 	Bosvoorde 			be 	4.408112 	50.794698 	31.947976878613
         Station bosvoorde = provider.getStationByHID("008811437");
         assertNotNull(bosvoorde);
@@ -72,7 +73,7 @@ public class StationsDbInstrumentedTest {
      * Test station searches which caused crashes in earlier versions
      */
     @Test
-    public void StationNamesRegressionTest() {
+    public void StationNamesRegressionTest() throws StationNotResolvedException {
         // 's gravenbrakel caused issues due to the '
         Station sGravenbrakel = provider.getStationByHID("008883006");
         assertNotNull(sGravenbrakel);
@@ -91,7 +92,7 @@ public class StationsDbInstrumentedTest {
      * Ensure all methods which query based on ID return the right result
      */
     @Test
-    public void StationIdsTest() {
+    public void StationIdsTest() throws StationNotResolvedException {
         Station zuid = provider.getStationByHID("008814001");
         assertEquals(zuid, provider.getStationByUIC("8814001"));
         assertEquals(zuid, provider.getStationByUri("http://irail.be/stations/NMBS/008814001"));
