@@ -13,12 +13,11 @@
 package be.hyperrail.android.irail.implementation;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import be.hyperrail.android.irail.db.Station;
 
 /**
  * Vehicle information, except its stops.
@@ -26,14 +25,27 @@ import be.hyperrail.android.irail.db.Station;
  */
 public class VehicleStub implements Serializable {
 
+    /**
+     * The URI which uniquely identifies this train across time and transport providers.
+     */
+    @Nullable
     private final String uri;
 
+    /**
+     * The ID of the train, relative to the public transport provider. For example IC538.
+     */
     @NonNull
     protected String id;
-    protected Station direction;
+
+    /**
+     * The headsign of the train, which indicates the destination of the train to end users.
+     * This is the preferred way to communicate the train in an understandable way to the end user.
+     */
+    @NonNull
+    protected String headsign;
 
     // Direction is required, since we need to display something
-    public VehicleStub(@NonNull String id, @NonNull Station direction, String uri) {
+    public VehicleStub(@NonNull String id, @NonNull String headSign, @Nullable String uri) {
 
         // TODO: all ids should have a correct prefix already, should not be tightly coupled to iRail
         if (!id.startsWith("BE.NMBS.")) {
@@ -41,8 +53,7 @@ public class VehicleStub implements Serializable {
         }
 
         this.id = id.toUpperCase();
-
-        this.direction = direction;
+        this.headsign = headSign;
         this.uri = uri;
     }
 
@@ -56,13 +67,9 @@ public class VehicleStub implements Serializable {
         return id;
     }
 
-    /**
-     * The direction (final stop) of this train
-     *
-     * @return direction (final stop) of this train
-     */
-    public Station getDirection() {
-        return direction;
+    @NonNull
+    public String getHeadsign() {
+        return headsign;
     }
 
     /**
@@ -70,11 +77,13 @@ public class VehicleStub implements Serializable {
      *
      * @return Human-readable name
      */
+    @NonNull
     public String getName() {
         return getVehicleName(id);
     }
 
-    public static String getVehicleName(String id) {
+    @NonNull
+    public static String getVehicleName(@NonNull String id) {
         id = getReducedVehicleId(id);
         return getVehicleClass(id) + " " + getVehicleNumber(id);
     }
@@ -84,7 +93,8 @@ public class VehicleStub implements Serializable {
      *
      * @return ID without leading BE.NMBS
      */
-    public static String getReducedVehicleId(String id) {
+    @NonNull
+    public static String getReducedVehicleId(@NonNull String id) {
         if (id.startsWith("BE.NMBS.")) {
             return id.substring(8);
         } else {
@@ -92,6 +102,7 @@ public class VehicleStub implements Serializable {
         }
     }
 
+    @NonNull
     public String getReducedId() {
         return getReducedVehicleId(this.id);
     }
@@ -101,6 +112,7 @@ public class VehicleStub implements Serializable {
      *
      * @return Semantic ID
      */
+    @NonNull
     public String getSemanticId() {
         if (uri != null) {
             return uri;
@@ -114,6 +126,7 @@ public class VehicleStub implements Serializable {
      *
      * @return The type of this train
      */
+    @NonNull
     public String getType() {
         return getVehicleClass(getReducedId());
     }
@@ -123,6 +136,7 @@ public class VehicleStub implements Serializable {
      *
      * @return The route/trip type for this vehicle
      */
+    @NonNull
     public static String getVehicleClass(String id) {
         // S trains are special
         if (id.startsWith("S")) {
@@ -147,6 +161,7 @@ public class VehicleStub implements Serializable {
      *
      * @return The number of this train
      */
+    @NonNull
     public String getNumber() {
         return getVehicleNumber(getReducedId());
     }
@@ -157,7 +172,8 @@ public class VehicleStub implements Serializable {
      * @param vehicleId The ID of a vehicle, e.g. IC538
      * @return The number of a vehicle, e.g. 538
      */
-    public static String getVehicleNumber(String vehicleId) {
+    @NonNull
+    public static String getVehicleNumber(@NonNull String vehicleId) {
         // S trains are special
         if (vehicleId.startsWith("S")) {
             return vehicleId.substring(vehicleId.length() - 4);

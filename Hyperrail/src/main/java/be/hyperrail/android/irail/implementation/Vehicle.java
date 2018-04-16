@@ -12,6 +12,9 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -27,14 +30,12 @@ public class Vehicle extends VehicleStub implements Serializable {
 
     private final double longitude;
     private final double latitude;
-    private final Station origin;
 
     private final VehicleStop[] stops;
     private VehicleStop lastHaltedStop;
 
-    public Vehicle(String id, String uri, Station destination, Station origin, double longitude, double latitude, VehicleStop[] stops) {
-        super(id, destination, uri);
-        this.origin = origin;
+    public Vehicle(@NonNull String id, @Nullable String uri, double longitude, double latitude, VehicleStop[] stops) {
+        super(id, stops[stops.length - 1].getStation().getLocalizedName(), uri);
         this.longitude = longitude;
         this.latitude = latitude;
         this.stops = stops;
@@ -47,7 +48,7 @@ public class Vehicle extends VehicleStub implements Serializable {
     }
 
     public Station getOrigin() {
-        return origin;
+        return stops[0].getStation();
     }
 
     public VehicleStop[] getStops() {
@@ -68,6 +69,7 @@ public class Vehicle extends VehicleStub implements Serializable {
 
     /**
      * Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
+     *
      * @param station The station to search for.
      * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
      */
@@ -82,6 +84,7 @@ public class Vehicle extends VehicleStub implements Serializable {
 
     /**
      * Get zero-based index for this departure time in the stops list. -1 if this stop doesn't exist.
+     *
      * @param time The datetime to search for
      * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
      */
@@ -91,10 +94,20 @@ public class Vehicle extends VehicleStub implements Serializable {
                 return i;
             }
         }
-        if (Objects.equals(stops[stops.length-1].getArrivalTime(), time)) {
-            return stops.length-1;
+        if (Objects.equals(stops[stops.length - 1].getArrivalTime(), time)) {
+            return stops.length - 1;
         }
         return -1;
     }
 
+
+    /**
+     * The direction (final stop) of this train
+     *
+     * @return direction (final stop) of this train
+     */
+    @NonNull
+    public Station getDirection() {
+        return stops[stops.length - 1].getStation();
+    }
 }

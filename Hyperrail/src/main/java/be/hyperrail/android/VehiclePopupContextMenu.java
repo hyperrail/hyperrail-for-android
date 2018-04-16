@@ -376,7 +376,7 @@ public class VehiclePopupContextMenu {
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
                                                                                mVehicleStop));
                     mBuilder.setSubText(
-                            "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getVehicle().getDirection().getLocalizedName());
+                            "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getVehicle().getHeadsign());
                     resultIntent = VehicleActivity.createIntent(mContext, new IrailVehicleRequest(
                             mVehicleStop.getVehicle().getId(), mVehicleStop.getDepartureTime()));
 

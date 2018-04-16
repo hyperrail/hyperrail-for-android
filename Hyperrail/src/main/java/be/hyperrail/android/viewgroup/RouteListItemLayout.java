@@ -118,14 +118,8 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
 
         bindTimeAndDelay(context, route, hhmm);
 
-        if (route.getLegs()[0].getVehicleInformation().getDirection() != null) {
-            vDirection.setText(route.getLegs()[0].getVehicleInformation().getDirection().getLocalizedName());
-        } else {
-            vDirection.setText(route.getLegs()[0].getVehicleInformation().getName());
-        }
-
+        vDirection.setText(route.getLegs()[0].getVehicleInformation().getHeadsign());
         vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
-
         vTrainCount.setText(String.valueOf(route.getLegs().length));
 
         bindPlatformAndStatus(context, route);
@@ -143,9 +137,9 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
                 if (object instanceof Bundle) {
                     i = VehicleActivity.createIntent(context,
                                                      new IrailVehicleRequest(
-                                    ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
-                                    (DateTime) ((Bundle) object).getSerializable("date")
-                            ));
+                                                             ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
+                                                             (DateTime) ((Bundle) object).getSerializable("date")
+                                                     ));
 
                 } else if (object instanceof Transfer) {
                     i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null));

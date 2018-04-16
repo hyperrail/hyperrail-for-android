@@ -123,7 +123,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vTrainType.setText(routeLeg.getVehicleInformation().getType());
         vOccupancy.setVisibility(View.VISIBLE);
         vTrainType.setVisibility(View.VISIBLE);
-        vDirection.setText(routeLeg.getVehicleInformation().getDirection().getLocalizedName());
+        vDirection.setText(routeLeg.getVehicleInformation().getHeadsign());
 
         if (transferBefore.hasLeft()) {
             if (transferAfter.hasArrived()) {

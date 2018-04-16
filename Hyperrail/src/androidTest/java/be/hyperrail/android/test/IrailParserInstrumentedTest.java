@@ -93,7 +93,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(train.getLastHaltedStop().getStation().getLongitude(), train.getLongitude(), 0);
 
         assertEquals("BE.NMBS.008844628", train.getOrigin().getId());
-        assertEquals("BE.NMBS.008891702", train.getDirection().getId());
+        assertEquals("Oostende", train.getHeadsign());
         assertEquals("BE.NMBS.IC537", train.getId());
         assertEquals("http://irail.be/vehicle/PARSETHISVALUE", train.getSemanticId());
 
@@ -149,7 +149,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(true, route.getTransfers()[1].hasArrived());
         assertEquals("BE.NMBS.IC713", route.getLegs()[0].getVehicleInformation().getId());
         assertEquals(route.getLegs()[0], route.getTransfers()[0].getDepartureLeg());
-        assertEquals(stationProvider.getStationByName("Poperinge").getId(), route.getLegs()[0].getVehicleInformation().getDirection().getId());
+        assertEquals("Poperinge", route.getLegs()[0].getVehicleInformation().getHeadsign());
         assertEquals(new DateTime((long) 1510839180 * 1000), route.getLegs()[0].getArrival().getTime());
         assertEquals(new DateTime((long) 1510839180 * 1000), route.getTransfers()[1].getArrivalTime());
 
@@ -158,13 +158,13 @@ public class IrailParserInstrumentedTest {
         assertNotNull( route.getTransfers()[1].getDepartureLeg());
         assertEquals("BE.NMBS.IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
         assertEquals("BE.NMBS.IC1513", route.getLegs()[1].getVehicleInformation().getId());
-        assertEquals(stationProvider.getStationByName("Genk").getId(), route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getDirection().getId());
+        assertEquals("Genk", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getHeadsign());
         assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime());
 
         assertEquals("BE.NMBS.IC713", route.getLegs()[0].getVehicleInformation().getId());
-        assertEquals(stationProvider.getStationByName("Poperinge"), route.getLegs()[0].getVehicleInformation().getDirection());
+        assertEquals("Poperinge", route.getLegs()[0].getVehicleInformation().getHeadsign());
         assertEquals("BE.NMBS.IC1513", route.getLegs()[1].getVehicleInformation().getId());
-        assertEquals(stationProvider.getStationByName("Genk"), route.getLegs()[1].getVehicleInformation().getDirection());
+        assertEquals("Genk", route.getLegs()[1].getVehicleInformation().getHeadsign());
     }
 
     private static final String LIVEBOARD_RESPONSE = "{\n" +

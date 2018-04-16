@@ -172,7 +172,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
     }
 
     protected void showData(Vehicle train) {
-        getActivity().setTitle(train.getName() + " " + train.getDirection().getLocalizedName());
+        getActivity().setTitle(train.getName() + " " + train.getHeadsign());
 
         mRecyclerviewAdapter.updateTrain(train);
         mRequest.setOrigin(train.getStops()[0].getStation());
