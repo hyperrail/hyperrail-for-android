@@ -26,14 +26,14 @@ public class StationTest {
 
     @Test
     public void testStations() throws Exception {
-        Station station1 = new Station("BE.NMBS.1", "Brussels", "Brussel", "fr", "de", "en", "Brussel", "BE", 1, 2, 3);
-        Station station2 = new Station("BE.NMBS.1", "Brussels-south", "Brussel-zuid", "fr", "de", "en", "Brussel-zuid", "BE", 1, 2, 3);
-        Station station3 = new Station("BE.NMBS.2", "Ghent", "Gent", "Gand", "Gent", "Ghent", "Gent", "BE", 1, 2, 3);
+        Station station1 = new Station("1", "Brussels", "Brussel", "fr", "de", "en", "Brussel", "BE", 1, 2, 3);
+        Station station2 = new Station("1", "Brussels-south", "Brussel-zuid", "fr", "de", "en", "Brussel-zuid", "BE", 1, 2, 3);
+        Station station3 = new Station("2", "Ghent", "Gent", "Gand", "Gent", "Ghent", "Gent", "BE", 1, 2, 3);
         assertEquals(station1, station2);
         assertNotEquals(station1, station3);
         assertNotEquals(station2, station3);
 
-        assertEquals("BE.NMBS.1", station1.getId());
+        assertEquals("1", station1.getHafasId());
         assertEquals("Brussels", station1.getName());
         assertEquals("Brussel", station1.getLocalizedName());
         assertEquals("Brussels-south", station2.getName());
@@ -42,10 +42,10 @@ public class StationTest {
         assertEquals(2, station2.getLongitude(), 0);
         assertEquals(3, station2.getAvgStopTimes(), 0);
 
-        assertEquals("http://irail.be/stations/NMBS/1", station1.getSemanticId());
+        assertEquals("http://irail.be/stations/NMBS/1", station1.getUri());
 
         station3.copy(station1);
-        assertEquals(station1.getId(),station3.getId());
+        assertEquals(station1.getHafasId(), station3.getHafasId());
         assertEquals(station1.getName(),station3.getName());
         assertEquals(station1.getAlternativeEn(),station3.getAlternativeEn());
         assertEquals(station1.getAlternativeNl(),station3.getAlternativeNl());
@@ -56,12 +56,12 @@ public class StationTest {
         assertEquals(station1.getLongitude(),station3.getLongitude(),0);
         assertEquals(station1.getLatitude(),station3.getLatitude(),0);
         assertEquals(station1.getAvgStopTimes(),station3.getAvgStopTimes(),0);
-        assertEquals(station1.getSemanticId(),station3.getSemanticId());
+        assertEquals(station1.getUri(), station3.getUri());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testStationInvalidId() throws Exception {
-        // Without BE.NMBS. prefix
-        Station station1 = new Station("1", "Brussels", "Brussel", "fr", "de", "en", "Brussel", "BE", 1, 2, 3);
+        // With BE.NMBS. prefix
+        Station station1 = new Station("BE.NMBS.000000001", "Brussels", "Brussel", "fr", "de", "en", "Brussel", "BE", 1, 2, 3);
     }
 }

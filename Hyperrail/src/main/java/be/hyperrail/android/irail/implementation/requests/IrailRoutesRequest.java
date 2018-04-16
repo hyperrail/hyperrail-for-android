@@ -50,8 +50,18 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     }
 
     public IrailRoutesRequest(JSONObject jsonObject) throws JSONException {
-        this.origin = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("from"));
-        this.destination = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("to"));
+        String from = jsonObject.getString("from");
+        if (from.startsWith("BE.NMBS.")) {
+            from = from.substring(8);
+        }
+
+        String to = jsonObject.getString("to");
+        if (to.startsWith("BE.NMBS.")) {
+            to = to.substring(8);
+        }
+
+        this.origin = IrailFactory.getStationsProviderInstance().getStationByHID(from);
+        this.destination = IrailFactory.getStationsProviderInstance().getStationByHID(to);
 
         if (origin == null || destination == null) {
             throw new IllegalArgumentException("Origin or destionation station can't be null");
@@ -65,8 +75,8 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("from", origin.getId());
-        json.put("to", destination.getId());
+        json.put("from", origin.getHafasId());
+        json.put("to", destination.getHafasId());
         return json;
     }
 

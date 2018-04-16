@@ -52,8 +52,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         // They shouldn't contain a search time either, since shortcuts should always show actual information
         Intent i = new Intent(this, RouteActivity.class);
         i.putExtra("shortcut", true);
-        i.putExtra("from", mRequest.getOrigin().getId());
-        i.putExtra("to", mRequest.getDestination().getId());
+        i.putExtra("from", mRequest.getOrigin().getHafasId());
+        i.putExtra("to", mRequest.getDestination().getHafasId());
         return i;
     }
 
@@ -61,8 +61,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
     protected void onCreate(Bundle savedInstanceState) {
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
-            Station origin = IrailFactory.getStationsProviderInstance().getStationByIrailId(getIntent().getStringExtra("from"));
-            Station destination = IrailFactory.getStationsProviderInstance().getStationByIrailId(getIntent().getStringExtra("to"));
+            Station origin = IrailFactory.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("from"));
+            Station destination = IrailFactory.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("to"));
 
             this.mRequest = new IrailRoutesRequest(origin, destination, RouteTimeDefinition.DEPART_AT, null);
         } else {
@@ -78,7 +78,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getId() + mRequest.getDestination().getId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getHafasId() + mRequest.getDestination().getHafasId());
         bundle.putString(FirebaseAnalytics.Param.ORIGIN, mRequest.getOrigin().getName());
         bundle.putString(FirebaseAnalytics.Param.DESTINATION, mRequest.getDestination().getName());
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "route");

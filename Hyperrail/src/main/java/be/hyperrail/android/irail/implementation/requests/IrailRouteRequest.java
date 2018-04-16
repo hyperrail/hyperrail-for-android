@@ -73,8 +73,8 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
     public IrailRouteRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
-        this.origin = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("from"));
-        this.destination = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("to"));
+        this.origin = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
+        this.destination = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
 
         timeDefinition = RouteTimeDefinition.DEPART_AT;
         searchTime = new DateTime(jsonObject.getLong("time"));
@@ -85,8 +85,8 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
         json.put("departure_semantic_id", getDepartureSemanticId());
-        json.put("from", getOrigin().getId());
-        json.put("to", getDestination().getId());
+        json.put("from", getOrigin().getHafasId());
+        json.put("to", getDestination().getHafasId());
         json.put("time", searchTime.getMillis());
         return json;
     }

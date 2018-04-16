@@ -70,7 +70,7 @@ public class LiveboardActivity extends ResultActivity {
         Intent i = new Intent(this, LiveboardActivity.class);
         i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
         i.putExtra("station",
-                   mRequest.getStation().getId()); // shortcut intents should not contain application specific classes - only pass the station ID
+                   mRequest.getStation().getHafasId()); // shortcut intents should not contain application specific classes - only pass the station ID
         return i;
     }
 
@@ -81,7 +81,7 @@ public class LiveboardActivity extends ResultActivity {
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
             this.mRequest = new IrailLiveboardRequest(
-                    IrailFactory.getStationsProviderInstance().getStationByIrailId(
+                    IrailFactory.getStationsProviderInstance().getStationByHID(
                             getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
                     null);
         } else {
@@ -116,7 +116,7 @@ public class LiveboardActivity extends ResultActivity {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Bundle bundle = new Bundle();
-        bundle.putString(Param.ITEM_ID, mRequest.getStation().getId());
+        bundle.putString(Param.ITEM_ID, mRequest.getStation().getHafasId());
         bundle.putString(Param.ITEM_NAME, mRequest.getStation().getName());
         bundle.putString(Param.CONTENT_TYPE, "liveboard");
         mFirebaseAnalytics.logEvent(Event.VIEW_SEARCH_RESULTS, bundle);
@@ -167,7 +167,7 @@ public class LiveboardActivity extends ResultActivity {
                 Intent shortcutIntent = createShortcutIntent();
                 if (VERSION.SDK_INT >= VERSION_CODES.O) {
                     Builder mShortcutInfoBuilder = new Builder(this,
-                                                               mRequest.getStation().getId());
+                                                               mRequest.getStation().getHafasId());
                     mShortcutInfoBuilder.setShortLabel(mRequest.getStation().getLocalizedName());
 
                     mShortcutInfoBuilder.setLongLabel(

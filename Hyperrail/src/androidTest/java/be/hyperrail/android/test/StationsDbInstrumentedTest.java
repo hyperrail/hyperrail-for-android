@@ -26,10 +26,10 @@ public class StationsDbInstrumentedTest {
 
     @Test
     public void testStationSearch() {
-        //BE.NMBS.008811437 	Bosvoorde/Boitsfort 	Boitsfort 	Bosvoorde 			be 	4.408112 	50.794698 	31.947976878613
-        Station bosvoorde = provider.getStationByIrailId("BE.NMBS.008811437");
+        //008811437 	Bosvoorde/Boitsfort 	Boitsfort 	Bosvoorde 			be 	4.408112 	50.794698 	31.947976878613
+        Station bosvoorde = provider.getStationByHID("008811437");
         assertNotNull(bosvoorde);
-        assertEquals("BE.NMBS.008811437", bosvoorde.getId());
+        assertEquals("008811437", bosvoorde.getHafasId());
         assertEquals("Bosvoorde/Boitsfort", bosvoorde.getName());
         assertEquals("Bosvoorde", bosvoorde.getAlternativeNl());
         assertEquals("Boitsfort", bosvoorde.getAlternativeFr());
@@ -45,12 +45,12 @@ public class StationsDbInstrumentedTest {
         for (String name : searchnames) {
             Station searchResult = provider.getStationByName(name);
             assertNotNull(searchResult);
-            assertEquals(bosvoorde.getId(), searchResult.getId());
+            assertEquals(bosvoorde.getHafasId(), searchResult.getHafasId());
         }
-        // BE.NMBS.008866001 	Arlon 		Aarlen 	Arel
-        Station arlon = provider.getStationByIrailId("BE.NMBS.008866001");
+        // 008866001 	Arlon 		Aarlen 	Arel
+        Station arlon = provider.getStationByHID("008866001");
         assertNotNull(arlon);
-        assertEquals("BE.NMBS.008866001", arlon.getId());
+        assertEquals("008866001", arlon.getHafasId());
         assertEquals("Arlon", arlon.getName());
         assertEquals("Aarlen", arlon.getAlternativeNl());
         assertEquals("", arlon.getAlternativeFr());
@@ -60,11 +60,11 @@ public class StationsDbInstrumentedTest {
         // http://irail.be/stations/NMBS/008815016 	Thurn en Taxis/Tour et Taxis 	Tour et Taxis 	Thurn en Taxis 	Tour et Taxis 	Thurn en Taxis
         Station thurnTaxis = provider.getStationByHID("008815016");
         assertNotNull(thurnTaxis);
-        assertEquals(thurnTaxis,provider.getStationByName(thurnTaxis.getName()));
-        assertEquals(thurnTaxis,provider.getStationByName(thurnTaxis.getAlternativeDe()));
-        assertEquals(thurnTaxis,provider.getStationByName(thurnTaxis.getAlternativeEn()));
-        assertEquals(thurnTaxis,provider.getStationByName(thurnTaxis.getAlternativeFr()));
-        assertEquals(thurnTaxis,provider.getStationByName(thurnTaxis.getAlternativeNl()));
+        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getName()));
+        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeDe()));
+        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeEn()));
+        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeFr()));
+        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeNl()));
 
     }
 
@@ -74,7 +74,7 @@ public class StationsDbInstrumentedTest {
     @Test
     public void StationNamesRegressionTest() {
         // 's gravenbrakel caused issues due to the '
-        Station sGravenbrakel = provider.getStationByIrailId("BE.NMBS.008883006");
+        Station sGravenbrakel = provider.getStationByHID("008883006");
         assertNotNull(sGravenbrakel);
         assertEquals(sGravenbrakel, provider.getStationByName("'s Gravenbrakel"));
         assertEquals(sGravenbrakel, provider.getStationByName("'s Gravenbrakel (be)"));
@@ -92,8 +92,7 @@ public class StationsDbInstrumentedTest {
      */
     @Test
     public void StationIdsTest() {
-        Station zuid = provider.getStationByIrailId("BE.NMBS.008814001");
-        assertEquals(zuid, provider.getStationByHID("008814001"));
+        Station zuid = provider.getStationByHID("008814001");
         assertEquals(zuid, provider.getStationByUIC("8814001"));
         assertEquals(zuid, provider.getStationByUri("http://irail.be/stations/NMBS/008814001"));
     }

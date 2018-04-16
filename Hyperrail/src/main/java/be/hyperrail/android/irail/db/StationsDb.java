@@ -14,7 +14,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.metrics.AddTrace;
@@ -52,7 +51,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 18041600;
+    private static final int DATABASE_VERSION = 18041601;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -123,12 +122,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     String id = fields.next();
 
                     // By default, the CSV contains ids in iRail URI format,
-                    // reformat them to BE.NMBS.XXXXXXXX (which is also iRail compliant)
+                    // reformat them to 9-digit HAFAS IDs, as HAFAS IDs are an extension upon UIC station codes.
                     if (id.startsWith("http")) {
-                        id = id.replace("http://irail.be/stations/NMBS/", "BE.NMBS.");
+                        id = id.replace("http://irail.be/stations/NMBS/", "");
                     }
 
-                    // Store ID as BE.NMBS.XXXXXXXX
+                    // Store ID as XXXXXXXX
                     values.put(StationsDataColumns._ID, id);
                     // Replace special characters (for search purposes)
                     values.put(
@@ -222,12 +221,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                     String id = fields.next();
 
                     // By default, the CSV contains ids in iRail URI format,
-                    // reformat them to BE.NMBS.XXXXXXXX (which is also iRail compliant)
+                    // reformat them to 9 digit HAFAS ids
                     if (id.startsWith("http")) {
-                        id = id.replace("http://irail.be/stations/NMBS/", "BE.NMBS.");
+                        id = id.replace("http://irail.be/stations/NMBS/", "");
                     }
 
-                    // Store ID as BE.NMBS.XXXXXXXX
+                    // Store ID as 9 digit IDs
                     values.put(StationFacilityColumns._ID, id);
                     // Skip name
                     fields.next();
@@ -532,42 +531,27 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         return results;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Station getStationByUIC(String id) {
         return getStationByUIC(id, false);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Station getStationByUIC(String id, boolean suppressErrors) {
-        return getStationByIrailId("BE.NMBS.00" + id, false);
+        return getStationByHID("00" + id, false);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Station getStationByHID(String id) {
         return getStationByHID(id, false);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Station getStationByHID(String id, boolean suppressErrors) {
-        return getStationByIrailId("BE.NMBS." + id, false);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    @AddTrace(name = "StationsDb.getStationByIrailId")
-    public Station getStationByIrailId(String id) {
-        return getStationByIrailId(id, false);
-    }
-
-    @Nullable
-    @Override
-    public Station getStationByIrailId(String id, boolean suppressErrors) {
         if (mStationIdCache.containsKey(id)) {
             return mStationIdCache.get(id);
         }
@@ -599,16 +583,25 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         return results[0];
     }
 
-    @Nullable
+    @NonNull
+    @Override
+    public Station getStationByIrailApiId(String id) {
+        if (id.startsWith("BE.NMBS.")) {
+            id = id.substring(8);
+        }
+        return getStationByHID(id);
+    }
+
+    @NonNull
     @Override
     public Station getStationByUri(String uri) {
         return getStationByUri(uri, false);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Station getStationByUri(String uri, boolean suppressErrors) {
-        return getStationByIrailId("BE.NMBS." + uri.substring(uri.lastIndexOf('/') + 1), suppressErrors);
+        return getStationByHID(uri.substring(uri.lastIndexOf('/') + 1), suppressErrors);
     }
 
     /**

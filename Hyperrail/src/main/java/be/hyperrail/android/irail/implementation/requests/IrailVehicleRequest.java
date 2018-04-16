@@ -63,7 +63,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
-            this.mVehicleDirection = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("direction"));
+            this.mVehicleDirection = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("direction"));
         } else {
             this.mVehicleDirection = null;
         }
@@ -79,13 +79,13 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
 
         json.put("id", getVehicleId());
         if (getDirection() != null) {
-            json.put("direction", getDirection().getId());
+            json.put("direction", getDirection().getHafasId());
         }
         if (this.getDepartureTime() != null) {
             json.put("departure_time", getDepartureTime().getMillis());
         }
         if (this.getOrigin() != null) {
-            json.put("origin", getOrigin().getId());
+            json.put("origin", getOrigin().getHafasId());
         }
         mSearchTime = null;
         return json;

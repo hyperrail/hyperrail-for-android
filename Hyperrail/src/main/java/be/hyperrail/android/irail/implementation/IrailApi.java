@@ -168,8 +168,8 @@ public class IrailApi implements IrailDataProvider {
         }
 
         String url = "https://api.irail.be/connections/?format=json"
-                + "&to=" + request.getDestination().getId()
-                + "&from=" + request.getOrigin().getId()
+                + "&to=" + request.getDestination().getHafasId()
+                + "&from=" + request.getOrigin().getHafasId()
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
                 + "&lang=" + locale.substring(0, 2);
@@ -279,7 +279,7 @@ public class IrailApi implements IrailDataProvider {
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
         final String url = "https://api.irail.be/liveboard/?format=json"
-                + "&id=" + request.getStation().getId()
+                + "&id=" + request.getStation().getHafasId()
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
                 + "&arrdep=" + ((request.getType() == Liveboard.LiveboardType.DEPARTURES) ? "dep" : "arr");

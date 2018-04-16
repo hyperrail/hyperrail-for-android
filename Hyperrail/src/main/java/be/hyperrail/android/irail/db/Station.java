@@ -28,7 +28,7 @@ import be.hyperrail.android.irail.factories.IrailFactory;
  */
 public class Station implements Serializable, Comparable {
 
-    protected String id;
+    protected String hafasId;
     protected String name;
     protected String alternative_nl;
     protected String alternative_fr;
@@ -44,12 +44,12 @@ public class Station implements Serializable, Comparable {
 
     }
 
-    public Station(String id, String name, String nl, String fr, String de, String en, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
-        if (!id.startsWith("BE.NMBS.")) {
-            throw new IllegalArgumentException("Station IDs should start with BE.NMBS!");
+    public Station(String hafasId, String name, String nl, String fr, String de, String en, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
+        if (hafasId.startsWith("BE.NMBS.")) {
+            throw new IllegalArgumentException("Station IDs should not start with BE.NMBS!");
         }
 
-        this.id = id;
+        this.hafasId = hafasId;
         this.name = name;
         this.alternative_nl = nl;
         this.alternative_fr = fr;
@@ -67,7 +67,7 @@ public class Station implements Serializable, Comparable {
     }
 
     public void copy(Station copy) {
-        this.id = copy.id;
+        this.hafasId = copy.hafasId;
         this.name = copy.name;
         this.alternative_nl = copy.alternative_nl;
         this.alternative_fr = copy.alternative_fr;
@@ -92,12 +92,25 @@ public class Station implements Serializable, Comparable {
         return longitude;
     }
 
-    public String getId() {
-        return id;
+    /**
+     * Get the 9-digit HAFAS Id for this station
+     * @return a 9 digit HAFAS identifier
+     *
+     */
+    public String getHafasId() {
+        return hafasId;
     }
 
-    public String getSemanticId() {
-        return "http://irail.be/stations/NMBS/" + id.substring(8);
+    /**
+     * Get the 7-digit UIC id for this station
+     * @return a 7 digit worldwide unique identifier for this station
+     */
+    public String getUicId() {
+        return hafasId.substring(2);
+    }
+
+    public String getUri() {
+        return "http://irail.be/stations/NMBS/" + hafasId.substring(8);
     }
 
     public String getAlternativeNl() {
@@ -150,14 +163,14 @@ public class Station implements Serializable, Comparable {
                 FirebaseCrash.report(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
                 return null;
             }
-            this.stationFacilities = ((StationsDb) provider).getStationFacilitiesById(this.id);
+            this.stationFacilities = ((StationsDb) provider).getStationFacilitiesById(this.hafasId);
         }
         return stationFacilities;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Station && this.getId().equals(((Station) obj).getId());
+        return obj instanceof Station && this.getHafasId().equals(((Station) obj).getHafasId());
     }
 
     @Override

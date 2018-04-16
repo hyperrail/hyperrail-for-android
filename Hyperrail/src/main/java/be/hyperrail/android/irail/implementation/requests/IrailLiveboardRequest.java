@@ -65,7 +65,11 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
 
     public IrailLiveboardRequest(@NonNull JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        this.station = IrailFactory.getStationsProviderInstance().getStationByIrailId(jsonObject.getString("id"));
+        String id = jsonObject.getString("id");
+        if (id.startsWith("BE.NMBS.")) {
+            id = id.substring(5);
+        }
+        this.station = IrailFactory.getStationsProviderInstance().getStationByHID(id);
         timeDefinition = RouteTimeDefinition.DEPART_AT;
         type = Liveboard.LiveboardType.DEPARTURES;
         searchTime = null;
@@ -82,7 +86,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("id", station.getId());
+        json.put("id", station.getHafasId());
         return json;
     }
 

@@ -35,7 +35,7 @@ public class Liveboard extends Station implements Serializable {
 
     public Liveboard(Station station, VehicleStop[] stops, DateTime searchTime, LiveboardType type, RouteTimeDefinition timeDefinition) {
         super(
-                station.getId(),
+                station.getHafasId(),
                 station.getName(),
                 station.getAlternativeNl(),
                 station.getAlternativeFr(),

@@ -38,7 +38,7 @@ public interface IrailStationProvider {
      * @param id a 7 digit ID string
      * @return The station object, null if not found
      */
-    @Nullable
+    @NonNull
     Station getStationByUIC(String id);
 
     /**
@@ -47,7 +47,7 @@ public interface IrailStationProvider {
      * @param id a 7 digit ID string
      * @return The station object, null if not found
      */
-    @Nullable
+    @NonNull
     Station getStationByUIC(String id, boolean suppressErrors);
 
     /**
@@ -57,7 +57,7 @@ public interface IrailStationProvider {
      * @param id a 9 digit ID String
      * @return The station object.
      */
-    @Nullable
+    @NonNull
     Station getStationByHID(String id);
 
     /**
@@ -67,26 +67,18 @@ public interface IrailStationProvider {
      * @param id a 9 digit ID String
      * @return The station object.
      */
-    @Nullable
+    @NonNull
     Station getStationByHID(String id, boolean suppressErrors);
 
     /**
      * Get a station by its ID
      *
-     * @param id an ID string, in BE.NMBS.XXXXXXXX format
+     * @param id an ID string, in BE.NMBS.XXXXXXXX or Hafas ID format
      * @return The station object.
      */
-    @Nullable
-    Station getStationByIrailId(String id);
-
-    /**
-     * Get a station by its ID
-     *
-     * @param id an ID string, in BE.NMBS.XXXXXXXX format
-     * @return The station object.
-     */
-    @Nullable
-    Station getStationByIrailId(String id, boolean suppressErrors);
+    @Deprecated
+    @NonNull
+    Station getStationByIrailApiId(String id);
 
     /**
      * Get a station by its URI
@@ -94,7 +86,7 @@ public interface IrailStationProvider {
      * @param uri a uri string
      * @return The station object.
      */
-    @Nullable
+    @NonNull
     Station getStationByUri(String uri);
 
     /**
@@ -103,7 +95,7 @@ public interface IrailStationProvider {
      * @param uri a uri string
      * @return The station object.
      */
-    @Nullable
+    @NonNull
     Station getStationByUri(String uri, boolean suppressErrors);
 
     /**
