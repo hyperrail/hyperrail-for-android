@@ -272,7 +272,10 @@ public class IrailApiParser {
     @NonNull
     private VehicleStop parseLiveboardStop(Station stop, JSONObject item, VehicleStopType type) throws JSONException {
         Station destination = stationProvider.getStationByIrailId(item.getJSONObject("stationinfo").getString("id"));
-
+        String destinationName = item.getJSONObject("stationinfo").getString("name");
+        if (destination != null){
+            destinationName = destination.getLocalizedName();
+        }
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
         if (item.has("occupancy")) {
             occupancyLevel = OccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
@@ -281,7 +284,7 @@ public class IrailApiParser {
             return VehicleStop.buildDepartureVehicleStop(
                     stop,
                     destination,
-                    new VehicleStub(item.getString("vehicle"), item.getJSONObject("stationinfo").getString("name"), item.getJSONObject("vehicleinfo").getString("@id")),
+                    new VehicleStub(item.getString("vehicle"), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
                     item.getJSONObject("platforminfo").getInt("normal") == 1,
                     timestamp2date(item.getString("time")),
@@ -295,7 +298,7 @@ public class IrailApiParser {
             return VehicleStop.buildArrivalVehicleStop(
                     stop,
                     destination,
-                    new VehicleStub(item.getString("vehicle"), item.getJSONObject("stationinfo").getString("name"), item.getJSONObject("vehicleinfo").getString("@id")),
+                    new VehicleStub(item.getString("vehicle"), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
                     item.getJSONObject("platforminfo").getInt("normal") == 1,
                     timestamp2date(item.getString("time")),
@@ -307,7 +310,7 @@ public class IrailApiParser {
         }
     }
 
-    // allow providing station, so liveboards don't need to parse a station over and over
+    // allow providing station, so don't need to parse a station over and over
     @NonNull
     private VehicleStop parseTrainStop(Station destination, VehicleStub train, JSONObject item, VehicleStopType type) throws JSONException {
         Station stop = stationProvider.getStationByIrailId(item.getJSONObject("stationinfo").getString("id"));
