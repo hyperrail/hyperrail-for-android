@@ -42,7 +42,7 @@
         android:textColor="@color/colorTextLight"
         android:textSize="@dimen/listitem_content_primary_textsize" />
 
-    <be.hyperrail.android.util.ImageViewTopCrop
+    <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -50,6 +50,7 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_weight="9"
+        android:scaleType="fitEnd"
         android:contentDescription="First launch illustration"
         android:src="@drawable/firstlaunch_settings_framed"
         tools:ignore="UnusedAttribute" />
