@@ -161,12 +161,14 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
                         text.append("\n");
                     }
                 }
-
                 vAlertText.setText(text.toString());
             } else {
                 vAlertContainer.setVisibility(View.GONE);
             }
+        } else {
+            vAlertContainer.setVisibility(View.GONE);
         }
+
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
     }
 
