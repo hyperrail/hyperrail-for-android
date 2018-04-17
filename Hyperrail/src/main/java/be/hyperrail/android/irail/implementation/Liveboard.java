@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import be.hyperrail.android.irail.contracts.PagedResource;
+import be.hyperrail.android.irail.contracts.PagedResourceDescriptor;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 
@@ -26,12 +28,13 @@ import be.hyperrail.android.irail.db.Station;
  * This class represents a liveboard entity, containing departures or arrivals.
  * This class extends a station with its departures.
  */
-public class Liveboard extends Station implements Serializable {
+public class Liveboard extends Station implements Serializable, PagedResource {
 
     private VehicleStop[] mStops;
     private DateTime mSearchTime;
     private final RouteTimeDefinition mTimeDefinition;
     LiveboardType mType;
+    private PagedResourceDescriptor mDescriptor;
 
     public Liveboard(Station station, VehicleStop[] stops, DateTime searchTime, LiveboardType type, RouteTimeDefinition timeDefinition) {
         super(
@@ -103,6 +106,16 @@ public class Liveboard extends Station implements Serializable {
         });
 
         return new Liveboard(this, stops, this.getSearchTime(), this.getLiveboardType(), this.getTimeDefinition());
+    }
+
+    @Override
+    public PagedResourceDescriptor getPagedResourceDescriptor() {
+        return mDescriptor;
+    }
+
+    @Override
+    public void setPageInfo(PagedResourceDescriptor descriptor) {
+        mDescriptor = descriptor;
     }
 
     public enum LiveboardType {

@@ -16,6 +16,8 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
+import be.hyperrail.android.irail.contracts.PagedResource;
+import be.hyperrail.android.irail.contracts.PagedResourceDescriptor;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.Station;
 
@@ -24,13 +26,14 @@ import be.hyperrail.android.irail.db.Station;
  * This query information can be used to display which question the server replied to,
  * and can be used to detect incorrect parsed stations server-side (e.g. when searching a station)
  */
-public class RouteResult implements Serializable {
+public class RouteResult implements Serializable, PagedResource {
 
     private final Station origin;
     private final Station destination;
     private final RouteTimeDefinition timeDefinition;
     private final DateTime mLastSearchTime;
     private Route[] routes;
+    private PagedResourceDescriptor mDescriptor;
 
     public RouteResult(Station origin, Station destination, DateTime searchTime, RouteTimeDefinition timeDefinition, Route[] routes) {
         this.destination = destination;
@@ -58,5 +61,15 @@ public class RouteResult implements Serializable {
 
     public Route[] getRoutes() {
         return routes;
+    }
+
+    @Override
+    public PagedResourceDescriptor getPagedResourceDescriptor() {
+        return mDescriptor;
+    }
+
+    @Override
+    public void setPageInfo(PagedResourceDescriptor descriptor) {
+        mDescriptor = descriptor;
     }
 }
