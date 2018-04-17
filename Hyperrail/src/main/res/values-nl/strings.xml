@@ -134,4 +134,6 @@
     <string name="skip">Overslaan</string>
     <string name="station_details_not_available_description">Gedetailleerde informatie is helaas nog niet beschikbaar voor dit station.</string>
     <string name="station_details_not_available_title">Informatie niet beschikbaar</string>
+    <string name="station_not_found">Station niet gevonden</string>
+    <string name="widget_error_cant_load">Gegevens kunnen niet geladen worden.\\n Verwijder dit widget en probeer opnieuw.</string>
 </resources>
