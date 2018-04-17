@@ -102,7 +102,11 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             displayList = null;
         }
 
-        this.notifyDataSetChanged();
+        mRecyclerView.post(new Runnable() {
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

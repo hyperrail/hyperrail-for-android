@@ -46,6 +46,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     protected final int VIEW_TYPE_LOAD_EARLIER = 602;
 
     private final InfiniteScrollingDataSource mInfiniteScrollingDataSource;
+    protected final RecyclerView mRecyclerView;
 
     private boolean mIsLoadingNext;
     private boolean mIsLoadingPrevious;
@@ -67,7 +68,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource infiniteScrollingDataSource) {
 
         this.context = context;
-
+        this.mRecyclerView = recyclerView;
         this.mInfiniteScrollingDataSource = infiniteScrollingDataSource;
         this.mRecyclerViewLayoutMgr = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

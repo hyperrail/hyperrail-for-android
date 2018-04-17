@@ -116,7 +116,11 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
             resultPosition++;
         }
 
-        super.notifyDataSetChanged();
+        mRecyclerView.post(new Runnable() {
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

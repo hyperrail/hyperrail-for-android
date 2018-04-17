@@ -6,10 +6,12 @@
 
 package be.hyperrail.android.irail.contracts;
 
+import java.io.Serializable;
+
 /**
  * Describes where the previous, current and next page can be found
  */
-public class PagedResourceDescriptor {
+public class PagedResourceDescriptor implements Serializable {
     private Object previousPointer, currentPointer, nextPointer;
 
     public PagedResourceDescriptor(Object previousPointer, Object currentPointer, Object nextPointer) {
