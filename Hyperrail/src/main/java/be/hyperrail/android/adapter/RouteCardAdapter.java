@@ -62,7 +62,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             // Default day to compare to is today
             DateTime lastday = DateTime.now().withTimeAtStartOfDay();
 
-            if (!routes[0].getDepartureTime().withTimeAtStartOfDay().isEqual(lastday)) {
+            if (routes[0].getDepartureTime().withTimeAtStartOfDay().isBefore(lastday)) {
                 // If the first stop is not today, add date separators everywhere
                 lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
             } else if (!routeResult.getSearchTime().withTimeAtStartOfDay().equals(routes[0].getDepartureTime().withTimeAtStartOfDay())) {

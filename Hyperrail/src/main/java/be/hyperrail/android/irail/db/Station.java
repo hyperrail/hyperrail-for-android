@@ -110,7 +110,7 @@ public class Station implements Serializable, Comparable {
     }
 
     public String getUri() {
-        return "http://irail.be/stations/NMBS/" + hafasId.substring(8);
+        return "http://irail.be/stations/NMBS/" + hafasId;
     }
 
     public String getAlternativeNl() {

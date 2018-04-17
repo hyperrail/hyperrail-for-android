@@ -75,7 +75,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
                 liveBoard.getStops()[0].getDepartureTime() :
                 liveboard.getStops()[0].getArrivalTime();
 
-        if (!stoptime.withTimeAtStartOfDay().isEqual(dateCompareObj)) {
+        if (stoptime.withTimeAtStartOfDay().isBefore(dateCompareObj)) {
             // If the first stop is not today, add date separators everywhere
             dateCompareObj = stoptime.withTimeAtStartOfDay().minusDays(1);
         } else if (!liveboard.getSearchTime().withTimeAtStartOfDay().equals(stoptime.withTimeAtStartOfDay())) {
