@@ -70,7 +70,7 @@ public class IrailParserInstrumentedTest {
         assertEquals("008892007", liveboard.getStops()[1].getStation().getHafasId());
         assertEquals("008892908", liveboard.getStops()[1].getDestination().getHafasId());
         assertEquals(new Duration(60 * 1000), liveboard.getStops()[1].getDepartureDelay());
-        assertEquals(new DateTime((long) 1510833600 * 1000), liveboard.getStops()[1].getDepartureTime());
+        assertEquals(new DateTime((long) 1510833600 * 1000), liveboard.getStops()[1].getDepartureTime().withZone(DateTimeZone.UTC));
         assertEquals("L783", liveboard.getStops()[1].getVehicle().getId());
 
         assertEquals("4", liveboard.getStops()[1].getPlatform());
@@ -103,9 +103,9 @@ public class IrailParserInstrumentedTest {
 
         // Start testing stop 2
         assertEquals("008844008", train.getStops()[2].getStation().getHafasId());
-        assertEquals(new DateTime((long) 1510839480 * 1000), train.getStops()[2].getArrivalTime());
+        assertEquals(new DateTime((long) 1510839480 * 1000), train.getStops()[2].getArrivalTime().withZone(DateTimeZone.UTC));
         assertEquals(new Duration(120 * 1000), train.getStops()[2].getArrivalDelay());
-        assertEquals(new DateTime((long) 1510839540 * 1000), train.getStops()[2].getDepartureTime());
+        assertEquals(new DateTime((long) 1510839540 * 1000), train.getStops()[2].getDepartureTime().withZone(DateTimeZone.UTC));
         assertEquals(new Duration(60 * 1000), train.getStops()[2].getDepartureDelay());
         assertEquals(true, train.getStops()[2].hasLeft());
         assertEquals("http://irail.be/connections/8844008/20171116/IC537", train.getStops()[2].getDepartureSemanticId());
@@ -126,11 +126,11 @@ public class IrailParserInstrumentedTest {
 
         assertEquals("008893120", route.getDepartureStation().getHafasId());
         assertEquals(new Duration(120 * 1000), route.getDepartureDelay());
-        assertEquals(new DateTime((long) 1510838640 * 1000), route.getDepartureTime());
+        assertEquals(new DateTime((long) 1510838640 * 1000), route.getDepartureTime().withZone(DateTimeZone.UTC));
 
         assertEquals("008832375", route.getArrivalStation().getHafasId());
         assertEquals(new Duration(0), route.getArrivalDelay());
-        assertEquals(new DateTime((long) 1510838640 * 1000), route.getDepartureTime());
+        assertEquals(new DateTime((long) 1510838640 * 1000), route.getDepartureTime().withZone(DateTimeZone.UTC));
 
         assertEquals(1, route.getAlerts().length);
         assertEquals("Probleem bovenleiding  MIVB", route.getAlerts()[0].getHeader());
@@ -151,8 +151,8 @@ public class IrailParserInstrumentedTest {
         assertEquals("IC713", route.getLegs()[0].getVehicleInformation().getId());
         assertEquals(route.getLegs()[0], route.getTransfers()[0].getDepartureLeg());
         assertEquals("Poperinge", route.getLegs()[0].getVehicleInformation().getHeadsign());
-        assertEquals(new DateTime((long) 1510839180 * 1000), route.getLegs()[0].getArrival().getTime());
-        assertEquals(new DateTime((long) 1510839180 * 1000), route.getTransfers()[1].getArrivalTime());
+        assertEquals(new DateTime((long) 1510839180 * 1000), route.getLegs()[0].getArrival().getTime().withZone(DateTimeZone.UTC));
+        assertEquals(new DateTime((long) 1510839180 * 1000), route.getTransfers()[1].getArrivalTime().withZone(DateTimeZone.UTC));
 
         assertEquals(true, route.getTransfers()[1].hasLeft());
         assertEquals("11", route.getTransfers()[1].getDeparturePlatform());
@@ -160,7 +160,7 @@ public class IrailParserInstrumentedTest {
         assertEquals("IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
         assertEquals("IC1513", route.getLegs()[1].getVehicleInformation().getId());
         assertEquals("Genk", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getHeadsign());
-        assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime());
+        assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime().withZone(DateTimeZone.UTC));
 
         assertEquals("IC713", route.getLegs()[0].getVehicleInformation().getId());
         assertEquals("Poperinge", route.getLegs()[0].getVehicleInformation().getHeadsign());

@@ -145,7 +145,7 @@ public class IrailApiParser {
             if (departure.getInt("walking") == 0) {
                 legs[0] = new RouteLeg(RouteLegType.TRAIN,
                                        new VehicleStub(
-                                               departure.getString("vehicle"),
+                                               departure.getString("vehicle").substring(8),
                                                departure.getJSONObject("direction").getString("name"), null),
                                        departures[0], arrivals[0]);
             } else {
@@ -160,8 +160,8 @@ public class IrailApiParser {
                 if (viaDeparture.getInt("walking") == 0) {
                     legs[i + 1] = new RouteLeg(RouteLegType.TRAIN,
                                                new VehicleStub(
-                                                       viaDeparture.getString("vehicle"),
-                                                       departure.getJSONObject("direction").getString("name"), null),
+                                                       viaDeparture.getString("vehicle").substring(8),
+                                                       viaDeparture.getJSONObject("direction").getString("name"), null),
                                                departures[i + 1], arrivals[i + 1]);
                 } else {
                     legs[i + 1] = new RouteLeg(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
@@ -293,7 +293,7 @@ public class IrailApiParser {
             return VehicleStop.buildDepartureVehicleStop(
                     stop,
                     destination,
-                    new VehicleStub(item.getString("vehicle"), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
+                    new VehicleStub(item.getString("vehicle").substring(8), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
                     item.getJSONObject("platforminfo").getInt("normal") == 1,
                     timestamp2date(item.getString("time")),
@@ -307,7 +307,7 @@ public class IrailApiParser {
             return VehicleStop.buildArrivalVehicleStop(
                     stop,
                     destination,
-                    new VehicleStub(item.getString("vehicle"), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
+                    new VehicleStub(item.getString("vehicle").substring(8), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
                     item.getJSONObject("platforminfo").getInt("normal") == 1,
                     timestamp2date(item.getString("time")),
