@@ -405,7 +405,7 @@ public class IrailApi implements IrailDataProvider {
             public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
                 for (VehicleStop stop :
                         data.getStops()) {
-                    if (stop.getDepartureSemanticId().equals(request.getStop().getDepartureSemanticId())) {
+                    if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
                         request.notifySuccessListeners(stop);
                         return;
                     }

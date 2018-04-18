@@ -4,7 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.viewgroup;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package be.hyperrail.android.util;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -17,7 +23,6 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.util.DurationFormatter;
 
 public class NotificationLayoutBuilder {
 
@@ -91,6 +96,9 @@ public class NotificationLayoutBuilder {
             }
 
         }
+
+        contentView.setTextViewText(R.id.text_train_type, stop.getVehicle().getType());
+        contentView.setTextViewText(R.id.text_train_number, stop.getVehicle().getNumber());
 
         contentView.setTextViewText(R.id.text_station, stop.getStation().getLocalizedName());
         contentView.setViewVisibility(R.id.text_station, View.VISIBLE);

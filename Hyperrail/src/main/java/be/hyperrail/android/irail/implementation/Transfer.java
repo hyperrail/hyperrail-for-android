@@ -165,4 +165,12 @@ public class Transfer implements Serializable {
         return mDepartureLeg;
     }
 
+    @Nullable
+    public VehicleStop toDepartureVehicleStop() {
+        if (mDepartureLeg != null) {
+            return new VehicleStop(mDepartureLeg);
+        } else {
+            return null;
+        }
+    }
 }

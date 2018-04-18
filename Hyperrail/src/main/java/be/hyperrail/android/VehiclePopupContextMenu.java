@@ -33,24 +33,20 @@ import be.hyperrail.android.R.id;
 import be.hyperrail.android.R.layout;
 import be.hyperrail.android.R.string;
 import be.hyperrail.android.R.style;
-import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
 import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.RouteLeg;
 import be.hyperrail.android.irail.implementation.RouteLegType;
 import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.irail.implementation.TransferType;
 import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailPostOccupancyRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
-import be.hyperrail.android.viewgroup.NotificationLayoutBuilder;
+import be.hyperrail.android.util.NotificationLayoutBuilder;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -142,7 +138,7 @@ public class VehiclePopupContextMenu {
         }
 
         // When this contextmenu was called on a train stop or transfer in a route (but not on a train in a route!)
-        if (type == TYPE_TRAIN_STOP || type == TYPE_TRANSFER) {
+        if (type == TYPE_TRAIN_STOP || (type == TYPE_TRANSFER && mTransfer.getType() != TransferType.ARRIVAL)) {
             bindNotificationButton(vDialog, vSetNotification);
         } else {
             vSetNotification.setVisibility(View.GONE);
@@ -260,7 +256,7 @@ public class VehiclePopupContextMenu {
     private void bindTrainStop(Dialog vDialog, IrailDataProvider mApiInstance) {
         vDialog.setTitle(mVehicleStop.getStation().getLocalizedName());
 
-        String mDepartureConnection = mVehicleStop.getDepartureSemanticId();
+        String mDepartureConnection = mVehicleStop.getDepartureUri();
         String mStationSemanticId = mVehicleStop.getStation().getUri();
         String mVehicleSemanticId = mVehicleStop.getVehicle().getSemanticId();
         DateTime mDateTime = mVehicleStop.getDepartureTime();
@@ -291,9 +287,10 @@ public class VehiclePopupContextMenu {
 
     /**
      * Update the ETA buttons to share the right text
-     *  @param vDialog            The dialog view
-     * @param mDepartureEtaText  The departure ETA text
-     * @param mArrivalEtaText    The arrival ETA text
+     *
+     * @param vDialog           The dialog view
+     * @param mDepartureEtaText The departure ETA text
+     * @param mArrivalEtaText   The arrival ETA text
      */
     private void bindETAButtons(final Dialog vDialog, final String mDepartureEtaText, final String mArrivalEtaText) {
         LinearLayout vShareDepartureEta = vDialog.findViewById(
@@ -371,6 +368,8 @@ public class VehiclePopupContextMenu {
                 Intent resultIntent;
 
                 mBuilder.setColor(ContextCompat.getColor(mContext, color.colorPrimary));
+
+                String notificationTag;
                 if (mVehicleStop != null) {
                     mBuilder.setCustomBigContentView(
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
@@ -379,9 +378,10 @@ public class VehiclePopupContextMenu {
                             "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getVehicle().getHeadsign());
                     resultIntent = VehicleActivity.createIntent(mContext, new IrailVehicleRequest(
                             mVehicleStop.getVehicle().getId(), mVehicleStop.getDepartureTime()));
-
+                    notificationTag = mVehicleStop.getDepartureUri();
                 } else {
-                    mBuilder.setSubText(
+                /*
+                  mBuilder.setSubText(
                             "Transfer at  " + mTransfer.getStation().getLocalizedName());
                     resultIntent = LiveboardActivity.createIntent(mContext,
                                                                   new IrailLiveboardRequest(
@@ -393,7 +393,16 @@ public class VehiclePopupContextMenu {
                     mBuilder.setCustomBigContentView(
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
                                                                                mTransfer));
-
+                */
+                    VehicleStop notificationStop = mTransfer.toDepartureVehicleStop();
+                    mBuilder.setCustomBigContentView(
+                            NotificationLayoutBuilder.createNotificationLayout(mContext,
+                                                                               notificationStop));
+                    mBuilder.setSubText(
+                            "Vehicle at  " + notificationStop.getStation().getLocalizedName() + " towards " + notificationStop.getVehicle().getHeadsign());
+                    resultIntent = VehicleActivity.createIntent(mContext, new IrailVehicleRequest(
+                            notificationStop.getVehicle().getId(), notificationStop.getDepartureTime()));
+                    notificationTag = notificationStop.getDepartureUri();
                 }
 
                 mBuilder.setStyle(new DecoratedCustomViewStyle());
@@ -408,11 +417,11 @@ public class VehiclePopupContextMenu {
                 mBuilder.setContentIntent(resultPendingIntent);
 
                 // Sets an ID for the notification
-                int mNotificationId = 1;
+                int mNotificationId = notificationTag.hashCode();
                 // Gets an instance of the NotificationManager service
 
                 // Builds the notification and issues it.
-                mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                mNotifyMgr.notify(notificationTag, mNotificationId, mBuilder.build());
                 vDialog.dismiss();
             }
         });

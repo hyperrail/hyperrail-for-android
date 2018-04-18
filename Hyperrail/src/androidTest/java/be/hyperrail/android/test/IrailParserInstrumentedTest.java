@@ -53,7 +53,7 @@ public class IrailParserInstrumentedTest {
 
         // START tests stop 0
         assertEquals("008892007", liveboard.getStops()[0].getStation().getHafasId());
-        assertEquals("008892338", liveboard.getStops()[0].getDestination().getHafasId());
+        assertEquals("De Panne", liveboard.getStops()[0].getHeadsign());
         assertEquals(new Duration(1860 * 1000), liveboard.getStops()[0].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833300 * 1000).withZone(DateTimeZone.forID("Europe/Brussels")), liveboard.getStops()[0].getDepartureTime());
         assertEquals("IC3634", liveboard.getStops()[0].getVehicle().getId());
@@ -68,7 +68,6 @@ public class IrailParserInstrumentedTest {
         // END tests stop 0
         // START tests stop 1
         assertEquals("008892007", liveboard.getStops()[1].getStation().getHafasId());
-        assertEquals("008892908", liveboard.getStops()[1].getDestination().getHafasId());
         assertEquals(new Duration(60 * 1000), liveboard.getStops()[1].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833600 * 1000), liveboard.getStops()[1].getDepartureTime().withZone(DateTimeZone.UTC));
         assertEquals("L783", liveboard.getStops()[1].getVehicle().getId());
@@ -78,7 +77,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(false, liveboard.getStops()[1].hasLeft());
 
         assertEquals("http://irail.be/vehicle/L783", liveboard.getStops()[1].getVehicle().getSemanticId());
-        assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getDepartureSemanticId());
+        assertEquals("http://irail.be/connections/8892007/20171116/DEPARTURECONNECTIONTEST", liveboard.getStops()[1].getDepartureUri());
         assertEquals(OccupancyLevel.HIGH, liveboard.getStops()[1].getOccupancyLevel());
         // END tests stop 1
     }
@@ -108,7 +107,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(new DateTime((long) 1510839540 * 1000), train.getStops()[2].getDepartureTime().withZone(DateTimeZone.UTC));
         assertEquals(new Duration(60 * 1000), train.getStops()[2].getDepartureDelay());
         assertEquals(true, train.getStops()[2].hasLeft());
-        assertEquals("http://irail.be/connections/8844008/20171116/IC537", train.getStops()[2].getDepartureSemanticId());
+        assertEquals("http://irail.be/connections/8844008/20171116/IC537", train.getStops()[2].getDepartureUri());
     }
 
     @Test

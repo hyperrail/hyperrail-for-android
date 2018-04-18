@@ -80,14 +80,14 @@ public class Liveboard extends Station implements Serializable, PagedResource {
         HashMap<String, VehicleStop> stopsByUri = new HashMap<>();
         for (VehicleStop stop :
                 mStops) {
-            stopsByUri.put(stop.getDepartureSemanticId(), stop);
+            stopsByUri.put(stop.getDepartureUri(), stop);
         }
 
         for (Liveboard liveboard : other
                 ) {
             for (VehicleStop stop :
                     liveboard.getStops()) {
-                stopsByUri.put(stop.getDepartureSemanticId(), stop);
+                stopsByUri.put(stop.getDepartureUri(), stop);
             }
         }
 

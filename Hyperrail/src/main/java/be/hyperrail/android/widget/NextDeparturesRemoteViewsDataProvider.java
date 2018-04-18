@@ -116,7 +116,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
 
         bindTimeAndDelays(rv, stop);
 
-        rv.setTextViewText(R.id.text_destination, stop.getDestination().getLocalizedName());
+        rv.setTextViewText(R.id.text_destination, stop.getHeadsign());
 
         rv.setTextViewText(R.id.text_train_number, stop.getVehicle().getNumber());
         rv.setTextViewText(R.id.text_train_type, stop.getVehicle().getType());

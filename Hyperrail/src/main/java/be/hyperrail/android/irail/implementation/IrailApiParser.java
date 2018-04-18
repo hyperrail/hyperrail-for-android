@@ -282,8 +282,15 @@ public class IrailApiParser {
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
     private VehicleStop parseLiveboardStop(Station stop, JSONObject item, VehicleStopType type) throws JSONException, StationNotResolvedException {
-        Station destination = stationProvider.getStationByIrailApiId(item.getJSONObject("stationinfo").getString("id"));
-        String destinationName =destination.getLocalizedName();
+
+        String headsign;
+
+        try {
+            Station destination = stationProvider.getStationByIrailApiId(item.getJSONObject("stationinfo").getString("id"));
+            headsign = destination.getLocalizedName();
+        } catch (Exception e) {
+            headsign = item.getJSONObject("stationinfo").getString("name");
+        }
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
         if (item.has("occupancy")) {
@@ -292,8 +299,7 @@ public class IrailApiParser {
         if (type == VehicleStopType.DEPARTURE) {
             return VehicleStop.buildDepartureVehicleStop(
                     stop,
-                    destination,
-                    new VehicleStub(item.getString("vehicle").substring(8), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
+                    new VehicleStub(item.getString("vehicle").substring(8), headsign, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
                     item.getJSONObject("platforminfo").getInt("normal") == 1,
                     timestamp2date(item.getString("time")),
@@ -306,8 +312,7 @@ public class IrailApiParser {
         } else {
             return VehicleStop.buildArrivalVehicleStop(
                     stop,
-                    destination,
-                    new VehicleStub(item.getString("vehicle").substring(8), destinationName, item.getJSONObject("vehicleinfo").getString("@id")),
+                    new VehicleStub(item.getString("vehicle").substring(8), headsign, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
                     item.getJSONObject("platforminfo").getInt("normal") == 1,
                     timestamp2date(item.getString("time")),
@@ -321,7 +326,7 @@ public class IrailApiParser {
 
     // allow providing station, so don't need to parse a station over and over
     @NonNull
-    private VehicleStop parseTrainStop(Station destination, VehicleStub train, JSONObject item, VehicleStopType type) throws JSONException, StationNotResolvedException {
+    private VehicleStop parseTrainStop(String headsign, VehicleStub train, JSONObject item, VehicleStopType type) throws JSONException, StationNotResolvedException {
         Station stop = stationProvider.getStationByIrailApiId(item.getJSONObject("stationinfo").getString("id"));
 
         OccupancyLevel occupancyLevel = OccupancyLevel.UNKNOWN;
@@ -331,7 +336,6 @@ public class IrailApiParser {
 
         return new VehicleStop(
                 stop,
-                destination,
                 train,
                 item.getString("platform"),
                 item.getJSONObject("platforminfo").getInt("normal") == 1,
@@ -355,13 +359,22 @@ public class IrailApiParser {
         double latitude = jsonData.getJSONObject("vehicleinfo").getDouble("locationY");
 
         JSONArray jsonStops = jsonData.getJSONObject("stops").getJSONArray("stop");
-        Station destination = stationProvider.getStationByIrailApiId(
-                jsonStops
-                        .getJSONObject(jsonStops.length() - 1)
-                        .getJSONObject("stationinfo")
-                        .getString("id")
-        );
 
+        String headsign;
+        try {
+            Station destination = stationProvider.getStationByIrailApiId(
+                    jsonStops
+                            .getJSONObject(jsonStops.length() - 1)
+                            .getJSONObject("stationinfo")
+                            .getString("id")
+            );
+            headsign = destination.getLocalizedName();
+        } catch (Exception e) {
+            headsign = jsonStops
+                    .getJSONObject(jsonStops.length() - 1)
+                    .getJSONObject("stationinfo")
+                    .getString("name");
+        }
         VehicleStop[] stops = new VehicleStop[jsonStops.length()];
         VehicleStub t = new VehicleStub(id,
                                         jsonStops.getJSONObject(jsonStops.length() - 1)
@@ -376,7 +389,7 @@ public class IrailApiParser {
             } else if (i == jsonStops.length() - 1) {
                 type = VehicleStopType.ARRIVAL;
             }
-            stops[i] = parseTrainStop(destination, t, jsonStops.getJSONObject(i), type);
+            stops[i] = parseTrainStop(headsign, t, jsonStops.getJSONObject(i), type);
         }
 
         // Consider whether or not the searchDate should be stored
