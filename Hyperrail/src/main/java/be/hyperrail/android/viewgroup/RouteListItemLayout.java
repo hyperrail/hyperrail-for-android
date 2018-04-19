@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
@@ -60,9 +61,9 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
     protected ImageView vDurationIcon;
     protected TextView vTrainCount;
     protected TextView vPlatform;
-    protected LinearLayout vPlatformContainer;
+    protected ImageView vPlatformDrawable;
     protected RecyclerView vRecyclerView;
-    protected LinearLayout vHeaderContainer;
+    protected RelativeLayout vHeaderContainer;
     protected LinearLayout vDetailContainer;
     protected TextView vStatusText;
     protected LinearLayout vStatusContainer;
@@ -100,7 +101,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
         vTrainCount = findViewById(R.id.text_train_count);
 
         vPlatform = findViewById(R.id.text_platform);
-        vPlatformContainer = findViewById(R.id.layout_platform_container);
+        vPlatformDrawable = findViewById(R.id.image_platform);
 
         vRecyclerView = findViewById(R.id.recyclerview_primary);
         vHeaderContainer = findViewById(R.id.cardview_collapsed);
@@ -197,23 +198,24 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
 
         if (route.getDeparture().isDepartureCanceled()) {
             vPlatform.setText("");
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
+            vPlatformDrawable.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
             vStatusText.setText(R.string.status_cancelled);
             vStatusContainer.setVisibility(View.VISIBLE);
         } else if (route.isPartiallyCanceled()) {
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
+            vPlatformDrawable.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.platform_train));
             vStatusText.setText(R.string.status_partially_cancelled);
             vStatusContainer.setVisibility(View.VISIBLE);
         } else {
             vStatusContainer.setVisibility(View.GONE);
-            vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));
+            vPlatformDrawable.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.platform_train));
         }
 
 
         if (!route.isDeparturePlatformNormal()) {
-            Drawable drawable = vPlatformContainer.getBackground();
+            Drawable drawable = vPlatformDrawable.getDrawable();
             drawable.mutate();
             drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
+            vPlatformDrawable.setImageDrawable(drawable);
         }
     }
 
