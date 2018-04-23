@@ -14,19 +14,19 @@
         <item>@drawable/firstlaunch_settings_framed</item>
     </integer-array>
     <string-array name="firstlaunch_titles">
-        <item>Departs &amp; Arrivees</item>
+        <item>Départs &amp; Arrivées</item>
         <item>Itinéraires</item>
-        <item>Long clic pour plus</item>
+        <item>Clic long pour plus</item>
         <item>Notifications</item>
         <item>Raccourcis</item>
         <item>Personnaliser en utilisant les paramètres</item>
     </string-array>
     <string-array name="firstlaunch_descriptions">
-        <item>Attraper un train ou attendre quelqu\'un? Voir les départs et arrivées</item>
-        <item>Partout où vous voulez aller, planifiez un itinéraire en utilisant Hyperrail. Les favoris et les recherches récentes sont stockés pour un accès rapide</item>
+        <item>Prendre un train ou attendre quelqu\'un? Voir les départs et arrivées</item>
+        <item>Partout où vous voulez aller, planifiez un itinéraire en utilisant Hyperrail. Les favoris et les recherches récentes sont sauvegardés pour un accès rapide</item>
         <item>Cliquez longuement sur un résultat pour obtenir plus de possibilités</item>
-        <item>Stocke un résultat dans une notification. Les notifications ne seront pas mises à jour automatiquement (pour le moment), alors gardez cela à l\'esprit!</item>
-        <item>Créez un raccourci vers une station, une itinéraires ou un train pour les rechercher en un clic!</item>
-        <item>Tu préfères des itinéraires ou des départs? Deux, quatre ou zéro favoris? Personnalisez l\'application comme vous le souhaitez en utilisant le menu des paramètres</item>
+        <item>Sauvegarde un résultat dans une notification. Les notifications ne seront pas mises à jour automatiquement (pour le moment), alors gardez cela à l\'esprit!</item>
+        <item>Créez un raccourci vers une gare, un itinéraire ou un train pour les rechercher en un clic !</item>
+        <item>Tu préfères des itinéraires ou des départs ? Deux, quatre ou zéro favoris ? Personnalisez l\'application comme vous le souhaitez en utilisant le menu des paramètres</item>
     </string-array>
 </resources>
