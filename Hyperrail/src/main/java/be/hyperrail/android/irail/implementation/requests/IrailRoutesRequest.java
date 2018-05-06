@@ -51,6 +51,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     }
 
     public IrailRoutesRequest(JSONObject jsonObject) throws JSONException, StationNotResolvedException {
+        super(jsonObject);
         String from = jsonObject.getString("from");
         if (from.startsWith("BE.NMBS.")) {
             from = from.substring(8);
