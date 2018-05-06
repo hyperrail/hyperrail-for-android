@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,7 +96,10 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         } else {
-            getChildFragmentManager().findFragmentById(R.id.map).getView().setVisibility(View.GONE);
+            View mapView = getChildFragmentManager().findFragmentById(R.id.map).getView();
+            if (mapView != null) {
+                mapView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -243,17 +248,15 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
         for (int i = 0; i < mCurrentTrain.getStops().length; i++) {
             Station s = mCurrentTrain.getStops()[i].getStation();
-            if (s != null) {
-                locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
-                if (mCurrentTrain.getStops()[i].hasLeft()) {
-                    passedLocations.add(locations[i]);
-                    map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(colorIcon).anchor(0.5f, 0.5f));
-                } else {
-                    futureLocations.add(locations[i]);
-                    map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(greyIcon).anchor(0.5f, 0.5f));
-                }
-                builder.include(locations[i]);
+            locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
+            if (mCurrentTrain.getStops()[i].hasLeft()) {
+                passedLocations.add(locations[i]);
+                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(colorIcon).anchor(0.5f, 0.5f));
+            } else {
+                futureLocations.add(locations[i]);
+                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(greyIcon).anchor(0.5f, 0.5f));
             }
+            builder.include(locations[i]);
         }
 
         LatLngBounds bounds = builder.build();
@@ -281,12 +284,26 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
                                     .clickable(false)
                                     .jointType(JointType.DEFAULT));
         }
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120));
-        map.setBuildingsEnabled(true);
-        map.setTrafficEnabled(false);
-        map.setMinZoomPreference(7);
-        map.setMaxZoomPreference(14);
-        map.setLatLngBoundsForCameraTarget(bounds);
+        try {
+            map.setBuildingsEnabled(true);
+            map.setTrafficEnabled(false);
+            map.setMinZoomPreference(7);
+            map.setMaxZoomPreference(14);
+            map.setLatLngBoundsForCameraTarget(bounds);
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120));
+        } catch (IllegalStateException illegalStateException) {
+            try {
+                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, size.x, (int) (size.y * 0.4), 120));
+            } catch (Exception e) {
+                View mapView = getChildFragmentManager().findFragmentById(R.id.map).getView();
+                if (mapView != null) {
+                    mapView.setVisibility(View.GONE);
+                }
+            }
+        }
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
