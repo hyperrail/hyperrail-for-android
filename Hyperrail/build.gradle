@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.firebase-crash'
 
-def VERSION_CODE = 31
-def VERSION_NAME = '1.0.8-dev'
+def VERSION_CODE = 32
+def VERSION_NAME = '1.0.8'
 
 android {
     signingConfigs {
@@ -76,6 +76,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.json:json:20160810'
+    testCompile "org.mockito:mockito-core:2.18.3"
     // org.json is included with Android, but Android.jar can not be used from unit tests
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
