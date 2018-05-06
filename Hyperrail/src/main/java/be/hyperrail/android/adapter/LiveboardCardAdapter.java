@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 
@@ -70,15 +71,15 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
         }
 
         // Default day to compare to is today
-        DateTime dateCompareObj = DateTime.now().withTimeAtStartOfDay();
+        DateTime dateCompareObj = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
         DateTime stoptime = liveBoard.getStops()[0].getType() == VehicleStopType.DEPARTURE ?
                 liveBoard.getStops()[0].getDepartureTime() :
                 liveboard.getStops()[0].getArrivalTime();
 
-        if (stoptime.withTimeAtStartOfDay().isBefore(dateCompareObj)) {
+        if (stoptime.withZone(DateTimeZone.UTC).withTimeAtStartOfDay().isBefore(dateCompareObj)) {
             // If the first stop is not today, add date separators everywhere
             dateCompareObj = stoptime.withTimeAtStartOfDay().minusDays(1);
-        } else if (!liveboard.getSearchTime().withTimeAtStartOfDay().equals(stoptime.withTimeAtStartOfDay())) {
+        } else if (!liveboard.getSearchTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay().equals(stoptime.withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
             // If the search results differ from the date searched, everything after the date searched should have separators
             dateCompareObj = liveboard.getSearchTime().withTimeAtStartOfDay();
         }

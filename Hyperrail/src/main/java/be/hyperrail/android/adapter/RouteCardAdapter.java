@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 
@@ -60,12 +61,12 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
         if (routes != null && routes.length > 0) {
             // Default day to compare to is today
-            DateTime lastday = DateTime.now().withTimeAtStartOfDay();
+            DateTime lastday = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
 
-            if (routes[0].getDepartureTime().withTimeAtStartOfDay().isBefore(lastday)) {
+            if (routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay().isBefore(lastday)) {
                 // If the first stop is not today, add date separators everywhere
                 lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
-            } else if (!routeResult.getSearchTime().withTimeAtStartOfDay().equals(routes[0].getDepartureTime().withTimeAtStartOfDay())) {
+            } else if (!routeResult.getSearchTime().withTimeAtStartOfDay().withZone(DateTimeZone.UTC).equals(routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
                 // If the search results differ from the date searched, everything after the date searched should have separators
                 lastday = routeResult.getSearchTime().withTimeAtStartOfDay();
             }
