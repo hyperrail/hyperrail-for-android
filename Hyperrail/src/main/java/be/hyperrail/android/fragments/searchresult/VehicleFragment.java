@@ -126,8 +126,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
     @Override
     public void onDateTimePicked(DateTime d) {
-        mRequest.setSearchTime(d);
-        getData();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -257,47 +256,41 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
             }
         }
 
-        final LatLngBounds bounds = builder.build();
+        LatLngBounds bounds = builder.build();
+        map.addPolyline(new PolylineOptions()
+                                .add(passedLocations.toArray(new LatLng[passedLocations.size()]))
+                                .color(getActivity().getResources().getColor(R.color.colorPrimary))
+                                .geodesic(false)
+                                .clickable(false)
+                                .jointType(JointType.DEFAULT)
+        );
+        map.addPolyline(new PolylineOptions()
+                                .add(futureLocations.toArray(new LatLng[futureLocations.size()]))
+                                .color(getActivity().getResources().getColor(R.color.colorMuted))
+                                .geodesic(false)
+                                .clickable(false)
+                                .jointType(JointType.DEFAULT)
+        );
 
-        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-                map.addPolyline(new PolylineOptions()
-                                        .add(passedLocations.toArray(new LatLng[passedLocations.size()]))
-                                        .color(getActivity().getResources().getColor(R.color.colorPrimary))
-                                        .geodesic(false)
-                                        .clickable(false)
-                                        .jointType(JointType.DEFAULT)
-                );
-                map.addPolyline(new PolylineOptions()
-                                        .add(futureLocations.toArray(new LatLng[futureLocations.size()]))
-                                        .color(getActivity().getResources().getColor(R.color.colorMuted))
-                                        .geodesic(false)
-                                        .clickable(false)
-                                        .jointType(JointType.DEFAULT)
-                );
-
-                if (passedLocations.size() > 0 && futureLocations.size() > 0) {
-                    map.addPolyline(new PolylineOptions()
-                                            .add(passedLocations.get(passedLocations.size() - 1))
-                                            .add(futureLocations.get(0))
-                                            .color(getActivity().getResources().getColor(R.color.colorPrimary))
-                                            .geodesic(false)
-                                            .clickable(false)
-                                            .jointType(JointType.DEFAULT));
-                }
-                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120));
-                map.setBuildingsEnabled(true);
-                map.setTrafficEnabled(false);
-                map.setMinZoomPreference(7);
-                map.setMaxZoomPreference(14);
-                map.setLatLngBoundsForCameraTarget(bounds);
-                if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                        ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    map.setMyLocationEnabled(true);
-                }
-            }
-        });
+        if (passedLocations.size() > 0 && futureLocations.size() > 0) {
+            map.addPolyline(new PolylineOptions()
+                                    .add(passedLocations.get(passedLocations.size() - 1))
+                                    .add(futureLocations.get(0))
+                                    .color(getActivity().getResources().getColor(R.color.colorPrimary))
+                                    .geodesic(false)
+                                    .clickable(false)
+                                    .jointType(JointType.DEFAULT));
+        }
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120));
+        map.setBuildingsEnabled(true);
+        map.setTrafficEnabled(false);
+        map.setMinZoomPreference(7);
+        map.setMaxZoomPreference(14);
+        map.setLatLngBoundsForCameraTarget(bounds);
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+        }
 
     }
 

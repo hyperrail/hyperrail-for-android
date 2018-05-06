@@ -88,7 +88,6 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
         if (this.getOrigin() != null) {
             json.put("origin", getOrigin().getHafasId());
         }
-        mSearchTime = null;
         return json;
     }
 
