@@ -38,6 +38,6 @@
         <item>Frans</item>
         <item>Duits</item>
     </string-array>
-    <string name="pref_display_vehicle_on_map_summary">oon de route van een trein op een kaart. Dit kan extra data verbruiken.</string>
+    <string name="pref_display_vehicle_on_map_summary">Toon de route van een trein op een kaart. Dit kan extra data verbruiken.</string>
     <string name="pref_display_vehicle_on_map">Toon de route van een trein op een kaart</string>
 </resources>

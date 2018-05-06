@@ -60,7 +60,6 @@
     <string name="warning_not_realtime">Vous regardez les résultats pour</string>
     <string name="title_departures">Départs</string>
     <string name="action_swap">Inverser la direction</string>
-    <string name="pref_startup_screen">Écran d\'affichage par défaut au démarrage de l\'app</string>
     <string name="error_route_from_missing">La gare de départ ne peut pas être vide</string>
     <string name="error_route_to_missing">La gare de destination ne peut pas être vide</string>
     <string name="time_today">aujourd\'hui</string>
@@ -95,11 +94,6 @@
     <string name="ETA_stop_departure">À %s je partirai de %s avec %s</string>
     <string name="ETA_transfer_arrival">À %s j’arriverai dans %s avec %s</string>
     <string name="ETA_transfer_departure">À %s je partirai de %s avec %s</string>
-
-    <string-array name="departarrive">
-        <item>Quitte</item>
-        <item>Arrive</item>
-    </string-array>
 
     <string name="title_activity_station">Gare</string>
 
@@ -139,8 +133,5 @@
     <string name="station_details_not_available_title">Les informations pour la gare non disponible</string>
     <string name="station_not_found">Gare non trouvée</string>
     <string name="widget_error_cant_load">Les données ne peuvent pas être chargées.\n Supprimez ce widget et réessayez.</string>
-
-	<string name="order_of_trains">Ordre des étapes</string>
-	<string name="pref_header_trains">Trains</string>
 
 </resources>

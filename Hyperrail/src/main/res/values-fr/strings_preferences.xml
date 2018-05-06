@@ -21,7 +21,7 @@
     <string name="pref_github">Voir sur github</string>
     <string name="pref_header_links">Liens</string>
     <string name="pref_stations_language">Langue de la gare</string>
-    <string name="pref_startup_screen">Écran par défaut lors du démarrage de l\'application</string> 
+    <string name="pref_startup_screen">Écran d\'affichage par défaut au démarrage de l\'app</string>
 
     <string-array name="pref_list_screens">
         <item>@string/title_liveboard</item>
@@ -45,7 +45,7 @@
 
     <string-array name="departarrive">
         <item>Départ</item>
-        <item>Arrivée</item>
+        <item>Arrive</item>
     </string-array>
 
     <string-array name="pref_list_languages">

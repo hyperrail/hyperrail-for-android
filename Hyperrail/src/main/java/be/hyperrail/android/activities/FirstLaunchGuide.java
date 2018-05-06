@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -188,15 +189,27 @@ public class FirstLaunchGuide extends AppCompatActivity {
             TextView titleView = rootView.findViewById(R.id.text_title);
             titleView.setText(getArguments().getString(ARG_TITLE));
 
-            if (getActivity() != null) {
-                ImageView imageView = rootView.findViewById(R.id.image);
-                Picasso.get().load(getArguments().getInt(ARG_IMG)).config(Bitmap.Config.RGB_565).fit().into(imageView);
-            }
-
             TextView descriptionView = rootView.findViewById(R.id.text_description);
             descriptionView.setText(getArguments().getString(ARG_DESCRIPTION));
 
             return rootView;
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            if (getActivity() != null) {
+                final ImageView imageView = view.findViewById(R.id.image);
+                imageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int width = imageView.getWidth();
+                        int height = imageView.getHeight();
+                        int size = Math.min(width,height);
+                        Picasso.get().load(getArguments().getInt(ARG_IMG)).config(Bitmap.Config.RGB_565).resize(size,size).into(imageView);
+                    }
+                });
+            }
         }
     }
 
