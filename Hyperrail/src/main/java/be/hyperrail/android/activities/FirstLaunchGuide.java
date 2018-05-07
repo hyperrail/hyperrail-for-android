@@ -14,6 +14,7 @@ package be.hyperrail.android.activities;
 
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
@@ -40,6 +41,10 @@ import com.squareup.picasso.Picasso;
 
 import be.hyperrail.android.BuildConfig;
 import be.hyperrail.android.R;
+import be.hyperrail.android.irail.contracts.StationNotResolvedException;
+import be.hyperrail.android.irail.factories.IrailFactory;
+
+import static java.util.logging.Level.INFO;
 
 public class FirstLaunchGuide extends AppCompatActivity {
 
@@ -210,6 +215,10 @@ public class FirstLaunchGuide extends AppCompatActivity {
                     }
                 });
             }
+            // Load a random station - this ensures the database gets loaded (and filled, if needed).
+            // This way users can start using the app right away when searching, instead of having to wait for the database.
+            SetupStationsDbTask setupTask = new SetupStationsDbTask();
+            setupTask.execute();
         }
     }
 
@@ -244,4 +253,18 @@ public class FirstLaunchGuide extends AppCompatActivity {
             return "";
         }
     }
+
+    private static class SetupStationsDbTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                FirebaseCrash.logcat(INFO.intValue(), "FirstLaunchGuide","Preparing stations database ahead of time");
+                IrailFactory.getStationsProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
+                FirebaseCrash.logcat(INFO.intValue(), "FirstLaunchGuide","Prepared stations database ahead of time");
+            } catch (StationNotResolvedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    };
 }
