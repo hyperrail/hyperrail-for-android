@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.firebase-crash'
 
-def VERSION_CODE = 33
-def VERSION_NAME = '1.0.8b'
+def VERSION_CODE = 34
+def VERSION_NAME = '1.0.8c'
 
 android {
     signingConfigs {
@@ -55,7 +55,7 @@ android {
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.google.android.gms:play-services-maps:15.0.0'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -76,7 +76,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.json:json:20160810'
-    testCompile "org.mockito:mockito-core:2.18.3"
+    testImplementation "org.mockito:mockito-core:2.18.3"
     // org.json is included with Android, but Android.jar can not be used from unit tests
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

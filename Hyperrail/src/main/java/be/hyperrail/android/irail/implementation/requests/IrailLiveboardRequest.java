@@ -68,7 +68,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         super(jsonObject);
         String id = jsonObject.getString("id");
         if (id.startsWith("BE.NMBS.")) {
-            id = id.substring(5);
+            id = id.substring(8);
         }
         this.station = IrailFactory.getStationsProviderInstance().getStationByHID(id);
         timeDefinition = RouteTimeDefinition.DEPART_AT;

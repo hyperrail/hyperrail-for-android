@@ -311,6 +311,10 @@ public class PersistentQueryProvider implements Serializable {
         while (items.size() >= MAX_STORED) {
             ArrayList<Suggestion<T>> queries = setToList(items, LIST, classInstance);
             queries = sortByTime(queries);
+
+            if (queries.isEmpty()) {
+                break;
+            }
             // Remove latest query
             items = removeFromPersistentSet(items, queries.get(queries.size() - 1).getData());
         }
