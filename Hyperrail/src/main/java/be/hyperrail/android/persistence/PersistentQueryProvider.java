@@ -506,13 +506,14 @@ public class PersistentQueryProvider implements Serializable {
      * @return The filtered collection
      */
     private <T extends IrailRequest> Set<String> removeFromPersistentSet(Set<String> collection, T remove) {
+        // TODO: this will not work for trains - they will need a better way to compare
         Set<String> toBeRemoved = new HashSet<>();
 
         for (String entry : collection) {
             try {
                 JSONObject object = new JSONObject(entry);
 
-                if (remove.getCreatedAt().getMillis() == object.getLong("created_at")) {
+                if (remove.equals(object)) {
                     toBeRemoved.add(entry);
                 }
             } catch (JSONException exception) {

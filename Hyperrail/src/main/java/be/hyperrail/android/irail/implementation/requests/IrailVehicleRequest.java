@@ -132,6 +132,14 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Ir
 
     @Override
     public boolean equals(Object o) {
+        if (o instanceof JSONObject){
+            try {
+                o = new IrailVehicleRequest((JSONObject) o);
+            } catch (JSONException | StationNotResolvedException e) {
+                return false;
+            }
+        }
+
         if (!(o instanceof IrailVehicleRequest)) {
             return false;
         }

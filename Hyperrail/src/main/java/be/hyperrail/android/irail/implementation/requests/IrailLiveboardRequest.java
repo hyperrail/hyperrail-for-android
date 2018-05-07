@@ -96,6 +96,15 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         return other instanceof IrailLiveboardRequest && this.getStation().equals(((IrailLiveboardRequest) other).getStation());
     }
 
+    public boolean equals(String json) {
+        try {
+            IrailLiveboardRequest other = new IrailLiveboardRequest(new JSONObject(json));
+            return this.equals(other);
+        } catch (JSONException | StationNotResolvedException e) {
+            return false;
+        }
+    }
+
     @NonNull
     public Station getStation() {
         return station;
@@ -147,6 +156,15 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
 
     @Override
     public boolean equals(Object o) {
+
+        if (o instanceof JSONObject){
+            try {
+                o = new IrailLiveboardRequest((JSONObject) o);
+            } catch (JSONException | StationNotResolvedException e) {
+                return false;
+            }
+        }
+
         if (!(o instanceof IrailLiveboardRequest)) {
             return false;
         }

@@ -120,6 +120,15 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements IrailR
 
     @Override
     public boolean equals(Object o) {
+
+        if (o instanceof JSONObject){
+            try {
+                o = new IrailRouteRequest((JSONObject) o);
+            } catch (JSONException | StationNotResolvedException e) {
+                return false;
+            }
+        }
+
         if (!(o instanceof IrailRouteRequest)) {
             return false;
         }
