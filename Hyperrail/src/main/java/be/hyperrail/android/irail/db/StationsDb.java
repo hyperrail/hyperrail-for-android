@@ -558,6 +558,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             return mStationIdCache.get(id);
         }
 
+        if (id.startsWith("BE.NMBS.")){
+            id = id.substring(8);
+        }
+
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,

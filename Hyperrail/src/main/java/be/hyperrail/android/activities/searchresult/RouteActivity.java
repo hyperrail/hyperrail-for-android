@@ -61,6 +61,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
             Station origin;
@@ -77,7 +79,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         } else {
             this.mRequest = (IrailRoutesRequest) getIntent().getSerializableExtra("request");
         }
-        super.onCreate(savedInstanceState);
+
 
         this.setHeader();
 
