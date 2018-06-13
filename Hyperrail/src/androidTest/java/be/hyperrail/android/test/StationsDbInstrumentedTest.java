@@ -44,7 +44,7 @@ public class StationsDbInstrumentedTest {
         // Test for caps variations, different languages, and diferent separator symbols
         String searchnames[] = new String[]{"Bosvoorde", "Boitsfort", "Bosvoorde/Boitsfort", "Bosvoorde Boitsfort", "Bosvoorde-Boitsfort", "BOSVOORDE"};
         for (String name : searchnames) {
-            Station searchResult = provider.getStationByName(name);
+            Station searchResult = provider.getStationByExactName(name);
             assertNotNull(searchResult);
             assertEquals(bosvoorde.getHafasId(), searchResult.getHafasId());
         }
@@ -61,11 +61,11 @@ public class StationsDbInstrumentedTest {
         // http://irail.be/stations/NMBS/008815016 	Thurn en Taxis/Tour et Taxis 	Tour et Taxis 	Thurn en Taxis 	Tour et Taxis 	Thurn en Taxis
         Station thurnTaxis = provider.getStationByHID("008815016");
         assertNotNull(thurnTaxis);
-        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getName()));
-        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeDe()));
-        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeEn()));
-        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeFr()));
-        assertEquals(thurnTaxis, provider.getStationByName(thurnTaxis.getAlternativeNl()));
+        assertEquals(thurnTaxis, provider.getStationByExactName(thurnTaxis.getName()));
+        assertEquals(thurnTaxis, provider.getStationByExactName(thurnTaxis.getAlternativeDe()));
+        assertEquals(thurnTaxis, provider.getStationByExactName(thurnTaxis.getAlternativeEn()));
+        assertEquals(thurnTaxis, provider.getStationByExactName(thurnTaxis.getAlternativeFr()));
+        assertEquals(thurnTaxis, provider.getStationByExactName(thurnTaxis.getAlternativeNl()));
 
     }
 
@@ -77,15 +77,15 @@ public class StationsDbInstrumentedTest {
         // 's gravenbrakel caused issues due to the '
         Station sGravenbrakel = provider.getStationByHID("008883006");
         assertNotNull(sGravenbrakel);
-        assertEquals(sGravenbrakel, provider.getStationByName("'s Gravenbrakel"));
-        assertEquals(sGravenbrakel, provider.getStationByName("'s Gravenbrakel (be)"));
-        assertEquals(sGravenbrakel, provider.getStationByName("Braine-le-Comte"));
-        assertEquals(sGravenbrakel, provider.getStationByName("Braine-le-Comte/s Gravenbrakel"));
-        assertEquals(sGravenbrakel, provider.getStationByName("Braine-le-Comte/'s Gravenbrakel"));
-        assertEquals(sGravenbrakel, provider.getStationByName("'s Gravenbrakel/Braine-le-Comte"));
-        assertEquals(sGravenbrakel, provider.getStationByName("s Gravenbrakel/Braine-le-Comte"));
-        assertEquals(sGravenbrakel, provider.getStationByName("s Gravenbrakel"));
-        assertEquals(sGravenbrakel, provider.getStationByName("s-gravenbrakel"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("'s Gravenbrakel"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("'s Gravenbrakel (be)"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("Braine-le-Comte"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("Braine-le-Comte/s Gravenbrakel"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("Braine-le-Comte/'s Gravenbrakel"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("'s Gravenbrakel/Braine-le-Comte"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("s Gravenbrakel/Braine-le-Comte"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("s Gravenbrakel"));
+        assertEquals(sGravenbrakel, provider.getStationByExactName("s-gravenbrakel"));
     }
 
     /**

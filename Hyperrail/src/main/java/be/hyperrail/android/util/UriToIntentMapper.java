@@ -107,11 +107,11 @@ public class UriToIntentMapper {
                 // Route:
                 // http://www.belgianrail.be/jp/nmbs-routeplanner/query.exe/nn?S=Halle&Z=Brussel&date=12/04/2018&time=20:30&start=1&timesel=depart&&REQ0JourneyStopsSID=A=1@O=Halle@X=4240634@Y=50733931@U=80@L=008814308@B=1@p=1523491001@n=ac.1=GA@&REQ0JourneyStopsZID=A=1@O=Brussel@X=4356802@Y=50845658@U=80@L=008813003@B=1@p=1523491001@n=ac.1=GA@&REQ0JourneyProduct_prod_list=3:0111111111111111&OK#focus
                 if (departureStation == null) {
-                    departureStation = stationProvider.getStationByName(uri.getQueryParameter("S"));
+                    departureStation = stationProvider.getStationByExactName(uri.getQueryParameter("S"));
                 }
 
                 if (arrivalStation == null) {
-                    arrivalStation = stationProvider.getStationByName(uri.getQueryParameter("Z"));
+                    arrivalStation = stationProvider.getStationByExactName(uri.getQueryParameter("Z"));
                 }
 
                 IrailRoutesRequest routesRequest = new IrailRoutesRequest(departureStation, arrivalStation,
@@ -126,7 +126,7 @@ public class UriToIntentMapper {
                 // &time=21:04&boardType=dep&start=1&REQ0JourneyStopsSID=A=1@O=Halle@X=4240634@Y=50733931@U=80@L=008814308@B=1@p=1523491001@n=ac.1=GA@
 
                 if (departureStation == null) {
-                    departureStation = stationProvider.getStationByName(uri.getQueryParameter("input"));
+                    departureStation = stationProvider.getStationByExactName(uri.getQueryParameter("input"));
                 }
 
                 IrailLiveboardRequest liveboardRequest = new IrailLiveboardRequest(departureStation,

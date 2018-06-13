@@ -314,9 +314,9 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         IrailStationProvider p = IrailFactory.getStationsProviderInstance();
-        Station station_from = p.getStationByName(from);
+        Station station_from = p.getStationByExactName(from);
 
-        Station station_to = p.getStationByName(to);
+        Station station_to = p.getStationByExactName(to);
 
         doSearch(station_from, station_to);
     }

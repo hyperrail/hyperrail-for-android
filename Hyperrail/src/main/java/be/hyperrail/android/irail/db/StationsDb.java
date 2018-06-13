@@ -562,13 +562,13 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "StationsDb.getStationByName")
+    @AddTrace(name = "StationsDb.getStationByExactName")
     @Nullable
-    public Station getStationByName(@NonNull String name) {
+    public Station getStationByExactName(@NonNull String name) {
         if (mStationNameCache.containsKey(name)) {
             return mStationNameCache.get(name);
         }
-        Station[] results = getStationsByNameOrderBySize(name);
+        Station[] results = getStationsByNameOrderBySize(name, true);
         if (results == null) {
             return null;
         }
@@ -581,18 +581,31 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      * @inheritDoc
      */
     @Override
+    @Nullable
     @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
     public Station[] getStationsByNameOrderBySize(@NonNull String name) {
+        return getStationsByNameOrderBySize(name, false);
+    }
+
+    private final static String stationNameSelection = StationsDataColumns.COLUMN_NAME_NAME + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL +
+            " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?";
+
+    @Nullable
+    public Station[] getStationsByNameOrderBySize(@NonNull String name, boolean exact) {
         SQLiteDatabase db = getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
-        String wcName = "%" + name.replaceAll("[^A-Za-z]", "%") + "%";
+
+        String cleanedName = name.replaceAll("[^A-Za-z]", "%");
+        if (!exact) {
+            cleanedName = "%" + cleanedName + "%";
+        }
+
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 getDefaultQueryColumns(),
-                StationsDataColumns.COLUMN_NAME_NAME + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL +
-                        " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?",
-                new String[]{wcName, wcName, wcName, wcName, wcName},
+                stationNameSelection,
+                new String[]{cleanedName, cleanedName, cleanedName, cleanedName, cleanedName},
                 null,
                 null,
                 StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC",
@@ -616,7 +629,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                         "Station not found: " + name + ", replacement search " + newname
                 );
                 return getStationsByNameOrderBySize(newname);
-            } else if (name.toLowerCase().startsWith("s ") || wcName.toLowerCase().startsWith("s%")) {
+            } else if (name.toLowerCase().startsWith("s ") || cleanedName.toLowerCase().startsWith("s%")) {
                 String newname = "'" + name;
                 Crashlytics.log(
                         WARNING.intValue(), "SQLiteStationProvider",
@@ -626,7 +639,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             } else {
                 Crashlytics.log(
                         SEVERE.intValue(), "SQLiteStationProvider",
-                        "Station not found: " + name + ", cleaned search " + wcName
+                        "Station not found: " + name + ", cleaned search " + cleanedName
                 );
                 return null;
             }

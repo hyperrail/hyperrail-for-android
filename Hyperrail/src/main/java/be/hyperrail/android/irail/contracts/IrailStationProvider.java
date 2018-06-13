@@ -105,7 +105,7 @@ public interface IrailStationProvider {
      * @return The station object.
      */
     @Nullable
-    Station getStationByName(@NonNull String name);
+    Station getStationByExactName(@NonNull String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their size, measured in average train stops per day.
