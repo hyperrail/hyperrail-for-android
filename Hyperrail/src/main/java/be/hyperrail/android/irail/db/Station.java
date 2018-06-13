@@ -14,7 +14,7 @@ package be.hyperrail.android.irail.db;
 
 import android.support.annotation.NonNull;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 
 import java.io.Serializable;
 
@@ -160,7 +160,7 @@ public class Station implements Serializable, Comparable {
         if (stationFacilities == null) {
             IrailStationProvider provider = IrailFactory.getStationsProviderInstance();
             if (!(provider instanceof StationsDb)) {
-                FirebaseCrash.report(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
+                Crashlytics.logException(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
                 return null;
             }
             this.stationFacilities = ((StationsDb) provider).getStationFacilitiesById(this.hafasId);

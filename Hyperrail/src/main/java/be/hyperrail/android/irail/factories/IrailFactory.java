@@ -14,7 +14,7 @@ package be.hyperrail.android.irail.factories;
 
 import android.content.Context;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import be.hyperrail.android.irail.contracts.IrailDataProvider;
@@ -41,8 +41,8 @@ public class IrailFactory {
 
     public static IrailStationProvider getStationsProviderInstance() {
         if (stationProviderInstance == null) {
-            FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
-            FirebaseCrash.report(new Exception("IrailStationProvider was requested before the factory was initialized"));
+            Crashlytics.log(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
+            Crashlytics.logException(new Exception("IrailStationProvider was requested before the factory was initialized"));
             throw new IllegalStateException();
         }
         return stationProviderInstance;
@@ -50,8 +50,8 @@ public class IrailFactory {
 
     public static IrailDataProvider getDataProviderInstance() {
         if (dataProviderInstance == null) {
-            FirebaseCrash.logcat(SEVERE.intValue(), "Irail16Factory", "Failed to provide data provider! Call setup() before calling any factory method!");
-            FirebaseCrash.report(new Exception("IrailDataProvider was requested before the factory was initialized"));
+            Crashlytics.log(SEVERE.intValue(), "Irail16Factory", "Failed to provide data provider! Call setup() before calling any factory method!");
+            Crashlytics.logException(new Exception("IrailDataProvider was requested before the factory was initialized"));
             throw new IllegalStateException();
         }
         return dataProviderInstance;

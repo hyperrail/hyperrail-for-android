@@ -16,7 +16,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.joda.time.LocalTime;
@@ -80,7 +80,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     @AddTrace(name = "StationsDb.onCreate")
     public void onCreate(SQLiteDatabase db) {
-        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Creating stations database");
+        Crashlytics.log(INFO.intValue(), LOGTAG, "Creating stations database");
 
         db.execSQL(SQL_CREATE_TABLE_STATIONS);
         db.execSQL(SQL_CREATE_TABLE_FACILITIES);
@@ -88,12 +88,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         db.execSQL(SQL_CREATE_INDEX_NAME);
         db.execSQL(SQL_CREATE_INDEX_FACILITIES_ID);
 
-        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Filling stations database");
+        Crashlytics.log(INFO.intValue(), LOGTAG, "Filling stations database");
         fillStations(db);
-        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations table ready");
+        Crashlytics.log(INFO.intValue(), LOGTAG, "Stations table ready");
         fillFacilities(db);
-        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations facilities table ready");
-        FirebaseCrash.logcat(INFO.intValue(), LOGTAG, "Stations database ready");
+        Crashlytics.log(INFO.intValue(), LOGTAG, "Stations facilities table ready");
+        Crashlytics.log(INFO.intValue(), LOGTAG, "Stations database ready");
     }
 
     /**
@@ -406,30 +406,6 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     /**
      * @inheritDoc
      */
-    @Override
-    @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
-    public Station[] getStationsByNameOrderBySize(@NonNull String name) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        name = cleanAccents(name);
-        Cursor c = db.query(
-                StationsDataColumns.TABLE_NAME,
-                getDefaultQueryColumns(),
-                StationsDataColumns.COLUMN_NAME_NAME + " LIKE ?",
-                new String[]{"%" + name + "%"},
-                null,
-                null,
-                StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC"
-        );
-
-        Station[] stations = loadStationCursor(c);
-        c.close();
-
-        return stations;
-    }
-
-    /**
-     * @inheritDoc
-     */
     @NonNull
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderByLocation")
@@ -439,34 +415,6 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             return new Station[0];
         }
         return results;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    @AddTrace(name = "StationsDb.getStationsByNameOrderByLocation")
-    public Station[] getStationsByNameOrderByLocation(@NonNull String name, @NonNull Location location) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
-        double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
-        name = cleanAccents(name);
-        name = name.replaceAll("\\(\\w\\)", "");
-        Cursor c = db.query(
-                StationsDataColumns.TABLE_NAME,
-                getLocationQueryColumns(longitude, latitude),
-                StationsDataColumns.COLUMN_NAME_NAME + " LIKE ?",
-                new String[]{"%" + name + "%"},
-                null,
-                null,
-                "distance ASC, " + StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC"
-        );
-
-        Station[] stations = loadStationCursor(c);
-        c.close();
-
-        return stations;
     }
 
 
@@ -519,7 +467,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     public String[] getStationNames(Station[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
-            FirebaseCrash.logcat(
+            Crashlytics.log(
                     WARNING.intValue(), LOGTAG,
                     "Tried to load station names on empty station list!"
             );
@@ -558,7 +506,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
             return mStationIdCache.get(id);
         }
 
-        if (id.startsWith("BE.NMBS.")){
+        if (id.startsWith("BE.NMBS.")) {
             id = id.substring(8);
         }
 
@@ -580,7 +528,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
         if (results == null) {
             if (!suppressErrors) {
-                FirebaseCrash.report(
+                Crashlytics.logException(
                         new IllegalStateException("ID Not found in station database! " + id));
             }
             throw new StationNotResolvedException(id);
@@ -620,11 +568,25 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         if (mStationNameCache.containsKey(name)) {
             return mStationNameCache.get(name);
         }
+        Station[] results = getStationsByNameOrderBySize(name);
+        if (results == null) {
+            return null;
+        }
 
+        mStationNameCache.put(name, results[0]);
+        return results[0];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
+    public Station[] getStationsByNameOrderBySize(@NonNull String name) {
         SQLiteDatabase db = getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
-        String wcName = name.replaceAll("[^A-Za-z]", "%");
+        String wcName = "%" + name.replaceAll("[^A-Za-z]", "%") + "%";
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 getDefaultQueryColumns(),
@@ -634,36 +596,35 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                 null,
                 null,
                 StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC",
-                "1"
+                null
         );
+
         if (c.getCount() < 1) {
-
             c.close();
-
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/"));
-                FirebaseCrash.logcat(
+                Crashlytics.log(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
-                return getStationByName(newname);
+                return getStationsByNameOrderBySize(newname);
             } else if (name.contains("(")) {
                 String newname = name.substring(0, name.indexOf("("));
-                FirebaseCrash.logcat(
+                Crashlytics.log(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
-                return getStationByName(newname);
+                return getStationsByNameOrderBySize(newname);
             } else if (name.toLowerCase().startsWith("s ") || wcName.toLowerCase().startsWith("s%")) {
                 String newname = "'" + name;
-                FirebaseCrash.logcat(
+                Crashlytics.log(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
-                return getStationByName(newname);
+                return getStationsByNameOrderBySize(newname);
             } else {
-                FirebaseCrash.logcat(
+                Crashlytics.log(
                         SEVERE.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", cleaned search " + wcName
                 );
@@ -679,9 +640,37 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         if (results == null) {
             return null;
         }
+        return results;
+    }
 
-        mStationNameCache.put(name, results[0]);
-        return results[0];
+    /**
+     * @inheritDoc
+     */
+    @Override
+    @AddTrace(name = "StationsDb.getStationsByNameOrderByLocation")
+    public Station[] getStationsByNameOrderByLocation(@NonNull String name, @NonNull Location location) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
+        double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
+        name = cleanAccents(name);
+        name = name.replaceAll("\\(\\w\\)", "");
+        Cursor c = db.query(
+                StationsDataColumns.TABLE_NAME,
+                getLocationQueryColumns(longitude, latitude),
+                StationsDataColumns.COLUMN_NAME_NAME + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL +
+                        " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?",
+                new String[]{"%" + name + "%", "%" + name + "%", "%" + name + "%", "%" + name + "%",
+                        "%" + name + "%"},
+                null,
+                null,
+                "distance ASC, " + StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC"
+        );
+
+        Station[] stations = loadStationCursor(c);
+        c.close();
+
+        return stations;
     }
 
     public StationFacilities getStationFacilitiesById(String id) {
@@ -754,12 +743,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     private Station[] loadStationCursor(Cursor c) {
         if (c.isClosed()) {
-            FirebaseCrash.logcat(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
+            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
             return null;
         }
 
         if (c.getCount() == 0) {
-            FirebaseCrash.logcat(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
+            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
             return null;
         }
 
@@ -837,12 +826,12 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
      */
     private StationFacilities loadFacilitiesCursor(Cursor c) {
         if (c.isClosed()) {
-            FirebaseCrash.logcat(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
+            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
             return null;
         }
 
         if (c.getCount() == 0) {
-            FirebaseCrash.logcat(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
+            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
             return null;
         }
 

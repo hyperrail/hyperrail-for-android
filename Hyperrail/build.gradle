@@ -6,7 +6,7 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
-apply plugin: 'com.google.firebase.firebase-crash'
+apply plugin: 'io.fabric'
 
 def VERSION_CODE = 38
 def VERSION_NAME = '1.0.9'
@@ -61,6 +61,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.3'
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -70,7 +71,6 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
-    implementation 'com.google.firebase:firebase-crash:16.0.0'
     implementation 'com.google.firebase:firebase-perf:16.0.0'
     implementation 'com.google.firebase:firebase-core:16.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'

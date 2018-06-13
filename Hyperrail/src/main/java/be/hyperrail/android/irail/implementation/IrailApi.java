@@ -23,7 +23,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -191,9 +191,9 @@ public class IrailApi implements IrailDataProvider {
                             request.getSearchTime(), request.getTimeDefinition()
                     );
                 } catch (JSONException e) {
-                    FirebaseCrash.logcat(
+                    Crashlytics.log(
                             WARNING.intValue(), "Failed to parse routes", e.getMessage());
-                    FirebaseCrash.report(e);
+                    Crashlytics.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -204,7 +204,7 @@ public class IrailApi implements IrailDataProvider {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError e) {
-                FirebaseCrash.logcat(
+                Crashlytics.log(
                         WARNING.intValue(), "Failed to get routes", e.getMessage());
                 request.notifyErrorListeners(e);
             }
@@ -292,8 +292,8 @@ public class IrailApi implements IrailDataProvider {
                 try {
                     result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
                 } catch (JSONException | StationNotResolvedException e) {
-                    FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
-                    FirebaseCrash.report(e);
+                    Crashlytics.log(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
+                    Crashlytics.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -306,7 +306,7 @@ public class IrailApi implements IrailDataProvider {
             @Override
             public void onErrorResponse(VolleyError e) {
                 Log.w(LOGTAG, "Tried loading liveboard from " + url + " failed with error " + e);
-                FirebaseCrash.logcat(
+                Crashlytics.log(
                         WARNING.intValue(), "Failed to get liveboard", e.getMessage());
                 request.notifyErrorListeners(e);
             }
@@ -350,9 +350,9 @@ public class IrailApi implements IrailDataProvider {
                 try {
                     result = parser.parseTrain(response, request.getSearchTime());
                 } catch (JSONException | StationNotResolvedException e) {
-                    FirebaseCrash.logcat(
+                    Crashlytics.log(
                             WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
-                    FirebaseCrash.report(e);
+                    Crashlytics.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -363,7 +363,7 @@ public class IrailApi implements IrailDataProvider {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError e) {
-                FirebaseCrash.logcat(
+                Crashlytics.log(
                         WARNING.intValue(), "Failed to get vehicle", e.getMessage());
                 request.notifyErrorListeners(e);
             }
@@ -443,8 +443,8 @@ public class IrailApi implements IrailDataProvider {
                 try {
                     result = parser.parseDisturbances(response);
                 } catch (JSONException e) {
-                    FirebaseCrash.logcat(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
-                    FirebaseCrash.report(e);
+                    Crashlytics.log(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
+                    Crashlytics.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -455,7 +455,7 @@ public class IrailApi implements IrailDataProvider {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError e) {
-                FirebaseCrash.logcat(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
+                Crashlytics.log(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
                 request.notifyErrorListeners(e);
             }
         };
@@ -492,7 +492,7 @@ public class IrailApi implements IrailDataProvider {
                     cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
                     successListener.onResponse(cache);
                 } catch (JSONException e) {
-                    FirebaseCrash.logcat(
+                    Crashlytics.log(
                             WARNING.intValue(), "Failed to get result from cache", e.getMessage());
                     errorListener.onErrorResponse(new NoConnectionError());
                 }

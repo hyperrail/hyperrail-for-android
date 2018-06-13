@@ -12,9 +12,11 @@
 
 package be.hyperrail.android;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 
 import be.hyperrail.android.irail.factories.IrailFactory;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * The application base class
@@ -24,9 +26,10 @@ public class Launcher extends android.app.Application {
     public void onCreate() {
         // Setup the factory as soon as the app is created.
         IrailFactory.setup(getApplicationContext());
-        if (BuildConfig.DEBUG) {
-            FirebaseCrash.setCrashCollectionEnabled(false);
-        }
+
+        CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
+        Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
         super.onCreate();
     }
 

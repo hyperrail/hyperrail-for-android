@@ -10,7 +10,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -489,8 +489,8 @@ public class PersistentQueryProvider implements Serializable {
                 results.add(s);
 
             } catch (Exception exception) {
-                FirebaseCrash.logcat(Level.WARNING.intValue(), "PersistentQuery",
-                                     "Failed to load stored request for type " + type + ": " + exception.getMessage());
+                Crashlytics.log(Level.WARNING.intValue(), "PersistentQuery",
+                                "Failed to load stored request for type " + type + ": " + exception.getMessage());
                 // ignored
             }
         }

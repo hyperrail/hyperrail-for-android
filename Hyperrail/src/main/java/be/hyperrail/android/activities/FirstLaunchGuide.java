@@ -36,7 +36,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
 import be.hyperrail.android.BuildConfig;
@@ -110,7 +110,7 @@ public class FirstLaunchGuide extends AppCompatActivity {
                     mNext.setText(R.string.next);
                 }
 
-                FirebaseCrash.logcat(Log.INFO, "FirstLaunchGuide", "Switching to tab " + mTabLayout.getSelectedTabPosition() + " " + Picasso.get().getSnapshot().size + Picasso.get().getSnapshot().maxSize);
+                Crashlytics.log(Log.INFO, "FirstLaunchGuide", "Switching to tab " + mTabLayout.getSelectedTabPosition() + " " + Picasso.get().getSnapshot().size + Picasso.get().getSnapshot().maxSize);
             }
 
             @Override
@@ -258,9 +258,9 @@ public class FirstLaunchGuide extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                FirebaseCrash.logcat(INFO.intValue(), "FirstLaunchGuide","Preparing stations database ahead of time");
+                Crashlytics.log(INFO.intValue(), "FirstLaunchGuide","Preparing stations database ahead of time");
                 IrailFactory.getStationsProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
-                FirebaseCrash.logcat(INFO.intValue(), "FirstLaunchGuide","Prepared stations database ahead of time");
+                Crashlytics.log(INFO.intValue(), "FirstLaunchGuide","Prepared stations database ahead of time");
             } catch (StationNotResolvedException e) {
                 e.printStackTrace();
             }
