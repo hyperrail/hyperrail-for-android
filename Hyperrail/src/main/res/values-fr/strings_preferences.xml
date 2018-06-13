@@ -1,59 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Strings related to Settings -->
-
-    <string name="pref_header_general">Général</string>
-    <string name="pref_header_stations">Gares</string>
-    <string name="pref_header_routes">Itinéraires</string>
-    <string name="pref_header_trains">Trains</string>
-    <string name="pref_number_recent_searches">Nombre de recherches récentes à afficher</string>
-    <string name="order_of_routes">Ordre des itinéraires</string>
-    <string name="order_of_stations">Ordre des gares</string>
-	<string name="order_of_trains">Ordre des étapes</string>
-    <string name="number_nearby_stations">Nombre de gares à proximité à afficher</string>
-    <string name="show_nearby_stations">Afficher les gares autour de moi</string>
-    <string name="number_recent_searches">Nombre de recherches récentes à afficher</string>
-	<string name="pref_title_cards">Utiliser la vue par carte</string>	
-    <string name="pref_description_cards">Utiliser la vue par carte au lieu d\'une liste normale</string>
-    <string name="pref_short_tap_route_detail">Touche rapide pour une nouvelle fenêtre</string>
-    <string name="pref_short_tap_route_detail_summary">Touche rapide pour ouvrir dans une nouvelle fenêtre, touche longue pour étendre le résultat dans la fenêtre actuelle</string>
-    <string name="pref_github">Voir sur github</string>
-    <string name="pref_header_links">Liens</string>
-    <string name="pref_stations_language">Langue de la gare</string>
-    <string name="pref_startup_screen">Écran d\'affichage par défaut au démarrage de l\'app</string>
-
-    <string-array name="pref_list_screens">
-        <item>@string/title_liveboard</item>
-        <item>@string/title_route</item>
-        <item>@string/title_vehicle</item>
-        <item>@string/title_disturbances</item>
-    </string-array>
-
-    <string-array name="pref_list_station_order_values">
-        <item>Recherches récentes / Favoris / Proche</item>
-        <item>Favoris / Recherches récentes / Proche</item>
-        <item>Proche / Recherches récentes / Favoris</item>
-        <item>Proche / Favoris / Recherches récentes</item>
-    </string-array>
-
-
-    <string-array name="pref_list_history_favorites_order_values">
-        <item>Recherches récentes / Favoris</item>
-        <item>Favoris / Recherches récentes</item>
-    </string-array>
-
-    <string-array name="departarrive">
-        <item>Départ</item>
-        <item>Arrive</item>
-    </string-array>
-
-    <string-array name="pref_list_languages">
-        <item>Néerlandais</item>
-        <item>Anglais</item>
-        <item>Français</item>
-        <item>Allemand</item>
-    </string-array>
-    <string name="pref_display_vehicle_on_map_summary">Afficher l\'itinéraire des trains sur une carte. Cela pourrait utiliser plus de données.</string>
-    <string name="pref_display_vehicle_on_map">Afficher l\'itinéraire des trains sur une carte</string>
+  <!-- Strings related to Settings -->
+  <string name="pref_header_general">Général</string>
+  <string name="pref_header_stations">Gares</string>
+  <string name="pref_header_routes">Itinéraires</string>
+  <string name="pref_header_trains">Trains</string>
+  <string name="pref_number_recent_searches">Nombre de recherches récentes à afficher</string>
+  <string name="order_of_routes">Ordre des itinéraires</string>
+  <string name="order_of_stations">Ordre des gares</string>
+  <string name="order_of_trains">Ordre des étapes</string>
+  <string name="number_nearby_stations">Nombre de gares à proximité à afficher</string>
+  <string name="show_nearby_stations">Afficher les gares autour de moi</string>
+  <string name="number_recent_searches">Nombre de recherches récentes à afficher</string>
+  <string name="pref_title_cards">Utiliser la vue par carte</string>
+  <string name="pref_description_cards">Utiliser la vue par carte au lieu d\'une liste normale</string>
+  <string name="pref_short_tap_route_detail">Appui rapide pour une nouvelle fenêtre</string>
+  <string name="pref_short_tap_route_detail_summary">Appui rapide pour ouvrir dans une nouvelle fenêtre, appui long pour étendre le résultat dans la fenêtre actuelle</string>
+  <string name="pref_github">Voir sur Github</string>
+  <string name="pref_header_links">Liens</string>
+  <string name="pref_stations_language">Langue de la gare</string>
+  <string name="pref_startup_screen">Écran d\'affichage par défaut au démarrage de l\'app</string>
+  <string-array name="pref_list_screens">
+    <item>@string/title_liveboard</item>
+    <item>@string/title_route</item>
+    <item>@string/title_vehicle</item>
+    <item>@string/title_disturbances</item>
+  </string-array>
+  <string-array name="pref_list_station_order_values">
+    <item>Recherches récentes / Favoris / Proche</item>
+    <item>Favoris / Recherches récentes / Proche</item>
+    <item>Proche / Recherches récentes / Favoris</item>
+    <item>Proche / Favoris / Recherches récentes</item>
+  </string-array>
+  <string-array name="pref_list_history_favorites_order_values">
+    <item>Recherches récentes / Favoris</item>
+    <item>Favoris / Recherches récentes</item>
+  </string-array>
+  <string-array name="departarrive">
+    <item>Départ</item>
+    <item>Arrive</item>
+  </string-array>
+  <string-array name="pref_list_languages">
+    <item>Néerlandais</item>
+    <item>Anglais</item>
+    <item>Français</item>
+    <item>Allemand</item>
+  </string-array>
+  <string name="pref_display_vehicle_on_map_summary">Afficher l\'itinéraire des trains sur une carte. Cela pourrait utiliser plus de données.</string>
+  <string name="pref_display_vehicle_on_map">Afficher l\'itinéraire des trains sur une carte</string>
 </resources>
