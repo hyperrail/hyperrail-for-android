@@ -4,7 +4,7 @@
         android:title="@string/pref_header_general">
 
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="10"
             android:entries="@array/pref_list_screens"
             android:entryValues="@array/pref_list_screen_ids"
             android:key="pref_startup_screen"

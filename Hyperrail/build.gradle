@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.firebase-crash'
 
-def VERSION_CODE = 36
-def VERSION_NAME = '1.0.8e'
+def VERSION_CODE = 38
+def VERSION_NAME = '1.0.9'
 
 android {
     signingConfigs {
@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -70,9 +70,9 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
-    implementation 'com.google.firebase:firebase-crash:15.0.2'
-    implementation 'com.google.firebase:firebase-perf:15.1.0'
-    implementation 'com.google.firebase:firebase-core:15.0.2'
+    implementation 'com.google.firebase:firebase-crash:16.0.0'
+    implementation 'com.google.firebase:firebase-perf:16.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.json:json:20160810'

@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this.getApplicationContext());
         int defaultView = Integer.parseInt(defaultPreferences.getString("pref_startup_screen",
                                                                         String.valueOf(
-                                                                                VIEW_TYPE_LIVEBOARD)));
+                                                                                VIEW_TYPE_ROUTE)));
 
         if (!PreferenceManager.getDefaultSharedPreferences(this).contains("first_launch_guide")) {
             Intent i = new Intent(this, FirstLaunchGuide.class);

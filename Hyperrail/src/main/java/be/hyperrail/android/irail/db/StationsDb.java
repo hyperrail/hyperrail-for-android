@@ -53,7 +53,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 18041603;
+    private static final int DATABASE_VERSION = 18061300;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -556,6 +556,10 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
     public Station getStationByHID(@NonNull String id, boolean suppressErrors) throws StationNotResolvedException {
         if (mStationIdCache.containsKey(id)) {
             return mStationIdCache.get(id);
+        }
+
+        if (id.startsWith("BE.NMBS.")){
+            id = id.substring(8);
         }
 
         SQLiteDatabase db = getReadableDatabase();
