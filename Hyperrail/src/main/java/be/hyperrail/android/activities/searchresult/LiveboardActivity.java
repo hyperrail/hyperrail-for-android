@@ -8,11 +8,6 @@ package be.hyperrail.android.activities.searchresult;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.Intent.ShortcutIconResource;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutInfo.Builder;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -36,7 +31,6 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.R.id;
 import be.hyperrail.android.R.layout;
 import be.hyperrail.android.R.menu;
-import be.hyperrail.android.R.mipmap;
 import be.hyperrail.android.R.string;
 import be.hyperrail.android.activities.MainActivity;
 import be.hyperrail.android.activities.StationActivity;
@@ -47,6 +41,7 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
+import be.hyperrail.android.util.ShortcutHelper;
 
 import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.ARRIVALS;
 import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.DEPARTURES;
@@ -173,35 +168,12 @@ public class LiveboardActivity extends ResultActivity {
 
             case id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();
-                if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                    Builder mShortcutInfoBuilder = new Builder(this,
-                                                               mRequest.getStation().getHafasId());
-                    mShortcutInfoBuilder.setShortLabel(mRequest.getStation().getLocalizedName());
-
-                    mShortcutInfoBuilder.setLongLabel(
-                            "Departures from " + mRequest.getStation().getLocalizedName());
-                    mShortcutInfoBuilder.setIcon(
-                            Icon.createWithResource(this, R.mipmap.ic_shortcut_liveboard));
-                    shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
-                    mShortcutInfoBuilder.setIntent(shortcutIntent);
-                    ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
-                    ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
-
-                    if (mShortcutManager != null) {
-                        mShortcutManager.requestPinShortcut(mShortcutInfo, null);
-                    }
-                } else {
-                    Intent addIntent = new Intent();
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
-                                       mRequest.getStation().getLocalizedName());
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-                                       ShortcutIconResource.fromContext(
-                                               getApplicationContext(), mipmap.ic_shortcut_liveboard));
-                    addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-                    getApplicationContext().sendBroadcast(addIntent);
-                }
-                Snackbar.make(vLayoutRoot, string.shortcut_created, Snackbar.LENGTH_LONG).show();
+                ShortcutHelper.createShortcut(this,
+                                              vLayoutRoot,
+                                              shortcutIntent,
+                                              mRequest.getStation().getLocalizedName(),
+                                              "Departures from " + mRequest.getStation().getLocalizedName(),
+                                              R.mipmap.ic_shortcut_liveboard);
                 return true;
 
             default:

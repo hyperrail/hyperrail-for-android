@@ -8,10 +8,6 @@ package be.hyperrail.android.activities.searchresult;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
@@ -29,6 +25,7 @@ import be.hyperrail.android.irail.implementation.VehicleStub;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
+import be.hyperrail.android.util.ShortcutHelper;
 
 /**
  * Activity to show a train
@@ -85,30 +82,12 @@ public class VehicleActivity extends ResultActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_shortcut) {
             Intent shortcutIntent = this.createShortcutIntent();
-            // TODO: replace train ID with a name
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, Vehicle.getVehicleName(mRequest.getVehicleId()));
-                mShortcutInfoBuilder.setShortLabel(Vehicle.getVehicleName(mRequest.getVehicleId()));
-
-                mShortcutInfoBuilder.setLongLabel("Vehicle " + Vehicle.getVehicleName(mRequest.getVehicleId()));
-                mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_shortcut_train));
-                shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
-                mShortcutInfoBuilder.setIntent(shortcutIntent);
-                ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
-                ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
-                if (mShortcutManager != null) {
-                    mShortcutManager.requestPinShortcut(mShortcutInfo, null);
-                }
-            } else {
-                Intent addIntent = new Intent();
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, Vehicle.getVehicleName(mRequest.getVehicleId()));
-                addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_shortcut_train));
-                addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-                getApplicationContext().sendBroadcast(addIntent);
-            }
-            Snackbar.make(vLayoutRoot, R.string.shortcut_created, Snackbar.LENGTH_LONG).show();
-
+            ShortcutHelper.createShortcut(this,
+                                          vLayoutRoot,
+                                          shortcutIntent,
+                                          Vehicle.getVehicleName(mRequest.getVehicleId()),
+                                          "Vehicle " + Vehicle.getVehicleName(mRequest.getVehicleId()),
+                                          R.mipmap.ic_shortcut_train);
             return true;
         }
         return super.onOptionsItemSelected(item);

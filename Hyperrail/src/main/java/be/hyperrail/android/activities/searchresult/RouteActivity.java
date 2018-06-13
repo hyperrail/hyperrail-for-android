@@ -8,10 +8,6 @@ package be.hyperrail.android.activities.searchresult;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -32,6 +28,7 @@ import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.util.OnDateTimeSetListener;
+import be.hyperrail.android.util.ShortcutHelper;
 
 import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 
@@ -124,29 +121,12 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
                 return true;
             case R.id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(this, mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName());
-                    mShortcutInfoBuilder.setShortLabel(mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName());
-
-                    mShortcutInfoBuilder.setLongLabel("Route from " + mRequest.getOrigin().getLocalizedName() + " to " + mRequest.getDestination().getLocalizedName());
-                    mShortcutInfoBuilder.setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher));
-                    shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
-                    mShortcutInfoBuilder.setIntent(shortcutIntent);
-                    ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
-                    ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
-                    if (mShortcutManager != null) {
-                        mShortcutManager.requestPinShortcut(mShortcutInfo, null);
-                    }
-                } else {
-                    Intent addIntent = new Intent();
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName());
-                    addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.mipmap.ic_launcher));
-                    addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-                    getApplicationContext().sendBroadcast(addIntent);
-                }
-                Snackbar.make(vLayoutRoot, R.string.shortcut_created, Snackbar.LENGTH_LONG).show();
-
+                ShortcutHelper.createShortcut(this,
+                                              vLayoutRoot,
+                                              shortcutIntent,
+                                              mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName(),
+                                              "Route from " + mRequest.getOrigin().getLocalizedName() + " to " + mRequest.getDestination().getLocalizedName(),
+                                              R.mipmap.ic_launcher);
                 return true;
 
             default:
