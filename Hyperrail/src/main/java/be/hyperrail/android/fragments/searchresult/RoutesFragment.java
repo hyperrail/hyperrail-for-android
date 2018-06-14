@@ -189,7 +189,6 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                 }, new IRailErrorResponseListener() {
                     @Override
                     public void onErrorResponse(@NonNull Exception e, Object tag) {
-                        showError(e);
                         mRouteCardAdapter.setNextError(true);
                         mRouteCardAdapter.setNextLoaded();
                     }

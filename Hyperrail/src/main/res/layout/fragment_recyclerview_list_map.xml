@@ -24,20 +24,27 @@
         android:layout_height="0dp"
         android:layout_weight="6">
 
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview_primary"
+        <!-- This layout could use some improvements, but replacing the recyclerview with an error message requires something else than a SwipeRefreshLayout as parent -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/cardlist_vertical_spacing" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/text_error_message"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp"
-            android:gravity="center"
-            android:text="@string/placeholder_error_message"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_primary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/cardlist_vertical_spacing" />
+
+            <TextView
+                android:id="@+id/text_error_message"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/placeholder_error_message" />
+        </LinearLayout>
+
     </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

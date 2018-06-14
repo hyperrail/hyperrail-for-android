@@ -198,7 +198,6 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
-               showError(e);
                 mLiveboardCardAdapter.setNextError(true);
                 mLiveboardCardAdapter.setNextLoaded();
             }
