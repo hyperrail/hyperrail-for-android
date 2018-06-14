@@ -128,6 +128,18 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         mStationAdapter = new StationSuggestionsCardAdapter(this.getActivity(), null);
         mStationAdapter.setOnItemClickListener(this);
         mStationAdapter.setOnLongItemClickListener(this);
+        // Hide the recyclerview when empty - a placeholder will shift into place automaticly
+        mStationAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if (mStationAdapter.getItemCount() == 0) {
+                    stationRecyclerView.setVisibility(View.GONE);
+                } else {
+                    stationRecyclerView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         stationRecyclerView.setAdapter(mStationAdapter);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());

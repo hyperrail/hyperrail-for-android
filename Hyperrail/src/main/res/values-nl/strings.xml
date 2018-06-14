@@ -140,4 +140,9 @@
     <string name="dialog_title_shortcut_name">Snelkoppeling benoemen</string>
     <string name="button_add">Toevoegen</string>
     <string name="button_cancel">Annuleren</string>
+
+    <string name="placeholder_route_suggestions">Je recente en favoriete routes zullen hier verschijnen. Kies twee stations en tik op het vergrootglas om je eerste route op te zoeken.</string>
+    <string name="placeholder_vehicle_suggestions">Je recente en favoriete voertuigen zullen hier verschijnen. Geef een voertuig op en tik op het vergrootglas om je eerste route op te zoeken.</string>
+    <string name="placeholder_liveboard_suggestions">Je recente, favoriete en nabije stations zullen hier verschijnen. Start met typen en kies een station om je eerste zoekopdracht te maken.</string>
+
 </resources>

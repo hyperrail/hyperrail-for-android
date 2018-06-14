@@ -96,6 +96,18 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         mIrailTrainRequestAdapter = new VehicleSuggestionsCardAdapter(this.getActivity());
         mIrailTrainRequestAdapter.setOnItemClickListener(this);
         mIrailTrainRequestAdapter.setOnLongItemClickListener(this);
+        // Hide the recyclerview when empty - a placeholder will shift into place automaticly
+        mIrailTrainRequestAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if (mIrailTrainRequestAdapter.getItemCount() == 0) {
+                    recentTrainsRecyclerView.setVisibility(View.GONE);
+                } else {
+                    recentTrainsRecyclerView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         recentTrainsRecyclerView.setAdapter(mIrailTrainRequestAdapter);
 
         LoadSuggestionsTask t = new LoadSuggestionsTask(this);
