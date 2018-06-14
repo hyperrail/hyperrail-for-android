@@ -12,7 +12,7 @@
 
 package be.hyperrail.android.infiniteScrolling;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,13 +50,14 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     private boolean mIsLoadingNext;
     private boolean mIsLoadingPrevious;
-    private final Context context;
+    private final Activity context;
     private final LinearLayoutManager mRecyclerViewLayoutMgr;
     private boolean mInfiniteNextScrolling = true;
     private boolean mInfinitePrevScrolling = true;
     protected OnRecyclerItemClickListener<T> mOnClickListener;
     protected OnRecyclerItemLongClickListener<T> mOnLongClickListener;
     private boolean mLoadNextError;
+    private boolean mLoadPrevError;
 
     /**
      * Create a new InfiniteScrollingAdapter
@@ -65,7 +66,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param recyclerView                The recyclerview in which this adapter will be used
      * @param infiniteScrollingDataSource The listener which should be notified when new data should be loaded
      */
-    protected InfiniteScrollingAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource infiniteScrollingDataSource) {
+    protected InfiniteScrollingAdapter(Activity context, RecyclerView recyclerView, InfiniteScrollingDataSource infiniteScrollingDataSource) {
 
         this.context = context;
         this.mRecyclerView = recyclerView;
@@ -144,11 +145,11 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_LOADING) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_loading, parent, false);
-            return new LoadingViewHolder(view);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_load_next, parent, false);
+            return new LoadNextViewHolder(view);
         } else if (viewType == VIEW_TYPE_LOAD_EARLIER) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_load_button, parent, false);
-            return new LoadMoreButtonViewHolder(view);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_load_previous, parent, false);
+            return new LoadPreviousViewHolder(view);
         } else {
             return onCreateItemViewHolder(parent, viewType);
         }
@@ -169,34 +170,52 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      */
     @Override
     public final void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof LoadingViewHolder) {
-            final LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
-            loadingViewHolder.progressBar.setIndeterminate(true);
-            loadingViewHolder.progressBar.getIndeterminateDrawable().setColorFilter(
+        if (holder instanceof InfiniteScrollingAdapter.LoadNextViewHolder) {
+            final LoadNextViewHolder loadNextViewHolder = (LoadNextViewHolder) holder;
+
+            loadNextViewHolder.progressBar.setVisibility(VISIBLE);
+            loadNextViewHolder.tapToRetry.setVisibility(GONE);
+
+            loadNextViewHolder.progressBar.setIndeterminate(true);
+            loadNextViewHolder.progressBar.getIndeterminateDrawable().setColorFilter(
                     ContextCompat.getColor(context, R.color.colorPrimary),
                     PorterDuff.Mode.SRC_ATOP);
             if (mLoadNextError) {
-                loadingViewHolder.progressBar.setVisibility(GONE);
-                loadingViewHolder.tapToRetry.setVisibility(VISIBLE);
+                loadNextViewHolder.progressBar.setVisibility(GONE);
+                loadNextViewHolder.tapToRetry.setVisibility(VISIBLE);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // Load more ...
-                        mIsLoadingNext = true;
-                        mLoadNextError = false;
-                        loadingViewHolder.progressBar.setVisibility(VISIBLE);
-                        loadingViewHolder.tapToRetry.setVisibility(GONE);
+                        InfiniteScrollingAdapter.this.mIsLoadingNext = true;
+                        InfiniteScrollingAdapter.this.mLoadNextError = false;
+                        loadNextViewHolder.progressBar.setVisibility(VISIBLE);
+                        loadNextViewHolder.tapToRetry.setVisibility(GONE);
                         (InfiniteScrollingAdapter.this).mInfiniteScrollingDataSource.loadNextRecyclerviewItems();
                     }
                 });
             }
-        } else if (holder instanceof LoadMoreButtonViewHolder) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+        } else if (holder instanceof InfiniteScrollingAdapter.LoadPreviousViewHolder) {
+            final LoadPreviousViewHolder loadingViewHolder = (LoadPreviousViewHolder) holder;
+
+            if (mLoadPrevError) {
+                loadingViewHolder.tapToRetryOnError.setVisibility(VISIBLE);
+                loadingViewHolder.tapToLoad.setVisibility(GONE);
+            } else {
+                loadingViewHolder.tapToRetryOnError.setVisibility(GONE);
+                loadingViewHolder.tapToLoad.setVisibility(VISIBLE);
+            }
+
+            loadingViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    InfiniteScrollingAdapter.this.mLoadPrevError = false;
                     InfiniteScrollingAdapter.this.mIsLoadingPrevious = true;
                     InfiniteScrollingAdapter.this.notifyDataSetChanged();
                     InfiniteScrollingAdapter.this.mInfiniteScrollingDataSource.loadPreviousRecyclerviewItems();
+
+                    loadingViewHolder.tapToRetryOnError.setVisibility(GONE);
+                    loadingViewHolder.tapToLoad.setVisibility(VISIBLE);
                 }
             });
         } else {
@@ -259,34 +278,59 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
         mIsLoadingNext = false;
     }
 
-    public void setNextError(boolean hasError) {
-        mLoadNextError = hasError;
-        notifyDataSetChanged();
-    }
-
     public void setPrevLoaded() {
         mIsLoadingPrevious = false;
     }
 
+    public void setNextError(boolean hasError) {
+        mLoadNextError = hasError;
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void setPrevError(boolean hasError) {
+        mLoadPrevError = hasError;
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
+    }
+
     public void disableInfinitePrevious() {
         mInfinitePrevScrolling = false;
-        notifyDataSetChanged();
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public void disableInfiniteNext() {
         mInfiniteNextScrolling = false;
-        notifyDataSetChanged();
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     /**
-     * A ViewHolder for the spinner
+     * A ViewHolder for the load next button / spinner
      */
-    private static class LoadingViewHolder extends RecyclerView.ViewHolder {
+    private static class LoadNextViewHolder extends RecyclerView.ViewHolder {
 
         final ProgressBar progressBar;
         final TextView tapToRetry;
 
-        LoadingViewHolder(View itemView) {
+        LoadNextViewHolder(View itemView) {
             super(itemView);
             progressBar = itemView.findViewById(R.id.progressBar);
             tapToRetry = itemView.findViewById(R.id.text_tap_retry);
@@ -294,12 +338,17 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
     }
 
     /**
-     * A ViewHolder for the spinner
+     * A ViewHolder for the load earlier button
      */
-    private static class LoadMoreButtonViewHolder extends RecyclerView.ViewHolder {
+    private static class LoadPreviousViewHolder extends RecyclerView.ViewHolder {
 
-        LoadMoreButtonViewHolder(View itemView) {
+        final TextView tapToRetryOnError;
+        final TextView tapToLoad;
+
+        LoadPreviousViewHolder(View itemView) {
             super(itemView);
+            tapToRetryOnError = itemView.findViewById(R.id.text_tap_retry);
+            tapToLoad = itemView.findViewById(R.id.text_tap_load);
         }
     }
 }

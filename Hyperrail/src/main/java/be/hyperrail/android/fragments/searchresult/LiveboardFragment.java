@@ -159,7 +159,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
                 // only finish if we're loading new data
-               showError(e);
+                showError(e);
             }
         }, null);
         api.getLiveboard(mRequest);
@@ -220,7 +220,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
                 resetErrorState();
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    showError(new FileNotFoundException("No results"));
+                    // mLiveboardCardAdapter.setPrevError(true); //TODO: find a way to make clear to the user that no data is available
                     mLiveboardCardAdapter.disableInfinitePrevious();
                 }
 
@@ -238,7 +238,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
-               showError(e);
+                mLiveboardCardAdapter.setPrevError(true);
                 mLiveboardCardAdapter.setPrevLoaded();
             }
         }, null);

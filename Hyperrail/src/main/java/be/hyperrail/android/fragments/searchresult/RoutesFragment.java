@@ -211,7 +211,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
 
                         // data consists of both old and new routes
                         if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                            // mLiveboardCardAdapter.setPrevError(true); //TODO: find a way to make clear to the user that no data is available
                             mRouteCardAdapter.disableInfinitePrevious();
                         }
 
@@ -230,7 +230,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                 }, new IRailErrorResponseListener() {
                     @Override
                     public void onErrorResponse(@NonNull Exception e, Object tag) {
-                        showError(e);
+                        mRouteCardAdapter.setPrevError(true);
                         mRouteCardAdapter.setPrevLoaded();
                     }
                 }, null);
