@@ -36,7 +36,6 @@ import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
-import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * A fragment for showing liveboard results
@@ -135,6 +134,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         mRequest.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
+                resetErrorState();
                 vRefreshLayout.setRefreshing(false);
 
                 // store retrieved data
@@ -159,7 +159,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
                 // only finish if we're loading new data
-                ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), mCurrentLiveboard == null);
+               showError(e);
             }
         }, null);
         api.getLiveboard(mRequest);
@@ -178,9 +178,10 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
+                resetErrorState();
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), data.getStops().length == 0);
+                    showError(new FileNotFoundException("No results"));
                     mLiveboardCardAdapter.disableInfiniteNext();
                 }
                 mCurrentLiveboard = data;
@@ -197,7 +198,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
-                ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), false);
+               showError(e);
                 mLiveboardCardAdapter.setNextError(true);
                 mLiveboardCardAdapter.setNextLoaded();
             }
@@ -217,9 +218,10 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
+                resetErrorState();
                 // Compare the new one with the old one to check if stops have been added
                 if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), getActivity(), false);
+                    showError(new FileNotFoundException("No results"));
                     mLiveboardCardAdapter.disableInfinitePrevious();
                 }
 
@@ -237,7 +239,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }, new IRailErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
-                ErrorDialogFactory.showErrorDialog(e, LiveboardFragment.this.getActivity(), false);
+               showError(e);
                 mLiveboardCardAdapter.setPrevLoaded();
             }
         }, null);

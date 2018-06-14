@@ -31,5 +31,13 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingBottom="@dimen/cardlist_vertical_spacing" />
+
+        <TextView
+            android:id="@+id/text_error_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:gravity="center"
+            android:text="@string/placeholder_error_message"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>
