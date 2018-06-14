@@ -33,7 +33,7 @@ public class ShortcutHelper {
 
         // Ask users if they want to set a custom title
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Name this shortcut");
+        builder.setTitle(R.string.dialog_title_shortcut_name);
 
         // Set up the input
         final EditText input = new EditText(context);
@@ -50,13 +50,13 @@ public class ShortcutHelper {
         builder.setView(container);
 
         // Set up the buttons
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.button_add, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 addShortcut(context, layoutRoot, intent, input.getText().toString(), longLabel, icon);
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();

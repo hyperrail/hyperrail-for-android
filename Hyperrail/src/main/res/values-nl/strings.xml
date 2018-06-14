@@ -136,4 +136,8 @@
     <string name="station_details_not_available_title">Informatie niet beschikbaar</string>
     <string name="station_not_found">Station niet gevonden</string>
     <string name="widget_error_cant_load">Gegevens kunnen niet geladen worden.\\n Verwijder dit widget en probeer opnieuw.</string>
+
+    <string name="dialog_title_shortcut_name">Snelkoppeling benoemen</string>
+    <string name="button_add">Toevoegen</string>
+    <string name="button_cancel">Annuleren</string>
 </resources>

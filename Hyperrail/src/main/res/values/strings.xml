@@ -134,5 +134,9 @@
     <string name="station_not_found">Station not found</string>
     <string name="widget_error_cant_load">Can\'t load data.\n Remove this widget and try again.</string>
 
+    <string name="dialog_title_shortcut_name">Shortcut title</string>
+    <string name="button_add">Add</string>
+    <string name="button_cancel">Cancel</string>
+
 
 </resources>

@@ -19,6 +19,7 @@ import be.hyperrail.android.irail.db.StationsDb;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class StationsDbInstrumentedTest {
@@ -39,10 +40,12 @@ public class StationsDbInstrumentedTest {
         assertEquals("be", bosvoorde.getCountryCode());
         assertEquals(4.408112, bosvoorde.getLongitude(), 0.0000001);
         assertEquals(50.794698, bosvoorde.getLatitude(), 0.0000001);
-        assertEquals(31.947976878613, bosvoorde.getAvgStopTimes(), 0.0001);
+        // This value changes frequently
+        assertTrue(bosvoorde.getAvgStopTimes() > 1);
 
         // Test for caps variations, different languages, and diferent separator symbols
-        String searchnames[] = new String[]{"Bosvoorde", "Boitsfort", "Bosvoorde/Boitsfort", "Bosvoorde Boitsfort", "Bosvoorde-Boitsfort", "BOSVOORDE"};
+        String searchnames[] = new String[]{"Bosvoorde", "Boitsfort", "Bosvoorde/Boitsfort",
+                "Bosvoorde Boitsfort", "Bosvoorde-Boitsfort", "BOSVOORDE"};
         for (String name : searchnames) {
             Station searchResult = provider.getStationByExactName(name);
             assertNotNull(searchResult);

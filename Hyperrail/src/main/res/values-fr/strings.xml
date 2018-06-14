@@ -25,7 +25,7 @@
   <string name="action_close">Fermer</string>
   <string name="status_cancelled">Annulé</string>
   <string name="status_partially_cancelled">Partiellement annulé</string>
-  <string name="contentdescription_timeline_icon" translatable="false">timeline_icon</string>
+
   <string name="marked_route_favorite">Itinéraire ajouté aux favoris</string>
   <string name="unmarked_route_favorite">Itinéraire supprimé des favoris</string>
   <string name="marked_station_favorite">Gare ajoutée aux favoris</string>
@@ -121,4 +121,8 @@
   <string name="station_details_not_available_title">Informations de la gare indisponibles</string>
   <string name="station_not_found">Gare non trouvée</string>
   <string name="widget_error_cant_load">Les données ne peuvent pas être chargées.\n Supprimez ce widget et réessayez.</string>
+
+  <string name="dialog_title_shortcut_name">Nom du raccourci</string>
+  <string name="button_add">Ajouter</string>
+  <string name="button_cancel">Annuler</string>
 </resources>
