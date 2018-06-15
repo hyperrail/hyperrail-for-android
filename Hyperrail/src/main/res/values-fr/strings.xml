@@ -124,4 +124,13 @@
     <string name="placeholder_route_suggestions">Vos itinéraires récents et favoris apparaîtront ici. Choisissez deux stations et appuyez sur le miroir pour faire votre première recherche.</string>
     <string name="placeholder_vehicle_suggestions">Vos véhicules récents et favoris apparaîtront ici. Entrez un code de véhicule et appuyez sur le miroir pour faire votre première recherche.</string>
     <string name="placeholder_liveboard_suggestions">Vos gares récentes, favorites et à proximité apparaîtront ici. Commencez à taper et choisissez une gare pour effectuer votre première recherche.</string>
+    <string name="error_servererror_unavailable">Désolé, le serveur n\'est pas disponible pour le moment. Nous réparons cela dès que possible.</string>
+    <string name="error_network_connected_unavailable">Vous êtes connecté à un réseau, mais vous ne semblez pas avoir de connexion avec le monde extérieur.</string>
+    <string name="error_network_unsafe">Une connexion SSL sécurisée n\'a pas pu être établie. Votre connexion Wi-Fi peut être interceptée!</string>
+
+    <string name="rate_dialog_title">Noter cette application</string>
+    <string name="rate_dialog_message">Si vous appréciez cette application, veuillez prendre un moment pour la noter. Cela ne prendra qu\'une minute. Merci de votre participation !</string>
+    <string name="rate_dialog_button_rate">Maintenant</string>
+    <string name="rate_dialog_button_later">Plus tard</string>
+    <string name="rate_dialog_button_no_thanks">Non, merci</string>
 </resources>

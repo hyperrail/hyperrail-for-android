@@ -16,6 +16,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 
 import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.util.ReviewDialogProvider;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -29,6 +30,8 @@ public class Launcher extends android.app.Application {
 
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
+        ReviewDialogProvider.init(this);
 
         super.onCreate();
     }

@@ -143,5 +143,11 @@
     <string name="placeholder_route_suggestions">Je recente en favoriete routes zullen hier verschijnen. Kies twee stations en tik op het vergrootglas om je eerste route op te zoeken.</string>
     <string name="placeholder_vehicle_suggestions">Je recente en favoriete voertuigen zullen hier verschijnen. Geef een voertuig op en tik op het vergrootglas om je eerste route op te zoeken.</string>
     <string name="placeholder_liveboard_suggestions">Je recente, favoriete en nabije stations zullen hier verschijnen. Start met typen en kies een station om je eerste zoekopdracht te maken.</string>
+    <string name="error_network_connected_unavailable">Je bent met een netwerk verbonden, maar het lijkt erop dat je geen verbinding met de buitenwereld hebt.</string>
 
+    <string name="rate_dialog_title">Beoordeel de app</string>
+    <string name="rate_dialog_message">Als u tevreden bent met deze app, wilt u deze dan beoordelen? Beoordelen kost minder dan een minuut. Bedankt voor uw steun!</string>
+    <string name="rate_dialog_button_rate">Beoordelen</string>
+    <string name="rate_dialog_button_later">Later</string>
+    <string name="rate_dialog_button_no_thanks">Nee, bedankt</string>
 </resources>

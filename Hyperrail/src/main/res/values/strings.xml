@@ -142,6 +142,10 @@
     <string name="placeholder_route_suggestions">Your recent and favorite routes will appear here. Pick two stations and hit the looking glass to make your first search.</string>
     <string name="placeholder_vehicle_suggestions">Your recent and favorite vehicles will appear here. Enter a vehicle code and hit the looking glass to make your first search.</string>
     <string name="placeholder_liveboard_suggestions">Your recent, favorite and nearby stations will appear here. Start typing and pick a stations to make your first search.</string>
-    <string name="placeholder_error_message">Something went wrong while loading your results</string>
 
+    <string name="rate_dialog_title">Rate this app</string>
+    <string name="rate_dialog_message">If you enjoy using this app, would you mind taking a moment to rate it? It won\'t take more than a minute. Thank you for your support!</string>
+    <string name="rate_dialog_button_rate">Rate now</string>
+    <string name="rate_dialog_button_later">Later</string>
+    <string name="rate_dialog_button_no_thanks">No, thanks</string>
 </resources>

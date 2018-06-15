@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
-def VERSION_CODE = 38
-def VERSION_NAME = '1.0.9'
+def VERSION_CODE = 39
+def VERSION_NAME = '1.0.10'
 
 android {
     signingConfigs {

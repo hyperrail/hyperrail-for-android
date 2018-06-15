@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="16dp"
-        android:text="@string/placeholder_error_message"
+        android:text="@string/error_general"
         android:textColor="@color/colorMuted"
         android:textSize="20sp" />
 </LinearLayout>
