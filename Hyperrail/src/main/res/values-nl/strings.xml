@@ -30,14 +30,13 @@
     <string name="unmarked_station_favorite">Station verwijderd uit favorieten</string>
     <string name="undo">Ongedaan maken</string>
 
-    <string name="error_notfound_message">Je zoekopdracht leverde geen resultaten op.</string>
-    <string name="error_notfound_title">Geen resultaten</string>
-    <string name="error_servererror_title">Server fout</string>
-    <string name="error_servererror_message">Er trad een serverfout op. Probeer het later opnieuw.</string>
-    <string name="error_network_title">Netwerk onbeschikbaar</string>
-    <string name="error_network_message">Data kon niet geladen worden. Ben je verbonden met het internet?</string>
-    <string name="error_general_title">Het spijt ons</string>
-    <string name="error_general_message">Er trad een fout op. Probeer het later opnieuw.</string>
+    <string name="error_no_results_found">Je zoekopdracht leverde geen resultaten op. Probeer de zoektijd aan te passen</string>
+    <string name="error_servererror_invalid_response">De server leverde een ongeldig antwoord. Probeer het later opnieuw.</string>
+    <string name="error_network_unavailable">Resultaten kunnen niet geladen worden. Ben je verbonden met het internet?</string>
+    <string name="error_general">Er trad een fout op. We proberen dit ongemak zo snel mogelijk te verhelpen.</string>
+    <string name="error_network_unsafe">Er kon geen veilige verbinding opgezet worden. Je netwerkverbinding wordt mogelijk onderschept.</string>
+    <string name="error_servererror_unavailable">Het spijt ons. De server is op dit moment onbeschikbaar. We proberen dit ongemak zo snel mogelijk te verhelpen.</string>
+
     <string name="error_departure_not_found_message">Het vertrekstation kon niet gevonden worden</string>
     <string name="error_destination_not_found_message">De bestemming kon niet gevonden worden</string>
     <string name="error_departure_not_found_title">Ongeldig vertrekstation</string>

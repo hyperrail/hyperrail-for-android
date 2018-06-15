@@ -67,7 +67,6 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
      * @param infiniteScrollingDataSource The listener which should be notified when new data should be loaded
      */
     protected InfiniteScrollingAdapter(Activity context, RecyclerView recyclerView, InfiniteScrollingDataSource infiniteScrollingDataSource) {
-
         this.context = context;
         this.mRecyclerView = recyclerView;
         this.mInfiniteScrollingDataSource = infiniteScrollingDataSource;
@@ -284,7 +283,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     public void setNextError(boolean hasError) {
         mLoadNextError = hasError;
-        context.runOnUiThread(new Runnable() {
+        mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
                 notifyDataSetChanged();
@@ -294,7 +293,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     public void setPrevError(boolean hasError) {
         mLoadPrevError = hasError;
-        context.runOnUiThread(new Runnable() {
+        mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
                 notifyDataSetChanged();
@@ -304,7 +303,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     public void disableInfinitePrevious() {
         mInfinitePrevScrolling = false;
-        context.runOnUiThread(new Runnable() {
+        mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
                 notifyDataSetChanged();
@@ -314,7 +313,7 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     public void disableInfiniteNext() {
         mInfiniteNextScrolling = false;
-        context.runOnUiThread(new Runnable() {
+        mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
                 notifyDataSetChanged();

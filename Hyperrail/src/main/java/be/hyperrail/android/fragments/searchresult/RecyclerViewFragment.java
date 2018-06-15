@@ -27,8 +27,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
@@ -149,19 +153,27 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
         if (exception instanceof ServerError) {
             if (((ServerError) exception).networkResponse != null) {
                 if (((ServerError) exception).networkResponse.statusCode == 404) {
-                    showError(R.string.error_notfound_message);
+                    showError(R.string.error_no_results_found);
                 } else if (((ServerError) exception).networkResponse.statusCode == 500) {
-                    showError(R.string.error_servererror_message);
+                    showError(R.string.error_servererror_invalid_response);
                 } else {
-                    showError(R.string.error_servererror_message);
+                    showError(R.string.error_servererror_invalid_response);
                 }
             } else {
-                showError(R.string.error_general_message);
+                showError(R.string.error_general);
             }
         } else if (exception instanceof NoConnectionError) {
-            showError(R.string.error_network_message);
+            if (exception.getCause() instanceof SSLHandshakeException) {
+                showError(R.string.error_network_unsafe);
+            } else {
+                showError(R.string.error_network_unavailable);
+            }
+        } else if (exception instanceof NetworkError) {
+            showError(R.string.error_network_connected_unavailable);
+        } else if (exception instanceof TimeoutError){
+            showError(R.string.error_network_connected_unavailable);
         } else {
-            showError(R.string.error_general_message);
+            showError(R.string.error_general);
         }
     }
 
