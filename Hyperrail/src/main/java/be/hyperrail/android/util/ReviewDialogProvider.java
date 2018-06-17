@@ -47,40 +47,15 @@ public class ReviewDialogProvider {
         sharedPreferences.edit().putInt("rvd_app_launches", launches + 1).putLong("rvd_app_firstlaunch", firstLaunch).apply();
     }
 
-    public static void setParameter(String name, long value) {
-        if (sharedPreferences != null) {
-            sharedPreferences.edit().putLong("rvd_" + name, value).apply();
-        }
-    }
-
-    public static long getParameter(String name, long defaultValue) {
-        if (sharedPreferences != null) {
-            return sharedPreferences.getLong("rvd_" + name, defaultValue);
-        }
-        return 0;
-    }
 
     public static void showDialogIf(Context context, int daysSinceInstall, int minLaunches) {
 
-        if (sharedPreferences != null && sharedPreferences.getBoolean(KEY_DONT_SHOW_AGAIN, false)) {
+        if (sharedPreferences == null || sharedPreferences.getBoolean(KEY_DONT_SHOW_AGAIN, false)) {
             return;
         }
         DateTime installDate = new DateTime(firstLaunch);
         Log.i("RateDialog", (new Period(installDate, DateTime.now())).getHours() + "h since install. Rate dialog will show starting day " + daysSinceInstall);
         if ((new Period(installDate, DateTime.now())).toStandardDays().getDays() >= daysSinceInstall && launches >= minLaunches) {
-            // Show dialog
-            showRateDialog(context);
-        }
-    }
-
-    public static void showDialogIf(Context context, int daysSinceInstall, int minLaunches, String parameter, long minVal) {
-
-        if (sharedPreferences != null && sharedPreferences.getBoolean(KEY_DONT_SHOW_AGAIN, false)) {
-            return;
-        }
-
-        DateTime installDate = new DateTime(daysSinceInstall);
-        if ((new Period(installDate, DateTime.now())).getDays() >= daysSinceInstall && launches >= minLaunches && getParameter(parameter, 0) >= minVal) {
             // Show dialog
             showRateDialog(context);
         }
@@ -126,7 +101,8 @@ public class ReviewDialogProvider {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // reset the first launch timer, so it won't show again the next day(s)
-                sharedPreferences.edit().putLong("rvd_app_firstlaunch", DateTime.now().getMillis()).putInt("rvd_app_launches", 0).apply();
+                firstLaunch = DateTime.now().getMillis();
+                sharedPreferences.edit().putLong("rvd_app_firstlaunch", firstLaunch).putInt("rvd_app_launches", 0).apply();
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, "rate_dialog");
@@ -153,16 +129,17 @@ public class ReviewDialogProvider {
                 bundle.putString(FirebaseAnalytics.Param.SUCCESS, "dismiss");
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
                 // reset the first launch timer, so it won't show again the next day(s)
-                sharedPreferences.edit().putLong("rvd_app_firstlaunch", DateTime.now().getMillis()).putInt("rvd_app_launches", 0).apply();
+                firstLaunch = DateTime.now().getMillis();
+                sharedPreferences.edit().putLong("rvd_app_firstlaunch", firstLaunch).putInt("rvd_app_launches", 0).apply();
             }
         });
 
         builder.show();
     }
 
-    private static void setOptOut(boolean optOut){
-        if (sharedPreferences != null){
-            sharedPreferences.edit().putBoolean(KEY_DONT_SHOW_AGAIN,optOut).apply();
+    private static void setOptOut(boolean optOut) {
+        if (sharedPreferences != null) {
+            sharedPreferences.edit().putBoolean(KEY_DONT_SHOW_AGAIN, optOut).apply();
         }
     }
 
