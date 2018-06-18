@@ -20,7 +20,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.joda.time.DateTime;
-import org.joda.time.Period;
+import org.joda.time.Duration;
 
 import be.hyperrail.android.R;
 
@@ -54,8 +54,8 @@ public class ReviewDialogProvider {
             return;
         }
         DateTime installDate = new DateTime(firstLaunch);
-        Log.i("RateDialog", (new Period(installDate, DateTime.now())).getHours() + "h since install. Rate dialog will show starting day " + daysSinceInstall);
-        if ((new Period(installDate, DateTime.now())).toStandardDays().getDays() >= daysSinceInstall && launches >= minLaunches) {
+        Log.i("RateDialog", (new Duration(installDate, DateTime.now())).getStandardHours() + "h since install. Rate dialog will show starting day " + daysSinceInstall);
+        if ((new Duration(installDate, DateTime.now())).getStandardDays() >= daysSinceInstall && launches >= minLaunches) {
             // Show dialog
             showRateDialog(context);
         }
