@@ -53,7 +53,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     // If you change the database schema, you must increment the database version.
     // year/month/day/increment
-    private static final int DATABASE_VERSION = 18061300;
+    private static final int DATABASE_VERSION = 18090100;
 
     // Name of the database file
     private static final String DATABASE_NAME = "stations.db";
@@ -168,7 +168,6 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
                     field = fields.next();
                     if (field != null && !field.isEmpty()) {
-
                         values.put(
                                 StationsDataColumns.COLUMN_NAME_LATITUDE,
                                 Double.parseDouble(field)
@@ -192,6 +191,19 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                         values.put(StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES, 0);
                     }
 
+                    field = fields.next();
+                    if (field != null && !field.isEmpty()) {
+                        try {
+                            values.put(
+                                    StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME,
+                                    Double.parseDouble(field)
+                            );
+                        } catch (NumberFormatException e) {
+                            values.put(StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME, 0);
+                        }
+                    } else {
+                        values.put(StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME, 0);
+                    }
                     // Insert row
                     db.insert(StationsDataColumns.TABLE_NAME, null, values);
                 }
@@ -325,17 +337,22 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         onCreate(db);
     }
 
-    private String cleanAccents(String s) {
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // This database is only a cache from a local file, so just recreate it
+        onUpgrade(db, oldVersion, newVersion);
+    }
+
+    @NonNull
+    private String cleanAccents(@NonNull String s) {
+
+        if (s == null || s.isEmpty()) {
+            return s;
+        }
+
         return s.replaceAll("[éÉèÈêÊëË]", "e")
                 .replaceAll("[âÂåäÄ]", "a")
                 .replaceAll("[öÖø]", "o")
                 .replaceAll("[üÜ]", "u");
-    }
-
-
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This database is only a cache from a local file, so just recreate it
-        onUpgrade(db, oldVersion, newVersion);
     }
 
     private String[] getLocationQueryColumns(double longitude, double latitude) {
