@@ -109,7 +109,12 @@
                 <data
                     android:host="belgianrail.be"
                     android:scheme="http" />
+
                 <data android:pathPrefix="/jp/nmbs-routeplanner/query.exe/nn" />
+                <data android:pathPrefix="/jp/sncb-routeplanner/query.exe/nn" />
+                <data android:pathPrefix="/jp/sncb-nmbs-routeplanner/query.exe/nn" />
+                <data android:pathPrefix="/jp/nmbs-routeplanner/stboard.exe/nn" />
+                <data android:pathPrefix="/jp/sncb-routeplanner/stboard.exe/nn" />
                 <data android:pathPrefix="/jp/sncb-nmbs-routeplanner/stboard.exe/nn" />
             </intent-filter>
         </activity>
