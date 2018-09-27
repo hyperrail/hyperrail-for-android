@@ -281,7 +281,7 @@ public class IrailApiParser {
 
     // allow providing station, so liveboards don't need to parse a station over and over
     @NonNull
-    private VehicleStop parseLiveboardStop(Station stop, JSONObject item, VehicleStopType type) throws JSONException, StationNotResolvedException {
+    private VehicleStop parseLiveboardStop(Station stop, JSONObject item, VehicleStopType type) throws JSONException {
 
         String headsign;
 

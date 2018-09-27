@@ -7,7 +7,7 @@
     <include layout="@layout/toolbar_default" />
 
     <ListView
-        android:id="@id/android:list"
+        android:id="@android:id/list"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="1dp"

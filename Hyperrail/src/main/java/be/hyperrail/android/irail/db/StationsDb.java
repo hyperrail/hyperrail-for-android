@@ -317,7 +317,11 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                         values.put(StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY, field);
                         values.put(StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY, fields.next());
                     } else {
-                        fields.next();
+                        try {
+                            fields.next();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     // Insert row

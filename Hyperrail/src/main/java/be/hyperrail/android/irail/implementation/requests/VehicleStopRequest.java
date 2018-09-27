@@ -25,10 +25,9 @@ public class VehicleStopRequest extends IrailBaseRequest<VehicleStop> implements
     /**
      * Create a request to update a certain vehiclestop
      *
-     * @param stop
+     * @param stop the stop for which information should be obtained
      */
-
-    public VehicleStopRequest(VehicleStop stop) {
+    public VehicleStopRequest(@NonNull VehicleStop stop) {
         mStop = stop;
     }
 
@@ -39,7 +38,7 @@ public class VehicleStopRequest extends IrailBaseRequest<VehicleStop> implements
 
     @NonNull
     @Override
-    public JSONObject toJson() throws JSONException {
+    public JSONObject toJson() {
         throw new UnsupportedOperationException("VehicleStopRequests can't be serialized");
     }
 
