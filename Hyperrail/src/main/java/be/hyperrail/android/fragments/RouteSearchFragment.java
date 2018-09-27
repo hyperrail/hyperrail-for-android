@@ -119,6 +119,18 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         mSuggestionsAdapter = new RouteSuggestionsCardAdapter(this.getActivity(), null);
         mSuggestionsAdapter.setOnItemClickListener(this);
         mSuggestionsAdapter.setOnLongItemClickListener(this);
+        // Hide the recyclerview when empty - a placeholder will shift into place automaticly
+        mSuggestionsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if (mSuggestionsAdapter.getItemCount() == 0) {
+                    mSuggestionsRecyclerView.setVisibility(View.GONE);
+                } else {
+                    mSuggestionsRecyclerView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
 
         LoadAutoCompleteTask loadAutoCompleteTask = new LoadAutoCompleteTask(this);

@@ -41,7 +41,8 @@ class StationsDataContract {
                     StationsDataColumns.COLUMN_NAME_COUNTRY_CODE + " TEXT," +
                     StationsDataColumns.COLUMN_NAME_LONGITUDE + " REAL," +
                     StationsDataColumns.COLUMN_NAME_LATITUDE + " REAL," +
-                    StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " REAL); ";
+                    StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " REAL," +
+                    StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME + " REAL);";
 
     static final String SQL_CREATE_TABLE_FACILITIES = " CREATE TABLE " + StationFacilityColumns.TABLE_NAME + " (" +
             StationFacilityColumns._ID + " TEXT PRIMARY KEY," +
@@ -97,6 +98,7 @@ class StationsDataContract {
         protected static final String COLUMN_NAME_LONGITUDE = "longitude";
         protected static final String COLUMN_NAME_LATITUDE = "latitude";
         protected static final String COLUMN_NAME_AVG_STOP_TIMES = "avg_stop_times";
+        protected static final String COLUMN_NAME_OFFICIAL_TRANSFER_TIME = "official_transfer_time";
     }
 
     public static final class StationFacilityColumns implements BaseColumns {
@@ -122,7 +124,7 @@ class StationsDataContract {
         protected static final String COLUMN_ESCALATOR_UP = "escalator_up";
         protected static final String COLUMN_ESCALATOR_DOWN = "escalator_down";
         protected static final String COLUMN_ELEVATOR_PLATFORM = "elevator_platform";
-        protected static final String COLUMN_HEARING_AID_SIGNAL = "hearing_aid_signal";
+        protected static final String COLUMN_HEARING_AID_SIGNAL = "audio_induction_loop";
         protected static final String COLUMN_SALES_OPEN_MONDAY = "sales_open_monday";
         protected static final String COLUMN_SALES_CLOSE_MONDAY = "sales_close_monday";
         protected static final String COLUMN_SALES_OPEN_TUESDAY = "sales_open_tuesday";

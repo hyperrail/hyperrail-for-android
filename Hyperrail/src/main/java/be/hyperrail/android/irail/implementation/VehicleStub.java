@@ -15,6 +15,8 @@ package be.hyperrail.android.irail.implementation;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,7 +120,11 @@ public class VehicleStub implements Serializable {
     public static String getVehicleClass(String id) {
         // S trains are special
         if (id.startsWith("S")) {
-            return id.substring(0, id.length() - 4);
+            if (id.length() > 5) {
+                return id.substring(0, id.length() - 4);
+            } else {
+                Crashlytics.logException(new IllegalArgumentException("Failed to get vehicle class for id " + id));
+            }
         }
 
         String pattern = "(\\w+?)(\\d+)";

@@ -62,7 +62,6 @@ import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
-import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * A fragment for showing liveboard results
@@ -159,6 +158,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
         request.setCallback(new IRailSuccessResponseListener<Vehicle>() {
             @Override
             public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
+                resetErrorState();
                 vRefreshLayout.setRefreshing(false);
                 mCurrentTrain = data;
                 showData(mCurrentTrain);
@@ -169,7 +169,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
                 vRefreshLayout.setRefreshing(false);
 
                 // only finish if we're loading new data
-                ErrorDialogFactory.showErrorDialog(e, getActivity(), mCurrentTrain == null);
+                showError(e);
             }
         }, null);
         IrailFactory.getDataProviderInstance().getVehicle(request);
@@ -261,7 +261,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
         LatLngBounds bounds = builder.build();
         map.addPolyline(new PolylineOptions()
-                                .add(passedLocations.toArray(new LatLng[passedLocations.size()]))
+                                .add(passedLocations.toArray(new LatLng[0]))
                                 .color(getActivity().getResources().getColor(R.color.colorPrimary))
                                 .geodesic(false)
                                 .clickable(false)

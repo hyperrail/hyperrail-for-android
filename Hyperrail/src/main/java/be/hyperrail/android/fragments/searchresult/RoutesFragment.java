@@ -19,7 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +39,6 @@ import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.irail.implementation.requests.ExtendRoutesRequest;
 import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
-import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * A fragment for showing liveboard results
@@ -119,8 +117,6 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     }
 
     protected void getData() {
-        Log.d("RouteActivity", "Get original data");
-
         // Clear the view
         showData(null);
         mCurrentRouteResult = null;
@@ -139,6 +135,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                                 @Override
                                 public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
                                     vRefreshLayout.setRefreshing(false);
+                                    resetErrorState();
                                     mCurrentRouteResult = data;
                                     showData(mCurrentRouteResult);
 
@@ -151,7 +148,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                                 public void onErrorResponse(@NonNull Exception e, Object tag) {
                                     // only finish if we're loading new data
                                     mRouteCardAdapter.setInfiniteScrolling(false);
-                                    ErrorDialogFactory.showErrorDialog(e, getActivity(), mCurrentRouteResult == null);
+                                    showError(e);
                                 }
                             },
                             null);
@@ -171,7 +168,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                     @Override
                     public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
                         // data consists of both old and new routes
-
+                        resetErrorState();
                         if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
                             mRouteCardAdapter.disableInfiniteNext(); // Nothing new anymore
                             // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
@@ -192,7 +189,6 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                 }, new IRailErrorResponseListener() {
                     @Override
                     public void onErrorResponse(@NonNull Exception e, Object tag) {
-                        ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
                         mRouteCardAdapter.setNextError(true);
                         mRouteCardAdapter.setNextLoaded();
                     }
@@ -211,9 +207,11 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                 new IRailSuccessResponseListener<RouteResult>() {
                     @Override
                     public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
+                        resetErrorState();
+
                         // data consists of both old and new routes
                         if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
+                            // mLiveboardCardAdapter.setPrevError(true); //TODO: find a way to make clear to the user that no data is available
                             mRouteCardAdapter.disableInfinitePrevious();
                         }
 
@@ -232,7 +230,7 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
                 }, new IRailErrorResponseListener() {
                     @Override
                     public void onErrorResponse(@NonNull Exception e, Object tag) {
-                        ErrorDialogFactory.showErrorDialog(e, getActivity(), false);
+                        mRouteCardAdapter.setPrevError(true);
                         mRouteCardAdapter.setPrevLoaded();
                     }
                 }, null);

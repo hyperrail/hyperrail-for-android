@@ -12,6 +12,7 @@
 
 package be.hyperrail.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,7 +50,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
 
     protected final static int VIEW_TYPE_DATE = 1;
 
-    public LiveboardCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
+    public LiveboardCardAdapter(Activity context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
         this.context = context;
     }

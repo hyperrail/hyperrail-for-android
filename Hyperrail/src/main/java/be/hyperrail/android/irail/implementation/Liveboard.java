@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.irail.implementation;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -36,7 +38,7 @@ public class Liveboard extends Station implements Serializable, PagedResource {
     LiveboardType mType;
     private PagedResourceDescriptor mDescriptor;
 
-    public Liveboard(Station station, VehicleStop[] stops, DateTime searchTime, LiveboardType type, RouteTimeDefinition timeDefinition) {
+    public Liveboard(@NonNull Station station, @NonNull VehicleStop[] stops,@NonNull DateTime searchTime,@NonNull LiveboardType type,@NonNull RouteTimeDefinition timeDefinition) {
         super(
                 station.getHafasId(),
                 station.getName(),
@@ -49,12 +51,18 @@ public class Liveboard extends Station implements Serializable, PagedResource {
                 station.getLatitude(),
                 station.getLongitude(),
                 station.getAvgStopTimes());
+
         mStops = stops;
+        if (mStops == null){
+            mStops = new VehicleStop[0];
+        }
+
         mSearchTime = searchTime;
         mTimeDefinition = timeDefinition;
         mType = type;
     }
 
+    @NonNull
     public VehicleStop[] getStops() {
         return mStops;
     }
@@ -76,7 +84,7 @@ public class Liveboard extends Station implements Serializable, PagedResource {
      *
      * @param other the other liveboards to merge into this one
      */
-    public Liveboard withStopsAppended(Liveboard... other) {
+    public Liveboard withStopsAppended(@NonNull Liveboard... other) {
         HashMap<String, VehicleStop> stopsByUri = new HashMap<>();
         for (VehicleStop stop :
                 mStops) {

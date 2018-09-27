@@ -123,6 +123,11 @@ public class FirstLaunchGuide extends AppCompatActivity {
 
             }
         });
+
+        // Load a random station - this ensures the database gets loaded (and filled, if needed).
+        // This way users can start using the app right away when searching, instead of having to wait for the database.
+        SetupStationsDbTask setupTask = new SetupStationsDbTask();
+        setupTask.execute();
     }
 
     @Override
@@ -215,10 +220,6 @@ public class FirstLaunchGuide extends AppCompatActivity {
                     }
                 });
             }
-            // Load a random station - this ensures the database gets loaded (and filled, if needed).
-            // This way users can start using the app right away when searching, instead of having to wait for the database.
-            SetupStationsDbTask setupTask = new SetupStationsDbTask();
-            setupTask.execute();
         }
     }
 
@@ -266,5 +267,5 @@ public class FirstLaunchGuide extends AppCompatActivity {
             }
             return null;
         }
-    };
+    }
 }

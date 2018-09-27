@@ -51,6 +51,7 @@ import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.fragments.RouteSearchFragment;
 import be.hyperrail.android.fragments.VehicleSearchFragment;
 import be.hyperrail.android.fragments.searchresult.DisturbanceListFragment;
+import be.hyperrail.android.util.ReviewDialogProvider;
 
 /**
  * The main activity contains a drawer layout and fragments for search, disturbances and settings
@@ -171,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!PreferenceManager.getDefaultSharedPreferences(this).contains("first_launch_guide")) {
             Intent i = new Intent(this, FirstLaunchGuide.class);
             startActivity(i);
+        } else {
+            ReviewDialogProvider.showDialogIf(this,7,3);
         }
 
         // Decide which view to show

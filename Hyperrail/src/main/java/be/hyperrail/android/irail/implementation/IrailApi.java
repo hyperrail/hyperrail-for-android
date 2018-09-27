@@ -89,8 +89,8 @@ public class IrailApi implements IrailDataProvider {
         this.parser = new IrailApiParser(IrailFactory.getStationsProviderInstance());
         this.requestQueue = Volley.newRequestQueue(context);
         this.requestPolicy = new DefaultRetryPolicy(
-                1500,
-                4,
+                750,
+                3,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         );
         mConnectivityManager =

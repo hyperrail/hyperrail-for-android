@@ -17,8 +17,10 @@
     <TextView
         android:id="@+id/text_tap_retry"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/listitem_content_height_double"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:text="@string/tap_to_retry"
+        android:textColor="@color/colorTextDark"
+        android:textSize="@dimen/listitem_content_primary_textsize"
         android:visibility="gone" />
 </LinearLayout>

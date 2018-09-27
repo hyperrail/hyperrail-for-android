@@ -12,6 +12,7 @@
 
 package be.hyperrail.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +44,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     protected final static int VIEW_TYPE_DATE = 1;
 
-    public RouteCardAdapter(Context context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
+    public RouteCardAdapter(Activity context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
         this.context = context;
     }

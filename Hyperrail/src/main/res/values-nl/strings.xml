@@ -30,14 +30,13 @@
     <string name="unmarked_station_favorite">Station verwijderd uit favorieten</string>
     <string name="undo">Ongedaan maken</string>
 
-    <string name="error_notfound_message">Je zoekopdracht leverde geen resultaten op.</string>
-    <string name="error_notfound_title">Geen resultaten</string>
-    <string name="error_servererror_title">Server fout</string>
-    <string name="error_servererror_message">Er trad een serverfout op. Probeer het later opnieuw.</string>
-    <string name="error_network_title">Netwerk onbeschikbaar</string>
-    <string name="error_network_message">Data kon niet geladen worden. Ben je verbonden met het internet?</string>
-    <string name="error_general_title">Het spijt ons</string>
-    <string name="error_general_message">Er trad een fout op. Probeer het later opnieuw.</string>
+    <string name="error_no_results_found">Je zoekopdracht leverde geen resultaten op. Probeer de zoektijd aan te passen</string>
+    <string name="error_servererror_invalid_response">De server leverde een ongeldig antwoord. Probeer het later opnieuw.</string>
+    <string name="error_network_unavailable">Resultaten kunnen niet geladen worden. Ben je verbonden met het internet?</string>
+    <string name="error_general">Er trad een fout op. We proberen dit ongemak zo snel mogelijk te verhelpen.</string>
+    <string name="error_network_unsafe">Er kon geen veilige verbinding opgezet worden. Je netwerkverbinding wordt mogelijk onderschept.</string>
+    <string name="error_servererror_unavailable">Het spijt ons. De server is op dit moment onbeschikbaar. We proberen dit ongemak zo snel mogelijk te verhelpen.</string>
+
     <string name="error_departure_not_found_message">Het vertrekstation kon niet gevonden worden</string>
     <string name="error_destination_not_found_message">De bestemming kon niet gevonden worden</string>
     <string name="error_departure_not_found_title">Ongeldig vertrekstation</string>
@@ -140,4 +139,15 @@
     <string name="dialog_title_shortcut_name">Snelkoppeling benoemen</string>
     <string name="button_add">Toevoegen</string>
     <string name="button_cancel">Annuleren</string>
+
+    <string name="placeholder_route_suggestions">Je recente en favoriete routes zullen hier verschijnen. Kies twee stations en tik op het vergrootglas om je eerste route op te zoeken.</string>
+    <string name="placeholder_vehicle_suggestions">Je recente en favoriete voertuigen zullen hier verschijnen. Geef een voertuig op en tik op het vergrootglas om je eerste route op te zoeken.</string>
+    <string name="placeholder_liveboard_suggestions">Je recente, favoriete en nabije stations zullen hier verschijnen. Start met typen en kies een station om je eerste zoekopdracht te maken.</string>
+    <string name="error_network_connected_unavailable">Je bent met een netwerk verbonden, maar het lijkt erop dat je geen verbinding met de buitenwereld hebt.</string>
+
+    <string name="rate_dialog_title">Beoordeel de app</string>
+    <string name="rate_dialog_message">Als u tevreden bent met deze app, wilt u deze dan beoordelen? Beoordelen kost minder dan een minuut. Bedankt voor uw steun!</string>
+    <string name="rate_dialog_button_rate">Beoordelen</string>
+    <string name="rate_dialog_button_later">Later</string>
+    <string name="rate_dialog_button_no_thanks">Nee, bedankt</string>
 </resources>

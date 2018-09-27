@@ -33,7 +33,6 @@ import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
 import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.irail.implementation.Disturbance;
 import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
-import be.hyperrail.android.util.ErrorDialogFactory;
 
 /**
  * A list with disturbances
@@ -91,6 +90,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
         request.setCallback(new IRailSuccessResponseListener<Disturbance[]>() {
             @Override
             public void onSuccessResponse(@NonNull Disturbance[] data, Object tag) {
+                resetErrorState();
                 vRefreshLayout.setRefreshing(false);
                 lastUpdate = new DateTime();
                 showData(data);
@@ -100,7 +100,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
                 // Don't finish, this is the main activity
-                ErrorDialogFactory.showErrorDialog(e, DisturbanceListFragment.this.getActivity(), false);
+               showError(e);
             }
         }, null);
         IrailFactory.getDataProviderInstance().getDisturbances(request);

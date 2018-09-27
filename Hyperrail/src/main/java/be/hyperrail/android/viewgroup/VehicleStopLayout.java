@@ -122,7 +122,7 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
     }
 
     private void bindPlatform(Context context, VehicleStop stop) {
-        vPlatform.setText(String.valueOf(stop.getPlatform()));
+        vPlatform.setText(stop.getPlatform());
 
         if (stop.isDepartureCanceled()) {
             vPlatform.setText("");
