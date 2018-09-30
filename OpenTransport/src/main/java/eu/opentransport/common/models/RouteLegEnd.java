@@ -14,97 +14,33 @@ import org.joda.time.Duration;
 import java.io.Serializable;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
+import eu.opentransport.irail.IrailStation;
 
 /**
  * The end of a route leg (either a departure or an arrival)
  */
 
-public class RouteLegEnd implements Serializable {
+public interface RouteLegEnd extends Serializable {
 
+    DateTime getTime();
 
-    private DateTime time;
+    DateTime getDelayedTime();
 
+    IrailStation getStation();
 
-    private final Station station;
+    String getPlatform();
 
+    Duration getDelay();
 
-    private String platform;
-    private boolean isPlatformNormal;
+    boolean isCanceled();
 
-
-    private Duration delay = Duration.ZERO;
-    private boolean canceled;
-
-    private boolean passed;
+    boolean isPlatformNormal();
 
     @Nullable
-    private TransportOccupancyLevel Occupancy = TransportOccupancyLevel.UNKNOWN;
+    TransportOccupancyLevel getOccupancy();
 
     @Nullable
-    private String uri;
+    String getUri();
 
-    public RouteLegEnd( Station station,
-                        DateTime time,  String platform, boolean normal,  Duration delay,
-                       boolean canceled, boolean passed, @Nullable String semanticId,
-                       @Nullable TransportOccupancyLevel occupancy) {
-        this.station = station;
-        this.passed = passed;
-
-        this.time = time;
-        this.platform = platform;
-        this.delay = delay;
-
-        this.canceled = canceled;
-        this.isPlatformNormal = normal;
-
-        this.uri = semanticId;
-        this.Occupancy = occupancy;
-    }
-
-
-    public DateTime getTime() {
-        return time;
-    }
-
-    public DateTime getDelayedTime() {
-        return time.plus(delay);
-    }
-
-
-    public Station getStation() {
-        return station;
-    }
-
-
-    public String getPlatform() {
-        return platform;
-    }
-
-
-    public Duration getDelay() {
-        return delay;
-    }
-
-    public boolean isCanceled() {
-        return canceled;
-    }
-
-    public boolean isPlatformNormal() {
-        return isPlatformNormal;
-    }
-
-    @Nullable
-    public TransportOccupancyLevel getOccupancy() {
-        return Occupancy;
-    }
-
-    @Nullable
-    public String getUri() {
-        return uri;
-    }
-
-    public boolean hasPassed() {
-        return passed;
-    }
-
+    boolean hasPassed();
 }

@@ -4,7 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-
 package eu.opentransport.common.models;
 
 import org.joda.time.DateTime;
@@ -12,24 +11,24 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 
 import eu.opentransport.common.contracts.PagedDataResource;
-import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.irail.IrailStation;
 
 /**
- * This class represents a liveboard entity, containing departures or arrivals.
- * This class extends a station with its departures.
+ * Result of a route query. Includes the query, as parsed server-side.
+ * This query information can be used to display which question the server replied to,
+ * and can be used to detect incorrect parsed stations server-side (e.g. when searching a station)
  */
-public interface Liveboard extends StopLocation, Serializable, PagedDataResource {
+public interface RoutesList extends Serializable, PagedDataResource {
 
-    VehicleStop[] getStops();
+    IrailStation getOrigin();
 
-    DateTime getSearchTime();
+    IrailStation getDestination();
 
     QueryTimeDefinition getTimeDefinition();
 
-    LiveboardType getLiveboardType();
+    DateTime getSearchTime();
 
-    @Override
-    PagedDataResourceDescriptor getPagedResourceDescriptor();
+    Route[] getRoutes();
 
 }

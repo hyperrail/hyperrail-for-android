@@ -40,19 +40,14 @@ import java.util.List;
 import java.util.Map;
 
 import eu.opentransport.BuildConfig;
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
-import eu.opentransport.common.models.IrailApi;
-import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.models.Route;
-import eu.opentransport.common.models.RouteResult;
-import eu.opentransport.common.models.Vehicle;
-import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
 import eu.opentransport.common.requests.IrailDisturbanceRequest;
@@ -62,6 +57,11 @@ import eu.opentransport.common.requests.IrailRouteRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
 import eu.opentransport.common.requests.IrailVehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
+import eu.opentransport.irail.IrailApi;
+import eu.opentransport.irail.IrailLiveboard;
+import eu.opentransport.irail.IrailRoutesList;
+import eu.opentransport.irail.IrailVehicle;
+import eu.opentransport.irail.IrailVehicleStop;
 import eu.opentransport.irail.LiveboardAppendHelper;
 import eu.opentransport.irail.RouteAppendHelper;
 
@@ -85,7 +85,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
 
     public Lc2IrailDataSource(Context context) {
         this.mContext = context;
-        TransportStopsDataSource stationsProvider = OpenTransport.getStationsProviderInstance();
+        TransportStopsDataSource stationsProvider = OpenTransportApi.getStationsProviderInstance();
         this.parser = new Lc2IrailParser(stationsProvider);
 
         BasicNetwork network;
@@ -143,7 +143,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             @Override
             public void onResponse(JSONObject response) {
                 mMeteredRequest.setMsecUsableNetworkResponse(DateTime.now().getMillis());
-                Liveboard liveboard;
+                IrailLiveboard liveboard;
                 try {
                     liveboard = parser.parseLiveboard(request, response);
                     tracing.stop();
@@ -218,7 +218,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             @Override
             public void onResponse(JSONObject response) {
                 mMeteredRequest.setMsecUsableNetworkResponse(DateTime.now().getMillis());
-                RouteResult routeResult;
+                IrailRoutesList routeResult;
                 try {
                     routeResult = parser.parseRoutes(request, response);
                 } catch (Exception e) {
@@ -266,9 +266,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             );
 
             // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
-            routesRequest.setCallback(new TransportDataSuccessResponseListener<RouteResult>() {
+            routesRequest.setCallback(new TransportDataSuccessResponseListener<IrailRoutesList>() {
                 @Override
-                public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
+                public void onSuccessResponse(@NonNull IrailRoutesList data, Object tag) {
                     for (Route r : data.getRoutes()) {
                         if (r.getTransfers()[0].getDepartureSemanticId() != null &&
                                 r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
@@ -300,10 +300,10 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             time = request.getStop().getArrivalTime();
         }
         IrailVehicleRequest vehicleRequest = new IrailVehicleRequest(request.getStop().getVehicle().getId(), time);
-        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<Vehicle>() {
+        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<IrailVehicle>() {
             @Override
-            public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
-                for (VehicleStop stop :
+            public void onSuccessResponse(@NonNull IrailVehicle data, Object tag) {
+                for (IrailVehicleStop stop :
                         data.getStops()) {
                     if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
                         request.notifySuccessListeners(stop);
@@ -340,7 +340,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Vehicle vehicle;
+                IrailVehicle vehicle;
                 try {
                     vehicle = parser.parseVehicle(request, response);
                 } catch (Exception e) {

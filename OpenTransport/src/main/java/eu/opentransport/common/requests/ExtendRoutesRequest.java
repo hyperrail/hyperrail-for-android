@@ -7,21 +7,21 @@
 package eu.opentransport.common.requests;
 
 import eu.opentransport.common.contracts.TransportDataRequest;
-import eu.opentransport.common.models.RouteResult;
+import eu.opentransport.common.models.RoutesList;
 
 /**
  * Request to withStopsAppended or prepend a routes result
  */
 
-public class ExtendRoutesRequest extends IrailBaseRequest<RouteResult> implements TransportDataRequest<RouteResult> {
+public class ExtendRoutesRequest extends IrailBaseRequest<RoutesList> implements TransportDataRequest<RoutesList> {
 
 
-    private final RouteResult routes;
+    private final RoutesList routes;
 
 
     private final Action mAction;
 
-    public ExtendRoutesRequest( RouteResult routes,  Action action) {
+    public ExtendRoutesRequest(RoutesList routes, Action action) {
         this.routes = routes;
         mAction = action;
     }
@@ -37,7 +37,7 @@ public class ExtendRoutesRequest extends IrailBaseRequest<RouteResult> implement
     }
 
 
-    public RouteResult getRoutes() {
+    public RoutesList getRoutes() {
         return routes;
     }
 

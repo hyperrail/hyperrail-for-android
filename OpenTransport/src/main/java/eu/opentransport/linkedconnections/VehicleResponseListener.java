@@ -18,19 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.models.Station;
-import eu.opentransport.common.models.Vehicle;
-import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.models.VehicleStopType;
-import eu.opentransport.common.models.VehicleStub;
 import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.irail.IrailStation;
+import eu.opentransport.irail.IrailVehicle;
+import eu.opentransport.irail.IrailVehicleStop;
+import eu.opentransport.irail.IrailVehicleStub;
 
 import static eu.opentransport.linkedconnections.LinkedConnectionsDataSource.basename;
 
@@ -52,7 +52,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
     @AddTrace(name = "VehicleResponseListener.sucess")
     public void onSuccessResponse(@NonNull LinkedConnections data, Object tag) {
         ((MeteredDataSource.MeteredRequest)tag).setMsecUsableNetworkResponse(DateTime.now().getMillis());
-        List<VehicleStop> stops = new ArrayList<>();
+        List<IrailVehicleStop> stops = new ArrayList<>();
         Log.i("VehicleResponseListener", "Parsing train...");
         LinkedConnection lastConnection = null;
         for (int i = 0; i < data.connections.length; i++) {
@@ -61,7 +61,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
                 continue;
             }
 
-            Station departure;
+            IrailStation departure;
 
             try {
                 departure = mStationProvider.getStationByUri(connection.getDepartureStationUri());
@@ -70,7 +70,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
                 return;
             }
 
-            Station direction = mStationProvider.getStationByExactName(connection.getDirection());
+            IrailStation direction = mStationProvider.getStationByExactName(connection.getDirection());
             String headsign;
             if (direction != null) {
                 headsign = direction.getLocalizedName();
@@ -79,35 +79,35 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
             }
             if (stops.size() == 0) {
                 // First stop
-                stops.add(VehicleStop.buildDepartureVehicleStop(departure, new VehicleStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
-                                                                connection.getDepartureTime(),
-                                                                Duration.standardSeconds(connection.getDepartureDelay()),
-                                                                false, connection.getDelayedDepartureTime().isBeforeNow(),
-                                                                connection.getUri(), TransportOccupancyLevel.UNSUPPORTED));
+                stops.add(IrailVehicleStop.buildDepartureVehicleStop(departure, new IrailVehicleStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
+                                                                     connection.getDepartureTime(),
+                                                                     Duration.standardSeconds(connection.getDepartureDelay()),
+                                                                     false, connection.getDelayedDepartureTime().isBeforeNow(),
+                                                                     connection.getUri(), TransportOccupancyLevel.UNSUPPORTED));
             } else {
                 // Some stop during the journey
                 assert lastConnection != null;
-                stops.add(new VehicleStop(departure, new VehicleStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
-                                          connection.getDepartureTime(), lastConnection.getArrivalTime(),
-                                          Duration.standardSeconds(connection.getDepartureDelay()),
-                                          Duration.standardSeconds(lastConnection.getArrivalDelay()),
-                                          false, false, lastConnection.getDelayedArrivalTime().isBeforeNow(),
-                                          connection.getUri(), TransportOccupancyLevel.UNSUPPORTED, VehicleStopType.STOP));
+                stops.add(new IrailVehicleStop(departure, new IrailVehicleStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
+                                               connection.getDepartureTime(), lastConnection.getArrivalTime(),
+                                               Duration.standardSeconds(connection.getDepartureDelay()),
+                                               Duration.standardSeconds(lastConnection.getArrivalDelay()),
+                                               false, false, lastConnection.getDelayedArrivalTime().isBeforeNow(),
+                                               connection.getUri(), TransportOccupancyLevel.UNSUPPORTED, VehicleStopType.STOP));
             }
 
             lastConnection = connection;
         }
 
         if (stops.size() > 0 && lastConnection != null) {
-            Station arrival;
+            IrailStation arrival;
             try {
-                arrival = OpenTransport.getStationsProviderInstance().getStationByUri(lastConnection.getArrivalStationUri());
+                arrival = OpenTransportApi.getStationsProviderInstance().getStationByUri(lastConnection.getArrivalStationUri());
             } catch (StopLocationNotResolvedException e) {
                 mRequest.notifyErrorListeners(e);
                 return;
             }
 
-            Station direction = OpenTransport.getStationsProviderInstance().getStationByExactName(lastConnection.getDirection());
+            IrailStation direction = OpenTransportApi.getStationsProviderInstance().getStationByExactName(lastConnection.getDirection());
             String headsign;
             if (direction != null) {
                 headsign = direction.getLocalizedName();
@@ -115,16 +115,16 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
                 headsign = lastConnection.getDirection();
             }
             // Arrival stop
-            stops.add(VehicleStop.buildArrivalVehicleStop(arrival, new VehicleStub(basename(lastConnection.getRoute()), headsign, lastConnection.getRoute()),
-                                                          "?", true,
-                                                          lastConnection.getArrivalTime(),
-                                                          Duration.standardSeconds(lastConnection.getArrivalDelay()),
-                                                          false, lastConnection.getDelayedArrivalTime().isBeforeNow(),
-                                                          lastConnection.getUri(), TransportOccupancyLevel.UNSUPPORTED));
+            stops.add(IrailVehicleStop.buildArrivalVehicleStop(arrival, new IrailVehicleStub(basename(lastConnection.getRoute()), headsign, lastConnection.getRoute()),
+                                                               "?", true,
+                                                               lastConnection.getArrivalTime(),
+                                                               Duration.standardSeconds(lastConnection.getArrivalDelay()),
+                                                               false, lastConnection.getDelayedArrivalTime().isBeforeNow(),
+                                                               lastConnection.getUri(), TransportOccupancyLevel.UNSUPPORTED));
 
-            VehicleStop[] stopsArray = new VehicleStop[stops.size()];
+            IrailVehicleStop[] stopsArray = new IrailVehicleStop[stops.size()];
             ((MeteredDataSource.MeteredRequest)tag).setMsecParsed(DateTime.now().getMillis());
-            mRequest.notifySuccessListeners(new Vehicle(stops.get(0).getVehicle().getId(), lastConnection.getRoute(), 0, 0, stops.toArray(stopsArray)));
+            mRequest.notifySuccessListeners(new IrailVehicle(stops.get(0).getVehicle().getId(), lastConnection.getRoute(), 0, 0, stops.toArray(stopsArray)));
         }
     }
 

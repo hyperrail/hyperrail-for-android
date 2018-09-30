@@ -8,18 +8,14 @@ package eu.opentransport;
 
 import android.content.Context;
 
-import com.crashlytics.android.Crashlytics;
-
 import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
-import eu.opentransport.common.models.IrailApi;
+import eu.opentransport.irail.IrailApi;
 import eu.opentransport.irail.StationsDataProvider;
 import eu.opentransport.lc2Irail.Lc2IrailDataSource;
 import eu.opentransport.linkedconnections.LinkedConnectionsDataSource;
 
-import static java.util.logging.Level.SEVERE;
-
-public class OpenTransport {
+public class OpenTransportApi {
 
     private static TransportStopsDataSource stationProviderInstance;
     private static TransportDataSource dataProviderInstance;
@@ -32,45 +28,41 @@ public class OpenTransport {
         SE_LC2IRAIL
     }
 
-    public static void initPreset(Context context, DataProvider provider) {
+    public static void init(Context context, DataProvider provider) {
         switch (provider) {
             case BE_IRAIL_API:
-                initClass(new IrailApi(context), new StationsDataProvider(context));
+                init(new IrailApi(context), new StationsDataProvider(context));
                 break;
             case BE_IRAIL_GRAPH:
-                initClass(new LinkedConnectionsDataSource(context), new StationsDataProvider(context));
+                init(new LinkedConnectionsDataSource(context), new StationsDataProvider(context));
                 break;
             case BE_IRAIL_LC2IRAIL:
-                initClass(new Lc2IrailDataSource(context), new StationsDataProvider(context));
+                init(new Lc2IrailDataSource(context), new StationsDataProvider(context));
                 break;
             case SE_GRAPH:
-                initClass(new LinkedConnectionsDataSource(context), new StationsDataProvider(context));
+                init(new LinkedConnectionsDataSource(context), new StationsDataProvider(context));
                 break;
             case SE_LC2IRAIL:
-                initClass(new Lc2IrailDataSource(context), new StationsDataProvider(context));
+                init(new Lc2IrailDataSource(context), new StationsDataProvider(context));
                 break;
         }
     }
 
-    public static void initClass(TransportDataSource source, TransportStopsDataSource stops) {
+    public static void init(TransportDataSource source, TransportStopsDataSource stops) {
         stationProviderInstance = stops;
         dataProviderInstance = source;
     }
 
     public static TransportStopsDataSource getStationsProviderInstance() {
         if (stationProviderInstance == null) {
-            Crashlytics.log(SEVERE.intValue(), "Irail16Factory", "Failed to provide station provider! Call setup() before calling any factory method!");
-            Crashlytics.logException(new Exception("TransportStopsDataSource was requested before the factory was initialized"));
-            throw new IllegalStateException();
+            throw new IllegalStateException("Initialize OpenTransportApi using init() before trying to access the stations provider!");
         }
         return stationProviderInstance;
     }
 
     public static TransportDataSource getDataProviderInstance() {
         if (dataProviderInstance == null) {
-            Crashlytics.log(SEVERE.intValue(), "Irail16Factory", "Failed to provide data provider! Call setup() before calling any factory method!");
-            Crashlytics.logException(new Exception("TransportDataSource was requested before the factory was initialized"));
-            throw new IllegalStateException();
+            throw new IllegalStateException("Initialize OpenTransportApi using init() before trying to access the data provider!");
         }
         return dataProviderInstance;
     }

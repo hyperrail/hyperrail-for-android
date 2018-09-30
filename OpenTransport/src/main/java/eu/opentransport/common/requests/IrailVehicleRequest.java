@@ -12,16 +12,17 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.models.Station;
-import eu.opentransport.common.models.Vehicle;
+import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.irail.IrailStation;
+import eu.opentransport.irail.IrailVehicle;
 
 /**
  * A request for train data
  */
-public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements TransportDataRequest<Vehicle> {
+public class IrailVehicleRequest extends IrailBaseRequest<IrailVehicle> implements TransportDataRequest<IrailVehicle> {
 
 
     private final String mVehicleId;
@@ -35,7 +36,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
      * The departure station of this train. Additional information for request history/favorites.
      */
     @Nullable
-    private Station mVehicleOriginStation;
+    private IrailStation mVehicleOriginStation;
 
     /**
      * The departure time at the departure station for this train. Additional information for request history/favorites.
@@ -44,26 +45,25 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
     private DateTime mVehicleDepartureTime;
 
     @Nullable
-    private Station mVehicleDirection;
-
+    private StopLocation mVehicleDirection;
 
     /**
      * Create a request for train departures or arrivals in a given station
      *
-     * @param vehicleId    The train for which data should be retrieved
+     * @param vehicleId  The train for which data should be retrieved
      * @param searchTime The time for which should be searched
      */
     // TODO: support between stations, target scroll station as optional (display) parameters
-    public IrailVehicleRequest( String vehicleId, @Nullable DateTime searchTime) {
+    public IrailVehicleRequest(String vehicleId, @Nullable DateTime searchTime) {
         this.mVehicleId = vehicleId;
         this.mSearchTime = searchTime;
     }
 
-    public IrailVehicleRequest( JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
+    public IrailVehicleRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
-            this.mVehicleDirection = OpenTransport.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("direction"));
+            this.mVehicleDirection = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("direction"));
         } else {
             this.mVehicleDirection = null;
         }
@@ -107,11 +107,11 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
     }
 
     @Nullable
-    public Station getOrigin() {
+    public IrailStation getOrigin() {
         return mVehicleOriginStation;
     }
 
-    public void setOrigin(@Nullable Station origin) {
+    public void setOrigin(@Nullable IrailStation origin) {
         this.mVehicleOriginStation = origin;
     }
 
@@ -131,7 +131,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof JSONObject){
+        if (o instanceof JSONObject) {
             try {
                 o = new IrailVehicleRequest((JSONObject) o);
             } catch (JSONException | StopLocationNotResolvedException e) {
@@ -148,7 +148,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
     }
 
     @Override
-    public int compareTo( TransportDataRequest o) {
+    public int compareTo(TransportDataRequest o) {
         if (!(o instanceof IrailVehicleRequest)) {
             return -1;
         }
@@ -161,11 +161,11 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
      * The direction of this train. Additional information for request history/favorites.
      */
     @Nullable
-    public Station getDirection() {
+    public StopLocation getDirection() {
         return mVehicleDirection;
     }
 
-    public void setDirection(Station direction) {
+    public void setDirection(IrailStation direction) {
         mVehicleDirection = direction;
     }
 

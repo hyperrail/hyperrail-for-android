@@ -24,12 +24,13 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.Liveboard;
-import eu.opentransport.common.models.Station;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.StopLocation;
 
 /**
  * A request for a station liveboard
@@ -37,13 +38,13 @@ import eu.opentransport.common.models.Station;
 public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implements TransportDataRequest<Liveboard> {
 
 
-    private final Station station;
+    private final StopLocation station;
 
 
     private QueryTimeDefinition timeDefinition;
 
 
-    private Liveboard.LiveboardType type;
+    private LiveboardType type;
 
     @Nullable
     private DateTime searchTime;
@@ -56,7 +57,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
      * @param type           The type of data which should be retrieved: arrivals or departures
      * @param searchTime     The time for which should be searched
      */
-    public IrailLiveboardRequest( Station station,  QueryTimeDefinition timeDefinition,  Liveboard.LiveboardType type, @Nullable DateTime searchTime) {
+    public IrailLiveboardRequest(StopLocation station, QueryTimeDefinition timeDefinition, LiveboardType type, @Nullable DateTime searchTime) {
         this.station = station;
         this.timeDefinition = timeDefinition;
         this.type = type;
@@ -69,9 +70,9 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         if (id.startsWith("BE.NMBS.")) {
             id = id.substring(8);
         }
-        this.station = OpenTransport.getStationsProviderInstance().getStationByHID(id);
+        this.station = OpenTransportApi.getStationsProviderInstance().getStationByHID(id);
         timeDefinition = QueryTimeDefinition.DEPART_AT;
-        type = Liveboard.LiveboardType.DEPARTURES;
+        type = LiveboardType.DEPARTURES;
         searchTime = null;
     }
 
@@ -104,11 +105,9 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         }
     }
 
-
-    public Station getStation() {
+    public StopLocation getStation() {
         return station;
     }
-
 
     public QueryTimeDefinition getTimeDefinition() {
         return timeDefinition;
@@ -123,7 +122,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
     }
 
 
-    public Liveboard.LiveboardType getType() {
+    public LiveboardType getType() {
         return type;
     }
 
@@ -141,7 +140,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         return clone;
     }
 
-    public IrailLiveboardRequest withLiveboardType(Liveboard.LiveboardType type) {
+    public IrailLiveboardRequest withLiveboardType(LiveboardType type) {
         IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
         clone.type = type;
         return clone;

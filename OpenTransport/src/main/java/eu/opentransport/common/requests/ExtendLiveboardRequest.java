@@ -20,7 +20,7 @@ public class ExtendLiveboardRequest extends IrailBaseRequest<Liveboard> implemen
 
     private final Action mAction;
 
-    public ExtendLiveboardRequest( Liveboard liveboard,  Action action) {
+    public ExtendLiveboardRequest(Liveboard liveboard, Action action) {
         this.mLiveboard = liveboard;
         this.mAction = action;
     }

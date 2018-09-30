@@ -14,137 +14,63 @@ package eu.opentransport.common.models;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.joda.time.Period;
 
 import java.io.Serializable;
+
+import eu.opentransport.irail.IrailStation;
 
 /**
  * A route between 2 stations, which might consist of multiple vehicles with transfers in between
  */
-public class Route implements Serializable {
-    private final RouteLeg[] legs;
-    private final Transfer[] transfers;
-    private Message[] alerts;
-    private Message[][] trainalerts;
-    private Message[] remarks;
+public interface Route extends Serializable {
 
-    public Route(RouteLeg[] legs) {
-        this.legs = legs;
+    Duration getDuration();
 
-        // Calculate transfers for easier access to the right data
-        this.transfers = new Transfer[legs.length + 1];
-        this.transfers[0] = new Transfer(null, legs[0]);
-        this.transfers[legs.length] = new Transfer(legs[legs.length - 1], null);
+    Duration getDurationIncludingDelays();
 
-        for (int i = 1; i < legs.length; i++) {
-            this.transfers[i] = new Transfer(legs[i - 1], legs[i]);
-        }
-    }
+    DateTime getDepartureTime();
 
-    public Duration getDuration() {
-        return new Period(getDepartureTime(), getArrivalTime()).toStandardDuration();
-    }
+    DateTime getArrivalTime();
 
-    public Duration getDurationIncludingDelays() {
-        return new Period(getDepartureTime().plus(getDepartureDelay()), getArrivalTime().plus(getArrivalDelay())).toStandardDuration();
-    }
+    int getTransferCount();
 
-    public DateTime getDepartureTime() {
-        return getDeparture().getDepartureTime();
-    }
+    int getStationCount();
 
-    public DateTime getArrivalTime() {
-        return getArrival().getArrivalTime();
-    }
+    RouteLeg[] getLegs();
 
-    public int getTransferCount() {
-        // minus origin and destination
-        return legs.length - 1;
-    }
+    Transfer getDeparture();
 
-    public int getStationCount() {
-        return legs.length + 1;
-    }
+    Transfer getArrival();
 
-    public RouteLeg[] getLegs() {
-        return legs;
-    }
+    Duration getArrivalDelay();
 
-    public Transfer getDeparture() {
-        return transfers[0];
-    }
+    Duration getDepartureDelay();
 
-    public Transfer getArrival() {
-        return transfers[transfers.length - 1];
-    }
+    String getDeparturePlatform();
 
-    public Duration getArrivalDelay() {
-        return getArrival().getArrivalDelay();
-    }
+    String getArrivalPlatform();
 
-    public Duration getDepartureDelay() {
-        return getDeparture().getDepartureDelay();
-    }
+    boolean isArrivalDeparturePlatformNormal();
 
-    public String getDeparturePlatform() {
-        return getDeparture().getDeparturePlatform();
-    }
+    boolean isDeparturePlatformNormal();
 
-    public String getArrivalPlatform() {
-        return getArrival().getArrivalPlatform();
-    }
+    IrailStation getDepartureStation();
 
-    public boolean isArrivalDeparturePlatformNormal() {
-        return getArrival().isArrivalPlatformNormal();
-    }
+    IrailStation getArrivalStation();
 
-    public boolean isDeparturePlatformNormal() {
-        return getDeparture().isDeparturePlatformNormal();
-    }
+    Message[] getRemarks();
 
-    public Station getDepartureStation() {
-        return getDeparture().getStation();
-    }
+    Message[] getAlerts();
 
-    public Station getArrivalStation() {
-        return getArrival().getStation();
-    }
+    Message[][] getVehicleAlerts();
 
-    public Message[] getRemarks() {
-        return remarks;
-    }
+    boolean isPartiallyCanceled();
 
-    public Message[] getAlerts() {
-        return alerts;
-    }
+    Transfer[] getTransfers();
 
-    public Message[][] getVehicleAlerts() {
-        return trainalerts;
-    }
+    void setTrainalerts(Message[][] trainalerts);
 
-    public boolean isPartiallyCanceled() {
-        for (RouteLeg l :
-                getLegs()) {
-            if (l.getDeparture().isCanceled()) {
-                return true;
-            }
-        }
-        return false;
-    }
+    void setAlerts(Message[] alerts);
 
-    public Transfer[] getTransfers() {
-        return transfers;
-    }
-
-    public void setTrainalerts(Message[][] trainalerts) {
-        this.trainalerts = trainalerts;
-    }
-
-    public void setAlerts(Message[] alerts) {
-        this.alerts = alerts;
-    }
-
-    public void setRemarks(Message[] remarks) {
-        this.remarks = remarks;
-    }
+    void setRemarks(Message[] remarks);
 }

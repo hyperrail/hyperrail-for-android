@@ -33,7 +33,6 @@ import java.util.Locale;
 
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.models.Station;
 import eu.opentransport.common.webdb.WebDb;
 
 import static eu.opentransport.irail.StationsDataContract.StationFacilityColumns;
@@ -52,10 +51,10 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
     private final Context context;
     private WebDb mWebDb;
-    HashMap<String, Station> mStationIdCache = new HashMap<>();
-    HashMap<String, Station> mStationNameCache = new HashMap<>();
+    HashMap<String, IrailStation> mStationIdCache = new HashMap<>();
+    HashMap<String, IrailStation> mStationNameCache = new HashMap<>();
 
-    Station[] stationsOrderedBySizeCache;
+    IrailStation[] stationsOrderedBySizeCache;
 
     public StationsDataProvider(Context context) {
         this.context = context;
@@ -110,7 +109,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderBySize")
-    public Station[] getStationsOrderBySize() {
+    public IrailStation[] getStationsOrderBySize() {
 
         if (stationsOrderedBySizeCache != null) {
             return stationsOrderedBySizeCache;
@@ -127,11 +126,11 @@ public class StationsDataProvider implements TransportStopsDataSource {
                 StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC"
         );
 
-        Station[] stations = loadStationCursor(c);
+        IrailStation[] stations = loadStationCursor(c);
         c.close();
 
         if (stations == null) {
-            return new Station[0];
+            return new IrailStation[0];
         }
 
         stationsOrderedBySizeCache = stations;
@@ -145,10 +144,10 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderByLocation")
-    public Station[] getStationsOrderByLocation(Location location) {
-        Station[] results = this.getStationsByNameOrderByLocation("", location);
+    public IrailStation[] getStationsOrderByLocation(Location location) {
+        IrailStation[] results = this.getStationsByNameOrderByLocation("", location);
         if (results == null) {
-            return new Station[0];
+            return new IrailStation[0];
         }
         return results;
     }
@@ -160,7 +159,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
     @Override
     @AddTrace(name = "StationsDb.getStationsOrderByLocationAndSize")
-    public Station[] getStationsOrderByLocationAndSize(Location location, int limit) {
+    public IrailStation[] getStationsOrderByLocationAndSize(Location location, int limit) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
         double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
@@ -176,18 +175,18 @@ public class StationsDataProvider implements TransportStopsDataSource {
                 String.valueOf(limit)
         );
 
-        Station[] stations = loadStationCursor(c);
+        IrailStation[] stations = loadStationCursor(c);
 
         c.close();
 
 
         if (stations == null) {
-            return new Station[0];
+            return new IrailStation[0];
         }
 
-        Arrays.sort(stations, new Comparator<Station>() {
+        Arrays.sort(stations, new Comparator<IrailStation>() {
             @Override
-            public int compare(Station o1, Station o2) {
+            public int compare(IrailStation o1, IrailStation o2) {
                 return Float.compare(o2.getAvgStopTimes(), o1.getAvgStopTimes());
             }
         });
@@ -200,7 +199,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
      */
     @Override
     @AddTrace(name = "StationsDb.getStationNames")
-    public String[] getStationNames(Station[] Stations) {
+    public String[] getStationNames(IrailStation[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
             Crashlytics.log(
@@ -219,25 +218,25 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
 
     @Override
-    public Station getStationByUIC( String id) throws StopLocationNotResolvedException {
+    public IrailStation getStationByUIC(String id) throws StopLocationNotResolvedException {
         return getStationByUIC(id, false);
     }
 
 
     @Override
-    public Station getStationByUIC( String id, boolean suppressErrors) throws StopLocationNotResolvedException {
+    public IrailStation getStationByUIC(String id, boolean suppressErrors) throws StopLocationNotResolvedException {
         return getStationByHID("00" + id, false);
     }
 
 
     @Override
-    public Station getStationByHID( String id) throws StopLocationNotResolvedException {
+    public IrailStation getStationByHID(String id) throws StopLocationNotResolvedException {
         return getStationByHID(id, false);
     }
 
 
     @Override
-    public Station getStationByHID( String id, boolean suppressErrors) throws StopLocationNotResolvedException {
+    public IrailStation getStationByHID(String id, boolean suppressErrors) throws StopLocationNotResolvedException {
         if (mStationIdCache.containsKey(id)) {
             return mStationIdCache.get(id);
         }
@@ -258,7 +257,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
                 "1"
         );
 
-        Station[] results = loadStationCursor(c);
+        IrailStation[] results = loadStationCursor(c);
 
         c.close();
 
@@ -275,7 +274,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
 
     @Override
-    public Station getStationByIrailApiId( String id) throws StopLocationNotResolvedException {
+    public IrailStation getStationByIrailApiId(String id) throws StopLocationNotResolvedException {
         if (id.startsWith("BE.NMBS.")) {
             id = id.substring(8);
         }
@@ -284,13 +283,13 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
 
     @Override
-    public Station getStationByUri( String uri) throws StopLocationNotResolvedException {
+    public IrailStation getStationByUri(String uri) throws StopLocationNotResolvedException {
         return getStationByUri(uri, false);
     }
 
 
     @Override
-    public Station getStationByUri( String uri, boolean suppressErrors) throws StopLocationNotResolvedException {
+    public IrailStation getStationByUri(String uri, boolean suppressErrors) throws StopLocationNotResolvedException {
         return getStationByHID(uri.substring(uri.lastIndexOf('/') + 1), suppressErrors);
     }
 
@@ -300,11 +299,11 @@ public class StationsDataProvider implements TransportStopsDataSource {
     @Override
     @AddTrace(name = "StationsDb.getStationByExactName")
     @Nullable
-    public Station getStationByExactName( String name) {
+    public IrailStation getStationByExactName(String name) {
         if (mStationNameCache.containsKey(name)) {
             return mStationNameCache.get(name);
         }
-        Station[] results = getStationsByNameOrderBySize(name, true);
+        IrailStation[] results = getStationsByNameOrderBySize(name, true);
         if (results == null) {
             return null;
         }
@@ -319,7 +318,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
     @Override
     @Nullable
     @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
-    public Station[] getStationsByNameOrderBySize( String name) {
+    public IrailStation[] getStationsByNameOrderBySize(String name) {
         return getStationsByNameOrderBySize(name, false);
     }
 
@@ -327,7 +326,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
             " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?";
 
     @Nullable
-    public Station[] getStationsByNameOrderBySize( String name, boolean exact) {
+    public IrailStation[] getStationsByNameOrderBySize(String name, boolean exact) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
@@ -381,7 +380,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
             }
         }
 
-        Station[] results = loadStationCursor(c);
+        IrailStation[] results = loadStationCursor(c);
 
         c.close();
 
@@ -397,7 +396,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
      */
     @Override
     @AddTrace(name = "StationsDb.getStationsByNameOrderByLocation")
-    public Station[] getStationsByNameOrderByLocation( String name,  Location location) {
+    public IrailStation[] getStationsByNameOrderByLocation(String name, Location location) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
 
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
@@ -416,7 +415,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
                 "distance ASC, " + StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC"
         );
 
-        Station[] stations = loadStationCursor(c);
+        IrailStation[] stations = loadStationCursor(c);
         c.close();
 
         return stations;
@@ -428,7 +427,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
      * @param c The cursor from which stations should be loaded.
      * @return The array of loaded stations
      */
-    private Station[] loadStationCursor(Cursor c) {
+    private IrailStation[] loadStationCursor(Cursor c) {
         if (c.isClosed()) {
             Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
             return null;
@@ -440,7 +439,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
         }
 
         c.moveToFirst();
-        Station[] result = new Station[c.getCount()];
+        IrailStation[] result = new IrailStation[c.getCount()];
         int i = 0;
         while (!c.isAfterLast()) {
 
@@ -484,7 +483,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
                 localizedName = name;
             }
 
-            Station s = new Station(
+            IrailStation s = new IrailStation(
                     c.getString(c.getColumnIndex(StationsDataColumns._ID)),
                     name,
                     nl,

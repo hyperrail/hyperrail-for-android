@@ -16,7 +16,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.R;
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
@@ -24,11 +24,7 @@ import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
-import eu.opentransport.common.models.IrailApi;
-import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.models.Route;
-import eu.opentransport.common.models.RouteResult;
-import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
@@ -39,9 +35,13 @@ import eu.opentransport.common.requests.IrailRouteRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
 import eu.opentransport.common.requests.IrailVehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
+import eu.opentransport.irail.IrailApi;
+import eu.opentransport.irail.IrailLiveboard;
+import eu.opentransport.irail.IrailRoutesList;
+import eu.opentransport.irail.IrailVehicleStop;
 
-import static eu.opentransport.common.models.Liveboard.LiveboardType.ARRIVALS;
-import static eu.opentransport.common.models.Liveboard.LiveboardType.DEPARTURES;
+import static eu.opentransport.irail.IrailLiveboard.LiveboardType.ARRIVALS;
+import static eu.opentransport.irail.IrailLiveboard.LiveboardType.DEPARTURES;
 
 /**
  * This API loads linkedConnection data and builds responses based on this data
@@ -57,7 +57,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
 
     public LinkedConnectionsDataSource(Context context) {
         this.mContext = context;
-        this.mStationsProvider = OpenTransport.getStationsProviderInstance();
+        this.mStationsProvider = OpenTransportApi.getStationsProviderInstance();
         this.mLinkedConnectionsProvider = new LinkedConnectionsProvider(context);
         mConnectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -129,9 +129,9 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         );
 
         // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
-        routesRequest.setCallback(new TransportDataSuccessResponseListener<RouteResult>() {
+        routesRequest.setCallback(new TransportDataSuccessResponseListener<IrailRoutesList>() {
             @Override
-            public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
+            public void onSuccessResponse(@NonNull IrailRoutesList data, Object tag) {
                 for (Route r : data.getRoutes()) {
                     if (r.getTransfers()[0].getDepartureSemanticId() != null &&
                             r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
@@ -165,10 +165,10 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         } else {
             liveboardRequest = new IrailLiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.ARRIVE_AT, ARRIVALS, request.getStop().getArrivalTime());
         }
-        liveboardRequest.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
+        liveboardRequest.setCallback(new TransportDataSuccessResponseListener<IrailLiveboard>() {
             @Override
-            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
-                for (VehicleStop stop :
+            public void onSuccessResponse(@NonNull IrailLiveboard data, Object tag) {
+                for (IrailVehicleStop stop :
                         data.getStops()) {
                     if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
                         request.notifySuccessListeners(stop);

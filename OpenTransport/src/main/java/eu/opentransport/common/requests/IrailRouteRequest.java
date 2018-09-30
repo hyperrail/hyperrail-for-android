@@ -11,12 +11,12 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.Route;
-import eu.opentransport.common.models.Station;
+import eu.opentransport.common.models.StopLocation;
 
 /**
  * A request for a route between two or more stations
@@ -24,10 +24,10 @@ import eu.opentransport.common.models.Station;
 public class IrailRouteRequest extends IrailBaseRequest<Route> implements TransportDataRequest<Route> {
 
 
-    private final Station origin;
+    private final StopLocation origin;
 
 
-    private final Station destination;
+    private final StopLocation destination;
 
 
     private final QueryTimeDefinition timeDefinition;
@@ -45,7 +45,7 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
      * Create a request to get a specific between two stations
      */
     // TODO: support vias
-    public IrailRouteRequest( String departureSemanticId,  Station origin,  Station destination,  QueryTimeDefinition timeDefinition,  DateTime searchTime) {
+    public IrailRouteRequest(String departureSemanticId, StopLocation origin, StopLocation destination, QueryTimeDefinition timeDefinition, DateTime searchTime) {
         this.origin = origin;
         this.destination = destination;
         this.timeDefinition = timeDefinition;
@@ -72,8 +72,8 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
     public IrailRouteRequest( JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
-        this.origin = OpenTransport.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
-        this.destination = OpenTransport.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
+        this.origin = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
+        this.destination = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
 
         timeDefinition = QueryTimeDefinition.DEPART_AT;
         searchTime = new DateTime(jsonObject.getLong("time"));
@@ -91,12 +91,12 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
     }
 
 
-    public Station getOrigin() {
+    public StopLocation getOrigin() {
         return origin;
     }
 
 
-    public Station getDestination() {
+    public StopLocation getDestination() {
         return destination;
     }
 

@@ -18,20 +18,20 @@ import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
-import eu.opentransport.common.models.RouteResult;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.irail.IrailRoutesList;
 
 /**
  * Created in be.hyperrail.android.irail.implementation.linkedconnections on 17/04/2018.
  */
-public class RouteExtendHelper implements TransportDataSuccessResponseListener<RouteResult>, TransportDataErrorResponseListener {
+public class RouteExtendHelper implements TransportDataSuccessResponseListener<IrailRoutesList>, TransportDataErrorResponseListener {
 
     private final LinkedConnectionsProvider mLinkedConnectionsProvider;
     private final TransportStopsDataSource mStationProvider;
     private final ExtendRoutesRequest mRequest;
     private final MeteredDataSource.MeteredRequest mMeteredRequest;
-    private RouteResult mRoutes;
+    private IrailRoutesList mRoutes;
     int attempts = 0;
 
     public RouteExtendHelper(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, ExtendRoutesRequest request, MeteredDataSource.MeteredRequest meteredRequest) {
@@ -45,7 +45,7 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
         extend(mRequest.getRoutes());
     }
 
-    private void extend(RouteResult routes) {
+    private void extend(IrailRoutesList routes) {
         attempts++;
 
         if (attempts > 12) {
@@ -110,8 +110,8 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
     }
 
     @Override
-    public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
-        RouteResult appended = mRoutes.withRoutesAppended(data);
+    public void onSuccessResponse(@NonNull IrailRoutesList data, Object tag) {
+        IrailRoutesList appended = mRoutes.withRoutesAppended(data);
         appended.setPageInfo(new PagedDataResourceDescriptor(
                 data.getPagedResourceDescriptor().getPreviousPointer(),
                 data.getPagedResourceDescriptor().getCurrentPointer(),

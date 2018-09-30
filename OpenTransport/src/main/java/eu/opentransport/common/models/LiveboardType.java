@@ -6,16 +6,10 @@
 
 package eu.opentransport.common.models;
 
-import java.io.Serializable;
-
 /**
- * An alert or remark message
+ * The type of results in a liveboard, either departures or arrivals
  */
-public interface Message extends Serializable {
-
-    String getHeader();
-
-    String getDescription();
-
-    String getLink();
+public enum LiveboardType {
+    DEPARTURES,
+    ARRIVALS
 }

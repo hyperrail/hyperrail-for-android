@@ -13,23 +13,23 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.models.RouteResult;
-import eu.opentransport.common.models.Station;
+import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.irail.IrailRoutesList;
 
 /**
  * A request for a routes between two or more stations
  */
-public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements TransportDataRequest<RouteResult> {
+public class IrailRoutesRequest extends IrailBaseRequest<IrailRoutesList> implements TransportDataRequest<IrailRoutesList> {
 
 
-    private final Station origin;
+    private final StopLocation origin;
 
 
-    private final Station destination;
+    private final StopLocation destination;
 
 
     private final QueryTimeDefinition timeDefinition;
@@ -41,7 +41,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
      * Create a request to search routes between two stations
      */
     // TODO: support vias
-    public IrailRoutesRequest( Station origin,  Station destination,  QueryTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
+    public IrailRoutesRequest(StopLocation origin, StopLocation destination, QueryTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
         this.origin = origin;
         this.destination = destination;
         this.timeDefinition = timeDefinition;
@@ -61,8 +61,8 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
             to = to.substring(8);
         }
 
-        this.origin = OpenTransport.getStationsProviderInstance().getStationByHID(from);
-        this.destination = OpenTransport.getStationsProviderInstance().getStationByHID(to);
+        this.origin = OpenTransportApi.getStationsProviderInstance().getStationByHID(from);
+        this.destination = OpenTransportApi.getStationsProviderInstance().getStationByHID(to);
 
         timeDefinition = QueryTimeDefinition.DEPART_AT;
         searchTime = null;
@@ -78,12 +78,12 @@ public class IrailRoutesRequest extends IrailBaseRequest<RouteResult> implements
     }
 
 
-    public Station getOrigin() {
+    public StopLocation getOrigin() {
         return origin;
     }
 
 
-    public Station getDestination() {
+    public StopLocation getDestination() {
         return destination;
     }
 

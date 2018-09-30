@@ -13,20 +13,20 @@ import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
-import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.irail.IrailLiveboard;
 
 /**
  * Created in be.hyperrail.android.irail.implementation.linkedconnections on 17/04/2018.
  */
-public class LiveboardExtendHelper implements TransportDataSuccessResponseListener<Liveboard>, TransportDataErrorResponseListener {
+public class LiveboardExtendHelper implements TransportDataSuccessResponseListener<IrailLiveboard>, TransportDataErrorResponseListener {
 
     private final LinkedConnectionsProvider mLinkedConnectionsProvider;
     private final TransportStopsDataSource mStationProvider;
     private final ExtendLiveboardRequest mRequest;
     private final MeteredDataSource.MeteredRequest mMeteredRequest;
-    private Liveboard mLiveboard;
+    private IrailLiveboard mLiveboard;
 
     public LiveboardExtendHelper(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, ExtendLiveboardRequest request, MeteredDataSource.MeteredRequest meteredRequest) {
         mLinkedConnectionsProvider = linkedConnectionsProvider;
@@ -39,7 +39,7 @@ public class LiveboardExtendHelper implements TransportDataSuccessResponseListen
         extend(mRequest.getLiveboard());
     }
 
-    private void extend(Liveboard liveboard) {
+    private void extend(IrailLiveboard liveboard) {
         mLiveboard = liveboard;
         String url;
 
@@ -65,7 +65,7 @@ public class LiveboardExtendHelper implements TransportDataSuccessResponseListen
     }
 
     @Override
-    public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
+    public void onSuccessResponse(@NonNull IrailLiveboard data, Object tag) {
         int originalLength = mLiveboard.getStops().length;
         mLiveboard = mLiveboard.withStopsAppended(data);
 

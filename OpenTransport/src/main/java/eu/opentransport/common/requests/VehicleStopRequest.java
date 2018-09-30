@@ -11,12 +11,13 @@ import org.json.JSONObject;
 
 import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.models.VehicleStop;
+import eu.opentransport.irail.IrailVehicleStop;
 
 /**
  * Request to update a certain vehiclestop
  */
 
-public class VehicleStopRequest extends IrailBaseRequest<VehicleStop> implements TransportDataRequest<VehicleStop> {
+public class VehicleStopRequest extends IrailBaseRequest<IrailVehicleStop> implements TransportDataRequest<IrailVehicleStop> {
 
     private final VehicleStop mStop;
 
@@ -25,7 +26,7 @@ public class VehicleStopRequest extends IrailBaseRequest<VehicleStop> implements
      *
      * @param stop the stop for which information should be obtained
      */
-    public VehicleStopRequest( VehicleStop stop) {
+    public VehicleStopRequest( IrailVehicleStop stop) {
         mStop = stop;
     }
 

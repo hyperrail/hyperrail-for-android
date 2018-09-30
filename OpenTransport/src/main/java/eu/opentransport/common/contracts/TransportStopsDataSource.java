@@ -16,7 +16,7 @@ import android.location.Location;
 import android.support.annotation.Nullable;
 
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.models.Station;
+import eu.opentransport.common.models.StopLocation;
 
 /**
  * A station provider, returning stations from irail/stationscsv or a datasource with similar fields.
@@ -30,7 +30,7 @@ public interface TransportStopsDataSource {
      * @param Stations The list of stations for which a name should be retrieved.
      * @return An array of localized station names.
      */
-    String[] getStationNames(Station[] Stations);
+    String[] getStationNames(StopLocation[] Stations);
 
     /**
      * Get a station by its UIC ID (International Railway Station ID)
@@ -39,7 +39,7 @@ public interface TransportStopsDataSource {
      * @return The station object, null if not found
      */
     @Nullable
-    Station getStationByUIC( String id) throws StopLocationNotResolvedException;
+    StopLocation getStationByUIC(String id) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its UIC ID (International Railway Station ID)
@@ -48,7 +48,7 @@ public interface TransportStopsDataSource {
      * @return The station object, null if not found
      */
 
-    Station getStationByUIC( String id, boolean suppressErrors) throws StopLocationNotResolvedException;
+    StopLocation getStationByUIC(String id, boolean suppressErrors) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its Hafas ID (This format is similar to the UIC format, but longer and can include bus stops
@@ -58,7 +58,7 @@ public interface TransportStopsDataSource {
      * @return The station object.
      */
 
-    Station getStationByHID( String id) throws StopLocationNotResolvedException;
+    StopLocation getStationByHID(String id) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its Hafas ID (This format is similar to the UIC format, but longer and can include bus stops
@@ -68,7 +68,7 @@ public interface TransportStopsDataSource {
      * @return The station object.
      */
 
-    Station getStationByHID( String id, boolean suppressErrors) throws StopLocationNotResolvedException;
+    StopLocation getStationByHID(String id, boolean suppressErrors) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its ID
@@ -77,17 +77,7 @@ public interface TransportStopsDataSource {
      * @return The station object.
      */
     @Deprecated
-
-    Station getStationByIrailApiId( String id) throws StopLocationNotResolvedException;
-
-    /**
-     * Get a station by its URI
-     *
-     * @param uri a uri string
-     * @return The station object.
-     */
-
-    Station getStationByUri( String uri) throws StopLocationNotResolvedException;
+    StopLocation getStationByIrailApiId(String id) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its URI
@@ -96,7 +86,16 @@ public interface TransportStopsDataSource {
      * @return The station object.
      */
 
-    Station getStationByUri( String uri, boolean suppressErrors) throws StopLocationNotResolvedException;
+    StopLocation getStationByUri(String uri) throws StopLocationNotResolvedException;
+
+    /**
+     * Get a station by its URI
+     *
+     * @param uri a uri string
+     * @return The station object.
+     */
+
+    StopLocation getStationByUri(String uri, boolean suppressErrors) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its name.
@@ -105,7 +104,7 @@ public interface TransportStopsDataSource {
      * @return The station object.
      */
     @Nullable
-    Station getStationByExactName( String name);
+    StopLocation getStationByExactName(String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their size, measured in average train stops per day.
@@ -114,7 +113,7 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
     @Nullable
-    Station[] getStationsByNameOrderBySize( String name);
+    StopLocation[] getStationsByNameOrderBySize(String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their distance from a given location
@@ -124,7 +123,7 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their distance from the given location
      */
     @Nullable
-    Station[] getStationsByNameOrderByLocation( String name,  Location location);
+    StopLocation[] getStationsByNameOrderByLocation(String name, Location location);
 
     /**
      * Get all stations ordered by their distance from a given location
@@ -133,7 +132,7 @@ public interface TransportStopsDataSource {
      * @return An array of all station objects ordered by their distance from the given location
      */
 
-    Station[] getStationsOrderByLocation(Location location);
+    StopLocation[] getStationsOrderByLocation(Location location);
 
     /**
      * Get all stations ordered by their size, measured in average train stops per day.
@@ -141,7 +140,7 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
 
-    Station[] getStationsOrderBySize();
+    StopLocation[] getStationsOrderBySize();
 
     /**
      * Get the n closest stations to a location, ordered by their size, measured in average train stops per day.
@@ -151,5 +150,5 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
 
-    Station[] getStationsOrderByLocationAndSize(Location location, int limit);
+    StopLocation[] getStationsOrderByLocationAndSize(Location location, int limit);
 }

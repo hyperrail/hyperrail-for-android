@@ -10,74 +10,76 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package eu.opentransport.common.models;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package eu.opentransport.irail;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.io.Serializable;
+import java.util.Map;
 
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
-import eu.opentransport.irail.StationFacilities;
-import eu.opentransport.irail.StationsDataProvider;
+import eu.opentransport.common.models.StopLocation;
 
 /**
  * This class represents a station, as found in irail/stationscsv
  * <p>
  * https://github.com/iRail/stations/blob/master/stations.csv
  */
-public class Station implements Serializable, Comparable {
+public class IrailStation implements StopLocation, Serializable, Comparable {
 
     protected String hafasId;
     protected String name;
-    protected String alternative_nl;
-    protected String alternative_fr;
-    protected String alternative_de;
-    protected String alternative_en;
     protected String localizedName;
     protected String country_code;
+    protected String country_uri;
     protected double latitude;
     protected double longitude;
     protected float avgStopTimes;
+    protected Map<String, String> translations;
+    private StationFacilities stationFacilities;
 
-    protected Station() {
+    protected IrailStation() {
 
     }
 
-    public Station(String hafasId, String name, String nl, String fr, String de, String en, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
+    public IrailStation(String hafasId, String name, Map<String, String> translations, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
         if (hafasId.startsWith("BE.NMBS.")) {
             throw new IllegalArgumentException("Station IDs should not start with BE.NMBS!");
         }
 
         this.hafasId = hafasId;
         this.name = name;
-        this.alternative_nl = nl;
-        this.alternative_fr = fr;
-        this.alternative_en = en;
-        this.alternative_de = de;
+        translations = translations;
         this.localizedName = localizedName;
         this.country_code = country;
+        this.country_uri = "";
         this.latitude = latitude;
         this.longitude = longitude;
         this.avgStopTimes = avgStopTimes;
     }
 
-    public Station(Station s) {
+    public IrailStation(IrailStation s) {
         copy(s);
     }
 
-    public void copy(Station copy) {
+    public void copy(IrailStation copy) {
         this.hafasId = copy.hafasId;
         this.name = copy.name;
-        this.alternative_nl = copy.alternative_nl;
-        this.alternative_fr = copy.alternative_fr;
-        this.alternative_en = copy.alternative_en;
-        this.alternative_de = copy.alternative_de;
+        this.translations = copy.translations;
         this.localizedName = copy.localizedName;
         this.country_code = copy.country_code;
+        this.country_uri = copy.country_uri;
         this.latitude = copy.latitude;
         this.longitude = copy.longitude;
         this.avgStopTimes = copy.avgStopTimes;
+        this.stationFacilities = copy.stationFacilities;
     }
 
     public String getName() {
@@ -94,8 +96,8 @@ public class Station implements Serializable, Comparable {
 
     /**
      * Get the 9-digit HAFAS Id for this station
-     * @return a 9 digit HAFAS identifier
      *
+     * @return a 9 digit HAFAS identifier
      */
     public String getHafasId() {
         return hafasId;
@@ -103,6 +105,7 @@ public class Station implements Serializable, Comparable {
 
     /**
      * Get the 7-digit UIC id for this station
+     *
      * @return a 7 digit worldwide unique identifier for this station
      */
     public String getUicId() {
@@ -113,24 +116,6 @@ public class Station implements Serializable, Comparable {
         return "http://irail.be/stations/NMBS/" + hafasId;
     }
 
-    public String getAlternativeNl() {
-        return alternative_nl;
-    }
-
-    public String getAlternativeFr() {
-        return alternative_fr;
-    }
-
-    public String getAlternativeDe() {
-        return alternative_de;
-    }
-
-    public String getAlternativeEn() {
-        return alternative_en;
-    }
-
-    // @TODO device language should be set as a setting (one time), after which user can choose in settings
-
     /**
      * Get the NL, FR, DE or EN name based on the device language
      *
@@ -140,15 +125,24 @@ public class Station implements Serializable, Comparable {
         return localizedName;
     }
 
+    @Override
+    public Map<String, String> getTranslations() {
+        return translations;
+    }
+
     public String getCountryCode() {
         return country_code;
+    }
+
+    @Override
+    public String getCountryUri() {
+        throw new UnsupportedOperationException("This function is not yet implemented");
     }
 
     public float getAvgStopTimes() {
         return avgStopTimes;
     }
 
-    private StationFacilities stationFacilities;
 
     /**
      * Get the facilities available in this station.
@@ -158,7 +152,7 @@ public class Station implements Serializable, Comparable {
      */
     public StationFacilities getStationFacilities() {
         if (stationFacilities == null) {
-            TransportStopsDataSource provider = OpenTransport.getStationsProviderInstance();
+            TransportStopsDataSource provider = OpenTransportApi.getStationsProviderInstance();
             if (!(provider instanceof StationsDataProvider)) {
                 Crashlytics.logException(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
                 return null;
@@ -170,14 +164,14 @@ public class Station implements Serializable, Comparable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Station && this.getHafasId().equals(((Station) obj).getHafasId());
+        return obj instanceof IrailStation && this.getHafasId().equals(((IrailStation) obj).getHafasId());
     }
 
     @Override
-    public int compareTo( Object o) {
-        if (!(o instanceof Station)) {
+    public int compareTo(Object o) {
+        if (!(o instanceof IrailStation)) {
             return -1;
         }
-        return getLocalizedName().compareTo(((Station) o).getLocalizedName());
+        return getLocalizedName().compareTo(((IrailStation) o).getLocalizedName());
     }
 }

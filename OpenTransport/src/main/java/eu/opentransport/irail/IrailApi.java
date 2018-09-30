@@ -4,7 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package eu.opentransport.common.models;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package eu.opentransport.irail;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -46,12 +52,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import eu.opentransport.BuildConfig;
-import eu.opentransport.OpenTransport;
+import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.models.Disturbance;
+import eu.opentransport.common.models.Route;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
 import eu.opentransport.common.requests.IrailDisturbanceRequest;
@@ -61,8 +69,6 @@ import eu.opentransport.common.requests.IrailRouteRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
 import eu.opentransport.common.requests.IrailVehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
-import eu.opentransport.irail.LiveboardAppendHelper;
-import eu.opentransport.irail.RouteAppendHelper;
 
 import static java.util.logging.Level.WARNING;
 
@@ -85,7 +91,7 @@ public class IrailApi implements TransportDataSource {
 
     public IrailApi(Context context) {
         this.context = context;
-        this.parser = new IrailApiParser(OpenTransport.getStationsProviderInstance());
+        this.parser = new IrailApiParser(OpenTransportApi.getStationsProviderInstance());
         this.requestQueue = Volley.newRequestQueue(context);
         this.requestPolicy = new DefaultRetryPolicy(
                 750,
@@ -115,9 +121,9 @@ public class IrailApi implements TransportDataSource {
             );
 
             // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
-            routesRequest.setCallback(new TransportDataSuccessResponseListener<RouteResult>() {
+            routesRequest.setCallback(new TransportDataSuccessResponseListener<IrailRoutesList>() {
                 @Override
-                public void onSuccessResponse( RouteResult data, Object tag) {
+                public void onSuccessResponse(IrailRoutesList data, Object tag) {
                     for (Route r : data.getRoutes()) {
                         if (r.getTransfers()[0].getDepartureSemanticId() != null && r.getTransfers()[0].getDepartureSemanticId().equals(
                                 request.getDepartureSemanticId())) {
@@ -183,7 +189,7 @@ public class IrailApi implements TransportDataSource {
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                RouteResult routeResult;
+                IrailRoutesList routeResult;
                 try {
                     routeResult = parser.parseRouteResult(
                             response, request.getOrigin(), request.getDestination(),
@@ -248,18 +254,18 @@ public class IrailApi implements TransportDataSource {
         final IrailLiveboardRequest actualRequest = request.withSearchTime(
                 request.getSearchTime().minusHours(1));
 
-        actualRequest.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
+        actualRequest.setCallback(new TransportDataSuccessResponseListener<IrailLiveboard>() {
             @Override
-            public void onSuccessResponse( Liveboard data, Object tag) {
-                List<VehicleStop> stops = new ArrayList<>();
-                for (VehicleStop s : data.getStops()) {
+            public void onSuccessResponse(IrailLiveboard data, Object tag) {
+                List<IrailVehicleStop> stops = new ArrayList<>();
+                for (IrailVehicleStop s : data.getStops()) {
                     if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
                         stops.add(s);
                     }
                 }
                 request.notifySuccessListeners(
-                        new Liveboard(data, stops.toArray(new VehicleStop[]{}),
-                                      data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
+                        new IrailLiveboard(data, stops.toArray(new IrailVehicleStop[]{}),
+                                           data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
                         ));
             }
         }, new TransportDataErrorResponseListener() {
@@ -282,12 +288,12 @@ public class IrailApi implements TransportDataSource {
                 + "&id=" + request.getStation().getHafasId()
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
-                + "&arrdep=" + ((request.getType() == Liveboard.LiveboardType.DEPARTURES) ? "dep" : "arr");
+                + "&arrdep=" + ((request.getType() == IrailLiveboard.LiveboardType.DEPARTURES) ? "dep" : "arr");
 
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Liveboard result;
+                IrailLiveboard result;
                 try {
                     result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
                 } catch (JSONException | StopLocationNotResolvedException e) {
@@ -345,7 +351,7 @@ public class IrailApi implements TransportDataSource {
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Vehicle result;
+                IrailVehicle result;
                 try {
                     result = parser.parseTrain(response, request.getSearchTime());
                 } catch (JSONException | StopLocationNotResolvedException e) {
@@ -399,10 +405,10 @@ public class IrailApi implements TransportDataSource {
             time = request.getStop().getArrivalTime();
         }
         IrailVehicleRequest vehicleRequest = new IrailVehicleRequest(request.getStop().getVehicle().getId(), time);
-        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<Vehicle>() {
+        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<IrailVehicle>() {
             @Override
-            public void onSuccessResponse( Vehicle data, Object tag) {
-                for (VehicleStop stop :
+            public void onSuccessResponse(IrailVehicle data, Object tag) {
+                for (IrailVehicleStop stop :
                         data.getStops()) {
                     if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
                         request.notifySuccessListeners(stop);
