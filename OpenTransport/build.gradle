@@ -1,0 +1,69 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'io.fabric'
+
+
+
+def VERSION_CODE = 1
+def VERSION_NAME = '1.0.0'
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.2'
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+sourceCompatibility = "8"
+targetCompatibility = "8"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Networking
+    implementation 'com.android.volley:volley:1.1.0'
+
+    // Advanced DateTime library
+    implementation 'joda-time:joda-time:2.9.9'
+
+    // Easy communication with JSON APIs
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    // High performance JSON parsing for Linked Connections
+    annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.7'
+    implementation 'com.bluelinelabs:logansquare:1.3.7'
+
+    // Performance logging
+    implementation 'com.google.firebase:firebase-perf:16.1.0'
+    implementation 'com.google.firebase:firebase-core:16.0.3'
+
+    // Crash logging
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
+}
