@@ -32,6 +32,7 @@ import java.util.Scanner;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.StationNotResolvedException;
+import io.fabric.sdk.android.services.common.Crash;
 
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_ID;
@@ -898,14 +899,19 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
         LocalTime[][] openingHours = new LocalTime[7][];
         DateTimeFormatter localTimeFormatter = DateTimeFormat.forPattern("HH:mm");
         for (int i = 0; i < 7; i++) {
-            if (c.getString(indices[i][0]) == null) {
+            if (c.getString(indices[i][0]) == null || c.getString(indices[i][1]) == null) {
                 openingHours[i] = null;
             } else {
-                openingHours[i] = new LocalTime[2];
-                openingHours[i][0] = LocalTime.parse(
-                        c.getString(indices[i][0]), localTimeFormatter);
-                openingHours[i][1] = LocalTime.parse(
-                        c.getString(indices[i][1]), localTimeFormatter);
+                try {
+                    openingHours[i] = new LocalTime[2];
+                    openingHours[i][0] = LocalTime.parse(
+                            c.getString(indices[i][0]), localTimeFormatter);
+                    openingHours[i][1] = LocalTime.parse(
+                            c.getString(indices[i][1]), localTimeFormatter);
+                } catch (Exception e){
+                    Crashlytics.logException(e);
+                    openingHours[i] = null;
+                }
             }
         }
 
