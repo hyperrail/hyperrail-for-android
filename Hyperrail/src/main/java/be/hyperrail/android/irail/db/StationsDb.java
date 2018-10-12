@@ -32,7 +32,6 @@ import java.util.Scanner;
 import be.hyperrail.android.R;
 import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import io.fabric.sdk.android.services.common.Crash;
 
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
 import static be.hyperrail.android.irail.db.StationsDataContract.SQL_CREATE_INDEX_ID;
@@ -614,6 +613,11 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
 
     @Nullable
     public Station[] getStationsByNameOrderBySize(@NonNull String name, boolean exact) {
+        // Fallback to prevent crashes %TODO ensure this method is never called with a null parameter
+        if (name == null) {
+            return getStationsOrderBySize();
+        }
+
         SQLiteDatabase db = getReadableDatabase();
         name = cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
@@ -908,7 +912,7 @@ public class StationsDb extends SQLiteOpenHelper implements IrailStationProvider
                             c.getString(indices[i][0]), localTimeFormatter);
                     openingHours[i][1] = LocalTime.parse(
                             c.getString(indices[i][1]), localTimeFormatter);
-                } catch (Exception e){
+                } catch (Exception e) {
                     Crashlytics.logException(e);
                     openingHours[i] = null;
                 }
