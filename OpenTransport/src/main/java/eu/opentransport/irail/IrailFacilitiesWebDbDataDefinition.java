@@ -29,10 +29,10 @@ import java.util.Scanner;
 
 import eu.opentransport.common.webdb.WebDbDataDefinition;
 
-import static eu.opentransport.irail.StationFacilitiesDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
-import static eu.opentransport.irail.StationFacilitiesDataContract.SQL_CREATE_TABLE_FACILITIES;
-import static eu.opentransport.irail.StationFacilitiesDataContract.SQL_DELETE_TABLE_FACILITIES;
-import static eu.opentransport.irail.StationFacilitiesDataContract.StationFacilityColumns;
+import static eu.opentransport.irail.IrailStationFacilitiesDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
+import static eu.opentransport.irail.IrailStationFacilitiesDataContract.SQL_CREATE_TABLE_FACILITIES;
+import static eu.opentransport.irail.IrailStationFacilitiesDataContract.SQL_DELETE_TABLE_FACILITIES;
+import static eu.opentransport.irail.IrailStationFacilitiesDataContract.StationFacilityColumns;
 import static java.util.logging.Level.INFO;
 
 /**

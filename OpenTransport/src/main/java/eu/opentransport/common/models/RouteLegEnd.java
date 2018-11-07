@@ -14,7 +14,6 @@ import org.joda.time.Duration;
 import java.io.Serializable;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
-import eu.opentransport.irail.IrailStation;
 
 /**
  * The end of a route leg (either a departure or an arrival)
@@ -26,7 +25,7 @@ public interface RouteLegEnd extends Serializable {
 
     DateTime getDelayedTime();
 
-    IrailStation getStation();
+    StopLocation getStation();
 
     String getPlatform();
 

@@ -12,7 +12,6 @@ import java.io.Serializable;
 
 import eu.opentransport.common.contracts.PagedDataResource;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.irail.IrailStation;
 
 /**
  * Result of a route query. Includes the query, as parsed server-side.
@@ -21,9 +20,9 @@ import eu.opentransport.irail.IrailStation;
  */
 public interface RoutesList extends Serializable, PagedDataResource {
 
-    IrailStation getOrigin();
+    StopLocation getOrigin();
 
-    IrailStation getDestination();
+    StopLocation getDestination();
 
     QueryTimeDefinition getTimeDefinition();
 

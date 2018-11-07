@@ -12,7 +12,7 @@ import android.provider.BaseColumns;
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  * (c) Bert Marcelis 2018
  */
-public class StationFacilitiesDataContract {
+public class IrailStationFacilitiesDataContract {
     static final String SQL_CREATE_INDEX_FACILITIES_ID = " CREATE INDEX facilities_station_id ON " + StationFacilityColumns.TABLE_NAME + " (" + StationFacilityColumns._ID + ");";
     static final String SQL_DELETE_TABLE_FACILITIES = "DROP TABLE IF EXISTS " + StationFacilityColumns.TABLE_NAME;
     static final String SQL_CREATE_TABLE_FACILITIES = " CREATE TABLE " + StationFacilityColumns.TABLE_NAME + " (" +

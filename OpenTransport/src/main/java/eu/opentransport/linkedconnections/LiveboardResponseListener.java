@@ -36,7 +36,6 @@ import eu.opentransport.irail.IrailStation;
 import eu.opentransport.irail.IrailVehicleStop;
 import eu.opentransport.irail.IrailVehicleStub;
 
-import static eu.opentransport.irail.IrailLiveboard.LiveboardType.ARRIVALS;
 import static eu.opentransport.linkedconnections.LinkedConnectionsDataSource.basename;
 
 /**

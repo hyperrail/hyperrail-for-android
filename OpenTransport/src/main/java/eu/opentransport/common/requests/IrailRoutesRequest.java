@@ -17,13 +17,13 @@ import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.models.RoutesList;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.irail.IrailRoutesList;
 
 /**
  * A request for a routes between two or more stations
  */
-public class IrailRoutesRequest extends IrailBaseRequest<IrailRoutesList> implements TransportDataRequest<IrailRoutesList> {
+public class IrailRoutesRequest extends IrailBaseRequest<RoutesList> implements TransportDataRequest<RoutesList> {
 
 
     private final StopLocation origin;

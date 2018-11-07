@@ -22,7 +22,6 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import eu.opentransport.common.contracts.PagedDataResource;
@@ -30,6 +29,7 @@ import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.StopLocation;
 
 /**
  * This class represents a liveboard entity, containing departures or arrivals.
@@ -43,7 +43,7 @@ public class IrailLiveboard extends IrailStation implements Liveboard, Serializa
     LiveboardType mType;
     private PagedDataResourceDescriptor mDescriptor;
 
-    IrailLiveboard(IrailStation station, IrailVehicleStop[] stops, DateTime searchTime, LiveboardType type, QueryTimeDefinition timeDefinition) {
+    public IrailLiveboard(StopLocation station, IrailVehicleStop[] stops, DateTime searchTime, LiveboardType type, QueryTimeDefinition timeDefinition) {
         super(station);
 
         mStops = stops;
@@ -96,14 +96,11 @@ public class IrailLiveboard extends IrailStation implements Liveboard, Serializa
         IrailVehicleStop[] stops = new IrailVehicleStop[stopsByUri.size()];
         stops = stopsByUri.values().toArray(stops);
 
-        Arrays.sort(stops, new Comparator<IrailVehicleStop>() {
-            @Override
-            public int compare(IrailVehicleStop o1, IrailVehicleStop o2) {
-                if (IrailLiveboard.this.mType == LiveboardType.DEPARTURES) {
-                    return o1.getDepartureTime().compareTo(o2.getDepartureTime());
-                } else {
-                    return o1.getArrivalTime().compareTo(o2.getArrivalTime());
-                }
+        Arrays.sort(stops, (o1, o2) -> {
+            if (IrailLiveboard.this.mType == LiveboardType.DEPARTURES) {
+                return o1.getDepartureTime().compareTo(o2.getDepartureTime());
+            } else {
+                return o1.getArrivalTime().compareTo(o2.getArrivalTime());
             }
         });
 

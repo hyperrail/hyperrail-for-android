@@ -17,14 +17,14 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import eu.opentransport.common.webdb.WebDb;
-import eu.opentransport.irail.StationFacilitiesDataContract.StationFacilityColumns;
+import eu.opentransport.irail.IrailStationFacilitiesDataContract.StationFacilityColumns;
 
 import static java.util.logging.Level.SEVERE;
 
 /**
  * Database for querying stations
  */
-public class FacilitiesDataProvider {
+public class IrailFacilitiesDataProvider {
 
     // Logtag for logging purpose
     private static final String LOGTAG = "database";
@@ -32,25 +32,12 @@ public class FacilitiesDataProvider {
     private final Context context;
     private WebDb mWebDb;
 
-    public FacilitiesDataProvider(Context context) {
+    public IrailFacilitiesDataProvider(Context context) {
         this.context = context;
         this.mWebDb = new WebDb(context, new IrailFacilitiesWebDbDataDefinition(context));
     }
 
-    static String cleanAccents(String s) {
-
-        if (s == null || s.isEmpty()) {
-            return s;
-        }
-
-        return s.replaceAll("[éÉèÈêÊëË]", "e")
-                .replaceAll("[âÂåäÄ]", "a")
-                .replaceAll("[öÖø]", "o")
-                .replaceAll("[üÜ]", "u");
-    }
-
-
-    public StationFacilities getStationFacilitiesById(String id) {
+    public IrailStationFacilities getStationFacilitiesById(String id) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
         Cursor c = db.query(
                 StationFacilityColumns.TABLE_NAME,
@@ -105,7 +92,7 @@ public class FacilitiesDataProvider {
             return null;
         }
 
-        StationFacilities result = loadFacilitiesCursor(c);
+        IrailStationFacilities result = loadFacilitiesCursor(c);
         c.close();
 
         return result;
@@ -119,7 +106,7 @@ public class FacilitiesDataProvider {
      * @param c The cursor from which stations should be loaded.
      * @return The array of loaded stations
      */
-    private StationFacilities loadFacilitiesCursor(Cursor c) {
+    private IrailStationFacilities loadFacilitiesCursor(Cursor c) {
         if (c.isClosed()) {
             Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
             return null;
@@ -170,7 +157,7 @@ public class FacilitiesDataProvider {
             }
         }
 
-        return new StationFacilities(
+        return new IrailStationFacilities(
                 openingHours,
                 c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_STREET)),
                 c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_ZIP)),

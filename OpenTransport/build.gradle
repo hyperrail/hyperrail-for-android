@@ -66,4 +66,6 @@ dependencies {
 
     // Crash logging
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
+    implementation 'org.junit.jupiter:junit-jupiter-api'
+    implementation 'org.junit.jupiter:junit-jupiter-api'
 }

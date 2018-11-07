@@ -16,13 +16,13 @@ import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.common.models.Vehicle;
 import eu.opentransport.irail.IrailStation;
-import eu.opentransport.irail.IrailVehicle;
 
 /**
  * A request for train data
  */
-public class IrailVehicleRequest extends IrailBaseRequest<IrailVehicle> implements TransportDataRequest<IrailVehicle> {
+public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements TransportDataRequest<Vehicle> {
 
 
     private final String mVehicleId;

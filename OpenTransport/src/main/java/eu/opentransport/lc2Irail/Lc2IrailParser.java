@@ -42,12 +42,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
-import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RouteLeg;
 import eu.opentransport.common.models.RouteLegEnd;
@@ -57,8 +56,12 @@ import eu.opentransport.common.requests.IrailLiveboardRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
 import eu.opentransport.common.requests.IrailVehicleRequest;
 import eu.opentransport.irail.IrailLiveboard;
+import eu.opentransport.irail.IrailRoute;
+import eu.opentransport.irail.IrailRouteLeg;
+import eu.opentransport.irail.IrailRouteLegEnd;
 import eu.opentransport.irail.IrailRoutesList;
 import eu.opentransport.irail.IrailStation;
+import eu.opentransport.irail.IrailStationsDataProvider;
 import eu.opentransport.irail.IrailVehicle;
 import eu.opentransport.irail.IrailVehicleStop;
 import eu.opentransport.irail.IrailVehicleStub;
@@ -70,10 +73,10 @@ import eu.opentransport.irail.IrailVehicleStub;
  */
 public class Lc2IrailParser {
 
-    private final TransportStopsDataSource stationProvider;
+    private final IrailStationsDataProvider stationProvider;
     private DateTimeFormatter dtf = ISODateTimeFormat.dateTimeNoMillis();
 
-    Lc2IrailParser(@NonNull TransportStopsDataSource stationProvider) {
+    Lc2IrailParser(@NonNull IrailStationsDataProvider stationProvider) {
         this.stationProvider = stationProvider;
     }
 
@@ -86,7 +89,7 @@ public class Lc2IrailParser {
         }
 
         JSONArray departuresOrArrivals;
-        if (request.getType() == IrailLiveboard.LiveboardType.DEPARTURES) {
+        if (request.getType() == LiveboardType.DEPARTURES) {
             departuresOrArrivals = json.getJSONArray("departures");
         } else {
             departuresOrArrivals = json.getJSONArray("arrivals");
@@ -97,20 +100,17 @@ public class Lc2IrailParser {
 
         IrailVehicleStop[] stopArray = new IrailVehicleStop[stops.size()];
         stops.toArray(stopArray);
-        Arrays.sort(stopArray, new Comparator<IrailVehicleStop>() {
-            @Override
-            public int compare(IrailVehicleStop o1, IrailVehicleStop o2) {
-                if (o1.getDepartureTime() != null && o2.getDepartureTime() != null) {
-                    return o1.getDepartureTime().compareTo(o2.getDepartureTime());
-                }
-                if (o1.getArrivalTime() != null && o2.getArrivalTime() != null) {
-                    return o1.getArrivalTime().compareTo(o2.getArrivalTime());
-                }
-                if (o1.getDepartureTime() != null && o2.getArrivalTime() != null) {
-                    return o1.getDepartureTime().compareTo(o2.getArrivalTime());
-                }
-                return o1.getArrivalTime().compareTo(o2.getDepartureTime());
+        Arrays.sort(stopArray, (o1, o2) -> {
+            if (o1.getDepartureTime() != null && o2.getDepartureTime() != null) {
+                return o1.getDepartureTime().compareTo(o2.getDepartureTime());
             }
+            if (o1.getArrivalTime() != null && o2.getArrivalTime() != null) {
+                return o1.getArrivalTime().compareTo(o2.getArrivalTime());
+            }
+            if (o1.getDepartureTime() != null && o2.getArrivalTime() != null) {
+                return o1.getDepartureTime().compareTo(o2.getArrivalTime());
+            }
+            return o1.getArrivalTime().compareTo(o2.getDepartureTime());
         });
         return new IrailLiveboard(request.getStation(), stopArray, request.getSearchTime(), request.getType(), request.getTimeDefinition());
     }
@@ -449,7 +449,7 @@ public class Lc2IrailParser {
                 hasDeparted = jsonLeg.getBoolean("hasLeft");
             }
 
-            RouteLegEnd departure = new RouteLegEnd(departureStation,
+            RouteLegEnd departure = new IrailRouteLegEnd(departureStation,
                                                     departureTime,
                                                     jsonLeg.getString("departurePlatform"),
                                                     isDeparturePlatformNormal,
@@ -474,18 +474,18 @@ public class Lc2IrailParser {
             DateTime arrivalTime = DateTime.parse(jsonLeg.getString("arrivalTime"), dtf);
             int arrivalDelay = jsonLeg.getInt("arrivalDelay");
 
-            RouteLegEnd arrival = new RouteLegEnd(arrivalStation,
-                                                  arrivalTime,
-                                                  jsonLeg.getString("arrivalPlatform"),
-                                                  isArrivalPlatformNormal,
-                                                  Duration.standardSeconds(arrivalDelay),
-                                                  isArrivalCanceled,
-                                                  hasArrived,
-                                                  jsonLeg.getString("arrivalUri"),
-                                                  TransportOccupancyLevel.UNSUPPORTED);
+            RouteLegEnd arrival = new IrailRouteLegEnd(arrivalStation,
+                                                       arrivalTime,
+                                                       jsonLeg.getString("arrivalPlatform"),
+                                                       isArrivalPlatformNormal,
+                                                       Duration.standardSeconds(arrivalDelay),
+                                                       isArrivalCanceled,
+                                                       hasArrived,
+                                                       jsonLeg.getString("arrivalUri"),
+                                                       TransportOccupancyLevel.UNSUPPORTED);
 
-            legs[i] = new RouteLeg(RouteLegType.TRAIN, vehicle, departure, arrival);
+            legs[i] = new IrailRouteLeg(RouteLegType.TRAIN, vehicle, departure, arrival);
         }
-        return new Route(legs);
+        return new IrailRoute(legs);
     }
 }

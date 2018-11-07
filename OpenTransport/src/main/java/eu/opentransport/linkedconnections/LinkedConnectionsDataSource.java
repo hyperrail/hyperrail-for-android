@@ -40,9 +40,6 @@ import eu.opentransport.irail.IrailLiveboard;
 import eu.opentransport.irail.IrailRoutesList;
 import eu.opentransport.irail.IrailVehicleStop;
 
-import static eu.opentransport.irail.IrailLiveboard.LiveboardType.ARRIVALS;
-import static eu.opentransport.irail.IrailLiveboard.LiveboardType.DEPARTURES;
-
 /**
  * This API loads linkedConnection data and builds responses based on this data
  */

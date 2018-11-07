@@ -48,6 +48,8 @@ import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.Route;
+import eu.opentransport.common.models.RoutesList;
+import eu.opentransport.common.models.Vehicle;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
 import eu.opentransport.common.requests.IrailDisturbanceRequest;
@@ -59,11 +61,11 @@ import eu.opentransport.common.requests.IrailVehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
 import eu.opentransport.irail.IrailApi;
 import eu.opentransport.irail.IrailLiveboard;
+import eu.opentransport.irail.IrailLiveboardAppendHelper;
+import eu.opentransport.irail.IrailRouteAppendHelper;
 import eu.opentransport.irail.IrailRoutesList;
 import eu.opentransport.irail.IrailVehicle;
 import eu.opentransport.irail.IrailVehicleStop;
-import eu.opentransport.irail.LiveboardAppendHelper;
-import eu.opentransport.irail.RouteAppendHelper;
 
 import static java.util.logging.Level.WARNING;
 
@@ -180,7 +182,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     public void extendLiveboard(@NonNull ExtendLiveboardRequest... requests) {
         for (ExtendLiveboardRequest request :
                 requests) {
-            LiveboardAppendHelper helper = new LiveboardAppendHelper();
+            IrailLiveboardAppendHelper helper = new IrailLiveboardAppendHelper();
             helper.extendLiveboard(request);
         }
     }
@@ -252,7 +254,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     public void extendRoutes(@NonNull ExtendRoutesRequest... requests) {
         for (ExtendRoutesRequest request :
                 requests) {
-            RouteAppendHelper helper = new RouteAppendHelper();
+            IrailRouteAppendHelper helper = new IrailRouteAppendHelper();
             helper.extendRoutesRequest(request);
         }
     }
@@ -266,9 +268,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             );
 
             // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
-            routesRequest.setCallback(new TransportDataSuccessResponseListener<IrailRoutesList>() {
+            routesRequest.setCallback(new TransportDataSuccessResponseListener<RoutesList>() {
                 @Override
-                public void onSuccessResponse(@NonNull IrailRoutesList data, Object tag) {
+                public void onSuccessResponse(@NonNull RoutesList data, Object tag) {
                     for (Route r : data.getRoutes()) {
                         if (r.getTransfers()[0].getDepartureSemanticId() != null &&
                                 r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
@@ -300,9 +302,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             time = request.getStop().getArrivalTime();
         }
         IrailVehicleRequest vehicleRequest = new IrailVehicleRequest(request.getStop().getVehicle().getId(), time);
-        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<IrailVehicle>() {
+        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<Vehicle>() {
             @Override
-            public void onSuccessResponse(@NonNull IrailVehicle data, Object tag) {
+            public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
                 for (IrailVehicleStop stop :
                         data.getStops()) {
                     if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {

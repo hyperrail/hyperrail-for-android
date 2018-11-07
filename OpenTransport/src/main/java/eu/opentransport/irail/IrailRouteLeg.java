@@ -97,14 +97,14 @@ public class IrailRouteLeg implements RouteLeg, Serializable {
         return mIntermediaryStops;
     }
 
-    /**
+    /*/**
      * Set the stops whether this vehicle will halt, but the traveller stays on the train.
      * <p>
      * Null: unknown/unavailable
      * Empty array: no stops
      * Array: stops
-     */
-    public void setIntermediaryStops(IrailVehicleStop[] intermediaryStops) {
+     /
+    public void setIntermediaryStops(VehicleStop[] intermediaryStops) {
         mIntermediaryStops = intermediaryStops;
-    }
+    }/**/
 }

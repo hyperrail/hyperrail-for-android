@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
 import eu.opentransport.common.models.RouteLeg;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.models.VehicleStopType;
 
@@ -38,9 +39,8 @@ public class IrailVehicleStop implements VehicleStop, Serializable {
 
     private final IrailVehicleStub vehicle;
 
-    private final IrailStation station;
-
-
+    private final StopLocation station;
+    
     private final String platform;
     private final boolean isPlatformNormal;
     private boolean hasLeft;
@@ -60,7 +60,7 @@ public class IrailVehicleStop implements VehicleStop, Serializable {
 
     private final VehicleStopType type;
 
-    public IrailVehicleStop(IrailStation station, IrailVehicleStub vehicle, String platform, boolean isPlatformNormal, @Nullable DateTime departureTime, @Nullable DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureUri, TransportOccupancyLevel occupancyLevel, VehicleStopType type) {
+    public IrailVehicleStop(StopLocation station, IrailVehicleStub vehicle, String platform, boolean isPlatformNormal, @Nullable DateTime departureTime, @Nullable DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureUri, TransportOccupancyLevel occupancyLevel, VehicleStopType type) {
         this.station = station;
         this.isPlatformNormal = isPlatformNormal;
         this.departureTime = departureTime;

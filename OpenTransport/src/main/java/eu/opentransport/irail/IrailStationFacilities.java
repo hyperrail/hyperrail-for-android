@@ -19,7 +19,7 @@ import java.io.Serializable;
 /**
  * Describes facilities in a station, including transfers, facilities for disabled persons, and opening hours
  */
-public class StationFacilities implements Serializable {
+public class IrailStationFacilities implements Serializable {
 
     private LocalTime[][] openingHours;
     private String street;
@@ -43,10 +43,10 @@ public class StationFacilities implements Serializable {
     private boolean hearing_aid_signal;
     private int disabled_parking_spots;
 
-    public StationFacilities(LocalTime[][] openingHours, String street, String zip, String city, boolean ticketVendingMachines,
-                             boolean luggageLockers, boolean freeParking, boolean blue_bike, boolean bike, boolean taxi, boolean bus,
-                             boolean tram, boolean metro, boolean wheelchair_available, boolean ramp, int disabled_parking_spots, boolean elevated_platform,
-                             boolean escalator_up, boolean escalator_down, boolean elevator_platform, boolean hearing_aid_signal
+    public IrailStationFacilities(LocalTime[][] openingHours, String street, String zip, String city, boolean ticketVendingMachines,
+                                  boolean luggageLockers, boolean freeParking, boolean blue_bike, boolean bike, boolean taxi, boolean bus,
+                                  boolean tram, boolean metro, boolean wheelchair_available, boolean ramp, int disabled_parking_spots, boolean elevated_platform,
+                                  boolean escalator_up, boolean escalator_down, boolean elevator_platform, boolean hearing_aid_signal
     ) {
         this.openingHours = openingHours;
         this.street = street;

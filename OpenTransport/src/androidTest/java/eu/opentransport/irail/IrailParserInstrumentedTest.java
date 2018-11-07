@@ -4,7 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.test;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package eu.opentransport.irail;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -20,7 +26,6 @@ import be.hyperrail.android.irail.contracts.IrailStationProvider;
 import be.hyperrail.android.irail.contracts.OccupancyLevel;
 import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
 import be.hyperrail.android.irail.db.StationsDb;
-import be.hyperrail.android.irail.implementation.IrailApiParser;
 import be.hyperrail.android.irail.implementation.Liveboard;
 import be.hyperrail.android.irail.implementation.Route;
 import be.hyperrail.android.irail.implementation.RouteResult;
@@ -155,7 +160,7 @@ public class IrailParserInstrumentedTest {
 
         assertEquals(true, route.getTransfers()[1].hasLeft());
         assertEquals("11", route.getTransfers()[1].getDeparturePlatform());
-        assertNotNull( route.getTransfers()[1].getDepartureLeg());
+        Assert.assertNotNull(route.getTransfers()[1].getDepartureLeg());
         assertEquals("IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
         assertEquals("IC1513", route.getLegs()[1].getVehicleInformation().getId());
         assertEquals("Genk", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getHeadsign());

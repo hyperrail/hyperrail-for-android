@@ -23,7 +23,7 @@ import android.provider.BaseColumns;
 /**
  * Define the database structure for the stations database.
  */
-class StationsDataContract {
+class IrailStationsDataContract {
 
     static final String SQL_CREATE_INDEX_NAME = " CREATE INDEX stations_station_name ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns.COLUMN_NAME_NAME + ");";
     static final String SQL_CREATE_INDEX_ID = " CREATE INDEX stations_station_id ON " + StationsDataColumns.TABLE_NAME + " (" + StationsDataColumns._ID + ");";
@@ -64,7 +64,7 @@ class StationsDataContract {
         protected static final String COLUMN_NAME_OFFICIAL_TRANSFER_TIME = "official_transfer_time";
     }
 
-    private StationsDataContract() {
+    private IrailStationsDataContract() {
         // don't instantiate
     }
 

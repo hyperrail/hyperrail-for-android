@@ -16,6 +16,7 @@ import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RoutesList;
+import eu.opentransport.common.models.StopLocation;
 
 /**
  * Result of a route query. Includes the query, as parsed server-side.
@@ -24,14 +25,14 @@ import eu.opentransport.common.models.RoutesList;
  */
 public class IrailRoutesList implements RoutesList, Serializable, PagedDataResource {
 
-    private final IrailStation origin;
-    private final IrailStation destination;
+    private final StopLocation origin;
+    private final StopLocation destination;
     private final QueryTimeDefinition timeDefinition;
     private final DateTime mLastSearchTime;
     private Route[] routes;
     private PagedDataResourceDescriptor mDescriptor;
 
-    public IrailRoutesList(IrailStation origin, IrailStation destination, DateTime searchTime, QueryTimeDefinition timeDefinition, Route[] routes) {
+    public IrailRoutesList(StopLocation origin, StopLocation destination, DateTime searchTime, QueryTimeDefinition timeDefinition, Route[] routes) {
         this.destination = destination;
         this.mLastSearchTime = searchTime;
         this.origin = origin;
@@ -39,11 +40,11 @@ public class IrailRoutesList implements RoutesList, Serializable, PagedDataResou
         this.timeDefinition = timeDefinition;
     }
 
-    public IrailStation getOrigin() {
+    public StopLocation getOrigin() {
         return origin;
     }
 
-    public IrailStation getDestination() {
+    public StopLocation getDestination() {
         return destination;
     }
 

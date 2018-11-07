@@ -22,55 +22,43 @@ import android.support.annotation.Nullable;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
-import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.webdb.WebDb;
+import eu.opentransport.util.StringUtils;
 
-import static eu.opentransport.irail.StationsDataContract.StationFacilityColumns;
-import static eu.opentransport.irail.StationsDataContract.StationsDataColumns;
+import static eu.opentransport.irail.IrailStationsDataContract.StationsDataColumns;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 
 /**
  * Database for querying stations
  */
-public class StationsDataProvider implements TransportStopsDataSource {
-
+public class IrailStationsDataProvider implements TransportStopsDataSource {
 
     // Logtag for logging purpose
     private static final String LOGTAG = "database";
 
     private final Context context;
+
+    // The underlying webDb instance, ensuring that the local SQLite database stays up-to-date with the online data
     private WebDb mWebDb;
+
     HashMap<String, IrailStation> mStationIdCache = new HashMap<>();
     HashMap<String, IrailStation> mStationNameCache = new HashMap<>();
 
     IrailStation[] stationsOrderedBySizeCache;
 
-    public StationsDataProvider(Context context) {
+    public IrailStationsDataProvider(Context context) {
         this.context = context;
         this.mWebDb = new WebDb(context, new IrailStopsWebDbDataDefinition(context));
-    }
-
-    static String cleanAccents(String s) {
-
-        if (s == null || s.isEmpty()) {
-            return s;
-        }
-
-        return s.replaceAll("[éÉèÈêÊëË]", "e")
-                .replaceAll("[âÂåäÄ]", "a")
-                .replaceAll("[öÖø]", "o")
-                .replaceAll("[üÜ]", "u");
     }
 
     private String[] getLocationQueryColumns(double longitude, double latitude) {
@@ -199,7 +187,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
      */
     @Override
     @AddTrace(name = "StationsDb.getStationNames")
-    public String[] getStationNames(IrailStation[] Stations) {
+    public String[] getStationNames(StopLocation[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
             Crashlytics.log(
@@ -328,7 +316,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
     @Nullable
     public IrailStation[] getStationsByNameOrderBySize(String name, boolean exact) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
-        name = cleanAccents(name);
+        name = StringUtils.cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
 
         String cleanedName = name.replaceAll("[^A-Za-z]", "%");
@@ -401,7 +389,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
 
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
         double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
-        name = cleanAccents(name);
+        name = StringUtils.cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
@@ -455,27 +443,28 @@ public class StationsDataProvider implements TransportStopsDataSource {
             String name = c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_NAME));
             String localizedName = null;
 
-            String nl = c.getString(
-                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL));
-            String fr = c.getString(
-                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR));
-            String de = c.getString(
-                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE));
-            String en = c.getString(
-                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN));
+            Map<String, String> localizedNames = new HashMap<>();
+            localizedNames.put("nl_BE", c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL)));
+            localizedNames.put("fr_FR", c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR)));
+            localizedNames.put("de_DE", c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE)));
+            localizedNames.put("en_UK", c.getString(
+                    c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN)));
 
             switch (locale) {
                 case "nld":
-                    localizedName = nl;
+                    localizedName = localizedNames.get("nl_BE");
                     break;
                 case "fra":
-                    localizedName = fr;
+                    localizedName = localizedNames.get("fr_FR");
                     break;
                 case "deu":
-                    localizedName = de;
+                    localizedName = localizedNames.get("de_DE");
                     break;
                 case "eng":
-                    localizedName = en;
+                    localizedName = localizedNames.get("en_UK");
                     break;
             }
 
@@ -486,10 +475,7 @@ public class StationsDataProvider implements TransportStopsDataSource {
             IrailStation s = new IrailStation(
                     c.getString(c.getColumnIndex(StationsDataColumns._ID)),
                     name,
-                    nl,
-                    fr,
-                    de,
-                    en,
+                    localizedNames,
                     localizedName,
                     c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_COUNTRY_CODE)),
                     c.getDouble(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_LATITUDE)),
@@ -502,153 +488,5 @@ public class StationsDataProvider implements TransportStopsDataSource {
             i++;
         }
         return result;
-    }
-
-
-    public StationFacilities getStationFacilitiesById(String id) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.query(
-                StationFacilityColumns.TABLE_NAME,
-                new String[]{
-                        StationFacilityColumns._ID,
-                        StationFacilityColumns.COLUMN_STREET,
-                        StationFacilityColumns.COLUMN_ZIP,
-                        StationFacilityColumns.COLUMN_CITY,
-                        StationFacilityColumns.COLUMN_TICKET_VENDING_MACHINE,
-                        StationFacilityColumns.COLUMN_LUGGAGE_LOCKERS,
-                        StationFacilityColumns.COLUMN_FREE_PARKING,
-                        StationFacilityColumns.COLUMN_TAXI,
-                        StationFacilityColumns.COLUMN_BICYCLE_SPOTS,
-                        StationFacilityColumns.COLUMN_BLUE_BIKE,
-                        StationFacilityColumns.COLUMN_BUS,
-                        StationFacilityColumns.COLUMN_TRAM,
-                        StationFacilityColumns.COLUMN_METRO,
-                        StationFacilityColumns.COLUMN_WHEELCHAIR_AVAILABLE,
-                        StationFacilityColumns.COLUMN_RAMP,
-                        StationFacilityColumns.COLUMN_DISABLED_PARKING_SPOTS,
-                        StationFacilityColumns.COLUMN_ELEVATED_PLATFORM,
-                        StationFacilityColumns.COLUMN_ESCALATOR_UP,
-                        StationFacilityColumns.COLUMN_ESCALATOR_DOWN,
-                        StationFacilityColumns.COLUMN_ELEVATOR_PLATFORM,
-                        StationFacilityColumns.COLUMN_HEARING_AID_SIGNAL,
-                        StationFacilityColumns.COLUMN_SALES_OPEN_MONDAY,
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY,
-                        StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY,
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_TUESDAY,
-                        StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY,
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY,
-                        StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY,
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY,
-                        StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY,
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY,
-                        StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY,
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY,
-                        StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY,
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY,
-                },
-                StationFacilityColumns._ID + "=?",
-                new String[]{id},
-                null,
-                null,
-                null,
-                "1"
-        );
-
-        if (c.getCount() == 0) {
-            c.close();
-
-            return null;
-        }
-
-        StationFacilities result = loadFacilitiesCursor(c);
-        c.close();
-
-        return result;
-
-    }
-
-
-    /**
-     * Load stations from a cursor. This method <strong>does not close the cursor afterwards</strong>.
-     *
-     * @param c The cursor from which stations should be loaded.
-     * @return The array of loaded stations
-     */
-    private StationFacilities loadFacilitiesCursor(Cursor c) {
-        if (c.isClosed()) {
-            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
-            return null;
-        }
-
-        if (c.getCount() == 0) {
-            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
-            return null;
-        }
-
-        c.moveToFirst();
-
-        int[][] indices = new int[][]{
-                new int[]{c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_OPEN_MONDAY), c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY)},
-                new int[]{c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY), c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_MONDAY)},
-                new int[]{c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY), c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY)},
-                new int[]{c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY), c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY)},
-                new int[]{c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY), c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY)},
-                new int[]{c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY), c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY)},
-                new int[]{c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY), c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY)},
-        };
-
-        LocalTime[][] openingHours = new LocalTime[7][];
-        DateTimeFormatter localTimeFormatter = DateTimeFormat.forPattern("HH:mm");
-        for (int i = 0; i < 7; i++) {
-            if (c.getString(indices[i][0]) == null) {
-                openingHours[i] = null;
-            } else {
-                openingHours[i] = new LocalTime[2];
-                openingHours[i][0] = LocalTime.parse(
-                        c.getString(indices[i][0]), localTimeFormatter);
-                openingHours[i][1] = LocalTime.parse(
-                        c.getString(indices[i][1]), localTimeFormatter);
-            }
-        }
-
-        return new StationFacilities(
-                openingHours,
-                c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_STREET)),
-                c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_ZIP)),
-                c.getString(c.getColumnIndex(StationFacilityColumns.COLUMN_CITY)),
-                c.getInt(c.getColumnIndex(
-                        StationFacilityColumns.COLUMN_TICKET_VENDING_MACHINE)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_LUGGAGE_LOCKERS)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_FREE_PARKING)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_TAXI)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_BICYCLE_SPOTS)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_BLUE_BIKE)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_BUS)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_TRAM)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_METRO)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_WHEELCHAIR_AVAILABLE)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_RAMP)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_DISABLED_PARKING_SPOTS)),
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_ELEVATED_PLATFORM)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_ESCALATOR_UP)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_ESCALATOR_DOWN)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_ELEVATOR_PLATFORM)) == 1,
-                c.getInt(c.getColumnIndex(StationFacilityColumns.COLUMN_HEARING_AID_SIGNAL)) == 1
-        );
-
     }
 }

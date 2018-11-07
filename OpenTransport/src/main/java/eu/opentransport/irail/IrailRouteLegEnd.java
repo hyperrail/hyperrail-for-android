@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
 import eu.opentransport.common.models.RouteLegEnd;
+import eu.opentransport.common.models.StopLocation;
 
 /**
  * The end of a route leg (either a departure or an arrival)
@@ -31,9 +32,7 @@ public class IrailRouteLegEnd implements RouteLegEnd, Serializable {
 
     private DateTime time;
 
-
-    private final IrailStation station;
-
+    private final StopLocation station;
 
     private String platform;
     private boolean isPlatformNormal;
@@ -50,7 +49,7 @@ public class IrailRouteLegEnd implements RouteLegEnd, Serializable {
     @Nullable
     private String uri;
 
-    public IrailRouteLegEnd(IrailStation station,
+    public IrailRouteLegEnd(StopLocation station,
                             DateTime time, String platform, boolean normal, Duration delay,
                             boolean canceled, boolean passed, @Nullable String semanticId,
                             @Nullable TransportOccupancyLevel occupancy) {
@@ -78,7 +77,7 @@ public class IrailRouteLegEnd implements RouteLegEnd, Serializable {
     }
 
 
-    public IrailStation getStation() {
+    public StopLocation getStation() {
         return station;
     }
 

@@ -24,12 +24,13 @@ import org.joda.time.DateTime;
  */
 public class WebDb {
 
-    SqliteWebDb db;
+    private SqliteWebDb db;
 
     /**
      * Instantiate a new WebDb, according to the parameters defined in the WebDbDataDefinition.
      * Don't run this code on the main thread as it contains blocking I/O
-     * @param context The Android context
+     *
+     * @param context        The Android context
      * @param dataDefinition The data definition, containing both local and remote names as well as methods to create the database.
      */
     public WebDb(Context context, WebDbDataDefinition dataDefinition) {
@@ -37,12 +38,11 @@ public class WebDb {
         db = new SqliteWebDb(context, lastModified, dataDefinition);
     }
 
-    public SQLiteDatabase getReadableDatabase(){
+    public SQLiteDatabase getReadableDatabase() {
         return db.getReadableDatabase();
     }
 
-
-   public SQLiteDatabase getWriteableDatabase(){
+    public SQLiteDatabase getWriteableDatabase() {
         return db.getWritableDatabase();
     }
 }

@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.StopLocation;
 
 /**
@@ -43,7 +42,7 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
     protected double longitude;
     protected float avgStopTimes;
     protected Map<String, String> translations;
-    private StationFacilities stationFacilities;
+    private IrailStationFacilities stationFacilities;
 
     protected IrailStation() {
 
@@ -56,7 +55,7 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
 
         this.hafasId = hafasId;
         this.name = name;
-        translations = translations;
+        this.translations = translations;
         this.localizedName = localizedName;
         this.country_code = country;
         this.country_uri = "";
@@ -65,21 +64,23 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
         this.avgStopTimes = avgStopTimes;
     }
 
-    public IrailStation(IrailStation s) {
+    public IrailStation(StopLocation s) {
         copy(s);
     }
 
-    public void copy(IrailStation copy) {
-        this.hafasId = copy.hafasId;
-        this.name = copy.name;
-        this.translations = copy.translations;
-        this.localizedName = copy.localizedName;
-        this.country_code = copy.country_code;
-        this.country_uri = copy.country_uri;
-        this.latitude = copy.latitude;
-        this.longitude = copy.longitude;
-        this.avgStopTimes = copy.avgStopTimes;
-        this.stationFacilities = copy.stationFacilities;
+    public void copy(StopLocation copy) {
+        this.hafasId = copy.getHafasId();
+        this.name = copy.getName();
+        this.translations = copy.getTranslations();
+        this.localizedName = copy.getLocalizedName();
+        this.country_code = copy.getCountryCode();
+        this.country_uri = copy.getCountryUri();
+        this.latitude = copy.getLatitude();
+        this.longitude = copy.getLongitude();
+        this.avgStopTimes = copy.getAvgStopTimes();
+        if (copy instanceof IrailStation) {
+            this.stationFacilities = ((IrailStation) copy).stationFacilities;
+        }
     }
 
     public String getName() {
@@ -150,14 +151,14 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
      *
      * @return A StationFacilities object for this station
      */
-    public StationFacilities getStationFacilities() {
+    public IrailStationFacilities getStationFacilities() {
         if (stationFacilities == null) {
-            TransportStopsDataSource provider = OpenTransportApi.getStationsProviderInstance();
-            if (!(provider instanceof StationsDataProvider)) {
+            IrailFacilitiesDataProvider provider = OpenTransportApi.getFacilitiesProviderInstance();
+            if (!(provider instanceof IrailFacilitiesDataProvider)) {
                 Crashlytics.logException(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
                 return null;
             }
-            this.stationFacilities = ((StationsDataProvider) provider).getStationFacilitiesById(this.hafasId);
+            this.stationFacilities = ((IrailFacilitiesDataProvider) provider).getStationFacilitiesById(this.hafasId);
         }
         return stationFacilities;
     }

@@ -26,6 +26,7 @@ import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.models.Route;
+import eu.opentransport.common.models.RoutesList;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
 import eu.opentransport.util.ArrayUtils;
@@ -33,19 +34,19 @@ import eu.opentransport.util.ArrayUtils;
 /**
  * A class which allows to withStopsAppended route results.
  */
-public class RouteAppendHelper implements TransportDataSuccessResponseListener<IrailRoutesList>, TransportDataErrorResponseListener {
+class IrailRouteAppendHelper implements TransportDataSuccessResponseListener<RoutesList>, TransportDataErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;
 
     private int attempt = 0;
     private DateTime lastSearchTime;
-    private IrailRoutesList originalRouteResult;
+    private RoutesList originalRouteResult;
 
     TransportDataSource api = OpenTransportApi.getDataProviderInstance();
     private ExtendRoutesRequest mExtendRoutesRequest;
 
-    public void extendRoutesRequest( ExtendRoutesRequest extendRoutesRequest) {
+    public void extendRoutesRequest(ExtendRoutesRequest extendRoutesRequest) {
         switch (extendRoutesRequest.getAction()) {
             default:
             case APPEND:
@@ -57,7 +58,7 @@ public class RouteAppendHelper implements TransportDataSuccessResponseListener<I
         }
     }
 
-    private void appendRouteResult( ExtendRoutesRequest extendRoutesRequest) {
+    private void appendRouteResult(ExtendRoutesRequest extendRoutesRequest) {
         mExtendRoutesRequest = extendRoutesRequest;
 
         this.originalRouteResult = extendRoutesRequest.getRoutes();
@@ -72,7 +73,7 @@ public class RouteAppendHelper implements TransportDataSuccessResponseListener<I
         api.getRoutes(request);
     }
 
-    private void prependRouteResult( ExtendRoutesRequest extendRoutesRequest) {
+    private void prependRouteResult(ExtendRoutesRequest extendRoutesRequest) {
         mExtendRoutesRequest = extendRoutesRequest;
 
         this.originalRouteResult = extendRoutesRequest.getRoutes();
@@ -89,13 +90,13 @@ public class RouteAppendHelper implements TransportDataSuccessResponseListener<I
     }
 
     @Override
-    public void onSuccessResponse(IrailRoutesList data, Object tag) {
+    public void onSuccessResponse(RoutesList data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
-                handleAppendSuccessResponse(data);
+                handleAppendSuccessResponse((IrailRoutesList) data);
                 break;
             case TAG_PREPEND:
-                handlePrependSuccessResponse(data);
+                handlePrependSuccessResponse((IrailRoutesList) data);
                 break;
         }
     }
@@ -105,7 +106,7 @@ public class RouteAppendHelper implements TransportDataSuccessResponseListener<I
      *
      * @param data The newly received data
      */
-    private void handlePrependSuccessResponse( IrailRoutesList data) {
+    private void handlePrependSuccessResponse(IrailRoutesList data) {
         if (data.getRoutes().length > 0) {
             Route[] mergedRoutes = ArrayUtils.concatenate(data.getRoutes(), originalRouteResult.getRoutes());
             IrailRoutesList merged = new IrailRoutesList(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
@@ -128,7 +129,7 @@ public class RouteAppendHelper implements TransportDataSuccessResponseListener<I
      *
      * @param data The newly received data
      */
-    private void handleAppendSuccessResponse( IrailRoutesList data) {
+    private void handleAppendSuccessResponse(IrailRoutesList data) {
         if (data.getRoutes().length > 0) {
             Route[] mergedRoutes = ArrayUtils.concatenate(originalRouteResult.getRoutes(), data.getRoutes());
             IrailRoutesList merged = new IrailRoutesList(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
@@ -147,7 +148,7 @@ public class RouteAppendHelper implements TransportDataSuccessResponseListener<I
     }
 
     @Override
-    public void onErrorResponse( Exception e, Object tag) {
+    public void onErrorResponse(Exception e, Object tag) {
         mExtendRoutesRequest.notifyErrorListeners(e);
     }
 }

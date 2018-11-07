@@ -47,7 +47,7 @@ public interface TransportDataRequest<T> extends Serializable, Comparable<Transp
      *
      * @param data The request result
      */
-    void notifySuccessListeners( T data);
+    void notifySuccessListeners(T data);
 
     @Nullable
     TransportDataErrorResponseListener getOnErrorListener();

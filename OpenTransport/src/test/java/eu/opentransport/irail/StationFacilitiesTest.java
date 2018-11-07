@@ -4,7 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.android.irail.db;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+package eu.opentransport.irail;
 
 import org.joda.time.LocalTime;
 import org.junit.Before;
@@ -77,14 +83,14 @@ public class StationFacilitiesTest {
                                                                  false, false, false, 0,
                                                                  false, false, false,
                                                                  false, false);
-        assertTrue(facilitiesTrue.hasBlue_bike());
+        Assert.assertTrue(facilitiesTrue.hasBlue_bike());
         StationFacilities facilitiesFalse = new StationFacilities(new LocalTime[7][0], "street", "zip", "city",
                                                                   true, true, true,
                                                                   false, true, true, true, true,
                                                                   true, true, true, 0,
                                                                   true, true, true,
                                                                   true, true);
-        assertFalse(facilitiesFalse.hasBlue_bike());
+        Assert.assertFalse(facilitiesFalse.hasBlue_bike());
     }
 
     @Test
@@ -95,14 +101,14 @@ public class StationFacilitiesTest {
                                                                  false, false, false, 0,
                                                                  false, false, false,
                                                                  false, false);
-        assertTrue(facilitiesTrue.hasBike());
+        Assert.assertTrue(facilitiesTrue.hasBike());
         StationFacilities facilitiesFalse = new StationFacilities(new LocalTime[7][0], "street", "zip", "city",
                                                                   true, true, true,
                                                                   true, false, true, true, true,
                                                                   true, true, true, 0,
                                                                   true, true, true,
                                                                   true, true);
-        assertFalse(facilitiesFalse.hasBike());
+        Assert.assertFalse(facilitiesFalse.hasBike());
     }
 
     @Test
@@ -137,14 +143,14 @@ public class StationFacilitiesTest {
                                                                  false, false, false, 0,
                                                                  true, false, false,
                                                                  false, false);
-        assertTrue(facilitiesTrue.isElevated_platform());
+        Assert.assertTrue(facilitiesTrue.isElevated_platform());
         StationFacilities facilitiesFalse = new StationFacilities(new LocalTime[7][0], "street", "zip", "city",
                                                                   true, true, true,
                                                                   true, true, true, true, true,
                                                                   true, true, true, 0,
                                                                   false, true, true,
                                                                   true, true);
-        assertFalse(facilitiesFalse.isElevated_platform());
+        Assert.assertFalse(facilitiesFalse.isElevated_platform());
     }
 
     @Test
@@ -155,14 +161,14 @@ public class StationFacilitiesTest {
                                                                  false, false, false, 0,
                                                                  false, true, false,
                                                                  false, false);
-        assertTrue(facilitiesTrue.hasEscalator_up());
+        Assert.assertTrue(facilitiesTrue.hasEscalator_up());
         StationFacilities facilitiesFalse = new StationFacilities(new LocalTime[7][0], "street", "zip", "city",
                                                                   true, true, true,
                                                                   true, true, true, true, true,
                                                                   true, true, true, 0,
                                                                   true, false, true,
                                                                   true, true);
-        assertFalse(facilitiesFalse.hasEscalator_up());
+        Assert.assertFalse(facilitiesFalse.hasEscalator_up());
     }
 
     @Test
@@ -173,14 +179,14 @@ public class StationFacilitiesTest {
                                                                  false, false, false, 0,
                                                                  false, false, true,
                                                                  false, false);
-        assertTrue(facilitiesTrue.hasEscalator_down());
+        Assert.assertTrue(facilitiesTrue.hasEscalator_down());
         StationFacilities facilitiesFalse = new StationFacilities(new LocalTime[7][0], "street", "zip", "city",
                                                                   true, true, true,
                                                                   true, true, true, true, true,
                                                                   true, true, true, 0,
                                                                   true, true, false,
                                                                   true, true);
-        assertFalse(facilitiesFalse.hasEscalator_down());
+        Assert.assertFalse(facilitiesFalse.hasEscalator_down());
     }
 
     @Test

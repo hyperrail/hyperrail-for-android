@@ -21,6 +21,9 @@ import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
+import eu.opentransport.common.models.Liveboard;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.IrailLiveboardRequest;
@@ -28,7 +31,7 @@ import eu.opentransport.common.requests.IrailLiveboardRequest;
 /**
  * A class which allows to withStopsAppended liveboards.
  */
-public class LiveboardAppendHelper implements TransportDataSuccessResponseListener<IrailLiveboard>, TransportDataErrorResponseListener {
+class IrailLiveboardAppendHelper implements TransportDataSuccessResponseListener<Liveboard>, TransportDataErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;
@@ -54,7 +57,7 @@ public class LiveboardAppendHelper implements TransportDataSuccessResponseListen
 
     private void appendLiveboard(ExtendLiveboardRequest extendRequest) {
 
-        this.originalLiveboard = extendRequest.getLiveboard();
+        this.originalLiveboard = (IrailLiveboard) extendRequest.getLiveboard();
         mExtendRequest = extendRequest;
 
         if (originalLiveboard.getStops().length > 0) {
@@ -73,7 +76,7 @@ public class LiveboardAppendHelper implements TransportDataSuccessResponseListen
     }
 
     private void prependLiveboard(ExtendLiveboardRequest extendRequest) {
-        this.originalLiveboard = extendRequest.getLiveboard();
+        this.originalLiveboard = (IrailLiveboard) extendRequest.getLiveboard();
         mExtendRequest = extendRequest;
 
         if (originalLiveboard.getStops().length > 0) {
@@ -91,13 +94,13 @@ public class LiveboardAppendHelper implements TransportDataSuccessResponseListen
     }
 
     @Override
-    public void onSuccessResponse(IrailLiveboard data, Object tag) {
+    public void onSuccessResponse(Liveboard data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
-                handleAppendSuccessResponse(data);
+                handleAppendSuccessResponse((IrailLiveboard) data);
                 break;
             case TAG_PREPEND:
-                handlePrependSuccessResponse(data);
+                handlePrependSuccessResponse((IrailLiveboard) data);
                 break;
         }
     }
@@ -131,7 +134,7 @@ public class LiveboardAppendHelper implements TransportDataSuccessResponseListen
      * @param data The newly received data
      */
     private void handleAppendSuccessResponse(IrailLiveboard data) {
-        IrailVehicleStop[] newStops = data.getStops();
+        VehicleStop[] newStops = data.getStops();
 
         if (newStops.length > 0) {
             // It can happen that a scheduled departure was before the search time.
@@ -139,7 +142,7 @@ public class LiveboardAppendHelper implements TransportDataSuccessResponseListen
             // the searchdate, and removing all earlier stops.
             int i = 0;
 
-            if (data.getLiveboardType() == IrailLiveboard.LiveboardType.DEPARTURES) {
+            if (data.getLiveboardType() == LiveboardType.DEPARTURES) {
                 while (i < newStops.length && newStops[i].getDepartureTime().isBefore(data.getSearchTime())) {
                     i++;
                 }

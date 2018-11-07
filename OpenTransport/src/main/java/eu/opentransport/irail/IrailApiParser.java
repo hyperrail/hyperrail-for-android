@@ -42,14 +42,15 @@ import java.util.List;
 
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
-import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.Disturbance;
+import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.Message;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RouteLeg;
 import eu.opentransport.common.models.RouteLegEnd;
 import eu.opentransport.common.models.RouteLegType;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStopType;
 
 /**
@@ -57,15 +58,15 @@ import eu.opentransport.common.models.VehicleStopType;
  *
  * @inheritDoc
  */
-public class IrailApiParser {
+class IrailApiParser {
 
-    private final TransportStopsDataSource stationProvider;
+    private final IrailStationsDataProvider stationProvider;
 
-    public IrailApiParser(TransportStopsDataSource stationProvider) {
+    public IrailApiParser(IrailStationsDataProvider stationProvider) {
         this.stationProvider = stationProvider;
     }
 
-    public IrailRoutesList parseRouteResult(JSONObject json, IrailStation origin, IrailStation destination, DateTime searchTime, QueryTimeDefinition timeDefinition) throws JSONException {
+    public IrailRoutesList parseRouteResult(JSONObject json, StopLocation origin, StopLocation destination, DateTime searchTime, QueryTimeDefinition timeDefinition) throws JSONException {
         JSONArray routesObject = json.getJSONArray("connection");
         List<Route> routeList = new ArrayList<>();
         for (int i = 0; i < routesObject.length(); i++) {
@@ -97,14 +98,14 @@ public class IrailApiParser {
         boolean hasLastTrainArrived = (arrival.has("arrived") && arrival.getInt("arrived") == 1);
         boolean hasFirstTrainLeft = (departure.has("left") && departure.getInt("left") == 1);
 
-        RouteLegEnd departureEnd = new RouteLegEnd(
+        RouteLegEnd departureEnd = new IrailRouteLegEnd(
                 stationProvider.getStationByIrailApiId(departure.getJSONObject("stationinfo").getString("id")),
                 timestamp2date(departure.getString("time")), departure.getString("platform"), departure.getJSONObject("platforminfo").getInt("normal") == 1,
                 new Duration(departure.getInt("delay") * 1000), departure.getInt("canceled") != 0, hasFirstTrainLeft,
                 departure.getString("departureConnection"),
                 departureOccupancyLevel);
 
-        RouteLegEnd arrivalEnd = new RouteLegEnd(
+        RouteLegEnd arrivalEnd = new IrailRouteLegEnd(
                 stationProvider.getStationByIrailApiId(arrival.getJSONObject("stationinfo").getString("id")),
                 timestamp2date(arrival.getString("time")), arrival.getString("platform"), arrival.getJSONObject("platforminfo").getInt("normal") == 1,
                 new Duration(arrival.getInt("delay") * 1000), arrival.getInt("canceled") != 0, hasLastTrainArrived, null, null);
@@ -139,11 +140,11 @@ public class IrailApiParser {
                 boolean hasLeft = (viaDeparture.has("left") && viaDeparture.getInt("left") == 1);
 
                 // don't use parseStop function, we have to combine data!
-                arrivals[i] = new RouteLegEnd(
+                arrivals[i] = new IrailRouteLegEnd(
                         stationProvider.getStationByIrailApiId(via.getJSONObject("stationinfo").getString("id")),
                         timestamp2date(viaArrival.getString("time")), viaArrival.getString("platform"), viaArrival.getJSONObject("platforminfo").getInt("normal") == 1,
                         new Duration(viaArrival.getInt("delay") * 1000), viaArrival.getInt("canceled") != 0, hasArrived, null, null);
-                departures[i + 1] = new RouteLegEnd(
+                departures[i + 1] = new IrailRouteLegEnd(
                         stationProvider.getStationByIrailApiId(via.getJSONObject("stationinfo").getString("id")),
                         timestamp2date(viaDeparture.getString("time")), viaDeparture.getString("platform"), viaDeparture.getJSONObject("platforminfo").getInt("normal") == 1,
                         new Duration(viaDeparture.getInt("delay") * 1000), viaDeparture.getInt("canceled") != 0, hasLeft,
@@ -153,13 +154,13 @@ public class IrailApiParser {
             legs = new RouteLeg[viaCount + 1];
 
             if (departure.getInt("walking") == 0) {
-                legs[0] = new RouteLeg(RouteLegType.TRAIN,
-                                       new IrailVehicleStub(
-                                               departure.getString("vehicle").substring(8),
-                                               departure.getJSONObject("direction").getString("name"), null),
-                                       departures[0], arrivals[0]);
+                legs[0] = new IrailRouteLeg(RouteLegType.TRAIN,
+                                            new IrailVehicleStub(
+                                                    departure.getString("vehicle").substring(8),
+                                                    departure.getJSONObject("direction").getString("name"), null),
+                                            departures[0], arrivals[0]);
             } else {
-                legs[0] = new RouteLeg(RouteLegType.WALK, null, departures[0], arrivals[0]);
+                legs[0] = new IrailRouteLeg(RouteLegType.WALK, null, departures[0], arrivals[0]);
             }
 
             for (int i = 0; i < viaCount; i++) {
@@ -168,19 +169,19 @@ public class IrailApiParser {
                 // first train is already set
                 // Walking should only be between 2 journeys, so only in a via
                 if (viaDeparture.getInt("walking") == 0) {
-                    legs[i + 1] = new RouteLeg(RouteLegType.TRAIN,
-                                               new IrailVehicleStub(
-                                                       viaDeparture.getString("vehicle").substring(8),
-                                                       viaDeparture.getJSONObject("direction").getString("name"), null),
-                                               departures[i + 1], arrivals[i + 1]);
+                    legs[i + 1] = new IrailRouteLeg(RouteLegType.TRAIN,
+                                                    new IrailVehicleStub(
+                                                            viaDeparture.getString("vehicle").substring(8),
+                                                            viaDeparture.getJSONObject("direction").getString("name"), null),
+                                                    departures[i + 1], arrivals[i + 1]);
                 } else {
-                    legs[i + 1] = new RouteLeg(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
+                    legs[i + 1] = new IrailRouteLeg(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
                 }
             }
 
         } else {
             legs = new RouteLeg[1];
-            legs[0] = new RouteLeg(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd);
+            legs[0] = new IrailRouteLeg(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd);
         }
 
         Message[][] trainalerts = new Message[legs.length][];
@@ -190,7 +191,7 @@ public class IrailApiParser {
                     JSONArray alerts = departure.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
                     for (int i = 0; i < alerts.length(); i++) {
-                        trainalerts[t][i] = new Message(alerts.getJSONObject(i));
+                        trainalerts[t][i] = new IrailMessage(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
@@ -202,7 +203,7 @@ public class IrailApiParser {
                     JSONArray alerts = viaDeparture.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
                     for (int i = 0; i < alerts.length(); i++) {
-                        trainalerts[t][i] = new Message(alerts.getJSONObject(i));
+                        trainalerts[t][i] = new IrailMessage(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
@@ -215,11 +216,11 @@ public class IrailApiParser {
             JSONArray alertsArray = routeObject.getJSONObject("alerts").getJSONArray("alert");
             alerts = new Message[alertsArray.length()];
             for (int i = 0; i < alertsArray.length(); i++) {
-                alerts[i] = new Message(alertsArray.getJSONObject(i));
+                alerts[i] = new IrailMessage(alertsArray.getJSONObject(i));
             }
         }
 
-        Route r = new Route(legs);
+        Route r = new IrailRoute(legs);
         r.setAlerts(alerts);
         r.setTrainalerts(trainalerts);
         return r;
@@ -240,17 +241,17 @@ public class IrailApiParser {
         Disturbance[] result = new Disturbance[items.length()];
 
         for (int i = 0; i < items.length(); i++) {
-            result[i] = new Disturbance(i,
-                                        timestamp2date(items.getJSONObject(i).getString("timestamp")),
-                                        items.getJSONObject(i).getString("title"),
-                                        items.getJSONObject(i).getString("description"),
-                                        items.getJSONObject(i).getString("link"));
+            result[i] = new IrailDisturbance(i,
+                                             timestamp2date(items.getJSONObject(i).getString("timestamp")),
+                                             items.getJSONObject(i).getString("title"),
+                                             items.getJSONObject(i).getString("description"),
+                                             items.getJSONObject(i).getString("link"));
         }
 
         return result;
     }
 
-    public IrailLiveboard parseLiveboard(JSONObject jsonData, DateTime searchDate, IrailLiveboard.LiveboardType type, QueryTimeDefinition timeDefinition) throws JSONException, StopLocationNotResolvedException {
+    public IrailLiveboard parseLiveboard(JSONObject jsonData, DateTime searchDate, LiveboardType type, QueryTimeDefinition timeDefinition) throws JSONException, StopLocationNotResolvedException {
 
         if (jsonData == null) {
             throw new IllegalArgumentException("JSONObject is null");
@@ -274,7 +275,7 @@ public class IrailApiParser {
         IrailVehicleStop[] stops = new IrailVehicleStop[items.length()];
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            if (type == IrailLiveboard.LiveboardType.DEPARTURES) {
+            if (type == LiveboardType.DEPARTURES) {
                 stops[i] = parseLiveboardStop(s, item, VehicleStopType.DEPARTURE);
             } else {
                 stops[i] = parseLiveboardStop(s, item, VehicleStopType.ARRIVAL);
@@ -388,8 +389,8 @@ public class IrailApiParser {
         IrailVehicleStop[] stops = new IrailVehicleStop[jsonStops.length()];
         IrailVehicleStub t = new IrailVehicleStub(id,
                                                   jsonStops.getJSONObject(jsonStops.length() - 1)
-                                                .getJSONObject("stationinfo")
-                                                .getString("name"),
+                                                          .getJSONObject("stationinfo")
+                                                          .getString("name"),
                                                   uri);
 
         for (int i = 0; i < jsonStops.length(); i++) {

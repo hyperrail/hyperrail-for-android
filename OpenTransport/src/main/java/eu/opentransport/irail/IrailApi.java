@@ -25,7 +25,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
@@ -54,12 +53,12 @@ import java.util.Map;
 import eu.opentransport.BuildConfig;
 import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSource;
-import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.Disturbance;
+import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.Route;
+import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
 import eu.opentransport.common.requests.IrailDisturbanceRequest;
@@ -91,7 +90,7 @@ public class IrailApi implements TransportDataSource {
 
     public IrailApi(Context context) {
         this.context = context;
-        this.parser = new IrailApiParser(OpenTransportApi.getStationsProviderInstance());
+        this.parser = new IrailApiParser((IrailStationsDataProvider) OpenTransportApi.getStationsProviderInstance());
         this.requestQueue = Volley.newRequestQueue(context);
         this.requestPolicy = new DefaultRetryPolicy(
                 750,
@@ -112,8 +111,8 @@ public class IrailApi implements TransportDataSource {
 
 
     @Override
-    public void getRoute( IrailRouteRequest... requests) {
-        for (final IrailRouteRequest request : requests
+    public void getRoute(IrailRouteRequest... requests) {
+        for (IrailRouteRequest request : requests
                 ) {
             IrailRoutesRequest routesRequest = new IrailRoutesRequest(
                     request.getOrigin(), request.getDestination(), request.getTimeDefinition(),
@@ -121,29 +120,21 @@ public class IrailApi implements TransportDataSource {
             );
 
             // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
-            routesRequest.setCallback(new TransportDataSuccessResponseListener<IrailRoutesList>() {
-                @Override
-                public void onSuccessResponse(IrailRoutesList data, Object tag) {
-                    for (Route r : data.getRoutes()) {
-                        if (r.getTransfers()[0].getDepartureSemanticId() != null && r.getTransfers()[0].getDepartureSemanticId().equals(
-                                request.getDepartureSemanticId())) {
-                            request.notifySuccessListeners(r);
-                        }
+            routesRequest.setCallback((data, tag) -> {
+                for (Route r : data.getRoutes()) {
+                    if (r.getTransfers()[0].getDepartureSemanticId() != null && r.getTransfers()[0].getDepartureSemanticId().equals(
+                            request.getDepartureSemanticId())) {
+                        request.notifySuccessListeners(r);
                     }
                 }
-            }, new TransportDataErrorResponseListener() {
-                @Override
-                public void onErrorResponse( Exception e, Object tag) {
-                    request.notifyErrorListeners(e);
-                }
-            }, request.getTag());
+            }, (e, tag) -> request.notifyErrorListeners(e), request.getTag());
 
             getRoutes(routesRequest);
         }
     }
 
     @Override
-    public void getRoutes( IrailRoutesRequest... requests) {
+    public void getRoutes(IrailRoutesRequest... requests) {
         for (IrailRoutesRequest request :
                 requests) {
             getRoutes(request);
@@ -151,15 +142,15 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void extendRoutes( ExtendRoutesRequest... requests) {
+    public void extendRoutes(ExtendRoutesRequest... requests) {
         for (ExtendRoutesRequest request :
                 requests) {
-            RouteAppendHelper helper = new RouteAppendHelper();
+            IrailRouteAppendHelper helper = new IrailRouteAppendHelper();
             helper.extendRoutesRequest(request);
         }
     }
 
-    public void getRoutes(final IrailRoutesRequest request) {
+    public void getRoutes(IrailRoutesRequest request) {
 
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
 
@@ -186,33 +177,27 @@ public class IrailApi implements TransportDataSource {
             url += "&timeSel=arrive";
         }
 
-        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                IrailRoutesList routeResult;
-                try {
-                    routeResult = parser.parseRouteResult(
-                            response, request.getOrigin(), request.getDestination(),
-                            request.getSearchTime(), request.getTimeDefinition()
-                    );
-                } catch (JSONException e) {
-                    Crashlytics.log(
-                            WARNING.intValue(), "Failed to parse routes", e.getMessage());
-                    Crashlytics.logException(e);
-                    request.notifyErrorListeners(e);
-                    return;
-                }
-                request.notifySuccessListeners(routeResult);
+        Response.Listener<JSONObject> successListener = response -> {
+            IrailRoutesList routeResult;
+            try {
+                routeResult = parser.parseRouteResult(
+                        response, request.getOrigin(), request.getDestination(),
+                        request.getSearchTime(), request.getTimeDefinition()
+                );
+            } catch (JSONException e) {
+                Crashlytics.log(
+                        WARNING.intValue(), "Failed to parse routes", e.getMessage());
+                Crashlytics.logException(e);
+                request.notifyErrorListeners(e);
+                return;
             }
+            request.notifySuccessListeners(routeResult);
         };
 
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError e) {
-                Crashlytics.log(
-                        WARNING.intValue(), "Failed to get routes", e.getMessage());
-                request.notifyErrorListeners(e);
-            }
+        Response.ErrorListener errorListener = e -> {
+            Crashlytics.log(
+                    WARNING.intValue(), "Failed to get routes", e.getMessage());
+            request.notifyErrorListeners(e);
         };
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -231,7 +216,7 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getLiveboard( IrailLiveboardRequest... requests) {
+    public void getLiveboard(IrailLiveboardRequest... requests) {
         for (IrailLiveboardRequest request : requests) {
             if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
                 getLiveboardAfter(request);
@@ -242,79 +227,70 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void extendLiveboard( ExtendLiveboardRequest... requests) {
+    public void extendLiveboard(ExtendLiveboardRequest... requests) {
         for (ExtendLiveboardRequest request :
                 requests) {
-            LiveboardAppendHelper helper = new LiveboardAppendHelper();
+            IrailLiveboardAppendHelper helper = new IrailLiveboardAppendHelper();
             helper.extendLiveboard(request);
         }
     }
 
-    private void getLiveboardBefore(final IrailLiveboardRequest request) {
-        final IrailLiveboardRequest actualRequest = request.withSearchTime(
+    private void getLiveboardBefore(IrailLiveboardRequest request) {
+        IrailLiveboardRequest actualRequest = request.withSearchTime(
                 request.getSearchTime().minusHours(1));
 
-        actualRequest.setCallback(new TransportDataSuccessResponseListener<IrailLiveboard>() {
-            @Override
-            public void onSuccessResponse(IrailLiveboard data, Object tag) {
-                List<IrailVehicleStop> stops = new ArrayList<>();
-                for (IrailVehicleStop s : data.getStops()) {
-                    if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
-                        stops.add(s);
-                    }
+        actualRequest.setCallback((data, tag) -> {
+
+            if (!(data instanceof IrailLiveboard)) {
+                throw new IllegalArgumentException("IrailApi should only handle Irail specific models");
+            }
+
+            List<VehicleStop> stops = new ArrayList<>();
+            for (VehicleStop s : data.getStops()) {
+                if (s.getDepartureTime().isBefore(actualRequest.getSearchTime())) {
+                    stops.add(s);
                 }
-                request.notifySuccessListeners(
-                        new IrailLiveboard(data, stops.toArray(new IrailVehicleStop[]{}),
-                                           data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
-                        ));
             }
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse( Exception e, Object tag) {
-                request.notifyErrorListeners(e);
-            }
-        }, actualRequest.getTag());
+            request.notifySuccessListeners(
+                    new IrailLiveboard((IrailStation) data, stops.toArray(new VehicleStop[]{}),
+                                       data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
+                    ));
+        }, (e, tag) -> request.notifyErrorListeners(e), actualRequest.getTag());
         getLiveboardAfter(request);
     }
 
-    private void getLiveboardAfter(final IrailLiveboardRequest request) {
+    private void getLiveboardAfter(IrailLiveboardRequest request) {
         // https://api.irail.be/liveboard/?station=Halle&fast=true
 
         // suppress errors, this formatting is for an API call
         DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
-        final String url = "https://api.irail.be/liveboard/?format=json"
+        String url = "https://api.irail.be/liveboard/?format=json"
                 + "&id=" + request.getStation().getHafasId()
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
-                + "&arrdep=" + ((request.getType() == IrailLiveboard.LiveboardType.DEPARTURES) ? "dep" : "arr");
+                + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
 
-        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                IrailLiveboard result;
-                try {
-                    result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
-                } catch (JSONException | StopLocationNotResolvedException e) {
-                    Crashlytics.log(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
-                    Crashlytics.logException(e);
-                    request.notifyErrorListeners(e);
-                    return;
-                }
-
-                request.notifySuccessListeners(result);
+        Response.Listener<JSONObject> successListener = response -> {
+            IrailLiveboard result;
+            try {
+                result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
+            } catch (JSONException | StopLocationNotResolvedException e) {
+                Crashlytics.log(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
+                Crashlytics.logException(e);
+                request.notifyErrorListeners(e);
+                return;
             }
+
+            request.notifySuccessListeners(result);
         };
 
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError e) {
-                Log.w(LOGTAG, "Tried loading liveboard from " + url + " failed with error " + e);
-                Crashlytics.log(
-                        WARNING.intValue(), "Failed to get liveboard", e.getMessage());
-                request.notifyErrorListeners(e);
-            }
+        Response.ErrorListener errorListener = e -> {
+            Log.w(LOGTAG, "Tried loading liveboard from " + url + " failed with error " + e);
+            Crashlytics.log(
+                    WARNING.intValue(), "Failed to get liveboard", e.getMessage());
+            request.notifyErrorListeners(e);
         };
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -334,44 +310,38 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getVehicle( IrailVehicleRequest... requests) {
+    public void getVehicle(IrailVehicleRequest... requests) {
         for (IrailVehicleRequest request :
                 requests) {
             getVehicle(request);
         }
     }
 
-    public void getVehicle(final IrailVehicleRequest request) {
+    public void getVehicle(IrailVehicleRequest request) {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
                 + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
                 request.getSearchTime());
 
-        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                IrailVehicle result;
-                try {
-                    result = parser.parseTrain(response, request.getSearchTime());
-                } catch (JSONException | StopLocationNotResolvedException e) {
-                    Crashlytics.log(
-                            WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
-                    Crashlytics.logException(e);
-                    request.notifyErrorListeners(e);
-                    return;
-                }
-                request.notifySuccessListeners(result);
+        Response.Listener<JSONObject> successListener = response -> {
+            IrailVehicle result;
+            try {
+                result = parser.parseTrain(response, request.getSearchTime());
+            } catch (JSONException | StopLocationNotResolvedException e) {
+                Crashlytics.log(
+                        WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
+                Crashlytics.logException(e);
+                request.notifyErrorListeners(e);
+                return;
             }
+            request.notifySuccessListeners(result);
         };
 
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError e) {
-                Crashlytics.log(
-                        WARNING.intValue(), "Failed to get vehicle", e.getMessage());
-                request.notifyErrorListeners(e);
-            }
+        Response.ErrorListener errorListener = e -> {
+            Crashlytics.log(
+                    WARNING.intValue(), "Failed to get vehicle", e.getMessage());
+            request.notifyErrorListeners(e);
         };
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, successListener, errorListener)
@@ -392,28 +362,25 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getStop( VehicleStopRequest... requests) {
+    public void getStop(VehicleStopRequest... requests) {
         for (VehicleStopRequest request :
                 requests) {
             getStop(request);
         }
     }
 
-    private void getStop( final VehicleStopRequest request) {
+    private void getStop(VehicleStopRequest request) {
         DateTime time = request.getStop().getDepartureTime();
         if (time == null) {
             time = request.getStop().getArrivalTime();
         }
         IrailVehicleRequest vehicleRequest = new IrailVehicleRequest(request.getStop().getVehicle().getId(), time);
-        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<IrailVehicle>() {
-            @Override
-            public void onSuccessResponse(IrailVehicle data, Object tag) {
-                for (IrailVehicleStop stop :
-                        data.getStops()) {
-                    if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
-                        request.notifySuccessListeners(stop);
-                        return;
-                    }
+        vehicleRequest.setCallback((data, tag) -> {
+            for (IrailVehicleStop stop :
+                    data.getStops()) {
+                if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
+                    request.notifySuccessListeners(stop);
+                    return;
                 }
             }
         }, request.getOnErrorListener(), null);
@@ -421,14 +388,14 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getDisturbances( IrailDisturbanceRequest... requests) {
+    public void getDisturbances(IrailDisturbanceRequest... requests) {
         for (IrailDisturbanceRequest request :
                 requests) {
             getDisturbances(request);
         }
     }
 
-    public void getDisturbances(final IrailDisturbanceRequest request) {
+    public void getDisturbances(IrailDisturbanceRequest request) {
 
         String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
                 "pref_stations_language", "");
@@ -441,28 +408,22 @@ public class IrailApi implements TransportDataSource {
                 0, 2);
 
 
-        Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Disturbance[] result;
-                try {
-                    result = parser.parseDisturbances(response);
-                } catch (JSONException e) {
-                    Crashlytics.log(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
-                    Crashlytics.logException(e);
-                    request.notifyErrorListeners(e);
-                    return;
-                }
-                request.notifySuccessListeners(result);
+        Response.Listener<JSONObject> successListener = response -> {
+            Disturbance[] result;
+            try {
+                result = parser.parseDisturbances(response);
+            } catch (JSONException e) {
+                Crashlytics.log(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
+                Crashlytics.logException(e);
+                request.notifyErrorListeners(e);
+                return;
             }
+            request.notifySuccessListeners(result);
         };
 
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError e) {
-                Crashlytics.log(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
-                request.notifyErrorListeners(e);
-            }
+        Response.ErrorListener errorListener = e -> {
+            Crashlytics.log(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
+            request.notifyErrorListeners(e);
         };
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -509,7 +470,7 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void postOccupancy( IrailPostOccupancyRequest... requests) {
+    public void postOccupancy(IrailPostOccupancyRequest... requests) {
         for (IrailPostOccupancyRequest request :
                 requests) {
             postOccupancy(request);
@@ -600,7 +561,7 @@ public class IrailApi implements TransportDataSource {
         private final String url;
         private final IrailPostOccupancyRequest request;
 
-        public PostOccupancyTask( String url, IrailPostOccupancyRequest request) {
+        public PostOccupancyTask(String url, IrailPostOccupancyRequest request) {
             this.url = url;
             this.request = request;
         }

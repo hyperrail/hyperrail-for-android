@@ -23,12 +23,11 @@ import java.util.Scanner;
 
 import eu.opentransport.common.webdb.WebDbDataDefinition;
 
-import static eu.opentransport.irail.StationsDataContract.SQL_CREATE_INDEX_ID;
-import static eu.opentransport.irail.StationsDataContract.SQL_CREATE_INDEX_NAME;
-import static eu.opentransport.irail.StationsDataContract.SQL_CREATE_TABLE_STATIONS;
-import static eu.opentransport.irail.StationsDataContract.SQL_DELETE_TABLE_STATIONS;
-import static eu.opentransport.irail.StationsDataContract.StationsDataColumns;
-import static eu.opentransport.irail.StationsDataProvider.cleanAccents;
+import static eu.opentransport.irail.IrailStationsDataContract.SQL_CREATE_INDEX_ID;
+import static eu.opentransport.irail.IrailStationsDataContract.SQL_CREATE_INDEX_NAME;
+import static eu.opentransport.irail.IrailStationsDataContract.SQL_CREATE_TABLE_STATIONS;
+import static eu.opentransport.irail.IrailStationsDataContract.SQL_DELETE_TABLE_STATIONS;
+import static eu.opentransport.irail.IrailStationsDataContract.StationsDataColumns;
 import static java.util.logging.Level.INFO;
 
 /**

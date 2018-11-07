@@ -11,7 +11,8 @@ import android.content.Context;
 import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.irail.IrailApi;
-import eu.opentransport.irail.StationsDataProvider;
+import eu.opentransport.irail.IrailFacilitiesDataProvider;
+import eu.opentransport.irail.IrailStationsDataProvider;
 import eu.opentransport.lc2Irail.Lc2IrailDataSource;
 import eu.opentransport.linkedconnections.LinkedConnectionsDataSource;
 
@@ -19,6 +20,11 @@ public class OpenTransportApi {
 
     private static TransportStopsDataSource stationProviderInstance;
     private static TransportDataSource dataProviderInstance;
+
+    public static IrailFacilitiesDataProvider getFacilitiesProviderInstance() {
+        // TODO: implement
+        return null;
+    }
 
     enum DataProvider {
         BE_IRAIL_GRAPH,
@@ -31,19 +37,19 @@ public class OpenTransportApi {
     public static void init(Context context, DataProvider provider) {
         switch (provider) {
             case BE_IRAIL_API:
-                init(new IrailApi(context), new StationsDataProvider(context));
+                init(new IrailApi(context), new IrailStationsDataProvider(context));
                 break;
             case BE_IRAIL_GRAPH:
-                init(new LinkedConnectionsDataSource(context), new StationsDataProvider(context));
+                init(new LinkedConnectionsDataSource(context), new IrailStationsDataProvider(context));
                 break;
             case BE_IRAIL_LC2IRAIL:
-                init(new Lc2IrailDataSource(context), new StationsDataProvider(context));
+                init(new Lc2IrailDataSource(context), new IrailStationsDataProvider(context));
                 break;
             case SE_GRAPH:
-                init(new LinkedConnectionsDataSource(context), new StationsDataProvider(context));
+                init(new LinkedConnectionsDataSource(context), new IrailStationsDataProvider(context));
                 break;
             case SE_LC2IRAIL:
-                init(new Lc2IrailDataSource(context), new StationsDataProvider(context));
+                init(new Lc2IrailDataSource(context), new IrailStationsDataProvider(context));
                 break;
         }
     }
