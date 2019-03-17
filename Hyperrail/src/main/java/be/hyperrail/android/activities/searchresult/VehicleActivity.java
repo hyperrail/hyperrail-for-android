@@ -13,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.joda.time.DateTime;
@@ -60,6 +61,7 @@ public class VehicleActivity extends ResultActivity {
         } else {
             mRequest = (IrailVehicleRequest) getIntent().getSerializableExtra("request");
         }
+        Crashlytics.setString("vehicleId", mRequest.getVehicleId());
 
         super.onCreate(savedInstanceState);
 
@@ -83,11 +85,11 @@ public class VehicleActivity extends ResultActivity {
         if (item.getItemId() == R.id.action_shortcut) {
             Intent shortcutIntent = this.createShortcutIntent();
             ShortcutHelper.createShortcut(this,
-                                          vLayoutRoot,
-                                          shortcutIntent,
-                                          Vehicle.getVehicleName(mRequest.getVehicleId()),
-                                          "Vehicle " + Vehicle.getVehicleName(mRequest.getVehicleId()),
-                                          R.mipmap.ic_shortcut_train);
+                    vLayoutRoot,
+                    shortcutIntent,
+                    Vehicle.getVehicleName(mRequest.getVehicleId()),
+                    "Vehicle " + Vehicle.getVehicleName(mRequest.getVehicleId()),
+                    R.mipmap.ic_shortcut_train);
             return true;
         }
         return super.onOptionsItemSelected(item);
