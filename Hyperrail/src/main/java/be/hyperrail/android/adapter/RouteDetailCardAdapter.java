@@ -22,12 +22,12 @@ import android.view.ViewGroup;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.VehiclePopupContextMenu;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteLeg;
-import be.hyperrail.android.irail.implementation.RouteLegType;
-import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.viewgroup.RouteTrainItemLayout;
 import be.hyperrail.android.viewgroup.RouteTransferItemLayout;
+import eu.opentransport.common.models.Route;
+import eu.opentransport.common.models.RouteLeg;
+import eu.opentransport.common.models.RouteLegType;
+import eu.opentransport.common.models.Transfer;
 
 /**
  * RecyclerViewAdapter which shows a detailed timeline view for routes/connections,

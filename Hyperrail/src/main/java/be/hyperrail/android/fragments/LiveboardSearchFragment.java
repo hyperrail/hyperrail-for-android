@@ -59,15 +59,15 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.StationSuggestionsCardAdapter;
-import be.hyperrail.android.irail.contracts.IrailStationProvider;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.contracts.TransportStopsDataSource;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
 
 import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
 
@@ -201,7 +201,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     private void loadStations(String s) {
-        IrailStationProvider stationProvider = IrailFactory.getStationsProviderInstance();
+        TransportStopsDataSource stationProvider = OpenTransportApi.getStationsProviderInstance();
 
         // remove whitespaces
         s = s.trim();
@@ -256,8 +256,8 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      *
      * @param station The station which liveboard should be loaded
      */
-    private void openLiveboard(Station station) {
-        IrailLiveboardRequest request = new IrailLiveboardRequest(station, RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null);
+    private void openLiveboard(StopLocation station) {
+        IrailLiveboardRequest request = new IrailLiveboardRequest(station, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null);
         persistentQueryProvider.store(new Suggestion<>(request, HISTORY));
         Intent i = LiveboardActivity.createIntent(getActivity(), request);
         startActivity(i);
@@ -268,7 +268,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      *
      * @param stations The new array of stations
      */
-    private void setStations(Station[] stations, StationSuggestionsCardAdapter.stationType type) {
+    private void setStations(StopLocation[] stations, StationSuggestionsCardAdapter.stationType type) {
         mStationAdapter.setSearchResultStations(stations);
         mStationAdapter.setSearchResultType(type);
     }

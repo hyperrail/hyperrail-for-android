@@ -28,11 +28,11 @@ import org.joda.time.DateTime;
 import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Disturbance;
-import be.hyperrail.android.irail.implementation.requests.IrailDisturbanceRequest;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
+import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
+import eu.opentransport.common.models.Disturbance;
+import eu.opentransport.common.requests.IrailDisturbanceRequest;
 
 /**
  * A list with disturbances
@@ -84,10 +84,10 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     protected void getData() {
         vRefreshLayout.setRefreshing(true);
 
-        IrailFactory.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortAllQueries();
 
         IrailDisturbanceRequest request = new IrailDisturbanceRequest();
-        request.setCallback(new IRailSuccessResponseListener<Disturbance[]>() {
+        request.setCallback(new TransportDataSuccessResponseListener<Disturbance[]>() {
             @Override
             public void onSuccessResponse(@NonNull Disturbance[] data, Object tag) {
                 resetErrorState();
@@ -95,7 +95,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
                 lastUpdate = new DateTime();
                 showData(data);
             }
-        }, new IRailErrorResponseListener() {
+        }, new TransportDataErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
@@ -103,7 +103,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
                showError(e);
             }
         }, null);
-        IrailFactory.getDataProviderInstance().getDisturbances(request);
+        OpenTransportApi.getDataProviderInstance().getDisturbances(request);
     }
 
     @Override

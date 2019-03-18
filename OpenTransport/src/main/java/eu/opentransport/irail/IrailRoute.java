@@ -15,6 +15,7 @@ import java.io.Serializable;
 import eu.opentransport.common.models.Message;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RouteLeg;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.Transfer;
 
 /**
@@ -101,11 +102,11 @@ public class IrailRoute implements Route, Serializable {
         return getDeparture().isDeparturePlatformNormal();
     }
 
-    public IrailStation getDepartureStation() {
+    public StopLocation getDepartureStation() {
         return getDeparture().getStation();
     }
 
-    public IrailStation getArrivalStation() {
+    public StopLocation getArrivalStation() {
         return getArrival().getStation();
     }
 

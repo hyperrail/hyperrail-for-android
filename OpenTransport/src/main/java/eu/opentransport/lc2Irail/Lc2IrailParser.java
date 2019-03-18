@@ -45,12 +45,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
+import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RouteLeg;
 import eu.opentransport.common.models.RouteLegEnd;
 import eu.opentransport.common.models.RouteLegType;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.IrailLiveboardRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
@@ -73,10 +75,10 @@ import eu.opentransport.irail.IrailVehicleStub;
  */
 public class Lc2IrailParser {
 
-    private final IrailStationsDataProvider stationProvider;
+    private final TransportStopsDataSource stationProvider;
     private DateTimeFormatter dtf = ISODateTimeFormat.dateTimeNoMillis();
 
-    Lc2IrailParser(@NonNull IrailStationsDataProvider stationProvider) {
+    Lc2IrailParser(@NonNull TransportStopsDataSource stationProvider) {
         this.stationProvider = stationProvider;
     }
 
@@ -166,7 +168,7 @@ public class Lc2IrailParser {
         uri = json.getString("uri");
 
         String headsign = json.getJSONObject("vehicle").getString("direction");
-        IrailStation headsignStation = stationProvider.getStationByExactName(headsign);
+        StopLocation headsignStation = stationProvider.getStationByExactName(headsign);
         if (headsignStation != null) {
             headsign = headsignStation.getLocalizedName();
         }
@@ -290,7 +292,7 @@ public class Lc2IrailParser {
         // TODO: parse isPlatformNormal from response
         boolean isPlatformNormal = true;
 
-        IrailStation station = stationProvider.getStationByUri(json.getJSONObject("station").getString("uri"));
+        StopLocation station = stationProvider.getStationByUri(json.getJSONObject("station").getString("uri"));
 
         if (json.has("arrivalTime")) {
             arrivalTime = DateTime.parse(json.getString("arrivalTime"), dtf);
@@ -343,8 +345,8 @@ public class Lc2IrailParser {
 
     @NonNull
     public IrailRoutesList parseRoutes(@NonNull IrailRoutesRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
-        IrailStation origin = stationProvider.getStationByUri(json.getJSONObject("departureStation").getString("uri"));
-        IrailStation destination = stationProvider.getStationByUri(json.getJSONObject("arrivalStation").getString("uri"));
+        StopLocation origin = stationProvider.getStationByUri(json.getJSONObject("departureStation").getString("uri"));
+        StopLocation destination = stationProvider.getStationByUri(json.getJSONObject("arrivalStation").getString("uri"));
 
         JSONArray connections = json.getJSONArray("connections");
         Route[] routes = new Route[connections.length()];
@@ -419,7 +421,7 @@ public class Lc2IrailParser {
             JSONObject jsonLeg = jsonlegs.getJSONObject(i);
 
             String headsign = jsonLeg.getString("direction");
-            IrailStation headsignStation = stationProvider.getStationByExactName(headsign);
+            StopLocation headsignStation = stationProvider.getStationByExactName(headsign);
             if (headsignStation != null) {
                 headsign = headsignStation.getLocalizedName();
             }
@@ -430,8 +432,8 @@ public class Lc2IrailParser {
                     jsonLeg.getString("trip")
             );
 
-            IrailStation departureStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("departureStation").getString("uri"));
-            IrailStation arrivalStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("arrivalStation").getString("uri"));
+            StopLocation departureStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("departureStation").getString("uri"));
+            StopLocation arrivalStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("arrivalStation").getString("uri"));
 
             DateTime departureTime = DateTime.parse(jsonLeg.getString("departureTime"), dtf);
             int departureDelay = jsonLeg.getInt("departureDelay");

@@ -35,16 +35,17 @@ import be.hyperrail.android.R.string;
 import be.hyperrail.android.activities.MainActivity;
 import be.hyperrail.android.activities.StationActivity;
 import be.hyperrail.android.fragments.searchresult.LiveboardFragment;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
 
-import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.ARRIVALS;
-import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.DEPARTURES;
+import static eu.opentransport.common.contracts.QueryTimeDefinition.DEPART_AT;
+import static eu.opentransport.common.models.LiveboardType.ARRIVALS;
+import static eu.opentransport.common.models.LiveboardType.DEPARTURES;
+
 
 /**
  * Activity to show a liveboard
@@ -79,10 +80,10 @@ public class LiveboardActivity extends ResultActivity {
             // A valid shortcut intent, for which we have to parse the station
             try {
                 this.mRequest = new IrailLiveboardRequest(
-                        IrailFactory.getStationsProviderInstance().getStationByHID(
-                                getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
+                        OpenTransportApi.getStationsProviderInstance().getStationByHID(
+                                getIntent().getStringExtra("station")), DEPART_AT, DEPARTURES,
                         null);
-            } catch (StationNotResolvedException e) {
+            } catch (StopLocationNotResolvedException e) {
                 Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
                 finish();
                 return;

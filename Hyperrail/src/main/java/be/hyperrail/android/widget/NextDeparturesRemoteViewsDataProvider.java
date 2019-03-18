@@ -20,14 +20,15 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
+import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.models.Liveboard;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.OccupancyHelper;
+import eu.opentransport.common.models.VehicleStop;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
@@ -58,16 +59,16 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         IrailLiveboardRequest request = null;
         try {
             request = new IrailLiveboardRequest(
-                    IrailFactory.getStationsProviderInstance().getStationByIrailApiId(id),
-                    RouteTimeDefinition.DEPART_AT,
-                    Liveboard.LiveboardType.DEPARTURES,
+                    OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(id),
+                    QueryTimeDefinition.DEPART_AT,
+                    LiveboardType.DEPARTURES,
                     null
             );
-        } catch (StationNotResolvedException e) {
+        } catch (StopLocationNotResolvedException e) {
             this.mError = true;
             return;
         }
-        request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
+        request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 Log.w("widgets", "Received iRail data...");
@@ -75,7 +76,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             }
         }, null, null);
         Log.w("widgets", "Requesting iRail data...");
-        IrailFactory.getDataProviderInstance().getLiveboard(request);
+        OpenTransportApi.getDataProviderInstance().getLiveboard(request);
 
         try {
             Thread.sleep(2500);

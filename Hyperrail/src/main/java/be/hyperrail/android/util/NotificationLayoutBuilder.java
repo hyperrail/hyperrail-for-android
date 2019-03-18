@@ -21,8 +21,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Transfer;
-import be.hyperrail.android.irail.implementation.VehicleStop;
+import eu.opentransport.common.models.Transfer;
+import eu.opentransport.common.models.VehicleStop;
 
 public class NotificationLayoutBuilder {
 

@@ -20,7 +20,6 @@ import org.joda.time.Duration;
 import java.io.Serializable;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
-import eu.opentransport.irail.IrailStation;
 import eu.opentransport.irail.IrailVehicleStop;
 
 /**
@@ -40,7 +39,7 @@ public interface Transfer extends Serializable {
     DateTime getDelayedArrivalTime();
 
 
-    IrailStation getStation();
+    StopLocation getStation();
 
     @Nullable
     String getDeparturePlatform();

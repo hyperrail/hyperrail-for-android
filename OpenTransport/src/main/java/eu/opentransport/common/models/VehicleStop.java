@@ -24,7 +24,6 @@ import org.joda.time.Duration;
 import java.io.Serializable;
 
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
-import eu.opentransport.irail.IrailStation;
 
 /**
  * A vehicle stop, belonging to a certain vehicle.
@@ -107,7 +106,7 @@ public interface VehicleStop extends Serializable {
      *
      * @return
      */
-    IrailStation getStation();
+    StopLocation getStation();
 
     /**
      * Get the type of stop the vehicle makes

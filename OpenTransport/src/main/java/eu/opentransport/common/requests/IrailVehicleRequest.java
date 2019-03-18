@@ -17,7 +17,6 @@ import eu.opentransport.common.contracts.TransportDataRequest;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.Vehicle;
-import eu.opentransport.irail.IrailStation;
 
 /**
  * A request for train data
@@ -36,7 +35,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
      * The departure station of this train. Additional information for request history/favorites.
      */
     @Nullable
-    private IrailStation mVehicleOriginStation;
+    private StopLocation mVehicleOriginStation;
 
     /**
      * The departure time at the departure station for this train. Additional information for request history/favorites.
@@ -107,11 +106,11 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
     }
 
     @Nullable
-    public IrailStation getOrigin() {
+    public StopLocation getOrigin() {
         return mVehicleOriginStation;
     }
 
-    public void setOrigin(@Nullable IrailStation origin) {
+    public void setOrigin(@Nullable StopLocation origin) {
         this.mVehicleOriginStation = origin;
     }
 
@@ -165,7 +164,7 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
         return mVehicleDirection;
     }
 
-    public void setDirection(IrailStation direction) {
+    public void setDirection(StopLocation direction) {
         mVehicleDirection = direction;
     }
 

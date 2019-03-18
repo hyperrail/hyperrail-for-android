@@ -12,7 +12,6 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 
 import eu.opentransport.common.contracts.PagedDataResource;
-import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 
 /**
@@ -28,8 +27,4 @@ public interface Liveboard extends StopLocation, Serializable, PagedDataResource
     QueryTimeDefinition getTimeDefinition();
 
     LiveboardType getLiveboardType();
-
-    @Override
-    PagedDataResourceDescriptor getPagedResourceDescriptor();
-
 }

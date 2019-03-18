@@ -5,7 +5,7 @@
  */
 
 
-package eu.opentransport.irail;
+package eu.opentransport.linkedconnections;
 
 import org.joda.time.DateTime;
 
@@ -17,14 +17,14 @@ import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RoutesList;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.linkedconnections.LinkedConnectionsPagePointer;
+import eu.opentransport.util.ArrayUtils;
 
 /**
  * Result of a route query. Includes the query, as parsed server-side.
  * This query information can be used to display which question the server replied to,
  * and can be used to detect incorrect parsed stations server-side (e.g. when searching a station)
  */
-public class IrailRoutesList implements RoutesList, Serializable, PagedDataResource {
+public class LinkedConnectionsRoutesList implements RoutesList, Serializable {
 
     private final StopLocation origin;
     private final StopLocation destination;
@@ -36,7 +36,7 @@ public class IrailRoutesList implements RoutesList, Serializable, PagedDataResou
     private NextDataPointer currentPagePointer;
     private NextDataPointer nextPagePointer;
 
-    public IrailRoutesList(StopLocation origin, StopLocation destination, DateTime searchTime, QueryTimeDefinition timeDefinition, Route[] routes) {
+    public LinkedConnectionsRoutesList(StopLocation origin, StopLocation destination, DateTime searchTime, QueryTimeDefinition timeDefinition, Route[] routes) {
         this.destination = destination;
         this.mLastSearchTime = searchTime;
         this.origin = origin;
@@ -63,6 +63,13 @@ public class IrailRoutesList implements RoutesList, Serializable, PagedDataResou
     public Route[] getRoutes() {
         return routes;
     }
+
+    public LinkedConnectionsRoutesList withRoutesAppended(LinkedConnectionsRoutesList data) {
+        return new LinkedConnectionsRoutesList(this.getOrigin(), this.destination,
+                this.getSearchTime(), this.getTimeDefinition(),
+                ArrayUtils.concatenate(this.routes, data.routes));
+    }
+
 
     public void setPageInfo(NextDataPointer previous,
                             NextDataPointer current,

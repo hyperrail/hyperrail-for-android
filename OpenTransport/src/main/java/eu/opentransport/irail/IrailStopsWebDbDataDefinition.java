@@ -28,6 +28,7 @@ import static eu.opentransport.irail.IrailStationsDataContract.SQL_CREATE_INDEX_
 import static eu.opentransport.irail.IrailStationsDataContract.SQL_CREATE_TABLE_STATIONS;
 import static eu.opentransport.irail.IrailStationsDataContract.SQL_DELETE_TABLE_STATIONS;
 import static eu.opentransport.irail.IrailStationsDataContract.StationsDataColumns;
+import static eu.opentransport.util.StringUtils.cleanAccents;
 import static java.util.logging.Level.INFO;
 
 /**

@@ -19,13 +19,12 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.searchresult.VehicleFragment;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Vehicle;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.irail.IrailVehicleStub;
 
 /**
  * Activity to show a train
@@ -67,7 +66,7 @@ public class VehicleActivity extends ResultActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         setTitle(R.string.title_vehicle);
-        setSubTitle(VehicleStub.getVehicleName(mRequest.getVehicleId()));
+        setSubTitle(IrailVehicleStub.getVehicleName(mRequest.getVehicleId()));
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -83,11 +82,11 @@ public class VehicleActivity extends ResultActivity {
         if (item.getItemId() == R.id.action_shortcut) {
             Intent shortcutIntent = this.createShortcutIntent();
             ShortcutHelper.createShortcut(this,
-                                          vLayoutRoot,
-                                          shortcutIntent,
-                                          Vehicle.getVehicleName(mRequest.getVehicleId()),
-                                          "Vehicle " + Vehicle.getVehicleName(mRequest.getVehicleId()),
-                                          R.mipmap.ic_shortcut_train);
+                    vLayoutRoot,
+                    shortcutIntent,
+                    IrailVehicleStub.getVehicleName(mRequest.getVehicleId()),
+                    "Vehicle " + IrailVehicleStub.getVehicleName(mRequest.getVehicleId()),
+                    R.mipmap.ic_shortcut_train);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -111,7 +110,7 @@ public class VehicleActivity extends ResultActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        IrailFactory.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortAllQueries();
     }
 
     @Override

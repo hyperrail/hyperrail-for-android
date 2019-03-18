@@ -158,7 +158,7 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
                 Crashlytics.logException(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
                 return null;
             }
-            this.stationFacilities = ((IrailFacilitiesDataProvider) provider).getStationFacilitiesById(this.hafasId);
+            this.stationFacilities = ((IrailFacilitiesDataProvider) provider).getStationFacilitiesByUri(this.hafasId);
         }
         return stationFacilities;
     }

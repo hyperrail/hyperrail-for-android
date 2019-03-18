@@ -40,17 +40,17 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteResult;
-import be.hyperrail.android.irail.implementation.Transfer;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.util.DurationFormatter;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.Route;
+import eu.opentransport.common.models.RoutesList;
+import eu.opentransport.common.models.Transfer;
+import eu.opentransport.common.models.VehicleStub;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.IrailVehicleRequest;
 
-public class RouteListItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<RouteResult, Route> {
+public class RouteListItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<RoutesList, Route> {
 
     protected TextView vDepartureTime;
     protected TextView vDepartureDelay;
@@ -113,7 +113,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
     }
 
     @Override
-    public void bind(final Context context, Route route, RouteResult allRoutes, int position) {
+    public void bind(final Context context, Route route, RoutesList allRoutes, int position) {
 
         DateTimeFormatter hhmm = DateTimeFormat.forPattern("HH:mm");
 
@@ -143,7 +143,8 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
                                                      ));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null));
+                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(
+                            ((Transfer) object).getStation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
                 }
                 context.startActivity(i);
             }
@@ -154,14 +155,11 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
         vRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         vRecyclerView.setNestedScrollingEnabled(false);
 
-        vHeaderContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (vDetailContainer.getVisibility() == View.GONE) {
-                    vDetailContainer.setVisibility(View.VISIBLE);
-                } else {
-                    vDetailContainer.setVisibility(View.GONE);
-                }
+        vHeaderContainer.setOnClickListener(v -> {
+            if (vDetailContainer.getVisibility() == View.GONE) {
+                vDetailContainer.setVisibility(View.VISIBLE);
+            } else {
+                vDetailContainer.setVisibility(View.GONE);
             }
         });
 

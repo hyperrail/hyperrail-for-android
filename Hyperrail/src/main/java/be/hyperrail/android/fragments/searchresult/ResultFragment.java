@@ -14,10 +14,10 @@ package be.hyperrail.android.fragments.searchresult;
 
 import android.support.annotation.NonNull;
 
-import be.hyperrail.android.irail.contracts.IrailRequest;
 import be.hyperrail.android.util.OnDateTimeSetListener;
+import eu.opentransport.common.contracts.TransportDataRequest;
 
-public interface ResultFragment<T extends IrailRequest> extends OnDateTimeSetListener {
+public interface ResultFragment<T extends TransportDataRequest> extends OnDateTimeSetListener {
 
     /**
      * Update the Request object for which this fragment shows data, and retrieve new data.

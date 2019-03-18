@@ -25,6 +25,7 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 import java.util.Objects;
 
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.Vehicle;
 
 /**
@@ -52,7 +53,7 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
         }
     }
 
-    public IrailStation getOrigin() {
+    public StopLocation getOrigin() {
         return stops[0].getStation();
     }
 
@@ -112,7 +113,7 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
      * @return direction (final stop) of this train
      */
 
-    public IrailStation getDirection() {
+    public StopLocation getDirection() {
         return stops[stops.length - 1].getStation();
     }
 }

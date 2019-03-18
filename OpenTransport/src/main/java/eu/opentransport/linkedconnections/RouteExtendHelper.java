@@ -13,25 +13,24 @@ import org.joda.time.DateTime;
 import java.io.FileNotFoundException;
 
 import eu.opentransport.common.contracts.MeteredDataSource;
-import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
+import eu.opentransport.common.models.RoutesList;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
 import eu.opentransport.common.requests.IrailRoutesRequest;
-import eu.opentransport.irail.IrailRoutesList;
 
 /**
  * Created in be.hyperrail.android.irail.implementation.linkedconnections on 17/04/2018.
  */
-public class RouteExtendHelper implements TransportDataSuccessResponseListener<IrailRoutesList>, TransportDataErrorResponseListener {
+public class RouteExtendHelper implements TransportDataSuccessResponseListener<RoutesList>, TransportDataErrorResponseListener {
 
     private final LinkedConnectionsProvider mLinkedConnectionsProvider;
     private final TransportStopsDataSource mStationProvider;
     private final ExtendRoutesRequest mRequest;
     private final MeteredDataSource.MeteredRequest mMeteredRequest;
-    private IrailRoutesList mRoutes;
+    private LinkedConnectionsRoutesList mRoutes;
     int attempts = 0;
 
     public RouteExtendHelper(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, ExtendRoutesRequest request, MeteredDataSource.MeteredRequest meteredRequest) {
@@ -42,10 +41,13 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<I
     }
 
     public void extend() {
-        extend(mRequest.getRoutes());
+        if (!(mRequest.getRoutes() instanceof LinkedConnectionsRoutesList)) {
+            throw new IllegalArgumentException("Routeslist should be of type LinkedConnectionsRoutesList!");
+        }
+        extend((LinkedConnectionsRoutesList) mRequest.getRoutes());
     }
 
-    private void extend(IrailRoutesList routes) {
+    private void extend(LinkedConnectionsRoutesList routes) {
         attempts++;
 
         if (attempts > 12) {
@@ -54,7 +56,7 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<I
         }
 
         mRoutes = routes;
-        String start, stop = null;
+        String start;
         DateTime departureLimit;
         if (mRequest.getRoutes().getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
             departureLimit = mRequest.getRoutes().getSearchTime();
@@ -62,24 +64,24 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<I
                 departureLimit = mRequest.getRoutes().getRoutes()[mRequest.getRoutes().getRoutes().length - 1].getDepartureTime();
             }
             if (mRequest.getAction() == ExtendRoutesRequest.Action.PREPEND) {
-                start = (String) mRequest.getRoutes().getPagedResourceDescriptor().getCurrentPointer();
+                start = (String) mRequest.getRoutes().getCurrentResultsPointer().getPointer();
             } else {
-                start = (String) mRequest.getRoutes().getPagedResourceDescriptor().getNextPointer();
+                start = (String) mRequest.getRoutes().getNextResultsPointer().getPointer();
             }
         } else {
             departureLimit = null;
             if (mRequest.getAction() == ExtendRoutesRequest.Action.PREPEND) {
-                start = (String) mRequest.getRoutes().getPagedResourceDescriptor().getPreviousPointer();
+                start = (String) mRequest.getRoutes().getPreviousResultsPointer().getPointer();
             } else {
-                start = (String) mRequest.getRoutes().getPagedResourceDescriptor().getNextPointer();
+                start = (String) mRequest.getRoutes().getNextResultsPointer().getPointer();
             }
         }
 
 
         final IrailRoutesRequest routesRequest = new IrailRoutesRequest(mRoutes.getOrigin(),
-                                                                        mRoutes.getDestination(),
-                                                                        mRoutes.getTimeDefinition(),
-                                                                        mRoutes.getSearchTime());
+                mRoutes.getDestination(),
+                mRoutes.getTimeDefinition(),
+                mRoutes.getSearchTime());
 
         routesRequest.setCallback(this, this, mMeteredRequest);
 
@@ -98,45 +100,50 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<I
                 limit = mRoutes.getSearchTime();
             }
             mLinkedConnectionsProvider.getLinkedConnectionsByUrlForTimeSpanBackwards(start, limit,
-                                                                                     listener,
-                                                                                     listener,
-                                                                                     mMeteredRequest);
+                    listener,
+                    listener,
+                    mMeteredRequest);
         } else {
             mLinkedConnectionsProvider.getLinkedConnectionsByUrl(start,
-                                                                 listener,
-                                                                 listener,
-                                                                 mMeteredRequest);
+                    listener,
+                    listener,
+                    mMeteredRequest);
         }
     }
 
     @Override
-    public void onSuccessResponse(@NonNull IrailRoutesList data, Object tag) {
-        IrailRoutesList appended = mRoutes.withRoutesAppended(data);
-        appended.setPageInfo(new PagedDataResourceDescriptor(
-                data.getPagedResourceDescriptor().getPreviousPointer(),
-                data.getPagedResourceDescriptor().getCurrentPointer(),
-                data.getPagedResourceDescriptor().getNextPointer()
-        ));
+    public void onSuccessResponse(@NonNull RoutesList data, Object tag) {
+        if (!(data instanceof LinkedConnectionsRoutesList)) {
+            throw new IllegalArgumentException("data should be of type LinkedConnectionsRoutesList!");
+        }
+        LinkedConnectionsRoutesList newData = (LinkedConnectionsRoutesList) data;
+        LinkedConnectionsRoutesList originalWithAppended = mRoutes.withRoutesAppended(newData);
+
+        originalWithAppended.setPageInfo(
+                newData.getPreviousResultsPointer(),
+                newData.getCurrentResultsPointer(),
+                newData.getNextResultsPointer()
+        );
         if (mRequest.getAction() == ExtendRoutesRequest.Action.APPEND) {
-            if (appended.getRoutes().length > mRoutes.getRoutes().length) {
-                mRequest.notifySuccessListeners(appended);
+            if (originalWithAppended.getRoutes().length > mRoutes.getRoutes().length) {
+                mRequest.notifySuccessListeners(originalWithAppended);
             } else {
-                mRequest.getRoutes().setPageInfo(new PagedDataResourceDescriptor(
-                        mRequest.getRoutes().getPagedResourceDescriptor().getPreviousPointer(),
-                        mRequest.getRoutes().getPagedResourceDescriptor().getCurrentPointer(),
-                        data.getPagedResourceDescriptor().getNextPointer()
-                ));
+                ((LinkedConnectionsRoutesList) mRequest.getRoutes()).setPageInfo(
+                        mRequest.getRoutes().getPreviousResultsPointer(),
+                        mRequest.getRoutes().getCurrentResultsPointer(),
+                        data.getNextResultsPointer()
+                );
                 extend();
             }
         } else {
-            if (appended.getRoutes().length > mRoutes.getRoutes().length) {
-                mRequest.notifySuccessListeners(appended);
+            if (originalWithAppended.getRoutes().length > mRoutes.getRoutes().length) {
+                mRequest.notifySuccessListeners(originalWithAppended);
             } else {
-                mRequest.getRoutes().setPageInfo(new PagedDataResourceDescriptor(
-                        data.getPagedResourceDescriptor().getPreviousPointer(),
-                        data.getPagedResourceDescriptor().getCurrentPointer(),
-                        mRequest.getRoutes().getPagedResourceDescriptor().getNextPointer()
-                ));
+                ((LinkedConnectionsRoutesList) mRequest.getRoutes()).setPageInfo(
+                        data.getPreviousResultsPointer(),
+                        data.getCurrentResultsPointer(),
+                        mRequest.getRoutes().getNextResultsPointer()
+                );
                 extend();
             }
         }

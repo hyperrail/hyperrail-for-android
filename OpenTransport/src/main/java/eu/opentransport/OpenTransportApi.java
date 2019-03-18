@@ -26,7 +26,7 @@ public class OpenTransportApi {
         return null;
     }
 
-    enum DataProvider {
+    public enum DataProvider {
         BE_IRAIL_GRAPH,
         BE_IRAIL_API,
         BE_IRAIL_LC2IRAIL,

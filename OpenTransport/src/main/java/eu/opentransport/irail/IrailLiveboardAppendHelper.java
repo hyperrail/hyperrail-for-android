@@ -31,7 +31,7 @@ import eu.opentransport.common.requests.IrailLiveboardRequest;
 /**
  * A class which allows to withStopsAppended liveboards.
  */
-class IrailLiveboardAppendHelper implements TransportDataSuccessResponseListener<Liveboard>, TransportDataErrorResponseListener {
+public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseListener<Liveboard>, TransportDataErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;

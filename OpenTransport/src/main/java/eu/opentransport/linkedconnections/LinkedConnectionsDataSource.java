@@ -10,21 +10,18 @@ import android.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import eu.opentransport.OpenTransportApi;
-import eu.opentransport.R;
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSource;
-import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.Route;
+import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
 import eu.opentransport.common.requests.ExtendRoutesRequest;
@@ -36,9 +33,9 @@ import eu.opentransport.common.requests.IrailRoutesRequest;
 import eu.opentransport.common.requests.IrailVehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
 import eu.opentransport.irail.IrailApi;
-import eu.opentransport.irail.IrailLiveboard;
-import eu.opentransport.irail.IrailRoutesList;
-import eu.opentransport.irail.IrailVehicleStop;
+
+import static eu.opentransport.common.models.LiveboardType.ARRIVALS;
+import static eu.opentransport.common.models.LiveboardType.DEPARTURES;
 
 /**
  * This API loads linkedConnection data and builds responses based on this data
@@ -126,22 +123,16 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         );
 
         // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
-        routesRequest.setCallback(new TransportDataSuccessResponseListener<IrailRoutesList>() {
-            @Override
-            public void onSuccessResponse(@NonNull IrailRoutesList data, Object tag) {
-                for (Route r : data.getRoutes()) {
-                    if (r.getTransfers()[0].getDepartureSemanticId() != null &&
-                            r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
-                        request.notifySuccessListeners(r);
+        routesRequest.setCallback(
+                (data, tag) -> {
+                    for (Route r : data.getRoutes()) {
+                        if (r.getTransfers()[0].getDepartureSemanticId() != null &&
+                                r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
+                            request.notifySuccessListeners(r);
+                        }
                     }
-                }
-            }
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                request.notifyErrorListeners(e);
-            }
-        }, request.getTag());
+                },
+                (e, tag) -> request.notifyErrorListeners(e), request.getTag());
 
         getRoutes(routesRequest);
 
@@ -162,15 +153,12 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         } else {
             liveboardRequest = new IrailLiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.ARRIVE_AT, ARRIVALS, request.getStop().getArrivalTime());
         }
-        liveboardRequest.setCallback(new TransportDataSuccessResponseListener<IrailLiveboard>() {
-            @Override
-            public void onSuccessResponse(@NonNull IrailLiveboard data, Object tag) {
-                for (IrailVehicleStop stop :
-                        data.getStops()) {
-                    if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
-                        request.notifySuccessListeners(stop);
-                        return;
-                    }
+        liveboardRequest.setCallback((data, tag) -> {
+            for (VehicleStop stop :
+                    data.getStops()) {
+                if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
+                    request.notifySuccessListeners(stop);
+                    return;
                 }
             }
         }, request.getOnErrorListener(), null);
@@ -252,6 +240,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
             VehicleQueryResponseListener query = new VehicleQueryResponseListener("http://irail.be/vehicle/" + request.getVehicleId(), listener, listener, meteredRequest);
 
             DateTime departureTime = request.getSearchTime().withTimeAtStartOfDay().withHourOfDay(3);
+            /*
             if (trainDeparturesIndex == null) {
                 trainDeparturesIndex = new ArrayList<>();
                 try (InputStream in = api.mContext.getResources().openRawResource(R.raw.firstdepartures)) {
@@ -270,7 +259,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
                     break;
                 }
             }
-
+            */
             Log.d("LinkedConnectionsDS", "Departure time from index for " + request.getVehicleId() + " is " + departureTime.toString(ISODateTimeFormat.basicDateTimeNoMillis()));
 
             api.mLinkedConnectionsProvider.queryLinkedConnections(departureTime, query, meteredRequest);
@@ -301,9 +290,9 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
 
             LiveboardResponseListener listener = new LiveboardResponseListener(api.mLinkedConnectionsProvider, api.mStationsProvider, request);
             api.mLinkedConnectionsProvider.getLinkedConnectionsByDate(request.getSearchTime(),
-                                                                      listener,
-                                                                      listener,
-                                                                      meteredRequest);
+                    listener,
+                    listener,
+                    meteredRequest);
             return null;
         }
     }

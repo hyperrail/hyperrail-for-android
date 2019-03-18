@@ -7,11 +7,13 @@
 package eu.opentransport.common.contracts;
 
 /**
- * A paged resource contains pointers to the next and previous pages.
- * Pointers are API-implementation dependent
+ * Describes where the previous, current and next page can be found
  */
 public interface PagedDataResource {
-    PagedDataResourceDescriptor getPagedResourceDescriptor();
 
-    void setPageInfo(PagedDataResourceDescriptor descriptor);
+    NextDataPointer getPreviousResultsPointer();
+
+    NextDataPointer getCurrentResultsPointer();
+
+    NextDataPointer getNextResultsPointer();
 }

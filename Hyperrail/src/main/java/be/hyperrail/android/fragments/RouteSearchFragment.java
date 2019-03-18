@@ -55,17 +55,17 @@ import be.hyperrail.android.activities.searchresult.RouteActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteSuggestionsCardAdapter;
-import be.hyperrail.android.irail.contracts.IrailStationProvider;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.DateTimePicker;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.contracts.TransportStopsDataSource;
+import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.common.requests.IrailRoutesRequest;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -134,7 +134,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
 
         LoadAutoCompleteTask loadAutoCompleteTask = new LoadAutoCompleteTask(this);
-        loadAutoCompleteTask.execute(IrailFactory.getStationsProviderInstance());
+        loadAutoCompleteTask.execute(OpenTransportApi.getStationsProviderInstance());
 
         // Handle special keys in "from" text
         vFromText.setOnKeyListener(new View.OnKeyListener() {
@@ -325,15 +325,15 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             return;
         }
 
-        IrailStationProvider p = IrailFactory.getStationsProviderInstance();
-        Station station_from = p.getStationByExactName(from);
+        TransportStopsDataSource p = OpenTransportApi.getStationsProviderInstance();
+        StopLocation station_from = p.getStationByExactName(from);
 
-        Station station_to = p.getStationByExactName(to);
+        StopLocation station_to = p.getStationByExactName(to);
 
         doSearch(station_from, station_to);
     }
 
-    private void doSearch(Station from, Station to) {
+    private void doSearch(StopLocation from, StopLocation to) {
         if (from == null) {
             ErrorDialogFactory.showInvalidDepartureStationError(this.getActivity(), false);
             return;
@@ -350,11 +350,11 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
 
-        RouteTimeDefinition timedef;
+        QueryTimeDefinition timedef;
         if (vArriveDepart.getSelectedItemPosition() == 0) {
-            timedef = RouteTimeDefinition.DEPART_AT;
+            timedef = QueryTimeDefinition.DEPART_AT;
         } else {
-            timedef = RouteTimeDefinition.ARRIVE_AT;
+            timedef = QueryTimeDefinition.ARRIVE_AT;
         }
 
         DateTime d = null;
@@ -424,7 +424,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
     }
 
-    private static class LoadAutoCompleteTask extends AsyncTask<IrailStationProvider, Void, String[]> {
+    private static class LoadAutoCompleteTask extends AsyncTask<TransportStopsDataSource, Void, String[]> {
 
         private WeakReference<RouteSearchFragment> fragmentReference;
 
@@ -434,7 +434,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         @Override
-        protected String[] doInBackground(IrailStationProvider... provider) {
+        protected String[] doInBackground(TransportStopsDataSource... provider) {
             return provider[0].getStationNames(provider[0].getStationsOrderBySize());
 
         }

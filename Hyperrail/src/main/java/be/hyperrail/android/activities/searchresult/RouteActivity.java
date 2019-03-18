@@ -21,14 +21,14 @@ import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.searchresult.RoutesFragment;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 import be.hyperrail.android.util.ShortcutHelper;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.common.requests.IrailRoutesRequest;
 
 import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 
@@ -62,17 +62,17 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
 
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
-            Station origin;
-            Station destination;
+            StopLocation origin;
+            StopLocation destination;
             try {
-                origin = IrailFactory.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("from"));
-                destination = IrailFactory.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("to"));
-            } catch (StationNotResolvedException e) {
+                origin = OpenTransportApi.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("from"));
+                destination = OpenTransportApi.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("to"));
+            } catch (StopLocationNotResolvedException e) {
                 Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
-            this.mRequest = new IrailRoutesRequest(origin, destination, RouteTimeDefinition.DEPART_AT, null);
+            this.mRequest = new IrailRoutesRequest(origin, destination, QueryTimeDefinition.DEPART_AT, null);
         } else {
             this.mRequest = (IrailRoutesRequest) getIntent().getSerializableExtra("request");
         }

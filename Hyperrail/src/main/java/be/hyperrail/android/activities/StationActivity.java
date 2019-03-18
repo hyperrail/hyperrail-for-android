@@ -36,17 +36,18 @@ import org.joda.time.LocalTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.db.StationFacilities;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.irail.IrailStationFacilities;
 
 public class StationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private Station mStation;
+    private StopLocation mStation;
 
-    public static Intent createIntent(Context context, Station station) {
+    public static Intent createIntent(Context context, StopLocation station) {
         Intent i = new Intent(context, StationActivity.class);
         i.putExtra("station", station);
         return i;
@@ -63,13 +64,14 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mStation = (Station) getIntent().getSerializableExtra("station");
+        mStation = (StopLocation) getIntent().getSerializableExtra("station");
 
         findViewById(R.id.floating_action_button).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(LiveboardActivity.createIntent(StationActivity.this, new IrailLiveboardRequest(mStation, RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null)));
+                        startActivity(LiveboardActivity.createIntent(StationActivity.this,
+                                new IrailLiveboardRequest(mStation, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null)));
                     }
                 }
         );
@@ -83,8 +85,9 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         bind(mStation);
     }
 
-    private void bind(Station station) {
-        StationFacilities facilities = station.getStationFacilities();
+    private void bind(StopLocation station) {
+        IrailStationFacilities facilities =
+                OpenTransportApi.getFacilitiesProviderInstance().getStationFacilitiesByUri(station.getUri());
 
         // Catch stations without details
         if (facilities == null) {

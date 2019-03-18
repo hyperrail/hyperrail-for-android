@@ -18,7 +18,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.searchresult.RouteFragment;
-import be.hyperrail.android.irail.implementation.Route;
+import eu.opentransport.common.models.Route;
 
 /**
  * Activity to show one specific route

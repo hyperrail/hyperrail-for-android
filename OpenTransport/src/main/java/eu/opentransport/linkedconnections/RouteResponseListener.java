@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Objects;
 
 import eu.opentransport.common.contracts.MeteredDataSource;
-import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
+import eu.opentransport.common.contracts.NextDataPointer;
+import eu.opentransport.common.contracts.PagedDataResource;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
@@ -34,6 +35,9 @@ import eu.opentransport.common.models.RouteLeg;
 import eu.opentransport.common.models.RouteLegEnd;
 import eu.opentransport.common.models.RouteLegType;
 import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.irail.IrailRoute;
+import eu.opentransport.irail.IrailRouteLeg;
+import eu.opentransport.irail.IrailRouteLegEnd;
 import eu.opentransport.irail.IrailRoutesList;
 import eu.opentransport.irail.IrailVehicleStub;
 
@@ -70,9 +74,9 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
     // Size m, where m is the number of trips
     HashMap<String, TrainProfile> T = new HashMap<>();
     private Object mTag;
-    private String mNext;
-    private String mPrevious;
-    private String mCurrent;
+    private NextDataPointer mNext;
+    private NextDataPointer mPrevious;
+    private NextDataPointer mCurrent;
 
     public RouteResponseListener(@NonNull LinkedConnectionsProvider linkedConnectionsProvider, @NonNull TransportStopsDataSource stationProvider, @NonNull IrailRoutesRequest request, @Nullable DateTime departureLimit) {
         mLinkedConnectionsProvider = linkedConnectionsProvider;
@@ -94,10 +98,10 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
         // - but stop when we're passing the departe time limit
         // - when we're searching with a departuretime, we need to continue until we're at the front. This might result in more results, which we'll all pass to the client
 
-        mPrevious = data.previous;
-        mCurrent = data.current;
+        mPrevious = new LinkedConnectionsPagePointer(data.previous);
+        mCurrent =  new LinkedConnectionsPagePointer(data.current);
         if (mNext == null) {
-            mNext = data.next;
+            mNext =  new LinkedConnectionsPagePointer(data.next);
         }
 
         if (data.connections.length == 0) {
@@ -381,7 +385,7 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
         if (!S.containsKey(mRoutesRequest.getOrigin().getUri())) {
             if (hasPassedDepartureLimit) {
                 IrailRoutesList result = new IrailRoutesList(mRoutesRequest.getOrigin(), mRoutesRequest.getDestination(), mRoutesRequest.getSearchTime(), mRoutesRequest.getTimeDefinition(), new Route[0]);
-                result.setPageInfo(new PagedDataResourceDescriptor(mPrevious, mCurrent, mNext));
+                result.setPageInfo(mPrevious, mCurrent, mNext);
                 ((MeteredDataSource.MeteredRequest) mTag).setMsecParsed(DateTime.now().getMillis());
                 Log.d("RouteResponseListener", "Found 0 results");
                 mRoutesRequest.notifySuccessListeners(result);
@@ -402,30 +406,30 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
             List<RouteLeg> legs = new ArrayList<>();
 
             while (!Objects.equals(it.arrivalConnection.getArrivalStationUri(), mRoutesRequest.getDestination().getUri())) {
-                RouteLegEnd departure = new RouteLegEnd(mStationProvider.getStationByUri(it.departureConnection.getDepartureStationUri()),
+                RouteLegEnd departure = new IrailRouteLegEnd(mStationProvider.getStationByUri(it.departureConnection.getDepartureStationUri()),
                                                         it.departureConnection.getDepartureTime(), "?", true, Duration.standardSeconds(it.departureConnection.getDepartureDelay()), false, it.departureConnection.getDelayedDepartureTime().isBeforeNow(),
                                                         it.departureConnection.getUri(), TransportOccupancyLevel.UNSUPPORTED);
-                RouteLegEnd arrival = new RouteLegEnd(mStationProvider.getStationByUri(it.arrivalConnection.getArrivalStationUri()),
+                RouteLegEnd arrival = new IrailRouteLegEnd(mStationProvider.getStationByUri(it.arrivalConnection.getArrivalStationUri()),
                                                       it.arrivalConnection.getArrivalTime(), "?", true, Duration.standardSeconds(it.arrivalConnection.getArrivalDelay()), false, it.arrivalConnection.getDelayedArrivalTime().isBeforeNow(),
                                                       it.arrivalConnection.getArrivalStationUri(), TransportOccupancyLevel.UNSUPPORTED);
-                RouteLeg r = new RouteLeg(RouteLegType.TRAIN, new IrailVehicleStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival);
+                RouteLeg r = new IrailRouteLeg(RouteLegType.TRAIN, new IrailVehicleStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival);
                 legs.add(r);
 
                 it = getFirstReachableConnection(it);
             }
 
-            RouteLegEnd departure = new RouteLegEnd(mStationProvider.getStationByUri(it.departureConnection.getDepartureStationUri()),
+            RouteLegEnd departure = new IrailRouteLegEnd(mStationProvider.getStationByUri(it.departureConnection.getDepartureStationUri()),
                                                     it.departureConnection.getDepartureTime(), "?", true, Duration.standardSeconds(it.departureConnection.getDepartureDelay()), false, it.departureConnection.getDelayedDepartureTime().isBeforeNow(),
                                                     it.departureConnection.getUri(), TransportOccupancyLevel.UNSUPPORTED);
-            RouteLegEnd arrival = new RouteLegEnd(mStationProvider.getStationByUri(it.arrivalConnection.getArrivalStationUri()),
+            RouteLegEnd arrival = new IrailRouteLegEnd(mStationProvider.getStationByUri(it.arrivalConnection.getArrivalStationUri()),
                                                   it.arrivalConnection.getArrivalTime(), "?", true, Duration.standardSeconds(it.arrivalConnection.getArrivalDelay()), false, it.arrivalConnection.getDelayedArrivalTime().isBeforeNow(),
                                                   it.arrivalConnection.getArrivalStationUri(), TransportOccupancyLevel.UNSUPPORTED);
-            RouteLeg r = new RouteLeg(RouteLegType.TRAIN, new IrailVehicleStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival);
+            RouteLeg r = new IrailRouteLeg(RouteLegType.TRAIN, new IrailVehicleStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival);
             legs.add(r);
 
             RouteLeg[] legsArray = new RouteLeg[legs.size()];
             legsArray = legs.toArray(legsArray);
-            routes[i++] = new Route(legsArray);
+            routes[i++] = new IrailRoute(legsArray);
         }
 
         Arrays.sort(routes, new Comparator<Route>() {
@@ -436,7 +440,7 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
         });
 
         IrailRoutesList result = new IrailRoutesList(mRoutesRequest.getOrigin(), mRoutesRequest.getDestination(), mRoutesRequest.getSearchTime(), mRoutesRequest.getTimeDefinition(), routes);
-        result.setPageInfo(new PagedDataResourceDescriptor(mPrevious, mCurrent, mNext));
+        result.setPageInfo(mPrevious, mCurrent, mNext);
         ((MeteredDataSource.MeteredRequest) mTag).setMsecParsed(DateTime.now().getMillis());
         Log.d("RouteResponseListener", "Found " + result.getRoutes().length + " results");
         mRoutesRequest.notifySuccessListeners(result);

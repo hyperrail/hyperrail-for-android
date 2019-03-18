@@ -65,7 +65,7 @@ public class LinkedConnectionsProvider {
 
     private boolean mCacheEnabled = true;
 
-    private static final String UA = "HyperRail for Android - " + BuildConfig.VERSION_NAME;
+    private static final String UA = "OpenTransport for Android - " + BuildConfig.VERSION_NAME;
 
     private boolean isInternetAvailable() {
         NetworkInfo activeNetwork = mConnectivityManager.getActiveNetworkInfo();
@@ -192,8 +192,8 @@ public class LinkedConnectionsProvider {
         };
 
         StringRequest jsObjRequest = new StringRequest(Request.Method.GET, url,
-                                                           volleySuccessListener,
-                                                           volleyErrorListener) {
+                volleySuccessListener,
+                volleyErrorListener) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
@@ -242,42 +242,10 @@ public class LinkedConnectionsProvider {
     }
 
     @NonNull
-    @AddTrace(name="LinkedConnectionsProvider.fromJsonLS")
+    @AddTrace(name = "LinkedConnectionsProvider.fromJsonLS")
     private LinkedConnections getLinkedConnectionsFromJson(String response) throws
-            JSONException, IOException {
-       /* LinkedConnections result = new LinkedConnections();
-        result.current = response.getString("@id");
-        result.next = response.getString("hydra:next");
-        result.previous = response.getString("hydra:previous");
-
-        JSONArray array = response.getJSONArray("@graph");
-        List<LinkedConnection> connections = new ArrayList<>();
-
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject entry = array.getJSONObject(
-                    i);
-
-            if (!entry.has(GTFS_DROP_OFF_TYPE) ||
-                    !entry.has(GTFS_PICKUP_TYPE) ||
-                    !Objects.equals(entry.getString(GTFS_DROP_OFF_TYPE), GTFS_REGULAR) ||
-                    !Objects.equals(entry.getString(GTFS_PICKUP_TYPE), GTFS_REGULAR)) {
-                continue;
-            }
-
-            LinkedConnection connection = new LinkedConnection(entry);
-            connections.add(connection);
-        }
-
-        result.connections = new LinkedConnection[connections.size()];
-        result.connections = connections.toArray(result.connections);
-        */
-        return LoganSquare.parse(response,LinkedConnections.class);
-       /* Arrays.sort(result.connections, new Comparator<LinkedConnection>() {
-            @Override
-            public int compare(LinkedConnection o1, LinkedConnection o2) {
-                return o1.getDepartureTime().compareTo(o2.getDepartureTime());
-            }
-        });*/
+            IOException {
+        return LoganSquare.parse(response, LinkedConnections.class);
     }
 
     public void setCacheEnabled(boolean cacheEnabled) {

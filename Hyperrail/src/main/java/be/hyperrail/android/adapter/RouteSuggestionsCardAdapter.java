@@ -24,8 +24,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.Suggestion;
+import eu.opentransport.common.requests.IrailRoutesRequest;
 
 /**
  * An adapter to show RouteQueries (recent/favorite routes) in a recyclerview

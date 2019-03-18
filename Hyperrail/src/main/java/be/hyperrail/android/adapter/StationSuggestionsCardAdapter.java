@@ -26,12 +26,12 @@ import android.widget.TextView;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -40,7 +40,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
 
     private final Context context;
     private List<Suggestion<IrailLiveboardRequest>> suggestedStations;
-    private Station[] stations;
+    private StopLocation[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
     private OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> longClickListener;
@@ -64,7 +64,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         UNDEFINED
     }
 
-    public StationSuggestionsCardAdapter(Context context, Station[] stations) {
+    public StationSuggestionsCardAdapter(Context context, StopLocation[] stations) {
         this.context = context;
         this.stations = stations;
     }
@@ -75,12 +75,12 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         View itemView;
 
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout",
-                                                                               false)) {
+                false)) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_station,
-                                                                        parent, false);
+                    parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_station,
-                                                                        parent, false);
+                    parent, false);
         }
 
         return new StationViewHolder(itemView);
@@ -107,7 +107,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
     }
 
     private void bindNearbyViewHolder(StationViewHolder holder, int position, int suggestedStationsLength) {
-        Station station;
+        StopLocation station;
 
         if (!nearbyOnTop) {
             station = stations[position - suggestedStationsLength];
@@ -134,9 +134,9 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         }
 
         IrailLiveboardRequest request = new IrailLiveboardRequest(station,
-                                                                  RouteTimeDefinition.DEPART_AT,
-                                                                  Liveboard.LiveboardType.DEPARTURES,
-                                                                  null);
+                QueryTimeDefinition.DEPART_AT,
+                LiveboardType.DEPARTURES,
+                null);
         final Suggestion<IrailLiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +144,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             public void onClick(View v) {
                 if (listener != null) {
                     listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this,
-                                                 suggestion);
+                            suggestion);
                 }
             }
         });
@@ -154,7 +154,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
                     longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
-                                                              suggestion);
+                            suggestion);
                 }
                 return false;
             }
@@ -211,7 +211,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         this.notifyDataSetChanged();
     }
 
-    public void setSearchResultStations(Station[] stations) {
+    public void setSearchResultStations(StopLocation[] stations) {
         this.stations = stations;
         this.notifyDataSetChanged();
     }

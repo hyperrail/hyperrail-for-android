@@ -24,24 +24,28 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import eu.opentransport.common.contracts.NextDataPointer;
 import eu.opentransport.common.contracts.PagedDataResource;
-import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.StopLocation;
+import eu.opentransport.linkedconnections.LinkedConnectionsPagePointer;
 
 /**
  * This class represents a liveboard entity, containing departures or arrivals.
  * This class extends a station with its departures.
  */
-public class IrailLiveboard extends IrailStation implements Liveboard, Serializable, PagedDataResource {
+public class IrailLiveboard extends IrailStation implements Liveboard, Serializable {
 
     private IrailVehicleStop[] mStops;
     private DateTime mSearchTime;
     private final QueryTimeDefinition mTimeDefinition;
     LiveboardType mType;
-    private PagedDataResourceDescriptor mDescriptor;
+
+    private NextDataPointer previousPagePointer;
+    private NextDataPointer currentPagePointer;
+    private NextDataPointer nextPagePointer;
 
     public IrailLiveboard(StopLocation station, IrailVehicleStop[] stops, DateTime searchTime, LiveboardType type, QueryTimeDefinition timeDefinition) {
         super(station);
@@ -78,7 +82,7 @@ public class IrailLiveboard extends IrailStation implements Liveboard, Serializa
      *
      * @param other the other liveboards to merge into this one
      */
-    IrailLiveboard withStopsAppended(IrailLiveboard... other) {
+    public IrailLiveboard withStopsAppended(IrailLiveboard... other) {
         HashMap<String, IrailVehicleStop> stopsByUri = new HashMap<>();
         for (IrailVehicleStop stop :
                 mStops) {
@@ -107,13 +111,26 @@ public class IrailLiveboard extends IrailStation implements Liveboard, Serializa
         return new IrailLiveboard(this, stops, this.getSearchTime(), this.getLiveboardType(), this.getTimeDefinition());
     }
 
-    @Override
-    public PagedDataResourceDescriptor getPagedResourceDescriptor() {
-        return mDescriptor;
+    public void setPageInfo(NextDataPointer previous,
+                            NextDataPointer current,
+                            NextDataPointer next) {
+        this.previousPagePointer = previous;
+        this.currentPagePointer = current;
+        this.nextPagePointer = next;
     }
 
     @Override
-    public void setPageInfo(PagedDataResourceDescriptor descriptor) {
-        mDescriptor = descriptor;
+    public NextDataPointer getPreviousResultsPointer() {
+        return previousPagePointer;
+    }
+
+    @Override
+    public NextDataPointer getCurrentResultsPointer() {
+        return currentPagePointer;
+    }
+
+    @Override
+    public NextDataPointer getNextResultsPointer() {
+        return nextPagePointer;
     }
 }

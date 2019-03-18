@@ -15,9 +15,7 @@ import eu.opentransport.common.models.RoutesList;
 
 public class ExtendRoutesRequest extends IrailBaseRequest<RoutesList> implements TransportDataRequest<RoutesList> {
 
-
     private final RoutesList routes;
-
 
     private final Action mAction;
 

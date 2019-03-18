@@ -16,6 +16,7 @@ import java.io.Serializable;
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
 import eu.opentransport.common.models.RouteLeg;
 import eu.opentransport.common.models.RouteLegEnd;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.Transfer;
 import eu.opentransport.common.models.TransferType;
 
@@ -83,7 +84,7 @@ public class IrailTransfer implements Transfer, Serializable {
     }
 
 
-    public IrailStation getStation() {
+    public StopLocation getStation() {
         if (mDeparture != null) {
             return mDeparture.getStation();
         } else if (mArrival != null) {

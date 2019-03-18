@@ -37,7 +37,7 @@ public class IrailFacilitiesDataProvider {
         this.mWebDb = new WebDb(context, new IrailFacilitiesWebDbDataDefinition(context));
     }
 
-    public IrailStationFacilities getStationFacilitiesById(String id) {
+    public IrailStationFacilities getStationFacilitiesByUri(String id) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
         Cursor c = db.query(
                 StationFacilityColumns.TABLE_NAME,

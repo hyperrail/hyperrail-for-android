@@ -25,6 +25,7 @@ import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.IrailVehicleRequest;
 import eu.opentransport.irail.IrailStation;
@@ -61,8 +62,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
                 continue;
             }
 
-            IrailStation departure;
-
+            StopLocation departure;
             try {
                 departure = mStationProvider.getStationByUri(connection.getDepartureStationUri());
             } catch (StopLocationNotResolvedException e) {
@@ -70,7 +70,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
                 return;
             }
 
-            IrailStation direction = mStationProvider.getStationByExactName(connection.getDirection());
+            StopLocation direction = mStationProvider.getStationByExactName(connection.getDirection());
             String headsign;
             if (direction != null) {
                 headsign = direction.getLocalizedName();
@@ -99,7 +99,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
         }
 
         if (stops.size() > 0 && lastConnection != null) {
-            IrailStation arrival;
+            StopLocation arrival;
             try {
                 arrival = OpenTransportApi.getStationsProviderInstance().getStationByUri(lastConnection.getArrivalStationUri());
             } catch (StopLocationNotResolvedException e) {
@@ -107,7 +107,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
                 return;
             }
 
-            IrailStation direction = OpenTransportApi.getStationsProviderInstance().getStationByExactName(lastConnection.getDirection());
+            StopLocation direction = OpenTransportApi.getStationsProviderInstance().getStationByExactName(lastConnection.getDirection());
             String headsign;
             if (direction != null) {
                 headsign = direction.getLocalizedName();

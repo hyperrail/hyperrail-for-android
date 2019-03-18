@@ -23,19 +23,21 @@ import java.util.Objects;
 import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.MeteredDataSource.MeteredRequest;
-import eu.opentransport.common.contracts.PagedDataResourceDescriptor;
+import eu.opentransport.common.contracts.PagedDataResource;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
+import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.IrailLiveboardRequest;
 import eu.opentransport.irail.IrailLiveboard;
-import eu.opentransport.irail.IrailStation;
 import eu.opentransport.irail.IrailVehicleStop;
 import eu.opentransport.irail.IrailVehicleStub;
 
+import static eu.opentransport.common.models.LiveboardType.ARRIVALS;
+import static eu.opentransport.common.models.LiveboardType.DEPARTURES;
 import static eu.opentransport.linkedconnections.LinkedConnectionsDataSource.basename;
 
 /**
@@ -85,7 +87,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
         }
 
         for (LinkedConnection connection : data.connections) {
-            if (!connection.isNormal()){
+            if (!connection.isNormal()) {
                 continue;
             }
 
@@ -99,15 +101,19 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
         }
         pages++;
 
-        if ((request.getType() == IrailLiveboard.LiveboardType.DEPARTURES && departures.size() > 0) || (request.getType() == ARRIVALS && arrivals.size() > 0)) {
+        if ((request.getType() == DEPARTURES && departures.size() > 0) || (request.getType() == ARRIVALS && arrivals.size() > 0)) {
             IrailVehicleStop[] stoparray = generateStopArray();
             IrailLiveboard liveboard = new IrailLiveboard(request.getStation(), stoparray, request.getSearchTime(), request.getType(), request.getTimeDefinition());
-            liveboard.setPageInfo(new PagedDataResourceDescriptor(previous, current, next));
-            Log.i("LiveboardResponse","Found " + stoparray.length + " results after searching " + pages + " pages");
+            liveboard.setPageInfo(
+                    new LinkedConnectionsPagePointer(previous),
+                    new LinkedConnectionsPagePointer(current),
+                    new LinkedConnectionsPagePointer(next)
+            );
+            Log.i("LiveboardResponse", "Found " + stoparray.length + " results after searching " + pages + " pages");
             request.notifySuccessListeners(liveboard);
             ((MeteredRequest) tag).setMsecParsed(DateTime.now().getMillis());
         } else {
-            Log.i("LiveboardResponse","Found no results");
+            Log.i("LiveboardResponse", "Found no results");
             String link = data.next;
             // When searching for "arrive before", we need to look backwards
             if (request.getTimeDefinition() == QueryTimeDefinition.ARRIVE_AT) {
@@ -121,14 +127,14 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
             }
 
             mLinkedConnectionsProvider.getLinkedConnectionsByUrl(link,
-                                                                 this,
-                                                                 new TransportDataErrorResponseListener() {
-                                                                     @Override
-                                                                     public void onErrorResponse(@NonNull Exception e, Object tag) {
-                                                                         Log.w("LiveboardResponseLstnr", "Getting next LC page failed");
-                                                                     }
-                                                                 },
-                                                                 tag);
+                    this,
+                    new TransportDataErrorResponseListener() {
+                        @Override
+                        public void onErrorResponse(@NonNull Exception e, Object tag) {
+                            Log.w("LiveboardResponseLstnr", "Getting next LC page failed");
+                        }
+                    },
+                    tag);
         }
 
     }
@@ -158,7 +164,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                     handledConnections.add(departure);
                     handledConnections.add(arrival);
 
-                    IrailStation direction = OpenTransportApi.getStationsProviderInstance().getStationByExactName(
+                    StopLocation direction = OpenTransportApi.getStationsProviderInstance().getStationByExactName(
                             departure.getDirection());
 
                     String headsign;
@@ -168,34 +174,34 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                         headsign = direction.getLocalizedName();
                     }
                     stops.add(new IrailVehicleStop(request.getStation(),
-                                                   new IrailVehicleStub(
-                                                      basename(departure.getRoute()),
-                                                      headsign,
-                                                      departure.getRoute()),
-                                                   "?",
-                                                   true,
-                                                   departure.getDepartureTime(),
-                                                   arrival.getArrivalTime(),
-                                                   Duration.standardSeconds(departure.getDepartureDelay()),
-                                                   Duration.standardSeconds(arrival.getArrivalDelay()),
-                                                   false,
-                                                   false,
-                                                   departure.getDelayedDepartureTime().isAfterNow(),
-                                                   departure.getUri(),
-                                                   TransportOccupancyLevel.UNSUPPORTED,
-                                                   VehicleStopType.STOP));
+                            new IrailVehicleStub(
+                                    basename(departure.getRoute()),
+                                    headsign,
+                                    departure.getRoute()),
+                            "?",
+                            true,
+                            departure.getDepartureTime(),
+                            arrival.getArrivalTime(),
+                            Duration.standardSeconds(departure.getDepartureDelay()),
+                            Duration.standardSeconds(arrival.getArrivalDelay()),
+                            false,
+                            false,
+                            departure.getDelayedDepartureTime().isAfterNow(),
+                            departure.getUri(),
+                            TransportOccupancyLevel.UNSUPPORTED,
+                            VehicleStopType.STOP));
                 }
             }
         }
 
-        if (request.getType() == IrailLiveboard.LiveboardType.DEPARTURES) {
+        if (request.getType() == DEPARTURES) {
             for (int i = 0; i < departures.size(); i++) {
                 if (handledConnections.contains(departures.get(i))) {
                     continue;
                 }
 
                 LinkedConnection departure = departures.get(i);
-                IrailStation direction = mStationProvider.getStationByExactName(
+                StopLocation direction = mStationProvider.getStationByExactName(
                         departure.getDirection());
                 String headsign;
                 if (direction == null) {
@@ -207,51 +213,46 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                         basename(departure.getRoute()),
                         headsign,
                         departure.getRoute()),
-                                               "?",
-                                               true,
-                                               departure.getDepartureTime(),
-                                               null,
-                                               Duration.standardSeconds(departure.getDepartureDelay()),
-                                               new Duration(0),
-                                               false,
-                                               false,
-                                               departure.getDelayedDepartureTime().isBeforeNow(),
-                                               departure.getUri(),
-                                               TransportOccupancyLevel.UNSUPPORTED,
-                                               VehicleStopType.DEPARTURE));
+                        "?",
+                        true,
+                        departure.getDepartureTime(),
+                        null,
+                        Duration.standardSeconds(departure.getDepartureDelay()),
+                        new Duration(0),
+                        false,
+                        false,
+                        departure.getDelayedDepartureTime().isBeforeNow(),
+                        departure.getUri(),
+                        TransportOccupancyLevel.UNSUPPORTED,
+                        VehicleStopType.DEPARTURE));
 
             }
 
-            Collections.sort(stops, new Comparator<IrailVehicleStop>() {
-                @Override
-                public int compare(IrailVehicleStop o1, IrailVehicleStop o2) {
-                    return o1.getDepartureTime().compareTo(o2.getDepartureTime());
-                }
-            });
+            Collections.sort(stops, (o1, o2) -> o1.getDepartureTime().compareTo(o2.getDepartureTime()));
         } else {
             for (int i = 0; i < arrivals.size(); i++) {
                 if (handledConnections.contains(arrivals.get(i))) {
                     continue;
                 }
                 LinkedConnection arrival = arrivals.get(i);
-                IrailStation direction = request.getStation();
+                StopLocation direction = request.getStation();
 
                 stops.add(new IrailVehicleStop(request.getStation(), new IrailVehicleStub(
                         basename(arrival.getRoute()),
                         direction.getLocalizedName(),
                         arrival.getRoute()),
-                                               "?",
-                                               true,
-                                               null,
-                                               arrival.getArrivalTime(),
-                                               new Duration(0),
-                                               Duration.standardSeconds(arrival.getArrivalDelay()),
-                                               false,
-                                               false,
-                                               arrival.getDelayedArrivalTime().isBeforeNow(),
-                                               arrival.getUri(),
-                                               TransportOccupancyLevel.UNSUPPORTED,
-                                               VehicleStopType.ARRIVAL));
+                        "?",
+                        true,
+                        null,
+                        arrival.getArrivalTime(),
+                        new Duration(0),
+                        Duration.standardSeconds(arrival.getArrivalDelay()),
+                        false,
+                        false,
+                        arrival.getDelayedArrivalTime().isBeforeNow(),
+                        arrival.getUri(),
+                        TransportOccupancyLevel.UNSUPPORTED,
+                        VehicleStopType.ARRIVAL));
 
             }
 

@@ -80,7 +80,7 @@ public class IrailApi implements TransportDataSource {
 
     private static final String LOGTAG = "iRailApi";
     private final RequestQueue requestQueue;
-    private static final String UA = "HyperRail for Android - " + BuildConfig.VERSION_NAME;
+    private static final String UA = "OpenTransport for Android - " + BuildConfig.VERSION_NAME;
     private final RetryPolicy requestPolicy;
 
     private final Context context;
@@ -252,7 +252,7 @@ public class IrailApi implements TransportDataSource {
                 }
             }
             request.notifySuccessListeners(
-                    new IrailLiveboard((IrailStation) data, stops.toArray(new VehicleStop[]{}),
+                    new IrailLiveboard(data, stops.toArray(new IrailVehicleStop[]{}),
                                        data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
                     ));
         }, (e, tag) -> request.notifyErrorListeners(e), actualRequest.getTag());

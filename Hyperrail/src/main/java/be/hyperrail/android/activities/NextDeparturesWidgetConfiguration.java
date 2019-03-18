@@ -25,8 +25,8 @@ import android.widget.RemoteViews;
 import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
 
 public class NextDeparturesWidgetConfiguration extends AppCompatActivity implements OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> {
 

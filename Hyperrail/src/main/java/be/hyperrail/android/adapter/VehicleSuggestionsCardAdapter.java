@@ -22,9 +22,9 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
+import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.irail.IrailVehicleStub;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -58,7 +58,7 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
         final Suggestion<IrailVehicleRequest> t = suggestedTrains.get(position);
-        String title = VehicleStub.getVehicleName(t.getData().getVehicleId());
+        String title = IrailVehicleStub.getVehicleName(t.getData().getVehicleId());
         if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
             title += " - " + df.print(t.getData().getDepartureTime());

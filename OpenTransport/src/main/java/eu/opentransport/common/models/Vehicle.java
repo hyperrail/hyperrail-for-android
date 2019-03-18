@@ -33,14 +33,14 @@ public interface Vehicle extends VehicleStub  {
      * Get the origin station of this vehicle.
      * @return The station where the train departed
      */
-    IrailStation getOrigin();
+    StopLocation getOrigin();
 
     /**
      * Get the final stop of this train
      *
      * @return The station where the train has reached its destination
      */
-    IrailStation getDirection();
+    StopLocation getDirection();
 
     /**
      * Get the list of all stops this vehicle will make

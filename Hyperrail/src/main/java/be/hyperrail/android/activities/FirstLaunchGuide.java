@@ -41,8 +41,8 @@ import com.squareup.picasso.Picasso;
 
 import be.hyperrail.android.BuildConfig;
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.factories.IrailFactory;
+import eu.opentransport.OpenTransportApi;
+import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 
 import static java.util.logging.Level.INFO;
 
@@ -260,9 +260,9 @@ public class FirstLaunchGuide extends AppCompatActivity {
         protected Void doInBackground(Void... voids) {
             try {
                 Crashlytics.log(INFO.intValue(), "FirstLaunchGuide","Preparing stations database ahead of time");
-                IrailFactory.getStationsProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
+                OpenTransportApi.getStationsProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
                 Crashlytics.log(INFO.intValue(), "FirstLaunchGuide","Prepared stations database ahead of time");
-            } catch (StationNotResolvedException e) {
+            } catch (StopLocationNotResolvedException e) {
                 e.printStackTrace();
             }
             return null;

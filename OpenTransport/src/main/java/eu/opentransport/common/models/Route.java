@@ -17,8 +17,6 @@ import org.joda.time.Duration;
 
 import java.io.Serializable;
 
-import eu.opentransport.irail.IrailStation;
-
 /**
  * A route between 2 stations, which might consist of multiple vehicles with transfers in between
  */
@@ -54,9 +52,9 @@ public interface Route extends Serializable {
 
     boolean isDeparturePlatformNormal();
 
-    IrailStation getDepartureStation();
+    StopLocation getDepartureStation();
 
-    IrailStation getArrivalStation();
+    StopLocation getArrivalStation();
 
     Message[] getRemarks();
 

@@ -22,15 +22,15 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.Transfer;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
+import eu.opentransport.common.contracts.QueryTimeDefinition;
+import eu.opentransport.common.models.LiveboardType;
+import eu.opentransport.common.models.Route;
+import eu.opentransport.common.models.Transfer;
+import eu.opentransport.common.models.VehicleStop;
+import eu.opentransport.common.models.VehicleStub;
+import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.IrailRouteRequest;
+import eu.opentransport.common.requests.IrailVehicleRequest;
 
 /**
  * A fragment for showing liveboard results
@@ -99,24 +99,21 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(getActivity(), mRoute, false);
 
         // Launch intents to view details / click through
-        adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
-            @Override
-            public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
-                Intent i = null;
-                if (object instanceof Bundle) {
-                    i = VehicleActivity.createIntent(getActivity(),
-                                                     new IrailVehicleRequest(
-                                    ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
-                                    (DateTime) ((Bundle) object).getSerializable("date")
-                            )
-                    );
+        adapter.setOnItemClickListener((sender, object) -> {
+            Intent i = null;
+            if (object instanceof Bundle) {
+                i = VehicleActivity.createIntent(getActivity(),
+                                                 new IrailVehicleRequest(
+                                ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
+                                (DateTime) ((Bundle) object).getSerializable("date")
+                        )
+                );
 
 
-                } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(getActivity(), new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null));
-                }
-                startActivity(i);
+            } else if (object instanceof Transfer) {
+                i = LiveboardActivity.createIntent(getActivity(), new IrailLiveboardRequest(((Transfer) object).getStation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
             }
+            startActivity(i);
         });
         return adapter;
     }

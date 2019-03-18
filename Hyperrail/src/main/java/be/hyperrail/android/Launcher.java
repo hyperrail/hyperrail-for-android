@@ -15,8 +15,8 @@ package be.hyperrail.android;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 
-import be.hyperrail.android.irail.factories.IrailFactory;
 import be.hyperrail.android.util.ReviewDialogProvider;
+import eu.opentransport.OpenTransportApi;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -26,7 +26,7 @@ public class Launcher extends android.app.Application {
 
     public void onCreate() {
         // Setup the factory as soon as the app is created.
-        IrailFactory.setup(getApplicationContext());
+        OpenTransportApi.init(getApplicationContext(),OpenTransportApi.DataProvider.BE_IRAIL_API);
 
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());

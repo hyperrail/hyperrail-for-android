@@ -97,13 +97,13 @@ public class IrailVehicleStop implements VehicleStop, Serializable {
     }
 
 
-    public static IrailVehicleStop buildDepartureVehicleStop(IrailStation station, IrailVehicleStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
+    public static IrailVehicleStop buildDepartureVehicleStop(StopLocation station, IrailVehicleStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
         return new IrailVehicleStop(station, train, platform, isPlatformNormal,
                                     departureTime, null, departureDelay, new Duration(0),
                                     departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.DEPARTURE);
     }
 
-    public static IrailVehicleStop buildArrivalVehicleStop(IrailStation station, IrailVehicleStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
+    public static IrailVehicleStop buildArrivalVehicleStop(StopLocation station, IrailVehicleStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
         return new IrailVehicleStop(station, train, platform, isPlatformNormal,
                                     null, arrivalTime, new Duration(0), arrivalDelay,
                                     arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.ARRIVAL);
@@ -156,7 +156,7 @@ public class IrailVehicleStop implements VehicleStop, Serializable {
         return vehicle.headsign;
     }
 
-    public IrailStation getStation() {
+    public StopLocation getStation() {
         return station;
     }
 

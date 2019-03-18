@@ -34,7 +34,7 @@ import eu.opentransport.util.ArrayUtils;
 /**
  * A class which allows to withStopsAppended route results.
  */
-class IrailRouteAppendHelper implements TransportDataSuccessResponseListener<RoutesList>, TransportDataErrorResponseListener {
+public class IrailRouteAppendHelper implements TransportDataSuccessResponseListener<RoutesList>, TransportDataErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;
