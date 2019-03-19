@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
  * This class represents a train entity.
@@ -37,16 +38,16 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
     private final double longitude;
     private final double latitude;
 
-    private final IrailVehicleStop[] stops;
-    private IrailVehicleStop lastHaltedStop;
+    private final VehicleStopImpl[] stops;
+    private VehicleStopImpl lastHaltedStop;
 
-    public IrailVehicle(String id, @Nullable String uri, double longitude, double latitude, IrailVehicleStop[] stops) {
+    public IrailVehicle(String id, @Nullable String uri, double longitude, double latitude, VehicleStopImpl[] stops) {
         super(id, stops[stops.length - 1].getStation().getLocalizedName(), uri);
         this.longitude = longitude;
         this.latitude = latitude;
         this.stops = stops;
 
-        for (IrailVehicleStop stop : stops) {
+        for (VehicleStopImpl stop : stops) {
             if (stop.hasLeft()) {
                 lastHaltedStop = stop;
             }
@@ -57,11 +58,11 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
         return stops[0].getStation();
     }
 
-    public IrailVehicleStop[] getStops() {
+    public VehicleStopImpl[] getStops() {
         return stops;
     }
 
-    public IrailVehicleStop getLastHaltedStop() {
+    public VehicleStopImpl getLastHaltedStop() {
         return lastHaltedStop;
     }
 

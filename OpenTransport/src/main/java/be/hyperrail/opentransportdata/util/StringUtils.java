@@ -14,12 +14,12 @@ public class StringUtils {
         }
 
         return s.replaceAll("[ÉÈÊË]", "E")
-                .replaceAll("[éÉèÈêÊëË]", "e")
-                .replaceAll("[ÂÄ]", "A")
-                .replaceAll("[âÂåäÄ]", "a")
-                .replaceAll("[Ö]", "O")
-                .replaceAll("[öÖø]", "o")
+                .replaceAll("[éèêë]", "e")
+                .replaceAll("[ÂÄÅ]", "A")
+                .replaceAll("[âåä]", "a")
+                .replaceAll("[ÖØ]", "O")
+                .replaceAll("[öø]", "o")
                 .replaceAll("[Ü]", "U")
-                .replaceAll("[üÜ]", "u");
+                .replaceAll("[ü]", "u");
     }
 }

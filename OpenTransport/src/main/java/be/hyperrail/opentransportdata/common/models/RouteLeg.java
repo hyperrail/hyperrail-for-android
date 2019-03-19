@@ -9,9 +9,6 @@ package be.hyperrail.opentransportdata.common.models;
 
 import java.io.Serializable;
 
-import be.hyperrail.opentransportdata.irail.IrailVehicleStop;
-import be.hyperrail.opentransportdata.irail.IrailVehicleStub;
-
 /**
  * A leg of a route
  */
@@ -24,7 +21,7 @@ public interface RouteLeg extends Serializable {
      */
     RouteLegType getType();
 
-    IrailVehicleStub getVehicleInformation();
+    VehicleStub getVehicleInformation();
 
     /**
      * The departure end for this leg
@@ -47,5 +44,5 @@ public interface RouteLeg extends Serializable {
      * Empty array: no stops
      * Array: stops
      */
-    IrailVehicleStop[] getIntermediaryStops();
+    VehicleStop[] getIntermediaryStops();
 }

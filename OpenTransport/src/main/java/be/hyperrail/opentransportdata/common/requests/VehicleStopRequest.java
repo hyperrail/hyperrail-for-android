@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
-import be.hyperrail.opentransportdata.irail.IrailVehicleStop;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
  * Request to update a certain vehiclestop
@@ -26,7 +26,7 @@ public class VehicleStopRequest extends OpenTransportBaseRequest<VehicleStop> im
      *
      * @param stop the stop for which information should be obtained
      */
-    public VehicleStopRequest( IrailVehicleStop stop) {
+    public VehicleStopRequest( VehicleStopImpl stop) {
         mStop = stop;
     }
 

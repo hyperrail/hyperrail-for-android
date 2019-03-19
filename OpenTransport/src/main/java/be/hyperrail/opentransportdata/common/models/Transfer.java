@@ -20,7 +20,7 @@ import org.joda.time.Duration;
 import java.io.Serializable;
 
 import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
-import be.hyperrail.opentransportdata.irail.IrailVehicleStop;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
  * A transfer between two route legs.
@@ -80,6 +80,6 @@ public interface Transfer extends Serializable {
     RouteLeg getDepartureLeg();
 
     @Nullable
-    IrailVehicleStop toDepartureVehicleStop();
+    VehicleStopImpl toDepartureVehicleStop();
 
 }

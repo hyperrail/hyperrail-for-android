@@ -15,7 +15,6 @@ package be.hyperrail.opentransportdata.irail;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -36,21 +35,12 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import be.opentransport.BuildConfig;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
@@ -59,15 +49,20 @@ import be.hyperrail.opentransportdata.common.models.Disturbance;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
+import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
-import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
-import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
+import be.hyperrail.opentransportdata.irail.util.AsyncJsonPostRequest;
+import be.opentransport.BuildConfig;
 
 import static java.util.logging.Level.WARNING;
 
@@ -79,14 +74,16 @@ import static java.util.logging.Level.WARNING;
 public class IrailApi implements TransportDataSource {
 
     private static final String LOGTAG = "iRailApi";
+    private static final String USER_AGENT = "OpenTransportData for Android - " + BuildConfig.VERSION_NAME;
+
     private final RequestQueue requestQueue;
-    private static final String UA = "OpenTransport for Android - " + BuildConfig.VERSION_NAME;
     private final RetryPolicy requestPolicy;
 
     private final Context context;
     private final IrailApiParser parser;
-    private final ConnectivityManager mConnectivityManager;
-    private final int TAG_IRAIL_API_GET = 0;
+    private final ConnectivityManager connectivityManager;
+
+    private final int REQUEST_TAG_GET_REQUEST = 0;
 
     public IrailApi(Context context) {
         this.context = context;
@@ -97,23 +94,22 @@ public class IrailApi implements TransportDataSource {
                 3,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         );
-        mConnectivityManager =
+        connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 
     }
 
     private boolean isInternetAvailable() {
-        NetworkInfo activeNetwork = mConnectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
     }
 
-
     @Override
     public void getRoute(RouteRefreshRequest... requests) {
         for (RouteRefreshRequest request : requests
-                ) {
+        ) {
             RoutePlanningRequest routesRequest = new RoutePlanningRequest(
                     request.getOrigin(), request.getDestination(), request.getTimeDefinition(),
                     request.getSearchTime()
@@ -159,7 +155,7 @@ public class IrailApi implements TransportDataSource {
 
         String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
                 "pref_stations_language", "");
-        if (locale.isEmpty()) {
+        if (locale == null || locale.isEmpty()) {
             // Only get locale when needed
             locale = Locale.getDefault().getISO3Language();
         }
@@ -178,7 +174,7 @@ public class IrailApi implements TransportDataSource {
         }
 
         Response.Listener<JSONObject> successListener = response -> {
-            IrailRoutesList routeResult;
+            RoutesListImpl routeResult;
             try {
                 routeResult = parser.parseRouteResult(
                         response, request.getOrigin(), request.getDestination(),
@@ -205,12 +201,12 @@ public class IrailApi implements TransportDataSource {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", UA);
+                headers.put("User-agent", USER_AGENT);
                 return headers;
             }
         };
         jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(TAG_IRAIL_API_GET);
+        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -241,7 +237,7 @@ public class IrailApi implements TransportDataSource {
 
         actualRequest.setCallback((data, tag) -> {
 
-            if (!(data instanceof IrailLiveboard)) {
+            if (!(data instanceof LiveboardImpl)) {
                 throw new IllegalArgumentException("IrailApi should only handle Irail specific models");
             }
 
@@ -251,9 +247,11 @@ public class IrailApi implements TransportDataSource {
                     stops.add(s);
                 }
             }
+
+            //noinspection SuspiciousToArrayCall
             request.notifySuccessListeners(
-                    new IrailLiveboard(data, stops.toArray(new IrailVehicleStop[]{}),
-                                       data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
+                    new LiveboardImpl(data, stops.toArray(new VehicleStopImpl[]{}),
+                            data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
                     ));
         }, (e, tag) -> request.notifyErrorListeners(e), actualRequest.getTag());
         getLiveboardAfter(request);
@@ -273,7 +271,7 @@ public class IrailApi implements TransportDataSource {
                 + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
 
         Response.Listener<JSONObject> successListener = response -> {
-            IrailLiveboard result;
+            LiveboardImpl result;
             try {
                 result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
             } catch (JSONException | StopLocationNotResolvedException e) {
@@ -298,13 +296,13 @@ public class IrailApi implements TransportDataSource {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", UA);
+                headers.put("User-agent", USER_AGENT);
                 return headers;
             }
         };
 
         jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(TAG_IRAIL_API_GET);
+        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -344,19 +342,17 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, successListener, errorListener)
-
-        {
+                (Request.Method.GET, url, null, successListener, errorListener) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", UA);
+                headers.put("User-agent", USER_AGENT);
                 return headers;
             }
         };
 
         jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(TAG_IRAIL_API_GET);
+        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -376,7 +372,7 @@ public class IrailApi implements TransportDataSource {
         }
         VehicleRequest vehicleRequest = new VehicleRequest(request.getStop().getVehicle().getId(), time);
         vehicleRequest.setCallback((data, tag) -> {
-            for (IrailVehicleStop stop :
+            for (VehicleStopImpl stop :
                     data.getStops()) {
                 if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
                     request.notifySuccessListeners(stop);
@@ -395,18 +391,17 @@ public class IrailApi implements TransportDataSource {
         }
     }
 
-    public void getDisturbances(ActualDisturbancesRequest request) {
+    private void getDisturbances(ActualDisturbancesRequest request) {
 
-        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
-                "pref_stations_language", "");
-        if (locale.isEmpty()) {
+        String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
+
+        if (locale == null || locale.isEmpty()) {
             // Only get locale when needed
             locale = Locale.getDefault().getISO3Language();
         }
 
         String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(
                 0, 2);
-
 
         Response.Listener<JSONObject> successListener = response -> {
             Disturbance[] result;
@@ -431,13 +426,13 @@ public class IrailApi implements TransportDataSource {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", UA);
+                headers.put("User-agent", USER_AGENT);
                 return headers;
             }
         };
 
         jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(TAG_IRAIL_API_GET);
+        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
 
@@ -477,7 +472,7 @@ public class IrailApi implements TransportDataSource {
         }
     }
 
-    public void postOccupancy(OccupancyPostRequest request) {
+    private void postOccupancy(OccupancyPostRequest request) {
 
         String url = "https://api.irail.be/feedback/occupancy.php";
 
@@ -495,8 +490,7 @@ public class IrailApi implements TransportDataSource {
 
             Log.d(LOGTAG, "Posting feedback: " + url + " : " + payload);
 
-            PostOccupancyTask t = new PostOccupancyTask(url, request);
-            t.execute(payload.toString());
+            AsyncJsonPostRequest.postRequestAsync(url, request, payload);
         } catch (Exception e) {
             request.notifyErrorListeners(e);
         }
@@ -504,84 +498,7 @@ public class IrailApi implements TransportDataSource {
 
     @Override
     public void abortAllQueries() {
-        this.requestQueue.cancelAll(TAG_IRAIL_API_GET);
-    }
-
-    /**
-     * Make a synchronous POST request with a JSON body.
-     *
-     * @param uri  The URI to make the request to
-     * @param json The request body
-     * @return The return text from the server
-     */
-
-    private static String postJsonRequest(String uri, String json) {
-        HttpURLConnection urlConnection;
-        String result;
-        try {
-            //Connect
-            urlConnection = (HttpURLConnection) ((new URL(uri).openConnection()));
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestMethod("POST");
-            urlConnection.connect();
-
-            //Write
-            OutputStream outputStream = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(outputStream, "UTF-8"));
-            writer.write(json);
-            writer.close();
-            outputStream.close();
-
-            //Read
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-
-            String line;
-            StringBuilder sb = new StringBuilder();
-
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-
-            bufferedReader.close();
-            result = sb.toString();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return result;
-    }
-
-    private static class PostOccupancyTask extends AsyncTask<String, Void, String> {
-
-        private final String url;
-        private final OccupancyPostRequest request;
-
-        public PostOccupancyTask(String url, OccupancyPostRequest request) {
-            this.url = url;
-            this.request = request;
-        }
-
-        @Override
-        protected String doInBackground(String... payload) {
-            return postJsonRequest(this.url, payload[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            if (result != null) {
-                request.notifySuccessListeners(true);
-            } else {
-                // TODO: better exception handling
-                request.notifyErrorListeners(new Exception("Failed to submit occupancy data"));
-            }
-        }
+        this.requestQueue.cancelAll(REQUEST_TAG_GET_REQUEST);
     }
 
 }

@@ -43,13 +43,13 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
     /**
      * The ID of the train, relative to the public transport provider. For example IC538.
      */
-    protected String id;
+    private String id;
 
     /**
      * The headsign of the train, which indicates the destination of the train to end users.
      * This is the preferred way to communicate the train in an understandable way to the end user.
      */
-    protected String headsign;
+    private String headsign;
 
     // Direction is required, since we need to display something
     public IrailVehicleStub(String id, String headSign, @Nullable String uri) {
@@ -122,7 +122,7 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
      * @return The route/trip type for this vehicle
      */
 
-    public static String getVehicleClass(String id) {
+    private static String getVehicleClass(String id) {
         // S trains are special
         if (id.startsWith("S")) {
             if (id.length() > 5) {
@@ -162,7 +162,7 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
      * @return The number of a vehicle, e.g. 538
      */
 
-    public static String getVehicleNumber( String vehicleId) {
+    private static String getVehicleNumber(String vehicleId) {
         // S trains are special
         if (vehicleId.startsWith("S")) {
             return vehicleId.substring(vehicleId.length() - 4);

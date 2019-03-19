@@ -25,6 +25,8 @@ import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
+import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
@@ -38,7 +40,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
 
     private int attempt = 0;
     private DateTime lastSearchTime;
-    private IrailLiveboard originalLiveboard;
+    private LiveboardImpl originalLiveboard;
     private ExtendLiveboardRequest mExtendRequest;
 
     TransportDataSource api = OpenTransportApi.getDataProviderInstance();
@@ -57,7 +59,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
 
     private void appendLiveboard(ExtendLiveboardRequest extendRequest) {
 
-        this.originalLiveboard = (IrailLiveboard) extendRequest.getLiveboard();
+        this.originalLiveboard = (LiveboardImpl) extendRequest.getLiveboard();
         mExtendRequest = extendRequest;
 
         if (originalLiveboard.getStops().length > 0) {
@@ -76,7 +78,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
     }
 
     private void prependLiveboard(ExtendLiveboardRequest extendRequest) {
-        this.originalLiveboard = (IrailLiveboard) extendRequest.getLiveboard();
+        this.originalLiveboard = (LiveboardImpl) extendRequest.getLiveboard();
         mExtendRequest = extendRequest;
 
         if (originalLiveboard.getStops().length > 0) {
@@ -97,10 +99,10 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
     public void onSuccessResponse(Liveboard data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
-                handleAppendSuccessResponse((IrailLiveboard) data);
+                handleAppendSuccessResponse((LiveboardImpl) data);
                 break;
             case TAG_PREPEND:
-                handlePrependSuccessResponse((IrailLiveboard) data);
+                handlePrependSuccessResponse((LiveboardImpl) data);
                 break;
         }
     }
@@ -110,7 +112,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
      *
      * @param data The newly received data
      */
-    private void handlePrependSuccessResponse(IrailLiveboard data) {
+    private void handlePrependSuccessResponse(LiveboardImpl data) {
         // If there is new data
         if (data.getStops().length > 0) {
             mExtendRequest.notifySuccessListeners(originalLiveboard.withStopsAppended(data));
@@ -133,7 +135,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
      *
      * @param data The newly received data
      */
-    private void handleAppendSuccessResponse(IrailLiveboard data) {
+    private void handleAppendSuccessResponse(LiveboardImpl data) {
         VehicleStop[] newStops = data.getStops();
 
         if (newStops.length > 0) {
@@ -156,7 +158,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
                 if (i <= data.getStops().length - 1) {
                     newStops = Arrays.copyOfRange(data.getStops(), i, data.getStops().length - 1);
                 } else {
-                    newStops = new IrailVehicleStop[0];
+                    newStops = new VehicleStopImpl[0];
                 }
             }
         }

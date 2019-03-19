@@ -21,7 +21,7 @@ package be.hyperrail.opentransportdata.common.models;
 import org.joda.time.DateTime;
 
 import be.hyperrail.opentransportdata.irail.IrailStation;
-import be.hyperrail.opentransportdata.irail.IrailVehicleStop;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
  * This class represents a vehicle entity.
@@ -47,13 +47,13 @@ public interface Vehicle extends VehicleStub  {
      *
      * @return List of stop events
      */
-    IrailVehicleStop[] getStops();
+    VehicleStopImpl[] getStops();
 
     /**
      * Get the last stop where this vehicle halted
      * @return The stop event where the vehicle last halted.
      */
-    IrailVehicleStop getLastHaltedStop();
+    VehicleStopImpl getLastHaltedStop();
 
     /**
      * Get the current longitude of this vehicle

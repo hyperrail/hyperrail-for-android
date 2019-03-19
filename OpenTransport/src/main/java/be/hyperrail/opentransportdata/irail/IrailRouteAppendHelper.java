@@ -27,6 +27,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
+import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.util.ArrayUtils;
@@ -93,10 +94,10 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
     public void onSuccessResponse(RoutesList data, Object tag) {
         switch ((int) tag) {
             case TAG_APPEND:
-                handleAppendSuccessResponse((IrailRoutesList) data);
+                handleAppendSuccessResponse((RoutesListImpl) data);
                 break;
             case TAG_PREPEND:
-                handlePrependSuccessResponse((IrailRoutesList) data);
+                handlePrependSuccessResponse((RoutesListImpl) data);
                 break;
         }
     }
@@ -106,10 +107,10 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
      *
      * @param data The newly received data
      */
-    private void handlePrependSuccessResponse(IrailRoutesList data) {
+    private void handlePrependSuccessResponse(RoutesListImpl data) {
         if (data.getRoutes().length > 0) {
             Route[] mergedRoutes = ArrayUtils.concatenate(data.getRoutes(), originalRouteResult.getRoutes());
-            IrailRoutesList merged = new IrailRoutesList(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
+            RoutesListImpl merged = new RoutesListImpl(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
             mExtendRoutePlanningRequest.notifySuccessListeners(merged);
         } else {
             attempt++;
@@ -129,10 +130,10 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
      *
      * @param data The newly received data
      */
-    private void handleAppendSuccessResponse(IrailRoutesList data) {
+    private void handleAppendSuccessResponse(RoutesListImpl data) {
         if (data.getRoutes().length > 0) {
             Route[] mergedRoutes = ArrayUtils.concatenate(originalRouteResult.getRoutes(), data.getRoutes());
-            IrailRoutesList merged = new IrailRoutesList(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
+            RoutesListImpl merged = new RoutesListImpl(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
             mExtendRoutePlanningRequest.notifySuccessListeners(merged);
         } else {
             attempt++;

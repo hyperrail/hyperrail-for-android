@@ -52,6 +52,14 @@ import be.hyperrail.opentransportdata.common.models.RouteLegEnd;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
+import be.hyperrail.opentransportdata.common.models.implementation.DisturbanceImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.MessageImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RouteImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RouteLegEndImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RouteLegImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
  * A simple parser for api.irail.be.
@@ -66,7 +74,7 @@ class IrailApiParser {
         this.stationProvider = stationProvider;
     }
 
-    public IrailRoutesList parseRouteResult(JSONObject json, StopLocation origin, StopLocation destination, DateTime searchTime, QueryTimeDefinition timeDefinition) throws JSONException {
+    public RoutesListImpl parseRouteResult(JSONObject json, StopLocation origin, StopLocation destination, DateTime searchTime, QueryTimeDefinition timeDefinition) throws JSONException {
         JSONArray routesObject = json.getJSONArray("connection");
         List<Route> routeList = new ArrayList<>();
         for (int i = 0; i < routesObject.length(); i++) {
@@ -78,7 +86,7 @@ class IrailApiParser {
         }
         Route[] routes = new Route[routeList.size()];
         routes = routeList.toArray(routes);
-        return new IrailRoutesList(origin, destination, searchTime, timeDefinition, routes);
+        return new RoutesListImpl(origin, destination, searchTime, timeDefinition, routes);
     }
 
     private Route parseRoute(JSONObject routeObject) throws JSONException, StopLocationNotResolvedException {
@@ -98,14 +106,14 @@ class IrailApiParser {
         boolean hasLastTrainArrived = (arrival.has("arrived") && arrival.getInt("arrived") == 1);
         boolean hasFirstTrainLeft = (departure.has("left") && departure.getInt("left") == 1);
 
-        RouteLegEnd departureEnd = new IrailRouteLegEnd(
+        RouteLegEnd departureEnd = new RouteLegEndImpl(
                 stationProvider.getStationByIrailApiId(departure.getJSONObject("stationinfo").getString("id")),
                 timestamp2date(departure.getString("time")), departure.getString("platform"), departure.getJSONObject("platforminfo").getInt("normal") == 1,
                 new Duration(departure.getInt("delay") * 1000), departure.getInt("canceled") != 0, hasFirstTrainLeft,
                 departure.getString("departureConnection"),
                 departureOccupancyLevel);
 
-        RouteLegEnd arrivalEnd = new IrailRouteLegEnd(
+        RouteLegEnd arrivalEnd = new RouteLegEndImpl(
                 stationProvider.getStationByIrailApiId(arrival.getJSONObject("stationinfo").getString("id")),
                 timestamp2date(arrival.getString("time")), arrival.getString("platform"), arrival.getJSONObject("platforminfo").getInt("normal") == 1,
                 new Duration(arrival.getInt("delay") * 1000), arrival.getInt("canceled") != 0, hasLastTrainArrived, null, null);
@@ -140,11 +148,11 @@ class IrailApiParser {
                 boolean hasLeft = (viaDeparture.has("left") && viaDeparture.getInt("left") == 1);
 
                 // don't use parseStop function, we have to combine data!
-                arrivals[i] = new IrailRouteLegEnd(
+                arrivals[i] = new RouteLegEndImpl(
                         stationProvider.getStationByIrailApiId(via.getJSONObject("stationinfo").getString("id")),
                         timestamp2date(viaArrival.getString("time")), viaArrival.getString("platform"), viaArrival.getJSONObject("platforminfo").getInt("normal") == 1,
                         new Duration(viaArrival.getInt("delay") * 1000), viaArrival.getInt("canceled") != 0, hasArrived, null, null);
-                departures[i + 1] = new IrailRouteLegEnd(
+                departures[i + 1] = new RouteLegEndImpl(
                         stationProvider.getStationByIrailApiId(via.getJSONObject("stationinfo").getString("id")),
                         timestamp2date(viaDeparture.getString("time")), viaDeparture.getString("platform"), viaDeparture.getJSONObject("platforminfo").getInt("normal") == 1,
                         new Duration(viaDeparture.getInt("delay") * 1000), viaDeparture.getInt("canceled") != 0, hasLeft,
@@ -154,13 +162,13 @@ class IrailApiParser {
             legs = new RouteLeg[viaCount + 1];
 
             if (departure.getInt("walking") == 0) {
-                legs[0] = new IrailRouteLeg(RouteLegType.TRAIN,
+                legs[0] = new RouteLegImpl(RouteLegType.TRAIN,
                                             new IrailVehicleStub(
                                                     departure.getString("vehicle").substring(8),
                                                     departure.getJSONObject("direction").getString("name"), null),
                                             departures[0], arrivals[0]);
             } else {
-                legs[0] = new IrailRouteLeg(RouteLegType.WALK, null, departures[0], arrivals[0]);
+                legs[0] = new RouteLegImpl(RouteLegType.WALK, null, departures[0], arrivals[0]);
             }
 
             for (int i = 0; i < viaCount; i++) {
@@ -169,19 +177,19 @@ class IrailApiParser {
                 // first train is already set
                 // Walking should only be between 2 journeys, so only in a via
                 if (viaDeparture.getInt("walking") == 0) {
-                    legs[i + 1] = new IrailRouteLeg(RouteLegType.TRAIN,
+                    legs[i + 1] = new RouteLegImpl(RouteLegType.TRAIN,
                                                     new IrailVehicleStub(
                                                             viaDeparture.getString("vehicle").substring(8),
                                                             viaDeparture.getJSONObject("direction").getString("name"), null),
                                                     departures[i + 1], arrivals[i + 1]);
                 } else {
-                    legs[i + 1] = new IrailRouteLeg(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
+                    legs[i + 1] = new RouteLegImpl(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
                 }
             }
 
         } else {
             legs = new RouteLeg[1];
-            legs[0] = new IrailRouteLeg(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd);
+            legs[0] = new RouteLegImpl(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd);
         }
 
         Message[][] trainalerts = new Message[legs.length][];
@@ -191,7 +199,7 @@ class IrailApiParser {
                     JSONArray alerts = departure.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
                     for (int i = 0; i < alerts.length(); i++) {
-                        trainalerts[t][i] = new IrailMessage(alerts.getJSONObject(i));
+                        trainalerts[t][i] = new MessageImpl(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
@@ -203,7 +211,7 @@ class IrailApiParser {
                     JSONArray alerts = viaDeparture.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
                     for (int i = 0; i < alerts.length(); i++) {
-                        trainalerts[t][i] = new IrailMessage(alerts.getJSONObject(i));
+                        trainalerts[t][i] = new MessageImpl(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
@@ -216,11 +224,11 @@ class IrailApiParser {
             JSONArray alertsArray = routeObject.getJSONObject("alerts").getJSONArray("alert");
             alerts = new Message[alertsArray.length()];
             for (int i = 0; i < alertsArray.length(); i++) {
-                alerts[i] = new IrailMessage(alertsArray.getJSONObject(i));
+                alerts[i] = new MessageImpl(alertsArray.getJSONObject(i));
             }
         }
 
-        Route r = new IrailRoute(legs);
+        Route r = new RouteImpl(legs);
         r.setAlerts(alerts);
         r.setTrainalerts(trainalerts);
         return r;
@@ -241,7 +249,7 @@ class IrailApiParser {
         Disturbance[] result = new Disturbance[items.length()];
 
         for (int i = 0; i < items.length(); i++) {
-            result[i] = new IrailDisturbance(i,
+            result[i] = new DisturbanceImpl(i,
                                              timestamp2date(items.getJSONObject(i).getString("timestamp")),
                                              items.getJSONObject(i).getString("title"),
                                              items.getJSONObject(i).getString("description"),
@@ -251,7 +259,7 @@ class IrailApiParser {
         return result;
     }
 
-    public IrailLiveboard parseLiveboard(JSONObject jsonData, DateTime searchDate, LiveboardType type, QueryTimeDefinition timeDefinition) throws JSONException, StopLocationNotResolvedException {
+    public LiveboardImpl parseLiveboard(JSONObject jsonData, DateTime searchDate, LiveboardType type, QueryTimeDefinition timeDefinition) throws JSONException, StopLocationNotResolvedException {
 
         if (jsonData == null) {
             throw new IllegalArgumentException("JSONObject is null");
@@ -269,10 +277,10 @@ class IrailApiParser {
             object = jsonData.getJSONObject("arrivals");
             items = object.getJSONArray("arrival");
         } else {
-            return new IrailLiveboard(s, new IrailVehicleStop[0], searchDate, type, timeDefinition);
+            return new LiveboardImpl(s, new VehicleStopImpl[0], searchDate, type, timeDefinition);
         }
 
-        IrailVehicleStop[] stops = new IrailVehicleStop[items.length()];
+        VehicleStopImpl[] stops = new VehicleStopImpl[items.length()];
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
             if (type == LiveboardType.DEPARTURES) {
@@ -282,7 +290,7 @@ class IrailApiParser {
             }
         }
 
-        return new IrailLiveboard(
+        return new LiveboardImpl(
                 s,
                 stops,
                 searchDate,
@@ -292,7 +300,7 @@ class IrailApiParser {
 
     // allow providing station, so liveboards don't need to parse a station over and over
 
-    private IrailVehicleStop parseLiveboardStop(IrailStation stop, JSONObject item, VehicleStopType type) throws JSONException {
+    private VehicleStopImpl parseLiveboardStop(IrailStation stop, JSONObject item, VehicleStopType type) throws JSONException {
 
         String headsign;
 
@@ -308,7 +316,7 @@ class IrailApiParser {
             occupancyLevel = TransportOccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
         }
         if (type == VehicleStopType.DEPARTURE) {
-            return IrailVehicleStop.buildDepartureVehicleStop(
+            return VehicleStopImpl.buildDepartureVehicleStop(
                     stop,
                     new IrailVehicleStub(item.getString("vehicle").substring(8), headsign, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
@@ -321,7 +329,7 @@ class IrailApiParser {
                     occupancyLevel
             );
         } else {
-            return IrailVehicleStop.buildArrivalVehicleStop(
+            return VehicleStopImpl.buildArrivalVehicleStop(
                     stop,
                     new IrailVehicleStub(item.getString("vehicle").substring(8), headsign, item.getJSONObject("vehicleinfo").getString("@id")),
                     item.getString("platform"),
@@ -337,7 +345,7 @@ class IrailApiParser {
 
     // allow providing station, so don't need to parse a station over and over
 
-    private IrailVehicleStop parseTrainStop(String headsign, IrailVehicleStub train, JSONObject item, VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
+    private VehicleStopImpl parseTrainStop(String headsign, IrailVehicleStub train, JSONObject item, VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
         IrailStation stop = stationProvider.getStationByIrailApiId(item.getJSONObject("stationinfo").getString("id"));
 
         TransportOccupancyLevel occupancyLevel = TransportOccupancyLevel.UNKNOWN;
@@ -345,7 +353,7 @@ class IrailApiParser {
             occupancyLevel = TransportOccupancyLevel.valueOf(item.getJSONObject("occupancy").getString("name").toUpperCase());
         }
 
-        return new IrailVehicleStop(
+        return new VehicleStopImpl(
                 stop,
                 train,
                 item.getString("platform"),
@@ -386,7 +394,7 @@ class IrailApiParser {
                     .getJSONObject("stationinfo")
                     .getString("name");
         }
-        IrailVehicleStop[] stops = new IrailVehicleStop[jsonStops.length()];
+        VehicleStopImpl[] stops = new VehicleStopImpl[jsonStops.length()];
         IrailVehicleStub t = new IrailVehicleStub(id,
                                                   jsonStops.getJSONObject(jsonStops.length() - 1)
                                                           .getJSONObject("stationinfo")

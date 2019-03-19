@@ -13,18 +13,13 @@ import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.irail.IrailApi;
 import be.hyperrail.opentransportdata.irail.IrailFacilitiesDataProvider;
 import be.hyperrail.opentransportdata.irail.IrailStationsDataProvider;
-import be.hyperrail.opentransportdata.lc2Irail.Lc2IrailDataSource;
-import be.hyperrail.opentransportdata.linkedconnections.LinkedConnectionsDataSource;
+import be.hyperrail.opentransportdata.experimental.lc2Irail.Lc2IrailDataSource;
+import be.hyperrail.opentransportdata.experimental.linkedconnections.LinkedConnectionsDataSource;
 
 public class OpenTransportApi {
 
     private static TransportStopsDataSource stationProviderInstance;
     private static TransportDataSource dataProviderInstance;
-
-    public static IrailFacilitiesDataProvider getFacilitiesProviderInstance() {
-        // TODO: implement
-        return null;
-    }
 
     public enum DataProvider {
         BE_IRAIL_GRAPH,
@@ -71,5 +66,10 @@ public class OpenTransportApi {
             throw new IllegalStateException("Initialize OpenTransportApi using init() before trying to access the data provider!");
         }
         return dataProviderInstance;
+    }
+
+    public static IrailFacilitiesDataProvider getFacilitiesProviderInstance() {
+        // TODO: implement
+        return null;
     }
 }
