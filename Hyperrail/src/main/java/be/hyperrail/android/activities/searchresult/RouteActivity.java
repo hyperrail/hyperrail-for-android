@@ -28,7 +28,7 @@ import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
 
 import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 
@@ -37,10 +37,10 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    private IrailRoutesRequest mRequest;
+    private RoutePlanningRequest mRequest;
     private RoutesFragment mFragment;
 
-    public static Intent createIntent(Context context, @NonNull IrailRoutesRequest request) {
+    public static Intent createIntent(Context context, @NonNull RoutePlanningRequest request) {
         Intent i = new Intent(context, RouteActivity.class);
         i.putExtra("request", request);
         return i;
@@ -72,9 +72,9 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
                 finish();
                 return;
             }
-            this.mRequest = new IrailRoutesRequest(origin, destination, QueryTimeDefinition.DEPART_AT, null);
+            this.mRequest = new RoutePlanningRequest(origin, destination, QueryTimeDefinition.DEPART_AT, null);
         } else {
-            this.mRequest = (IrailRoutesRequest) getIntent().getSerializableExtra("request");
+            this.mRequest = (RoutePlanningRequest) getIntent().getSerializableExtra("request");
         }
 
 
@@ -114,7 +114,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         switch (item.getItemId()) {
             case R.id.action_swap:
                 // Create a new request with reversed origin and destination station
-                this.mRequest = new IrailRoutesRequest(mRequest.getDestination(), mRequest.getOrigin(), mRequest.getTimeDefinition(), mRequest.isNow() ? null : mRequest.getSearchTime());
+                this.mRequest = new RoutePlanningRequest(mRequest.getDestination(), mRequest.getOrigin(), mRequest.getTimeDefinition(), mRequest.isNow() ? null : mRequest.getSearchTime());
                 this.setFavoriteDisplayState(this.isFavorite());
                 this.setHeader();
                 mFragment.setRequest(this.mRequest);

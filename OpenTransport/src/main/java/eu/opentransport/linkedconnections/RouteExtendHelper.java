@@ -18,8 +18,8 @@ import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.RoutesList;
-import eu.opentransport.common.requests.ExtendRoutesRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
 
 /**
  * Created in be.hyperrail.android.irail.implementation.linkedconnections on 17/04/2018.
@@ -28,12 +28,12 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
 
     private final LinkedConnectionsProvider mLinkedConnectionsProvider;
     private final TransportStopsDataSource mStationProvider;
-    private final ExtendRoutesRequest mRequest;
+    private final ExtendRoutePlanningRequest mRequest;
     private final MeteredDataSource.MeteredRequest mMeteredRequest;
     private LinkedConnectionsRoutesList mRoutes;
     int attempts = 0;
 
-    public RouteExtendHelper(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, ExtendRoutesRequest request, MeteredDataSource.MeteredRequest meteredRequest) {
+    public RouteExtendHelper(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, ExtendRoutePlanningRequest request, MeteredDataSource.MeteredRequest meteredRequest) {
         mLinkedConnectionsProvider = linkedConnectionsProvider;
         mStationProvider = stationProvider;
         mRequest = request;
@@ -63,14 +63,14 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
             if (mRequest.getRoutes().getRoutes().length > 0) {
                 departureLimit = mRequest.getRoutes().getRoutes()[mRequest.getRoutes().getRoutes().length - 1].getDepartureTime();
             }
-            if (mRequest.getAction() == ExtendRoutesRequest.Action.PREPEND) {
+            if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.PREPEND) {
                 start = (String) mRequest.getRoutes().getCurrentResultsPointer().getPointer();
             } else {
                 start = (String) mRequest.getRoutes().getNextResultsPointer().getPointer();
             }
         } else {
             departureLimit = null;
-            if (mRequest.getAction() == ExtendRoutesRequest.Action.PREPEND) {
+            if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.PREPEND) {
                 start = (String) mRequest.getRoutes().getPreviousResultsPointer().getPointer();
             } else {
                 start = (String) mRequest.getRoutes().getNextResultsPointer().getPointer();
@@ -78,7 +78,7 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
         }
 
 
-        final IrailRoutesRequest routesRequest = new IrailRoutesRequest(mRoutes.getOrigin(),
+        final RoutePlanningRequest routesRequest = new RoutePlanningRequest(mRoutes.getOrigin(),
                 mRoutes.getDestination(),
                 mRoutes.getTimeDefinition(),
                 mRoutes.getSearchTime());
@@ -86,7 +86,7 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
         routesRequest.setCallback(this, this, mMeteredRequest);
 
         RouteResponseListener listener;
-        if (mRequest.getAction() == ExtendRoutesRequest.Action.PREPEND) {
+        if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.PREPEND) {
             listener = new RouteResponseListener(mLinkedConnectionsProvider, mStationProvider, routesRequest, null);
         } else {
             listener = new RouteResponseListener(mLinkedConnectionsProvider, mStationProvider, routesRequest, departureLimit, 12 * 60);
@@ -124,7 +124,7 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
                 newData.getCurrentResultsPointer(),
                 newData.getNextResultsPointer()
         );
-        if (mRequest.getAction() == ExtendRoutesRequest.Action.APPEND) {
+        if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.APPEND) {
             if (originalWithAppended.getRoutes().length > mRoutes.getRoutes().length) {
                 mRequest.notifySuccessListeners(originalWithAppended);
             } else {

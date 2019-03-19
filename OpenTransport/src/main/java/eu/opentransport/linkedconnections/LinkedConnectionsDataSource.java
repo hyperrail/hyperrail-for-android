@@ -24,13 +24,13 @@ import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.ExtendRoutesRequest;
-import eu.opentransport.common.requests.IrailDisturbanceRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailPostOccupancyRequest;
-import eu.opentransport.common.requests.IrailRouteRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
+import eu.opentransport.common.requests.ActualDisturbancesRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.OccupancyPostRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
+import eu.opentransport.common.requests.RouteRefreshRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
 import eu.opentransport.irail.IrailApi;
 
@@ -60,21 +60,21 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
 
 
     @Override
-    public void getDisturbances(@NonNull IrailDisturbanceRequest... request) {
+    public void getActualDisturbances(@NonNull ActualDisturbancesRequest... request) {
         // Fallback to the legacy API
         IrailApi api = new IrailApi(mContext);
-        api.getDisturbances(request);
+        api.getActualDisturbances(request);
     }
 
     @Override
-    public void getLiveboard(@NonNull IrailLiveboardRequest... requests) {
-        for (IrailLiveboardRequest request :
+    public void getLiveboard(@NonNull LiveboardRequest... requests) {
+        for (LiveboardRequest request :
                 requests) {
             getLiveboard(request);
         }
     }
 
-    private void getLiveboard(@NonNull final IrailLiveboardRequest request) {
+    private void getLiveboard(@NonNull final LiveboardRequest request) {
         StartLiveboardRequestTask task = new StartLiveboardRequestTask(this);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, request);
     }
@@ -88,36 +88,36 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
     }
 
     @Override
-    public void getRoutes(@NonNull IrailRoutesRequest... requests) {
+    public void getRoutePlanning(@NonNull RoutePlanningRequest... requests) {
         // TODO: switch to API specific code
-        for (IrailRoutesRequest request :
+        for (RoutePlanningRequest request :
                 requests) {
             getRoutes(request);
         }
     }
 
     @Override
-    public void extendRoutes(@NonNull ExtendRoutesRequest... requests) {
-        for (ExtendRoutesRequest request :
+    public void extendRoutePlanning(@NonNull ExtendRoutePlanningRequest... requests) {
+        for (ExtendRoutePlanningRequest request :
                 requests) {
             new ExtendRoutesTask(this).execute(request);
         }
     }
 
-    private void getRoutes(@NonNull final IrailRoutesRequest request) {
+    private void getRoutes(@NonNull final RoutePlanningRequest request) {
         new StartRouteRequestTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, request);
     }
 
     @Override
-    public void getRoute(@NonNull IrailRouteRequest... requests) {
-        for (IrailRouteRequest request :
+    public void getRoute(@NonNull RouteRefreshRequest... requests) {
+        for (RouteRefreshRequest request :
                 requests) {
             getRoute(request);
         }
     }
 
-    private void getRoute(@NonNull final IrailRouteRequest request) {
-        IrailRoutesRequest routesRequest = new IrailRoutesRequest(
+    private void getRoute(@NonNull final RouteRefreshRequest request) {
+        RoutePlanningRequest routesRequest = new RoutePlanningRequest(
                 request.getOrigin(), request.getDestination(), request.getTimeDefinition(),
                 request.getSearchTime()
         );
@@ -147,11 +147,11 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
     }
 
     private void getStop(@NonNull final VehicleStopRequest request) {
-        IrailLiveboardRequest liveboardRequest;
+        LiveboardRequest liveboardRequest;
         if (request.getStop().getType() == VehicleStopType.DEPARTURE || request.getStop().getType() == VehicleStopType.STOP) {
-            liveboardRequest = new IrailLiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.DEPART_AT, DEPARTURES, request.getStop().getDepartureTime());
+            liveboardRequest = new LiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.DEPART_AT, DEPARTURES, request.getStop().getDepartureTime());
         } else {
-            liveboardRequest = new IrailLiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.ARRIVE_AT, ARRIVALS, request.getStop().getArrivalTime());
+            liveboardRequest = new LiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.ARRIVE_AT, ARRIVALS, request.getStop().getArrivalTime());
         }
         liveboardRequest.setCallback((data, tag) -> {
             for (VehicleStop stop :
@@ -166,20 +166,20 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
     }
 
     @Override
-    public void getVehicle(@NonNull IrailVehicleRequest... requests) {
-        for (IrailVehicleRequest request :
+    public void getVehicleJourney(@NonNull VehicleRequest... requests) {
+        for (VehicleRequest request :
                 requests) {
             getVehicle(request);
         }
     }
 
-    private void getVehicle(@NonNull final IrailVehicleRequest request) {
+    private void getVehicle(@NonNull final VehicleRequest request) {
         StartVehicleRequestTask StartVehicleRequestTask = new StartVehicleRequestTask(this);
         StartVehicleRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, request);
     }
 
     @Override
-    public void postOccupancy(@NonNull IrailPostOccupancyRequest... request) {
+    public void postOccupancy(@NonNull OccupancyPostRequest... request) {
         // Fallback to the legacy API
         IrailApi api = new IrailApi(mContext);
         api.postOccupancy(request);
@@ -211,7 +211,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
     }
 
 
-    static class StartVehicleRequestTask extends AsyncTask<IrailVehicleRequest, Void, Void> {
+    static class StartVehicleRequestTask extends AsyncTask<VehicleRequest, Void, Void> {
 
         private final WeakReference<LinkedConnectionsDataSource> mApi;
 
@@ -223,14 +223,14 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         ArrayList<String> trainDeparturesIndex;
 
         @Override
-        protected Void doInBackground(IrailVehicleRequest... requests) {
+        protected Void doInBackground(VehicleRequest... requests) {
 
             if (mApi.get() == null) {
                 return null;
             }
             LinkedConnectionsDataSource api = mApi.get();
 
-            IrailVehicleRequest request = requests[0];
+            VehicleRequest request = requests[0];
             MeteredRequest meteredRequest = new MeteredRequest();
             meteredRequest.setTag(request.toString());
             meteredRequest.setMsecStart(DateTime.now().getMillis());
@@ -267,7 +267,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         }
     }
 
-    static class StartLiveboardRequestTask extends AsyncTask<IrailLiveboardRequest, Void, Void> {
+    static class StartLiveboardRequestTask extends AsyncTask<LiveboardRequest, Void, Void> {
 
         private final WeakReference<LinkedConnectionsDataSource> mApi;
 
@@ -276,13 +276,13 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         }
 
         @Override
-        protected Void doInBackground(IrailLiveboardRequest... requests) {
+        protected Void doInBackground(LiveboardRequest... requests) {
 
             if (mApi.get() == null) {
                 return null;
             }
             LinkedConnectionsDataSource api = mApi.get();
-            IrailLiveboardRequest request = requests[0];
+            LiveboardRequest request = requests[0];
             MeteredRequest meteredRequest = new MeteredRequest();
             meteredRequest.setTag(request.toString());
             meteredRequest.setMsecStart(DateTime.now().getMillis());
@@ -297,7 +297,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         }
     }
 
-    static class StartRouteRequestTask extends AsyncTask<IrailRoutesRequest, Void, Void> {
+    static class StartRouteRequestTask extends AsyncTask<RoutePlanningRequest, Void, Void> {
 
         private final WeakReference<LinkedConnectionsDataSource> mApi;
 
@@ -306,14 +306,14 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         }
 
         @Override
-        protected Void doInBackground(IrailRoutesRequest... requests) {
+        protected Void doInBackground(RoutePlanningRequest... requests) {
 
             if (mApi.get() == null) {
                 return null;
             }
 
             final LinkedConnectionsDataSource api = mApi.get();
-            final IrailRoutesRequest request = requests[0];
+            final RoutePlanningRequest request = requests[0];
             final MeteredRequest meteredRequest = new MeteredRequest();
             meteredRequest.setTag(request.toString());
             meteredRequest.setMsecStart(DateTime.now().getMillis());
@@ -385,7 +385,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         }
     }
 
-    static class ExtendRoutesTask extends AsyncTask<ExtendRoutesRequest, Void, Void> {
+    static class ExtendRoutesTask extends AsyncTask<ExtendRoutePlanningRequest, Void, Void> {
 
         private final WeakReference<LinkedConnectionsDataSource> mApi;
 
@@ -394,14 +394,14 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         }
 
         @Override
-        protected Void doInBackground(ExtendRoutesRequest... requests) {
+        protected Void doInBackground(ExtendRoutePlanningRequest... requests) {
 
             if (mApi.get() == null) {
                 return null;
             }
 
             final LinkedConnectionsDataSource api = mApi.get();
-            final ExtendRoutesRequest request = requests[0];
+            final ExtendRoutePlanningRequest request = requests[0];
             MeteredRequest meteredRequest = new MeteredRequest();
             meteredRequest.setTag(request.toString());
             meteredRequest.setMsecStart(DateTime.now().getMillis());

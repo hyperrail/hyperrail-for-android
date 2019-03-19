@@ -27,8 +27,8 @@ import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RoutesList;
-import eu.opentransport.common.requests.ExtendRoutesRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
 import eu.opentransport.util.ArrayUtils;
 
 /**
@@ -44,39 +44,39 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
     private RoutesList originalRouteResult;
 
     TransportDataSource api = OpenTransportApi.getDataProviderInstance();
-    private ExtendRoutesRequest mExtendRoutesRequest;
+    private ExtendRoutePlanningRequest mExtendRoutePlanningRequest;
 
-    public void extendRoutesRequest(ExtendRoutesRequest extendRoutesRequest) {
-        switch (extendRoutesRequest.getAction()) {
+    public void extendRoutesRequest(ExtendRoutePlanningRequest extendRoutePlanningRequest) {
+        switch (extendRoutePlanningRequest.getAction()) {
             default:
             case APPEND:
-                appendRouteResult(extendRoutesRequest);
+                appendRouteResult(extendRoutePlanningRequest);
                 break;
             case PREPEND:
-                prependRouteResult(extendRoutesRequest);
+                prependRouteResult(extendRoutePlanningRequest);
                 break;
         }
     }
 
-    private void appendRouteResult(ExtendRoutesRequest extendRoutesRequest) {
-        mExtendRoutesRequest = extendRoutesRequest;
+    private void appendRouteResult(ExtendRoutePlanningRequest extendRoutePlanningRequest) {
+        mExtendRoutePlanningRequest = extendRoutePlanningRequest;
 
-        this.originalRouteResult = extendRoutesRequest.getRoutes();
+        this.originalRouteResult = extendRoutePlanningRequest.getRoutes();
 
         if (originalRouteResult.getRoutes().length > 0) {
             lastSearchTime = originalRouteResult.getRoutes()[originalRouteResult.getRoutes().length - 1].getDepartureTime().plusMinutes(1);
         } else {
             lastSearchTime = originalRouteResult.getSearchTime().plusHours(1);
         }
-        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.DEPART_AT, lastSearchTime);
+        RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.DEPART_AT, lastSearchTime);
         request.setCallback(this, this, TAG_APPEND);
-        api.getRoutes(request);
+        api.getRoutePlanning(request);
     }
 
-    private void prependRouteResult(ExtendRoutesRequest extendRoutesRequest) {
-        mExtendRoutesRequest = extendRoutesRequest;
+    private void prependRouteResult(ExtendRoutePlanningRequest extendRoutePlanningRequest) {
+        mExtendRoutePlanningRequest = extendRoutePlanningRequest;
 
-        this.originalRouteResult = extendRoutesRequest.getRoutes();
+        this.originalRouteResult = extendRoutePlanningRequest.getRoutes();
 
         if (originalRouteResult.getRoutes().length > 0) {
             lastSearchTime = originalRouteResult.getRoutes()[0].getArrivalTime().minusMinutes(1);
@@ -84,9 +84,9 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
             lastSearchTime = originalRouteResult.getSearchTime();
         }
 
-        IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.ARRIVE_AT, lastSearchTime);
+        RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.ARRIVE_AT, lastSearchTime);
         request.setCallback(this, this, TAG_PREPEND);
-        api.getRoutes(request);
+        api.getRoutePlanning(request);
     }
 
     @Override
@@ -110,16 +110,16 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
         if (data.getRoutes().length > 0) {
             Route[] mergedRoutes = ArrayUtils.concatenate(data.getRoutes(), originalRouteResult.getRoutes());
             IrailRoutesList merged = new IrailRoutesList(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
-            mExtendRoutesRequest.notifySuccessListeners(merged);
+            mExtendRoutePlanningRequest.notifySuccessListeners(merged);
         } else {
             attempt++;
             lastSearchTime = lastSearchTime.minusHours(2);
             if (attempt < 12) {
-                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.ARRIVE_AT, lastSearchTime);
+                RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.ARRIVE_AT, lastSearchTime);
                 request.setCallback(this, this, TAG_PREPEND);
-                api.getRoutes(request);
+                api.getRoutePlanning(request);
             } else {
-                mExtendRoutesRequest.notifySuccessListeners(originalRouteResult);
+                mExtendRoutePlanningRequest.notifySuccessListeners(originalRouteResult);
             }
         }
     }
@@ -133,22 +133,22 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
         if (data.getRoutes().length > 0) {
             Route[] mergedRoutes = ArrayUtils.concatenate(originalRouteResult.getRoutes(), data.getRoutes());
             IrailRoutesList merged = new IrailRoutesList(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), originalRouteResult.getSearchTime(), originalRouteResult.getTimeDefinition(), mergedRoutes);
-            mExtendRoutesRequest.notifySuccessListeners(merged);
+            mExtendRoutePlanningRequest.notifySuccessListeners(merged);
         } else {
             attempt++;
             lastSearchTime = lastSearchTime.plusHours(2);
             if (attempt < 12) {
-                IrailRoutesRequest request = new IrailRoutesRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.DEPART_AT, lastSearchTime);
+                RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.DEPART_AT, lastSearchTime);
                 request.setCallback(this, this, TAG_APPEND);
-                api.getRoutes(request);
+                api.getRoutePlanning(request);
             } else {
-                mExtendRoutesRequest.notifySuccessListeners(originalRouteResult);
+                mExtendRoutePlanningRequest.notifySuccessListeners(originalRouteResult);
             }
         }
     }
 
     @Override
     public void onErrorResponse(Exception e, Object tag) {
-        mExtendRoutesRequest.notifyErrorListeners(e);
+        mExtendRoutePlanningRequest.notifyErrorListeners(e);
     }
 }

@@ -34,29 +34,29 @@ public class OpenTransportApi {
         SE_LC2IRAIL
     }
 
-    public static void init(Context context, DataProvider provider) {
+    public static void init(Context appContext, DataProvider provider) {
         switch (provider) {
             case BE_IRAIL_API:
-                init(new IrailApi(context), new IrailStationsDataProvider(context));
+                stationProviderInstance = new IrailStationsDataProvider(appContext);
+                dataProviderInstance = new IrailApi(appContext);
                 break;
             case BE_IRAIL_GRAPH:
-                init(new LinkedConnectionsDataSource(context), new IrailStationsDataProvider(context));
+                stationProviderInstance = new IrailStationsDataProvider(appContext);
+                dataProviderInstance = new LinkedConnectionsDataSource(appContext);
                 break;
             case BE_IRAIL_LC2IRAIL:
-                init(new Lc2IrailDataSource(context), new IrailStationsDataProvider(context));
+                stationProviderInstance = new IrailStationsDataProvider(appContext);
+                dataProviderInstance = new Lc2IrailDataSource(appContext);
                 break;
             case SE_GRAPH:
-                init(new LinkedConnectionsDataSource(context), new IrailStationsDataProvider(context));
+                stationProviderInstance = new IrailStationsDataProvider(appContext);
+                dataProviderInstance = new IrailApi(appContext);
                 break;
             case SE_LC2IRAIL:
-                init(new Lc2IrailDataSource(context), new IrailStationsDataProvider(context));
+                stationProviderInstance = new IrailStationsDataProvider(appContext);
+                dataProviderInstance = new IrailApi(appContext);
                 break;
         }
-    }
-
-    public static void init(TransportDataSource source, TransportStopsDataSource stops) {
-        stationProviderInstance = stops;
-        dataProviderInstance = source;
     }
 
     public static TransportStopsDataSource getStationsProviderInstance() {

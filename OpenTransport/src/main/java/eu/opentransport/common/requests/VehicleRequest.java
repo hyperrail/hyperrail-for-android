@@ -21,7 +21,7 @@ import eu.opentransport.common.models.Vehicle;
 /**
  * A request for train data
  */
-public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements TransportDataRequest<Vehicle> {
+public class VehicleRequest extends OpenTransportBaseRequest<Vehicle> implements TransportDataRequest<Vehicle> {
 
 
     private final String mVehicleId;
@@ -53,12 +53,12 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
      * @param searchTime The time for which should be searched
      */
     // TODO: support between stations, target scroll station as optional (display) parameters
-    public IrailVehicleRequest(String vehicleId, @Nullable DateTime searchTime) {
+    public VehicleRequest(String vehicleId, @Nullable DateTime searchTime) {
         this.mVehicleId = vehicleId;
         this.mSearchTime = searchTime;
     }
 
-    public IrailVehicleRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
+    public VehicleRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
@@ -132,27 +132,27 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
     public boolean equals(Object o) {
         if (o instanceof JSONObject) {
             try {
-                o = new IrailVehicleRequest((JSONObject) o);
+                o = new VehicleRequest((JSONObject) o);
             } catch (JSONException | StopLocationNotResolvedException e) {
                 return false;
             }
         }
 
-        if (!(o instanceof IrailVehicleRequest)) {
+        if (!(o instanceof VehicleRequest)) {
             return false;
         }
 
-        IrailVehicleRequest other = (IrailVehicleRequest) o;
+        VehicleRequest other = (VehicleRequest) o;
         return (getVehicleId().equals(other.getVehicleId()) && getSearchTime().equals(other.getSearchTime()));
     }
 
     @Override
     public int compareTo(TransportDataRequest o) {
-        if (!(o instanceof IrailVehicleRequest)) {
+        if (!(o instanceof VehicleRequest)) {
             return -1;
         }
 
-        IrailVehicleRequest other = (IrailVehicleRequest) o;
+        VehicleRequest other = (VehicleRequest) o;
         return getVehicleId().compareTo(other.getVehicleId());
     }
 
@@ -170,6 +170,6 @@ public class IrailVehicleRequest extends IrailBaseRequest<Vehicle> implements Tr
 
     @Override
     public boolean equalsIgnoringTime(TransportDataRequest other) {
-        return other instanceof IrailVehicleRequest && getVehicleId().equals(((IrailVehicleRequest) other).getVehicleId());
+        return other instanceof VehicleRequest && getVehicleId().equals(((VehicleRequest) other).getVehicleId());
     }
 }

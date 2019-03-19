@@ -27,8 +27,7 @@ import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStopType;
-import eu.opentransport.common.requests.IrailVehicleRequest;
-import eu.opentransport.irail.IrailStation;
+import eu.opentransport.common.requests.VehicleRequest;
 import eu.opentransport.irail.IrailVehicle;
 import eu.opentransport.irail.IrailVehicleStop;
 import eu.opentransport.irail.IrailVehicleStub;
@@ -41,10 +40,10 @@ import static eu.opentransport.linkedconnections.LinkedConnectionsDataSource.bas
 
 public class VehicleResponseListener implements TransportDataSuccessResponseListener<LinkedConnections>, TransportDataErrorResponseListener {
 
-    private IrailVehicleRequest mRequest;
+    private VehicleRequest mRequest;
     private final TransportStopsDataSource mStationProvider;
 
-    public VehicleResponseListener(IrailVehicleRequest request, TransportStopsDataSource stationProvider) {
+    public VehicleResponseListener(VehicleRequest request, TransportStopsDataSource stationProvider) {
         mRequest = request;
         mStationProvider = stationProvider;
     }

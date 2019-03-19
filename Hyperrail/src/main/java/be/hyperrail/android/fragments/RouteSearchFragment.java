@@ -65,12 +65,12 @@ import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailRoutesRequest>>, OnDateTimeSetListener, OnRecyclerItemLongClickListener<Suggestion<IrailRoutesRequest>> {
+public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<RoutePlanningRequest>>, OnDateTimeSetListener, OnRecyclerItemLongClickListener<Suggestion<RoutePlanningRequest>> {
 
     private AutoCompleteTextView vFromText;
     private AutoCompleteTextView vToText;
@@ -82,7 +82,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
     private PersistentQueryProvider persistentQueryProvider;
 
-    private Suggestion<IrailRoutesRequest> mLastSelectedQuery;
+    private Suggestion<RoutePlanningRequest> mLastSelectedQuery;
     private RecyclerView mSuggestionsRecyclerView;
     private RouteSuggestionsCardAdapter mSuggestionsAdapter;
     private LoadSuggestionsTask activeSuggestionsUpdateTask;
@@ -241,7 +241,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailRoutesRequest> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<RoutePlanningRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -362,7 +362,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             d = searchDateTime;
         }
 
-        IrailRoutesRequest request = new IrailRoutesRequest(from, to, timedef, d);
+        RoutePlanningRequest request = new RoutePlanningRequest(from, to, timedef, d);
         persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
 
         Intent i = RouteActivity.createIntent(getActivity(), request);
@@ -370,7 +370,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailRoutesRequest> object) {
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<RoutePlanningRequest> object) {
         doSearch(object.getData().getOrigin(), object.getData().getDestination());
     }
 
@@ -398,7 +398,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vDatetime.setText(day + " " + at + " " + time);
     }
 
-    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailRoutesRequest>>> {
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<RoutePlanningRequest>>> {
 
         private WeakReference<RouteSearchFragment> fragmentReference;
 
@@ -408,12 +408,12 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         @Override
-        protected List<Suggestion<IrailRoutesRequest>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<RoutePlanningRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllRoutes();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<IrailRoutesRequest>> suggestions) {
+        protected void onPostExecute(List<Suggestion<RoutePlanningRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there

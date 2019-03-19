@@ -54,16 +54,14 @@ import eu.opentransport.common.models.RouteLegEnd;
 import eu.opentransport.common.models.RouteLegType;
 import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStopType;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 import eu.opentransport.irail.IrailLiveboard;
 import eu.opentransport.irail.IrailRoute;
 import eu.opentransport.irail.IrailRouteLeg;
 import eu.opentransport.irail.IrailRouteLegEnd;
 import eu.opentransport.irail.IrailRoutesList;
-import eu.opentransport.irail.IrailStation;
-import eu.opentransport.irail.IrailStationsDataProvider;
 import eu.opentransport.irail.IrailVehicle;
 import eu.opentransport.irail.IrailVehicleStop;
 import eu.opentransport.irail.IrailVehicleStub;
@@ -83,7 +81,7 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    public IrailLiveboard parseLiveboard(@NonNull IrailLiveboardRequest request, @NonNull JSONObject json) throws JSONException {
+    public IrailLiveboard parseLiveboard(@NonNull LiveboardRequest request, @NonNull JSONObject json) throws JSONException {
         List<IrailVehicleStop> stops = new ArrayList<>();
         JSONArray jsonStops = json.getJSONArray("stops");
         for (int i = 0; i < jsonStops.length(); i++) {
@@ -118,7 +116,7 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    private IrailVehicleStop parseLiveboardStop(@NonNull IrailLiveboardRequest request, @NonNull JSONObject json) throws JSONException {
+    private IrailVehicleStop parseLiveboardStop(@NonNull LiveboardRequest request, @NonNull JSONObject json) throws JSONException {
         /*
         "arrivalDelay": 0,
           "arrivalTime": "2018-04-15T23:01:00+02:00",
@@ -222,7 +220,7 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    public IrailVehicle parseVehicle(@NonNull IrailVehicleRequest request, @NonNull JSONObject response) throws JSONException, StopLocationNotResolvedException {
+    public IrailVehicle parseVehicle(@NonNull VehicleRequest request, @NonNull JSONObject response) throws JSONException, StopLocationNotResolvedException {
         String id = response.getString("id");
         String uri = response.getString("uri");
 
@@ -252,7 +250,7 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    private IrailVehicleStop parseVehicleStop(@NonNull IrailVehicleRequest request, @NonNull JSONObject json, @NonNull IrailVehicleStub vehicle, @NonNull VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
+    private IrailVehicleStop parseVehicleStop(@NonNull VehicleRequest request, @NonNull JSONObject json, @NonNull IrailVehicleStub vehicle, @NonNull VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
         /*
         {
               "arrivalDelay": 0,
@@ -344,7 +342,7 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    public IrailRoutesList parseRoutes(@NonNull IrailRoutesRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
+    public IrailRoutesList parseRoutes(@NonNull RoutePlanningRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
         StopLocation origin = stationProvider.getStationByUri(json.getJSONObject("departureStation").getString("uri"));
         StopLocation destination = stationProvider.getStationByUri(json.getJSONObject("arrivalStation").getString("uri"));
 
@@ -365,7 +363,7 @@ public class Lc2IrailParser {
      * @return The object representation of the passed JSON
      */
     @NonNull
-    private Route parseConnection(@NonNull IrailRoutesRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
+    private Route parseConnection(@NonNull RoutePlanningRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
         /*
           "legs": [
                 {

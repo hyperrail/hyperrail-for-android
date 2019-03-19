@@ -22,7 +22,7 @@ import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
 import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
@@ -65,7 +65,7 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
 
         // Create an Intent to launch ExampleActivity
         Intent onClickIntent = LiveboardActivity.createIntent(context,
-                                                              new IrailLiveboardRequest(mStation,
+                                                              new LiveboardRequest(mStation,
                                                                                         QueryTimeDefinition.DEPART_AT,
                                                                                         LiveboardType.DEPARTURES,
                                                                                         null));

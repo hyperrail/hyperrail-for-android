@@ -31,7 +31,7 @@ import be.hyperrail.android.persistence.SuggestionType;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -39,12 +39,12 @@ import eu.opentransport.common.requests.IrailLiveboardRequest;
 public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationSuggestionsCardAdapter.StationViewHolder> {
 
     private final Context context;
-    private List<Suggestion<IrailLiveboardRequest>> suggestedStations;
+    private List<Suggestion<LiveboardRequest>> suggestedStations;
     private StopLocation[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
-    private OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> longClickListener;
-    private OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<LiveboardRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> listener;
 
     private stationType currentDisplayType = stationType.UNDEFINED;
 
@@ -133,11 +133,11 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
                 break;
         }
 
-        IrailLiveboardRequest request = new IrailLiveboardRequest(station,
+        LiveboardRequest request = new LiveboardRequest(station,
                 QueryTimeDefinition.DEPART_AT,
                 LiveboardType.DEPARTURES,
                 null);
-        final Suggestion<IrailLiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
+        final Suggestion<LiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +166,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             position = position - stations.length;
         }
 
-        final Suggestion<IrailLiveboardRequest> suggestion = suggestedStations.get(position);
+        final Suggestion<LiveboardRequest> suggestion = suggestedStations.get(position);
 
         holder.vStation.setText(suggestion.getData().getStation().getLocalizedName());
 
@@ -206,7 +206,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         });
     }
 
-    public void setSuggestedStations(List<Suggestion<IrailLiveboardRequest>> suggestedStations) {
+    public void setSuggestedStations(List<Suggestion<LiveboardRequest>> suggestedStations) {
         this.suggestedStations = suggestedStations;
         this.notifyDataSetChanged();
     }
@@ -226,11 +226,11 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<LiveboardRequest>> listener) {
         this.longClickListener = listener;
     }
 

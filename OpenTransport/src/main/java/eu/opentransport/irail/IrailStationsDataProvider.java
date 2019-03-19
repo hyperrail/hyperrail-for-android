@@ -56,9 +56,9 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
     IrailStation[] stationsOrderedBySizeCache;
 
-    public IrailStationsDataProvider(Context context) {
-        this.context = context;
-        this.mWebDb = new WebDb(context, new IrailStopsWebDbDataDefinition(context));
+    public IrailStationsDataProvider(Context appContext) {
+        this.context = appContext;
+        this.mWebDb = new WebDb(appContext, new IrailStopsWebDbDataDefinition(context));
     }
 
     private String[] getLocationQueryColumns(double longitude, double latitude) {

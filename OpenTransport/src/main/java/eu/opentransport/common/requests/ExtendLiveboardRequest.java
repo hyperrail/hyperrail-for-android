@@ -13,7 +13,7 @@ import eu.opentransport.common.models.Liveboard;
  * Request to withStopsAppended or prepend a mLiveboard
  */
 
-public class ExtendLiveboardRequest extends IrailBaseRequest<Liveboard> implements TransportDataRequest<Liveboard> {
+public class ExtendLiveboardRequest extends OpenTransportBaseRequest<Liveboard> implements TransportDataRequest<Liveboard> {
 
 
     private final Liveboard mLiveboard;

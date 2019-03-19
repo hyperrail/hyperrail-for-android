@@ -23,7 +23,7 @@ import eu.opentransport.common.models.StopLocation;
 /**
  * A request for a routes between two or more stations
  */
-public class IrailRoutesRequest extends IrailBaseRequest<RoutesList> implements TransportDataRequest<RoutesList> {
+public class RoutePlanningRequest extends OpenTransportBaseRequest<RoutesList> implements TransportDataRequest<RoutesList> {
 
 
     private final StopLocation origin;
@@ -41,7 +41,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RoutesList> implements 
      * Create a request to search routes between two stations
      */
     // TODO: support vias
-    public IrailRoutesRequest(StopLocation origin, StopLocation destination, QueryTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
+    public RoutePlanningRequest(StopLocation origin, StopLocation destination, QueryTimeDefinition timeDefinition, @Nullable DateTime searchTime) {
         this.origin = origin;
         this.destination = destination;
         this.timeDefinition = timeDefinition;
@@ -49,7 +49,7 @@ public class IrailRoutesRequest extends IrailBaseRequest<RoutesList> implements 
         this.searchTime = searchTime;
     }
 
-    public IrailRoutesRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
+    public RoutePlanningRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
         String from = jsonObject.getString("from");
         if (from.startsWith("BE.NMBS.")) {
@@ -113,27 +113,27 @@ public class IrailRoutesRequest extends IrailBaseRequest<RoutesList> implements 
 
         if (o instanceof JSONObject){
             try {
-                o = new IrailRoutesRequest((JSONObject) o);
+                o = new RoutePlanningRequest((JSONObject) o);
             } catch (JSONException | StopLocationNotResolvedException e) {
                 return false;
             }
         }
 
-        if (!(o instanceof IrailRoutesRequest)) {
+        if (!(o instanceof RoutePlanningRequest)) {
             return false;
         }
 
-        IrailRoutesRequest other = (IrailRoutesRequest) o;
+        RoutePlanningRequest other = (RoutePlanningRequest) o;
         return (getOrigin().equals(other.getOrigin()) && getDestination().equals(other.getDestination()) && getTimeDefinition().equals(other.getTimeDefinition()) && (searchTime == other.searchTime));
     }
 
     @Override
     public int compareTo( TransportDataRequest o) {
-        if (!(o instanceof IrailRouteRequest)) {
+        if (!(o instanceof RouteRefreshRequest)) {
             return -1;
         }
 
-        IrailRouteRequest other = (IrailRouteRequest) o;
+        RouteRefreshRequest other = (RouteRefreshRequest) o;
         return getOrigin().equals(other.getOrigin()) ?
                 getDestination().getLocalizedName().compareTo(other.getDestination().getLocalizedName()) :
                 getOrigin().getLocalizedName().compareTo(other.getOrigin().getLocalizedName());
@@ -141,11 +141,11 @@ public class IrailRoutesRequest extends IrailBaseRequest<RoutesList> implements 
 
     @Override
     public boolean equalsIgnoringTime(TransportDataRequest other) {
-        if (!(other instanceof IrailRoutesRequest)) {
+        if (!(other instanceof RoutePlanningRequest)) {
             return false;
         }
 
-        IrailRoutesRequest o = (IrailRoutesRequest) other;
+        RoutePlanningRequest o = (RoutePlanningRequest) other;
         return getOrigin().equals(o.getOrigin()) && getDestination().equals(o.getDestination());
     }
 }

@@ -60,13 +60,13 @@ import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.ExtendRoutesRequest;
-import eu.opentransport.common.requests.IrailDisturbanceRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailPostOccupancyRequest;
-import eu.opentransport.common.requests.IrailRouteRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
+import eu.opentransport.common.requests.ActualDisturbancesRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.OccupancyPostRequest;
+import eu.opentransport.common.requests.RouteRefreshRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
 
 import static java.util.logging.Level.WARNING;
@@ -111,10 +111,10 @@ public class IrailApi implements TransportDataSource {
 
 
     @Override
-    public void getRoute(IrailRouteRequest... requests) {
-        for (IrailRouteRequest request : requests
+    public void getRoute(RouteRefreshRequest... requests) {
+        for (RouteRefreshRequest request : requests
                 ) {
-            IrailRoutesRequest routesRequest = new IrailRoutesRequest(
+            RoutePlanningRequest routesRequest = new RoutePlanningRequest(
                     request.getOrigin(), request.getDestination(), request.getTimeDefinition(),
                     request.getSearchTime()
             );
@@ -134,23 +134,23 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getRoutes(IrailRoutesRequest... requests) {
-        for (IrailRoutesRequest request :
+    public void getRoutePlanning(RoutePlanningRequest... requests) {
+        for (RoutePlanningRequest request :
                 requests) {
             getRoutes(request);
         }
     }
 
     @Override
-    public void extendRoutes(ExtendRoutesRequest... requests) {
-        for (ExtendRoutesRequest request :
+    public void extendRoutePlanning(ExtendRoutePlanningRequest... requests) {
+        for (ExtendRoutePlanningRequest request :
                 requests) {
             IrailRouteAppendHelper helper = new IrailRouteAppendHelper();
             helper.extendRoutesRequest(request);
         }
     }
 
-    public void getRoutes(IrailRoutesRequest request) {
+    public void getRoutes(RoutePlanningRequest request) {
 
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
 
@@ -216,8 +216,8 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getLiveboard(IrailLiveboardRequest... requests) {
-        for (IrailLiveboardRequest request : requests) {
+    public void getLiveboard(LiveboardRequest... requests) {
+        for (LiveboardRequest request : requests) {
             if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
                 getLiveboardAfter(request);
             } else {
@@ -235,8 +235,8 @@ public class IrailApi implements TransportDataSource {
         }
     }
 
-    private void getLiveboardBefore(IrailLiveboardRequest request) {
-        IrailLiveboardRequest actualRequest = request.withSearchTime(
+    private void getLiveboardBefore(LiveboardRequest request) {
+        LiveboardRequest actualRequest = request.withSearchTime(
                 request.getSearchTime().minusHours(1));
 
         actualRequest.setCallback((data, tag) -> {
@@ -259,7 +259,7 @@ public class IrailApi implements TransportDataSource {
         getLiveboardAfter(request);
     }
 
-    private void getLiveboardAfter(IrailLiveboardRequest request) {
+    private void getLiveboardAfter(LiveboardRequest request) {
         // https://api.irail.be/liveboard/?station=Halle&fast=true
 
         // suppress errors, this formatting is for an API call
@@ -310,14 +310,14 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getVehicle(IrailVehicleRequest... requests) {
-        for (IrailVehicleRequest request :
+    public void getVehicleJourney(VehicleRequest... requests) {
+        for (VehicleRequest request :
                 requests) {
             getVehicle(request);
         }
     }
 
-    public void getVehicle(IrailVehicleRequest request) {
+    public void getVehicle(VehicleRequest request) {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = "https://api.irail.be/vehicle/?format=json"
@@ -374,7 +374,7 @@ public class IrailApi implements TransportDataSource {
         if (time == null) {
             time = request.getStop().getArrivalTime();
         }
-        IrailVehicleRequest vehicleRequest = new IrailVehicleRequest(request.getStop().getVehicle().getId(), time);
+        VehicleRequest vehicleRequest = new VehicleRequest(request.getStop().getVehicle().getId(), time);
         vehicleRequest.setCallback((data, tag) -> {
             for (IrailVehicleStop stop :
                     data.getStops()) {
@@ -388,14 +388,14 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void getDisturbances(IrailDisturbanceRequest... requests) {
-        for (IrailDisturbanceRequest request :
+    public void getActualDisturbances(ActualDisturbancesRequest... requests) {
+        for (ActualDisturbancesRequest request :
                 requests) {
             getDisturbances(request);
         }
     }
 
-    public void getDisturbances(IrailDisturbanceRequest request) {
+    public void getDisturbances(ActualDisturbancesRequest request) {
 
         String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
                 "pref_stations_language", "");
@@ -470,14 +470,14 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void postOccupancy(IrailPostOccupancyRequest... requests) {
-        for (IrailPostOccupancyRequest request :
+    public void postOccupancy(OccupancyPostRequest... requests) {
+        for (OccupancyPostRequest request :
                 requests) {
             postOccupancy(request);
         }
     }
 
-    public void postOccupancy(IrailPostOccupancyRequest request) {
+    public void postOccupancy(OccupancyPostRequest request) {
 
         String url = "https://api.irail.be/feedback/occupancy.php";
 
@@ -559,9 +559,9 @@ public class IrailApi implements TransportDataSource {
     private static class PostOccupancyTask extends AsyncTask<String, Void, String> {
 
         private final String url;
-        private final IrailPostOccupancyRequest request;
+        private final OccupancyPostRequest request;
 
-        public PostOccupancyTask(String url, IrailPostOccupancyRequest request) {
+        public PostOccupancyTask(String url, OccupancyPostRequest request) {
             this.url = url;
             this.request = request;
         }

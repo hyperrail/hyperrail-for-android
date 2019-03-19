@@ -35,7 +35,7 @@ import eu.opentransport.common.models.StopLocation;
 /**
  * A request for a station liveboard
  */
-public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implements TransportDataRequest<Liveboard> {
+public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implements TransportDataRequest<Liveboard> {
 
 
     private final StopLocation station;
@@ -57,14 +57,14 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
      * @param type           The type of data which should be retrieved: arrivals or departures
      * @param searchTime     The time for which should be searched
      */
-    public IrailLiveboardRequest(StopLocation station, QueryTimeDefinition timeDefinition, LiveboardType type, @Nullable DateTime searchTime) {
+    public LiveboardRequest(StopLocation station, QueryTimeDefinition timeDefinition, LiveboardType type, @Nullable DateTime searchTime) {
         this.station = station;
         this.timeDefinition = timeDefinition;
         this.type = type;
         this.searchTime = searchTime;
     }
 
-    public IrailLiveboardRequest( JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
+    public LiveboardRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
         String id = jsonObject.getString("id");
         if (id.startsWith("BE.NMBS.")) {
@@ -76,7 +76,7 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         searchTime = null;
     }
 
-    public IrailLiveboardRequest(IrailLiveboardRequest copy) {
+    public LiveboardRequest(LiveboardRequest copy) {
         this.searchTime = copy.searchTime;
         this.timeDefinition = copy.timeDefinition;
         this.station = copy.station;
@@ -93,12 +93,12 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
 
     @Override
     public boolean equalsIgnoringTime(TransportDataRequest other) {
-        return other instanceof IrailLiveboardRequest && this.getStation().equals(((IrailLiveboardRequest) other).getStation());
+        return other instanceof LiveboardRequest && this.getStation().equals(((LiveboardRequest) other).getStation());
     }
 
     public boolean equals(String json) {
         try {
-            IrailLiveboardRequest other = new IrailLiveboardRequest(new JSONObject(json));
+            LiveboardRequest other = new LiveboardRequest(new JSONObject(json));
             return this.equals(other);
         } catch (JSONException | StopLocationNotResolvedException e) {
             return false;
@@ -134,20 +134,20 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
         return (this.searchTime == null);
     }
 
-    public IrailLiveboardRequest withTimeDefinition(QueryTimeDefinition timeDefinition) {
-        IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
+    public LiveboardRequest withTimeDefinition(QueryTimeDefinition timeDefinition) {
+        LiveboardRequest clone = new LiveboardRequest(this);
         clone.timeDefinition = timeDefinition;
         return clone;
     }
 
-    public IrailLiveboardRequest withLiveboardType(LiveboardType type) {
-        IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
+    public LiveboardRequest withLiveboardType(LiveboardType type) {
+        LiveboardRequest clone = new LiveboardRequest(this);
         clone.type = type;
         return clone;
     }
 
-    public IrailLiveboardRequest withSearchTime(DateTime searchTime) {
-        IrailLiveboardRequest clone = new IrailLiveboardRequest(this);
+    public LiveboardRequest withSearchTime(DateTime searchTime) {
+        LiveboardRequest clone = new LiveboardRequest(this);
         clone.searchTime = searchTime;
         return clone;
     }
@@ -157,27 +157,27 @@ public class IrailLiveboardRequest extends IrailBaseRequest<Liveboard> implement
 
         if (o instanceof JSONObject){
             try {
-                o = new IrailLiveboardRequest((JSONObject) o);
+                o = new LiveboardRequest((JSONObject) o);
             } catch (JSONException | StopLocationNotResolvedException e) {
                 return false;
             }
         }
 
-        if (!(o instanceof IrailLiveboardRequest)) {
+        if (!(o instanceof LiveboardRequest)) {
             return false;
         }
 
-        IrailLiveboardRequest other = (IrailLiveboardRequest) o;
+        LiveboardRequest other = (LiveboardRequest) o;
         return (getStation().equals(other.getStation()) && searchTime == other.searchTime);
     }
 
     @Override
     public int compareTo( TransportDataRequest o) {
-        if (!(o instanceof IrailLiveboardRequest)) {
+        if (!(o instanceof LiveboardRequest)) {
             return -1;
         }
 
-        IrailLiveboardRequest other = (IrailLiveboardRequest) o;
+        LiveboardRequest other = (LiveboardRequest) o;
         return getStation().compareTo(other.getStation());
     }
 

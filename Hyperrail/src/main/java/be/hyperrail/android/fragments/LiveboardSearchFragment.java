@@ -67,14 +67,14 @@ import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 
 import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> {
+public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<LiveboardRequest>>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Suggestion<LiveboardRequest>> {
 
     private static final int COARSE_LOCATION_REQUEST = 1;
 
@@ -87,7 +87,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
     private PersistentQueryProvider persistentQueryProvider;
     private boolean mNearbyOnTop;
-    private Suggestion<IrailLiveboardRequest> mLastSelectedQuery;
+    private Suggestion<LiveboardRequest> mLastSelectedQuery;
     private StationSuggestionsCardAdapter mStationAdapter;
 
     UpdateSuggestionsTask activeSuggestionsUpdateTask;
@@ -95,7 +95,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     /**
      * This alternative onclicklistener allows to "catch" clicks. This way we can reuse this fragment for purposes other than just searching to show liveboards
      */
-    private OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> alternativeOnClickListener;
+    private OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> alternativeOnClickListener;
 
     public LiveboardSearchFragment() {
         // Required empty public constructor
@@ -257,7 +257,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * @param station The station which liveboard should be loaded
      */
     private void openLiveboard(StopLocation station) {
-        IrailLiveboardRequest request = new IrailLiveboardRequest(station, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null);
+        LiveboardRequest request = new LiveboardRequest(station, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null);
         persistentQueryProvider.store(new Suggestion<>(request, HISTORY));
         Intent i = LiveboardActivity.createIntent(getActivity(), request);
         startActivity(i);
@@ -274,7 +274,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailLiveboardRequest> object) {
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<LiveboardRequest> object) {
         if (alternativeOnClickListener == null) {
             openLiveboard(object.getData().getStation());
         } else {
@@ -283,7 +283,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailLiveboardRequest> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<LiveboardRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -418,11 +418,11 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         getLastLocation();
     }
 
-    public void setAlternativeOnClickListener(OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> alternativeOnClickListener) {
+    public void setAlternativeOnClickListener(OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> alternativeOnClickListener) {
         this.alternativeOnClickListener = alternativeOnClickListener;
     }
 
-    private static class UpdateSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailLiveboardRequest>>> {
+    private static class UpdateSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<LiveboardRequest>>> {
 
         private WeakReference<LiveboardSearchFragment> fragmentReference;
 
@@ -432,12 +432,12 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         }
 
         @Override
-        protected List<Suggestion<IrailLiveboardRequest>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<LiveboardRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllStations();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<IrailLiveboardRequest>> suggestions) {
+        protected void onPostExecute(List<Suggestion<LiveboardRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there

@@ -24,7 +24,6 @@ import java.util.Objects;
 
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.NextDataPointer;
-import eu.opentransport.common.contracts.PagedDataResource;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportOccupancyLevel;
@@ -34,7 +33,7 @@ import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RouteLeg;
 import eu.opentransport.common.models.RouteLegEnd;
 import eu.opentransport.common.models.RouteLegType;
-import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
 import eu.opentransport.irail.IrailRoute;
 import eu.opentransport.irail.IrailRouteLeg;
 import eu.opentransport.irail.IrailRouteLegEnd;
@@ -50,7 +49,7 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
 
     private final LinkedConnectionsProvider mLinkedConnectionsProvider;
     private final TransportStopsDataSource mStationProvider;
-    private IrailRoutesRequest mRoutesRequest;
+    private RoutePlanningRequest mRoutesRequest;
 
     @Nullable
     private DateTime mDepartureLimit;
@@ -78,14 +77,14 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
     private NextDataPointer mPrevious;
     private NextDataPointer mCurrent;
 
-    public RouteResponseListener(@NonNull LinkedConnectionsProvider linkedConnectionsProvider, @NonNull TransportStopsDataSource stationProvider, @NonNull IrailRoutesRequest request, @Nullable DateTime departureLimit) {
+    public RouteResponseListener(@NonNull LinkedConnectionsProvider linkedConnectionsProvider, @NonNull TransportStopsDataSource stationProvider, @NonNull RoutePlanningRequest request, @Nullable DateTime departureLimit) {
         mLinkedConnectionsProvider = linkedConnectionsProvider;
         mStationProvider = stationProvider;
         mRoutesRequest = request;
         mDepartureLimit = departureLimit;
     }
 
-    public RouteResponseListener(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, IrailRoutesRequest routesRequest, DateTime departureLimit, int i) {
+    public RouteResponseListener(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, RoutePlanningRequest routesRequest, DateTime departureLimit, int i) {
         this(linkedConnectionsProvider, stationProvider, routesRequest, departureLimit);
         maxMinutes = i;
     }

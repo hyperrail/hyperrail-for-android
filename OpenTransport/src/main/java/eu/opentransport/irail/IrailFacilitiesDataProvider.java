@@ -32,8 +32,8 @@ public class IrailFacilitiesDataProvider {
     private final Context context;
     private WebDb mWebDb;
 
-    public IrailFacilitiesDataProvider(Context context) {
-        this.context = context;
+    public IrailFacilitiesDataProvider(Context appContext) {
+        this.context = appContext;
         this.mWebDb = new WebDb(context, new IrailFacilitiesWebDbDataDefinition(context));
     }
 

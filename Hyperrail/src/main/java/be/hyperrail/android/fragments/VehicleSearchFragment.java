@@ -55,18 +55,18 @@ import be.hyperrail.android.adapter.VehicleSuggestionsCardAdapter;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class VehicleSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailVehicleRequest>>, OnRecyclerItemLongClickListener<Suggestion<IrailVehicleRequest>> {
+public class VehicleSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<VehicleRequest>>, OnRecyclerItemLongClickListener<Suggestion<VehicleRequest>> {
 
     private RecyclerView recentTrainsRecyclerView;
     private EditText vTrainSearchField;
 
     private PersistentQueryProvider persistentQueryProvider;
-    private Suggestion<IrailVehicleRequest> mLastSelectedQuery;
+    private Suggestion<VehicleRequest> mLastSelectedQuery;
     private VehicleSuggestionsCardAdapter mIrailTrainRequestAdapter;
 
     public static VehicleSearchFragment newInstance() {
@@ -149,7 +149,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
      * @param id The train id which should be loaded
      */
     private void openTrain(String id) {
-        IrailVehicleRequest request = new IrailVehicleRequest(id, null);
+        VehicleRequest request = new VehicleRequest(id, null);
         persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
         Intent i = VehicleActivity.createIntent(getActivity(), request);
         startActivity(i);
@@ -173,12 +173,12 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailVehicleRequest> object) {
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<VehicleRequest> object) {
         openTrain(object.getData().getVehicleId());
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailVehicleRequest> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<VehicleRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -207,7 +207,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         return super.onContextItemSelected(item);
     }
 
-    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailVehicleRequest>>> {
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<VehicleRequest>>> {
 
         private WeakReference<VehicleSearchFragment> fragmentReference;
 
@@ -217,12 +217,12 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         }
 
         @Override
-        protected List<Suggestion<IrailVehicleRequest>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<VehicleRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllTrains();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<IrailVehicleRequest>> suggestions) {
+        protected void onPostExecute(List<Suggestion<VehicleRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there

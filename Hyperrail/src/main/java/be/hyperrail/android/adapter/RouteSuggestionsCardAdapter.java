@@ -25,7 +25,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import be.hyperrail.android.persistence.Suggestion;
-import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
 
 /**
  * An adapter to show RouteQueries (recent/favorite routes) in a recyclerview
@@ -33,17 +33,17 @@ import eu.opentransport.common.requests.IrailRoutesRequest;
 public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSuggestionsCardAdapter.RouteHistoryViewHolder> {
 
     private final Context context;
-    private List<Suggestion<IrailRoutesRequest>> queries;
+    private List<Suggestion<RoutePlanningRequest>> queries;
 
-    private OnRecyclerItemClickListener<Suggestion<IrailRoutesRequest>> listener;
-    private OnRecyclerItemLongClickListener<Suggestion<IrailRoutesRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<RoutePlanningRequest>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<RoutePlanningRequest>> longClickListener;
 
-    public RouteSuggestionsCardAdapter(Context context, List<Suggestion<IrailRoutesRequest>> queries) {
+    public RouteSuggestionsCardAdapter(Context context, List<Suggestion<RoutePlanningRequest>> queries) {
         this.queries = queries;
         this.context = context;
     }
 
-    public void setSuggestedRoutes(List<Suggestion<IrailRoutesRequest>> queries) {
+    public void setSuggestedRoutes(List<Suggestion<RoutePlanningRequest>> queries) {
         this.queries = queries;
         this.notifyDataSetChanged();
     }
@@ -62,7 +62,7 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
 
     @Override
     public void onBindViewHolder(RouteHistoryViewHolder holder, int position) {
-        final Suggestion<IrailRoutesRequest> query = queries.get(position);
+        final Suggestion<RoutePlanningRequest> query = queries.get(position);
 
         holder.vFrom.setText(query.getData().getOrigin().getLocalizedName());
         holder.vTo.setText(query.getData().getDestination().getLocalizedName());
@@ -96,11 +96,11 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
         });
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailRoutesRequest>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<RoutePlanningRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailRoutesRequest>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<RoutePlanningRequest>> listener) {
         this.longClickListener = listener;
     }
 

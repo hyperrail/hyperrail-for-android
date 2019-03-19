@@ -17,7 +17,7 @@ import eu.opentransport.irail.IrailVehicleStop;
  * Request to update a certain vehiclestop
  */
 
-public class VehicleStopRequest extends IrailBaseRequest<VehicleStop> implements TransportDataRequest<VehicleStop> {
+public class VehicleStopRequest extends OpenTransportBaseRequest<VehicleStop> implements TransportDataRequest<VehicleStop> {
 
     private final VehicleStop mStop;
 

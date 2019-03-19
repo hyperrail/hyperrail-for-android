@@ -16,23 +16,23 @@ import eu.opentransport.common.models.Disturbance;
 /**
  * A request for disturbance information
  */
-public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> implements TransportDataRequest<Disturbance[]> {
+public class ActualDisturbancesRequest extends OpenTransportBaseRequest<Disturbance[]> implements TransportDataRequest<Disturbance[]> {
 
-    public IrailDisturbanceRequest(){
+    public ActualDisturbancesRequest(){
     }
 
-    public IrailDisturbanceRequest( JSONObject json) throws JSONException {
+    public ActualDisturbancesRequest(JSONObject json) throws JSONException {
         super(json);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return (obj instanceof IrailDisturbanceRequest);
+        return (obj instanceof ActualDisturbancesRequest);
     }
 
     @Override
     public int compareTo( TransportDataRequest o) {
-        if (! (o instanceof  IrailDisturbanceRequest)){
+        if (! (o instanceof ActualDisturbancesRequest)){
             return -1;
         }
 
@@ -41,6 +41,6 @@ public class IrailDisturbanceRequest extends IrailBaseRequest<Disturbance[]> imp
 
     @Override
     public boolean equalsIgnoringTime(TransportDataRequest other) {
-        return other instanceof IrailDisturbanceRequest;
+        return other instanceof ActualDisturbancesRequest;
     }
 }

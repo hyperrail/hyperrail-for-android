@@ -41,7 +41,7 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
 
     @Override
     public String getDataSourceUrl() {
-        return "https://api.irail.be/stations.format=json";
+        return "https://api.irail.be/stations/?format=json";
     }
 
     @Override

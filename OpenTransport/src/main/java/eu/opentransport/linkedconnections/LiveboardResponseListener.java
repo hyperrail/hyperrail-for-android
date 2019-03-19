@@ -23,7 +23,6 @@ import java.util.Objects;
 import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.MeteredDataSource.MeteredRequest;
-import eu.opentransport.common.contracts.PagedDataResource;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
@@ -31,7 +30,7 @@ import eu.opentransport.common.contracts.TransportOccupancyLevel;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.VehicleStopType;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 import eu.opentransport.irail.IrailLiveboard;
 import eu.opentransport.irail.IrailVehicleStop;
 import eu.opentransport.irail.IrailVehicleStub;
@@ -52,7 +51,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
     private final ArrayList<Integer> departureIndexForArrivals = new ArrayList<>();
     private final LinkedConnectionsProvider mLinkedConnectionsProvider;
     private final TransportStopsDataSource mStationProvider;
-    private IrailLiveboardRequest request;
+    private LiveboardRequest request;
 
     private String previous;
     private String current;
@@ -60,7 +59,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
 
     private int pages = 0;
 
-    public LiveboardResponseListener(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, IrailLiveboardRequest request) {
+    public LiveboardResponseListener(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, LiveboardRequest request) {
         mLinkedConnectionsProvider = linkedConnectionsProvider;
         mStationProvider = stationProvider;
         this.request = request;

@@ -40,7 +40,7 @@ import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
 import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 
 import static eu.opentransport.common.contracts.QueryTimeDefinition.DEPART_AT;
 import static eu.opentransport.common.models.LiveboardType.ARRIVALS;
@@ -52,13 +52,13 @@ import static eu.opentransport.common.models.LiveboardType.DEPARTURES;
  */
 public class LiveboardActivity extends ResultActivity {
 
-    private IrailLiveboardRequest mRequest;
+    private LiveboardRequest mRequest;
 
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
     private DeparturesArrivalsAdapter departuresArrivalsAdapter;
 
-    public static Intent createIntent(Context context, IrailLiveboardRequest request) {
+    public static Intent createIntent(Context context, LiveboardRequest request) {
         Intent i = new Intent(context, LiveboardActivity.class);
         i.putExtra("request", request);
         return i;
@@ -79,7 +79,7 @@ public class LiveboardActivity extends ResultActivity {
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
             try {
-                this.mRequest = new IrailLiveboardRequest(
+                this.mRequest = new LiveboardRequest(
                         OpenTransportApi.getStationsProviderInstance().getStationByHID(
                                 getIntent().getStringExtra("station")), DEPART_AT, DEPARTURES,
                         null);
@@ -95,7 +95,7 @@ public class LiveboardActivity extends ResultActivity {
                         "A liveboard activity should be created by passing a valid request");
             }
 
-            this.mRequest = (IrailLiveboardRequest) getIntent().getSerializableExtra("request");
+            this.mRequest = (LiveboardRequest) getIntent().getSerializableExtra("request");
         }
 
         super.onCreate(savedInstanceState);

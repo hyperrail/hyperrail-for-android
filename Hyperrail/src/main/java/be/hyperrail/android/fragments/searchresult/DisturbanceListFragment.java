@@ -32,27 +32,27 @@ import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.models.Disturbance;
-import eu.opentransport.common.requests.IrailDisturbanceRequest;
+import eu.opentransport.common.requests.ActualDisturbancesRequest;
 
 /**
  * A list with disturbances
  */
-public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]> implements ResultFragment<IrailDisturbanceRequest>, OnRecyclerItemClickListener<Disturbance> {
+public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]> implements ResultFragment<ActualDisturbancesRequest>, OnRecyclerItemClickListener<Disturbance> {
 
     private Disturbance[] disturbances;
     private DateTime lastUpdate;
 
     DisturbanceCardAdapter disturbanceCardAdapter;
-    private IrailDisturbanceRequest mRequest;
+    private ActualDisturbancesRequest mRequest;
 
     public DisturbanceListFragment() {
         // Required empty public constructor
-        mRequest = new IrailDisturbanceRequest();
+        mRequest = new ActualDisturbancesRequest();
     }
 
     public static DisturbanceListFragment newInstance() {
         DisturbanceListFragment frg = new DisturbanceListFragment();
-        frg.setRequest(new IrailDisturbanceRequest());
+        frg.setRequest(new ActualDisturbancesRequest());
         return frg;
     }
 
@@ -60,7 +60,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailDisturbanceRequest) savedInstanceState.getSerializable("request");
+            mRequest = (ActualDisturbancesRequest) savedInstanceState.getSerializable("request");
         }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
@@ -86,7 +86,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
 
         OpenTransportApi.getDataProviderInstance().abortAllQueries();
 
-        IrailDisturbanceRequest request = new IrailDisturbanceRequest();
+        ActualDisturbancesRequest request = new ActualDisturbancesRequest();
         request.setCallback(new TransportDataSuccessResponseListener<Disturbance[]>() {
             @Override
             public void onSuccessResponse(@NonNull Disturbance[] data, Object tag) {
@@ -103,7 +103,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
                showError(e);
             }
         }, null);
-        OpenTransportApi.getDataProviderInstance().getDisturbances(request);
+        OpenTransportApi.getDataProviderInstance().getActualDisturbances(request);
     }
 
     @Override
@@ -135,12 +135,12 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     }
 
     @Override
-    public void setRequest(@NonNull IrailDisturbanceRequest request) {
+    public void setRequest(@NonNull ActualDisturbancesRequest request) {
         this.mRequest = request;
     }
 
     @Override
-    public IrailDisturbanceRequest getRequest() {
+    public ActualDisturbancesRequest getRequest() {
         return mRequest;
     }
 

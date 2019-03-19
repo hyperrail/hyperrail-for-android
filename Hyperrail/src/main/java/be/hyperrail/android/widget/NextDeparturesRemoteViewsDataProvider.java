@@ -28,7 +28,7 @@ import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.OccupancyHelper;
 import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
@@ -56,9 +56,9 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             return;
         }
 
-        IrailLiveboardRequest request = null;
+        LiveboardRequest request = null;
         try {
-            request = new IrailLiveboardRequest(
+            request = new LiveboardRequest(
                     OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(id),
                     QueryTimeDefinition.DEPART_AT,
                     LiveboardType.DEPARTURES,

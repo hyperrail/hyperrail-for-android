@@ -34,20 +34,20 @@ import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results
  */
 public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implements InfiniteScrollingDataSource,
-        ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
+        ResultFragment<LiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
 
     private Liveboard mCurrentLiveboard;
     private LiveboardCardAdapter mLiveboardCardAdapter;
-    private IrailLiveboardRequest mRequest;
+    private LiveboardRequest mRequest;
 
-    public static LiveboardFragment createInstance(IrailLiveboardRequest request) {
+    public static LiveboardFragment createInstance(LiveboardRequest request) {
         // Clone the request so we can't accidentally modify the original
         LiveboardFragment frg = new LiveboardFragment();
         frg.mRequest = request;
@@ -58,7 +58,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailLiveboardRequest) savedInstanceState.getSerializable("request");
+            mRequest = (LiveboardRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
@@ -84,13 +84,13 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
     }
 
     @Override
-    public void setRequest(@NonNull IrailLiveboardRequest request) {
+    public void setRequest(@NonNull LiveboardRequest request) {
         this.mRequest = request;
         getInitialData();
     }
 
     @Override
-    public IrailLiveboardRequest getRequest() {
+    public LiveboardRequest getRequest() {
         return this.mRequest;
     }
 
@@ -254,7 +254,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        Intent i = VehicleActivity.createIntent(getActivity(), new IrailVehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
+        Intent i = VehicleActivity.createIntent(getActivity(), new VehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 

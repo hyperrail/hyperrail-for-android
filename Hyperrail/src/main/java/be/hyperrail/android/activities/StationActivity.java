@@ -40,7 +40,7 @@ import eu.opentransport.OpenTransportApi;
 import eu.opentransport.common.contracts.QueryTimeDefinition;
 import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 import eu.opentransport.irail.IrailStationFacilities;
 
 public class StationActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -71,7 +71,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
                     @Override
                     public void onClick(View v) {
                         startActivity(LiveboardActivity.createIntent(StationActivity.this,
-                                new IrailLiveboardRequest(mStation, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null)));
+                                new LiveboardRequest(mStation, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null)));
                     }
                 }
         );

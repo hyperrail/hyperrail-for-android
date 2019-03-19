@@ -26,7 +26,7 @@ import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.VehicleStop;
 import eu.opentransport.common.models.VehicleStopType;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 
 /**
  * A class which allows to withStopsAppended liveboards.
@@ -70,7 +70,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
             this.lastSearchTime = originalLiveboard.getSearchTime().plusHours(1);
         }
 
-        IrailLiveboardRequest request = new IrailLiveboardRequest(originalLiveboard, QueryTimeDefinition.DEPART_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
+        LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.DEPART_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
         request.setCallback(this, this, TAG_APPEND);
         api.getLiveboard(request);
     }
@@ -88,7 +88,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
         } else {
             this.lastSearchTime = originalLiveboard.getSearchTime().minusHours(1);
         }
-        IrailLiveboardRequest request = new IrailLiveboardRequest(originalLiveboard, QueryTimeDefinition.ARRIVE_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
+        LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.ARRIVE_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
         request.setCallback(this, this, TAG_PREPEND);
         api.getLiveboard(request);
     }
@@ -119,7 +119,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
             lastSearchTime = lastSearchTime.minusHours(1);
 
             if (attempt < 12) {
-                IrailLiveboardRequest request = new IrailLiveboardRequest(originalLiveboard, QueryTimeDefinition.ARRIVE_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
+                LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.ARRIVE_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
                 request.setCallback(this, this, TAG_PREPEND);
                 api.getLiveboard(request);
             } else {
@@ -170,7 +170,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
             lastSearchTime = lastSearchTime.plusHours(2);
 
             if (attempt < 12) {
-                IrailLiveboardRequest request = new IrailLiveboardRequest(originalLiveboard, QueryTimeDefinition.DEPART_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
+                LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.DEPART_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
                 request.setCallback(this, this, TAG_APPEND);
                 api.getLiveboard(request);
             } else {

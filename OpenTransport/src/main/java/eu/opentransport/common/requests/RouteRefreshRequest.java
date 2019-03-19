@@ -21,7 +21,7 @@ import eu.opentransport.common.models.StopLocation;
 /**
  * A request for a route between two or more stations
  */
-public class IrailRouteRequest extends IrailBaseRequest<Route> implements TransportDataRequest<Route> {
+public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> implements TransportDataRequest<Route> {
 
 
     private final StopLocation origin;
@@ -45,7 +45,7 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
      * Create a request to get a specific between two stations
      */
     // TODO: support vias
-    public IrailRouteRequest(String departureSemanticId, StopLocation origin, StopLocation destination, QueryTimeDefinition timeDefinition, DateTime searchTime) {
+    public RouteRefreshRequest(String departureSemanticId, StopLocation origin, StopLocation destination, QueryTimeDefinition timeDefinition, DateTime searchTime) {
         this.origin = origin;
         this.destination = destination;
         this.timeDefinition = timeDefinition;
@@ -58,7 +58,7 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
      *
      * @param route The route for which fresh data should be retrieved
      */
-    public IrailRouteRequest( Route route) {
+    public RouteRefreshRequest(Route route) {
         this.origin = route.getDepartureStation();
         this.destination = route.getArrivalStation();
         this.timeDefinition = QueryTimeDefinition.DEPART_AT;
@@ -69,7 +69,7 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
         this.departureSemanticId = route.getDeparture().getDepartureSemanticId();
     }
 
-    public IrailRouteRequest( JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
+    public RouteRefreshRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
         this.origin = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
@@ -121,27 +121,27 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
 
         if (o instanceof JSONObject){
             try {
-                o = new IrailRouteRequest((JSONObject) o);
+                o = new RouteRefreshRequest((JSONObject) o);
             } catch (JSONException | StopLocationNotResolvedException e) {
                 return false;
             }
         }
 
-        if (!(o instanceof IrailRouteRequest)) {
+        if (!(o instanceof RouteRefreshRequest)) {
             return false;
         }
 
-        IrailRouteRequest other = (IrailRouteRequest) o;
+        RouteRefreshRequest other = (RouteRefreshRequest) o;
         return (getDepartureSemanticId().equals(other.getDepartureSemanticId()) && getOrigin().equals(other.getOrigin()) && getDestination().equals(other.getDestination()) && getTimeDefinition().equals(other.getTimeDefinition()) && getSearchTime().equals(other.getSearchTime()));
     }
 
     @Override
     public int compareTo( TransportDataRequest o) {
-        if (!(o instanceof IrailRouteRequest)) {
+        if (!(o instanceof RouteRefreshRequest)) {
             return -1;
         }
 
-        IrailRouteRequest other = (IrailRouteRequest) o;
+        RouteRefreshRequest other = (RouteRefreshRequest) o;
         return getOrigin().equals(other.getOrigin()) ?
                 getDestination().compareTo(other.getDestination()) :
                 getOrigin().compareTo(other.getOrigin());
@@ -149,11 +149,11 @@ public class IrailRouteRequest extends IrailBaseRequest<Route> implements Transp
 
     @Override
     public boolean equalsIgnoringTime(TransportDataRequest other) {
-        if (!(other instanceof IrailRouteRequest)) {
+        if (!(other instanceof RouteRefreshRequest)) {
             return false;
         }
         // Not really meaningful for this request type
-        IrailRouteRequest o = (IrailRouteRequest) other;
+        RouteRefreshRequest o = (RouteRefreshRequest) other;
         return getDepartureSemanticId().equals(o.getDepartureSemanticId()) && getOrigin().equals(o.getOrigin()) && getDestination().equals(o.getDestination());
     }
 }

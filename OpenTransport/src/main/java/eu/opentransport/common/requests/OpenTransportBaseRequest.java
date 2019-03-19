@@ -27,18 +27,18 @@ import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
  * A base class for TransportDataRequest implementations
  */
 
-public abstract class IrailBaseRequest<T> implements TransportDataRequest<T> {
+public abstract class OpenTransportBaseRequest<T> implements TransportDataRequest<T> {
 
     protected DateTime createdAt;
     protected transient Object tag;
     protected transient TransportDataErrorResponseListener errorResponseListener;
     protected transient TransportDataSuccessResponseListener<T> successResponseListener;
 
-    protected IrailBaseRequest() {
+    protected OpenTransportBaseRequest() {
         this.createdAt = new DateTime();
     }
 
-    protected IrailBaseRequest( JSONObject json) throws JSONException {
+    protected OpenTransportBaseRequest(JSONObject json) throws JSONException {
         this.createdAt = new DateTime(json.getLong("created_at"));
     }
 

@@ -47,8 +47,8 @@ import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RoutesList;
 import eu.opentransport.common.models.Transfer;
 import eu.opentransport.common.models.VehicleStub;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 
 public class RouteListItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<RoutesList, Route> {
 
@@ -137,13 +137,13 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
                 Intent i = null;
                 if (object instanceof Bundle) {
                     i = VehicleActivity.createIntent(context,
-                                                     new IrailVehicleRequest(
+                                                     new VehicleRequest(
                                                              ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
                                                              (DateTime) ((Bundle) object).getSerializable("date")
                                                      ));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(
+                    i = LiveboardActivity.createIntent(context, new LiveboardRequest(
                             ((Transfer) object).getStation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
                 }
                 context.startActivity(i);

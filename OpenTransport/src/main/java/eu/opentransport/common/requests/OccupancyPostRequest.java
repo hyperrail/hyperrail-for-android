@@ -16,7 +16,7 @@ import eu.opentransport.common.contracts.TransportOccupancyLevel;
 /**
  * A request to post occupancy data
  */
-public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> implements TransportDataRequest<Boolean> {
+public class OccupancyPostRequest extends OpenTransportBaseRequest<Boolean> implements TransportDataRequest<Boolean> {
 
 
     private final String departureSemanticId;
@@ -36,7 +36,7 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> impleme
     /**
      * Create a request  to post occupancy data
      */
-    public IrailPostOccupancyRequest( String departureSemanticId,  String stationSemanticId,  String vehicleSemanticId,  DateTime date,  TransportOccupancyLevel occupancy) {
+    public OccupancyPostRequest(String departureSemanticId, String stationSemanticId, String vehicleSemanticId, DateTime date, TransportOccupancyLevel occupancy) {
 
         this.departureSemanticId = departureSemanticId;
         this.stationSemanticId = stationSemanticId;
@@ -48,7 +48,7 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> impleme
     /**
      * Deserialize JSON for a request to post occupancy data
      */
-    public IrailPostOccupancyRequest( JSONObject jsonObject) throws JSONException {
+    public OccupancyPostRequest(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
 
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
@@ -105,9 +105,9 @@ public class IrailPostOccupancyRequest extends IrailBaseRequest<Boolean> impleme
 
     @Override
     public int compareTo( TransportDataRequest o) {
-        if (!(o instanceof IrailPostOccupancyRequest)) {
+        if (!(o instanceof OccupancyPostRequest)) {
             return -1;
         }
-        return getDate().compareTo(((IrailPostOccupancyRequest) o).getDate());
+        return getDate().compareTo(((OccupancyPostRequest) o).getDate());
     }
 }

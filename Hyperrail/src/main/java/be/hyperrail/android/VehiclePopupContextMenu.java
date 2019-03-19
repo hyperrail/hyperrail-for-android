@@ -43,8 +43,8 @@ import eu.opentransport.common.models.RouteLegType;
 import eu.opentransport.common.models.Transfer;
 import eu.opentransport.common.models.TransferType;
 import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.requests.IrailPostOccupancyRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.OccupancyPostRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -374,7 +374,7 @@ public class VehiclePopupContextMenu {
                                     mVehicleStop));
                     mBuilder.setSubText(
                             "Vehicle at  " + mVehicleStop.getStation().getLocalizedName() + " towards " + mVehicleStop.getVehicle().getHeadsign());
-                    resultIntent = VehicleActivity.createIntent(mContext, new IrailVehicleRequest(
+                    resultIntent = VehicleActivity.createIntent(mContext, new VehicleRequest(
                             mVehicleStop.getVehicle().getId(), mVehicleStop.getDepartureTime()));
                     notificationTag = mVehicleStop.getDepartureUri();
                 } else {
@@ -382,7 +382,7 @@ public class VehiclePopupContextMenu {
                   mBuilder.setSubText(
                             "Transfer at  " + mTransfer.getStation().getLocalizedName());
                     resultIntent = LiveboardActivity.createIntent(mContext,
-                                                                  new IrailLiveboardRequest(
+                                                                  new LiveboardRequest(
                                                                           mTransfer.getStation(),
                                                                           RouteTimeDefinition.DEPART_AT,
                                                                           Liveboard.LiveboardType.DEPARTURES,
@@ -398,7 +398,7 @@ public class VehiclePopupContextMenu {
                                     notificationStop));
                     mBuilder.setSubText(
                             "Vehicle at  " + notificationStop.getStation().getLocalizedName() + " towards " + notificationStop.getVehicle().getHeadsign());
-                    resultIntent = VehicleActivity.createIntent(mContext, new IrailVehicleRequest(
+                    resultIntent = VehicleActivity.createIntent(mContext, new VehicleRequest(
                             notificationStop.getVehicle().getId(), notificationStop.getDepartureTime()));
                     notificationTag = notificationStop.getDepartureUri();
                 }
@@ -445,7 +445,7 @@ public class VehiclePopupContextMenu {
         vLowOccupancy.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                IrailPostOccupancyRequest request = new IrailPostOccupancyRequest(
+                OccupancyPostRequest request = new OccupancyPostRequest(
                         mDepartureConnection,
                         mStationSemanticId,
                         mVehicleSemanticId,
@@ -460,7 +460,7 @@ public class VehiclePopupContextMenu {
         vMediumOccupancy.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                IrailPostOccupancyRequest request = new IrailPostOccupancyRequest(
+                OccupancyPostRequest request = new OccupancyPostRequest(
                         mDepartureConnection,
                         mStationSemanticId,
                         mVehicleSemanticId,
@@ -475,7 +475,7 @@ public class VehiclePopupContextMenu {
         vHighOccupancy.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                IrailPostOccupancyRequest request = new IrailPostOccupancyRequest(
+                OccupancyPostRequest request = new OccupancyPostRequest(
                         mDepartureConnection,
                         mStationSemanticId,
                         mVehicleSemanticId,
@@ -488,7 +488,7 @@ public class VehiclePopupContextMenu {
         });
     }
 
-    private void setButtonConfirmationCallback(IrailPostOccupancyRequest request) {
+    private void setButtonConfirmationCallback(OccupancyPostRequest request) {
         request.setCallback(
                 (data, tag) -> {
                     Snackbar.make(VehiclePopupContextMenu.this.mActivityView,

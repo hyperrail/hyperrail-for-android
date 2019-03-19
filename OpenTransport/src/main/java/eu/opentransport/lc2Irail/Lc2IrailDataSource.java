@@ -51,13 +51,13 @@ import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RoutesList;
 import eu.opentransport.common.models.Vehicle;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.ExtendRoutesRequest;
-import eu.opentransport.common.requests.IrailDisturbanceRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailPostOccupancyRequest;
-import eu.opentransport.common.requests.IrailRouteRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
+import eu.opentransport.common.requests.ActualDisturbancesRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.OccupancyPostRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
+import eu.opentransport.common.requests.RouteRefreshRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
 import eu.opentransport.irail.IrailApi;
 import eu.opentransport.irail.IrailLiveboard;
@@ -107,18 +107,18 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     }
 
     @Override
-    public void getDisturbances(@NonNull IrailDisturbanceRequest... requests) {
-        (new IrailApi(mContext)).getDisturbances(requests);
+    public void getActualDisturbances(@NonNull ActualDisturbancesRequest... requests) {
+        (new IrailApi(mContext)).getActualDisturbances(requests);
     }
 
     @Override
-    public void getLiveboard(@NonNull IrailLiveboardRequest... requests) {
-        for (IrailLiveboardRequest request : requests) {
+    public void getLiveboard(@NonNull LiveboardRequest... requests) {
+        for (LiveboardRequest request : requests) {
             getLiveboard(request);
         }
     }
 
-    private void getLiveboard(@NonNull final IrailLiveboardRequest request) {
+    private void getLiveboard(@NonNull final LiveboardRequest request) {
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
         final MeteredRequest mMeteredRequest = new MeteredRequest();
         mMeteredRequest.setMsecStart(DateTime.now().getMillis());
@@ -188,17 +188,17 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     }
 
     @Override
-    public void getRoutes(@NonNull IrailRoutesRequest... requests) {
-        for (IrailRoutesRequest request : requests) {
+    public void getRoutePlanning(@NonNull RoutePlanningRequest... requests) {
+        for (RoutePlanningRequest request : requests) {
             getRoutes(request);
         }
     }
 
 
-    public void getRoutes(@NonNull final IrailRoutesRequest request) {
+    public void getRoutes(@NonNull final RoutePlanningRequest request) {
         final MeteredRequest mMeteredRequest = new MeteredRequest();
         mMeteredRequest.setMsecStart(DateTime.now().getMillis());
-        final Trace tracing = FirebasePerformance.getInstance().newTrace("lc2irail.getRoutes");
+        final Trace tracing = FirebasePerformance.getInstance().newTrace("lc2irail.getRoutePlanning");
         tracing.start();
         // https://api.irail.be/connections/?to=Halle&from=Brussels-south&date={dmy}&time=2359&timeSel=arrive or depart&format=json
         DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
@@ -251,8 +251,8 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     }
 
     @Override
-    public void extendRoutes(@NonNull ExtendRoutesRequest... requests) {
-        for (ExtendRoutesRequest request :
+    public void extendRoutePlanning(@NonNull ExtendRoutePlanningRequest... requests) {
+        for (ExtendRoutePlanningRequest request :
                 requests) {
             IrailRouteAppendHelper helper = new IrailRouteAppendHelper();
             helper.extendRoutesRequest(request);
@@ -260,9 +260,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     }
 
     @Override
-    public void getRoute(@NonNull IrailRouteRequest... requests) {
-        for (final IrailRouteRequest request : requests) {
-            IrailRoutesRequest routesRequest = new IrailRoutesRequest(
+    public void getRoute(@NonNull RouteRefreshRequest... requests) {
+        for (final RouteRefreshRequest request : requests) {
+            RoutePlanningRequest routesRequest = new RoutePlanningRequest(
                     request.getOrigin(), request.getDestination(), request.getTimeDefinition(),
                     request.getSearchTime()
             );
@@ -301,7 +301,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         if (time == null) {
             time = request.getStop().getArrivalTime();
         }
-        IrailVehicleRequest vehicleRequest = new IrailVehicleRequest(request.getStop().getVehicle().getId(), time);
+        VehicleRequest vehicleRequest = new VehicleRequest(request.getStop().getVehicle().getId(), time);
         vehicleRequest.setCallback(new TransportDataSuccessResponseListener<Vehicle>() {
             @Override
             public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
@@ -318,18 +318,18 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     }
 
     @Override
-    public void getVehicle(@NonNull IrailVehicleRequest... requests) {
-        for (IrailVehicleRequest request : requests) {
+    public void getVehicleJourney(@NonNull VehicleRequest... requests) {
+        for (VehicleRequest request : requests) {
             getVehicle(request);
         }
     }
 
-    public void getVehicle(@NonNull final IrailVehicleRequest request) {
+    public void getVehicle(@NonNull final VehicleRequest request) {
         final MeteredRequest mMeteredRequest = new MeteredRequest();
         mMeteredRequest.setMsecStart(DateTime.now().getMillis());
         DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYYMMdd");
 
-        final Trace tracing = FirebasePerformance.getInstance().newTrace("lc2irail.getVehicle");
+        final Trace tracing = FirebasePerformance.getInstance().newTrace("lc2irail.getVehicleJourney");
         tracing.start();
 
         // https://lc2irail.thesis.bertmarcelis.be/vehicle/IC538/20180413
@@ -374,7 +374,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     }
 
     @Override
-    public void postOccupancy(@NonNull IrailPostOccupancyRequest... requests) {
+    public void postOccupancy(@NonNull OccupancyPostRequest... requests) {
         new IrailApi(mContext).postOccupancy(requests);
     }
 

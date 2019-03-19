@@ -60,21 +60,21 @@ import eu.opentransport.common.models.LiveboardType;
 import eu.opentransport.common.models.StopLocation;
 import eu.opentransport.common.models.Vehicle;
 import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results
  */
 public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements InfiniteScrollingDataSource,
-        ResultFragment<IrailVehicleRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop>, OnMapReadyCallback {
+        ResultFragment<VehicleRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop>, OnMapReadyCallback {
 
     private Vehicle mCurrentTrain;
-    private IrailVehicleRequest mRequest;
+    private VehicleRequest mRequest;
     private VehicleStopCardAdapter mRecyclerviewAdapter;
     private GoogleMap mMap;
 
-    public static VehicleFragment createInstance(IrailVehicleRequest request) {
+    public static VehicleFragment createInstance(VehicleRequest request) {
         VehicleFragment frg = new VehicleFragment();
         frg.mRequest = request;
         return frg;
@@ -84,7 +84,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailVehicleRequest) savedInstanceState.getSerializable("request");
+            mRequest = (VehicleRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list_map, container, false);
     }
@@ -119,13 +119,13 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
     }
 
     @Override
-    public void setRequest(@NonNull IrailVehicleRequest request) {
+    public void setRequest(@NonNull VehicleRequest request) {
         this.mRequest = request;
         //getInitialData();
     }
 
     @Override
-    public IrailVehicleRequest getRequest() {
+    public VehicleRequest getRequest() {
         return this.mRequest;
     }
 
@@ -154,7 +154,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
         OpenTransportApi.getDataProviderInstance().abortAllQueries();
 
-        IrailVehicleRequest request = new IrailVehicleRequest(mRequest.getVehicleId(),
+        VehicleRequest request = new VehicleRequest(mRequest.getVehicleId(),
                                                               mRequest.getSearchTime());
         request.setCallback(new TransportDataSuccessResponseListener<Vehicle>() {
             @Override
@@ -173,7 +173,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
                 showError(e);
             }
         }, null);
-        OpenTransportApi.getDataProviderInstance().getVehicle(request);
+        OpenTransportApi.getDataProviderInstance().getVehicleJourney(request);
     }
 
     protected void showData(Vehicle train) {
@@ -220,7 +220,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
             queryTime = object.getDepartureTime();
         }
         Intent i = LiveboardActivity.createIntent(getActivity(),
-                                                  new IrailLiveboardRequest(object.getStation(),
+                                                  new LiveboardRequest(object.getStation(),
                                                                             QueryTimeDefinition.DEPART_AT,
                                                                             LiveboardType.DEPARTURES,
                                                                             queryTime));

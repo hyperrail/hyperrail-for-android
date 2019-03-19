@@ -26,10 +26,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import eu.opentransport.common.contracts.TransportDataRequest;
-import eu.opentransport.common.requests.IrailDisturbanceRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.ActualDisturbancesRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 
 import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
@@ -37,7 +37,7 @@ import static be.hyperrail.android.persistence.SuggestionType.LIST;
 
 /**
  * Store data about recent and favorite searches as json object in preferences.
- * For code-duplication reasons, all data is stored as a IrailRoutesRequest. Stations are stored as a query from the station, with an empty string as destination.
+ * For code-duplication reasons, all data is stored as a RoutePlanningRequest. Stations are stored as a query from the station, with an empty string as destination.
  */
 public class PersistentQueryProvider implements Serializable {
 
@@ -99,24 +99,24 @@ public class PersistentQueryProvider implements Serializable {
      *
      * @return Sorted array with favorite and recent route requests
      */
-    public List<Suggestion<IrailRoutesRequest>> getAllRoutes() {
+    public List<Suggestion<RoutePlanningRequest>> getAllRoutes() {
 
         int recentLimit = Integer.valueOf(sharedPreferences.getString("routes_history_count", "3"));
         int order = Integer.valueOf(sharedPreferences.getString("routes_order", "0"));
         // 0: recents before favorites
         // 1: favorites before recents
 
-        List<Suggestion<IrailRoutesRequest>> favorites = getRoutes(FAVORITE);
+        List<Suggestion<RoutePlanningRequest>> favorites = getRoutes(FAVORITE);
 
         if (recentLimit == 0) {
             return favorites;
         }
 
         // Keep some margin to ensure that we will always show the number of recents set by the user
-        List<Suggestion<IrailRoutesRequest>> recents = getRoutes(HISTORY,
+        List<Suggestion<RoutePlanningRequest>> recents = getRoutes(HISTORY,
                 recentLimit + favorites.size());
 
-        recents = (List<Suggestion<IrailRoutesRequest>>) removeFromCollection(recents, favorites);
+        recents = (List<Suggestion<RoutePlanningRequest>>) removeFromCollection(recents, favorites);
 
         if (recents.size() > recentLimit) {
             recents = recents.subList(0, recentLimit);
@@ -136,24 +136,24 @@ public class PersistentQueryProvider implements Serializable {
      *
      * @return Sorted array with favorite and recent liveboard requests
      */
-    public List<Suggestion<IrailLiveboardRequest>> getAllStations() {
+    public List<Suggestion<LiveboardRequest>> getAllStations() {
         int recentLimit = Integer.valueOf(
                 sharedPreferences.getString("stations_history_count", "3"));
         int order = Integer.valueOf(sharedPreferences.getString("stations_order", "0"));
         // 0 || 2: recents before favorites
         // 1 || 3: favorites before recents
 
-        List<Suggestion<IrailLiveboardRequest>> favorites = getStations(FAVORITE);
+        List<Suggestion<LiveboardRequest>> favorites = getStations(FAVORITE);
 
         if (recentLimit == 0) {
             return favorites;
         }
 
         // Keep some margin to ensure that we will always show the number of recents set by the user
-        List<Suggestion<IrailLiveboardRequest>> recents = getStations(HISTORY,
+        List<Suggestion<LiveboardRequest>> recents = getStations(HISTORY,
                 recentLimit + favorites.size());
 
-        recents = (List<Suggestion<IrailLiveboardRequest>>) removeFromCollection(recents,
+        recents = (List<Suggestion<LiveboardRequest>>) removeFromCollection(recents,
                 favorites);
 
         if (recents.size() > recentLimit) {
@@ -174,23 +174,23 @@ public class PersistentQueryProvider implements Serializable {
      *
      * @return Sorted array with favorite and recent vehicle requests
      */
-    public List<Suggestion<IrailVehicleRequest>> getAllTrains() {
+    public List<Suggestion<VehicleRequest>> getAllTrains() {
         int recentLimit = Integer.valueOf(sharedPreferences.getString("trains_history_count", "3"));
         int order = Integer.valueOf(sharedPreferences.getString("trains_order", "0"));
         // 0: recents before favorites
         // 1: favorites before recents
 
-        List<Suggestion<IrailVehicleRequest>> favorites = getTrains(FAVORITE);
+        List<Suggestion<VehicleRequest>> favorites = getTrains(FAVORITE);
 
         if (recentLimit == 0) {
             return favorites;
         }
 
         // Keep some margin to ensure that we will always show the number of recents set by the user
-        List<Suggestion<IrailVehicleRequest>> recents = getTrains(HISTORY,
+        List<Suggestion<VehicleRequest>> recents = getTrains(HISTORY,
                 recentLimit + favorites.size());
 
-        recents = (List<Suggestion<IrailVehicleRequest>>) removeFromCollection(recents, favorites);
+        recents = (List<Suggestion<VehicleRequest>>) removeFromCollection(recents, favorites);
 
         if (recents.size() > recentLimit) {
             recents = recents.subList(0, recentLimit);
@@ -205,87 +205,87 @@ public class PersistentQueryProvider implements Serializable {
         }
     }
 
-    public List<Suggestion<IrailRoutesRequest>> getRoutes(SuggestionType type) {
+    public List<Suggestion<RoutePlanningRequest>> getRoutes(SuggestionType type) {
         return getRoutes(type, MAX_STORED);
     }
 
-    public List<Suggestion<IrailRoutesRequest>> getRoutes(SuggestionType type, int limit) {
+    public List<Suggestion<RoutePlanningRequest>> getRoutes(SuggestionType type, int limit) {
         if (type == FAVORITE) {
-            return load(TAG_FAV_ROUTES, limit, type, IrailRoutesRequest.class);
+            return load(TAG_FAV_ROUTES, limit, type, RoutePlanningRequest.class);
         } else if (type == HISTORY) {
-            return load(TAG_RECENT_ROUTES, limit, true, type, IrailRoutesRequest.class);
+            return load(TAG_RECENT_ROUTES, limit, true, type, RoutePlanningRequest.class);
         }
         return null;
     }
 
-    public List<Suggestion<IrailLiveboardRequest>> getStations(SuggestionType type) {
+    public List<Suggestion<LiveboardRequest>> getStations(SuggestionType type) {
         return getStations(type, MAX_STORED);
     }
 
-    public List<Suggestion<IrailLiveboardRequest>> getStations(SuggestionType type, int limit) {
+    public List<Suggestion<LiveboardRequest>> getStations(SuggestionType type, int limit) {
         if (type == FAVORITE) {
-            return load(TAG_FAV_STATIONS, limit, type, IrailLiveboardRequest.class);
+            return load(TAG_FAV_STATIONS, limit, type, LiveboardRequest.class);
         } else if (type == HISTORY) {
-            return load(TAG_RECENT_STATIONS, limit, true, type, IrailLiveboardRequest.class);
+            return load(TAG_RECENT_STATIONS, limit, true, type, LiveboardRequest.class);
         }
         return null;
     }
 
-    public List<Suggestion<IrailVehicleRequest>> getTrains(SuggestionType type) {
+    public List<Suggestion<VehicleRequest>> getTrains(SuggestionType type) {
         return getTrains(type, MAX_STORED);
     }
 
-    public List<Suggestion<IrailVehicleRequest>> getTrains(SuggestionType type, int limit) {
+    public List<Suggestion<VehicleRequest>> getTrains(SuggestionType type, int limit) {
         if (type == FAVORITE) {
-            return load(TAG_FAV_TRAINS, limit, type, IrailVehicleRequest.class);
+            return load(TAG_FAV_TRAINS, limit, type, VehicleRequest.class);
         } else if (type == HISTORY) {
-            return load(TAG_RECENT_TRAINS, limit, true, type, IrailVehicleRequest.class);
+            return load(TAG_RECENT_TRAINS, limit, true, type, VehicleRequest.class);
         }
         return null;
     }
 
     public <T extends TransportDataRequest> void store(Suggestion<T> query) {
-        if (query.getData().getClass() == IrailRoutesRequest.class) {
+        if (query.getData().getClass() == RoutePlanningRequest.class) {
             if (query.getType() == FAVORITE) {
-                store(TAG_FAV_ROUTES, (IrailRoutesRequest) query.getData(),
-                        IrailRoutesRequest.class);
+                store(TAG_FAV_ROUTES, (RoutePlanningRequest) query.getData(),
+                        RoutePlanningRequest.class);
             } else if (query.getType() == HISTORY) {
-                store(TAG_RECENT_ROUTES, (IrailRoutesRequest) query.getData(),
-                        IrailRoutesRequest.class);
+                store(TAG_RECENT_ROUTES, (RoutePlanningRequest) query.getData(),
+                        RoutePlanningRequest.class);
             }
-        } else if (query.getData().getClass() == IrailLiveboardRequest.class) {
+        } else if (query.getData().getClass() == LiveboardRequest.class) {
             if (query.getType() == FAVORITE) {
-                store(TAG_FAV_STATIONS, (IrailLiveboardRequest) query.getData(),
-                        IrailLiveboardRequest.class);
+                store(TAG_FAV_STATIONS, (LiveboardRequest) query.getData(),
+                        LiveboardRequest.class);
             } else if (query.getType() == HISTORY) {
-                store(TAG_RECENT_STATIONS, (IrailLiveboardRequest) query.getData(),
-                        IrailLiveboardRequest.class);
+                store(TAG_RECENT_STATIONS, (LiveboardRequest) query.getData(),
+                        LiveboardRequest.class);
             }
-        } else if (query.getData().getClass() == IrailVehicleRequest.class) {
+        } else if (query.getData().getClass() == VehicleRequest.class) {
             if (query.getType() == FAVORITE) {
-                store(TAG_FAV_TRAINS, (IrailVehicleRequest) query.getData(),
-                        IrailVehicleRequest.class);
+                store(TAG_FAV_TRAINS, (VehicleRequest) query.getData(),
+                        VehicleRequest.class);
             } else if (query.getType() == HISTORY) {
-                store(TAG_RECENT_TRAINS, (IrailVehicleRequest) query.getData(),
-                        IrailVehicleRequest.class);
+                store(TAG_RECENT_TRAINS, (VehicleRequest) query.getData(),
+                        VehicleRequest.class);
             }
         }
     }
 
     public <T extends TransportDataRequest> void delete(Suggestion<T> query) {
-        if (query.getData().getClass() == IrailRoutesRequest.class) {
+        if (query.getData().getClass() == RoutePlanningRequest.class) {
             if (query.getType() == FAVORITE) {
                 remove(TAG_FAV_ROUTES, query.getData());
             } else if (query.getType() == HISTORY) {
                 remove(TAG_RECENT_ROUTES, query.getData());
             }
-        } else if (query.getData().getClass() == IrailLiveboardRequest.class) {
+        } else if (query.getData().getClass() == LiveboardRequest.class) {
             if (query.getType() == FAVORITE) {
                 remove(TAG_FAV_STATIONS, query.getData());
             } else if (query.getType() == HISTORY) {
                 remove(TAG_RECENT_STATIONS, query.getData());
             }
-        } else if (query.getData().getClass() == IrailVehicleRequest.class) {
+        } else if (query.getData().getClass() == VehicleRequest.class) {
             if (query.getType() == FAVORITE) {
                 remove(TAG_FAV_TRAINS, query.getData());
             } else if (query.getType() == HISTORY) {
@@ -335,20 +335,20 @@ public class PersistentQueryProvider implements Serializable {
 
     public <T extends TransportDataRequest> boolean isFavorite(T toCheck) {
         // TODO: reduce code duplication
-        if (toCheck.getClass() == IrailRoutesRequest.class) {
-            for (Suggestion<IrailRoutesRequest> favorite : getRoutes(FAVORITE)) {
+        if (toCheck.getClass() == RoutePlanningRequest.class) {
+            for (Suggestion<RoutePlanningRequest> favorite : getRoutes(FAVORITE)) {
                 if (toCheck.equalsIgnoringTime(favorite.getData())) {
                     return true;
                 }
             }
-        } else if (toCheck.getClass() == IrailLiveboardRequest.class) {
-            for (Suggestion<IrailLiveboardRequest> favorite : getStations(FAVORITE)) {
+        } else if (toCheck.getClass() == LiveboardRequest.class) {
+            for (Suggestion<LiveboardRequest> favorite : getStations(FAVORITE)) {
                 if (toCheck.equalsIgnoringTime(favorite.getData())) {
                     return true;
                 }
             }
-        } else if (toCheck.getClass() == IrailVehicleRequest.class) {
-            for (Suggestion<IrailVehicleRequest> favorite : getTrains(FAVORITE)) {
+        } else if (toCheck.getClass() == VehicleRequest.class) {
+            for (Suggestion<VehicleRequest> favorite : getTrains(FAVORITE)) {
                 if (toCheck.equalsIgnoringTime(favorite.getData())) {
                     return true;
                 }
@@ -468,16 +468,16 @@ public class PersistentQueryProvider implements Serializable {
                 JSONObject object = new JSONObject(entry);
 
                 TransportDataRequest suggestionData;
-                if (objectClass == IrailLiveboardRequest.class) {
-                    suggestionData = new IrailLiveboardRequest(object);
-                } else if (objectClass == IrailRoutesRequest.class) {
-                    suggestionData = new IrailRoutesRequest(object);
-                } else if (objectClass == IrailVehicleRequest.class) {
-                    suggestionData = new IrailVehicleRequest(object);
-                } else if (objectClass == IrailRoutesRequest.class) {
-                    suggestionData = new IrailRoutesRequest(object);
-                } else if (objectClass == IrailDisturbanceRequest.class) {
-                    suggestionData = new IrailDisturbanceRequest(object);
+                if (objectClass == LiveboardRequest.class) {
+                    suggestionData = new LiveboardRequest(object);
+                } else if (objectClass == RoutePlanningRequest.class) {
+                    suggestionData = new RoutePlanningRequest(object);
+                } else if (objectClass == VehicleRequest.class) {
+                    suggestionData = new VehicleRequest(object);
+                } else if (objectClass == RoutePlanningRequest.class) {
+                    suggestionData = new RoutePlanningRequest(object);
+                } else if (objectClass == ActualDisturbancesRequest.class) {
+                    suggestionData = new ActualDisturbancesRequest(object);
                 } else {
                     throw new IllegalStateException(
                             "Attempted to deserialize an unsupported TransportDataRequest class!");

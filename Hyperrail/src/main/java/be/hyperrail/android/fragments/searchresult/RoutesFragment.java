@@ -37,19 +37,19 @@ import eu.opentransport.common.contracts.TransportDataSource;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.models.Route;
 import eu.opentransport.common.models.RoutesList;
-import eu.opentransport.common.requests.ExtendRoutesRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
+import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
 
 /**
  * A fragment for showing liveboard results
  */
-public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements InfiniteScrollingDataSource, ResultFragment<IrailRoutesRequest>, OnRecyclerItemClickListener<Route>, OnRecyclerItemLongClickListener<Route> {
+public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements InfiniteScrollingDataSource, ResultFragment<RoutePlanningRequest>, OnRecyclerItemClickListener<Route>, OnRecyclerItemLongClickListener<Route> {
 
     private RoutesList mCurrentRouteResult;
     private RouteCardAdapter mRouteCardAdapter;
-    private IrailRoutesRequest mRequest;
+    private RoutePlanningRequest mRequest;
 
-    public static RoutesFragment createInstance(IrailRoutesRequest request) {
+    public static RoutesFragment createInstance(RoutePlanningRequest request) {
         RoutesFragment frg = new RoutesFragment();
         frg.mRequest = request;
         return frg;
@@ -59,7 +59,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailRoutesRequest) savedInstanceState.getSerializable("request");
+            mRequest = (RoutePlanningRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
@@ -70,13 +70,13 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
     }
 
     @Override
-    public void setRequest(@NonNull IrailRoutesRequest request) {
+    public void setRequest(@NonNull RoutePlanningRequest request) {
         this.mRequest = request;
         getInitialData();
     }
 
     @Override
-    public IrailRoutesRequest getRequest() {
+    public RoutePlanningRequest getRequest() {
         return this.mRequest;
     }
 
@@ -127,7 +127,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
         TransportDataSource api = OpenTransportApi.getDataProviderInstance();
         api.abortAllQueries();
 
-        IrailRoutesRequest request = new IrailRoutesRequest(mRequest.getOrigin(),
+        RoutePlanningRequest request = new RoutePlanningRequest(mRequest.getOrigin(),
                 mRequest.getDestination(),
                 mRequest.getTimeDefinition(),
                 mRequest.getSearchTime());
@@ -147,7 +147,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
                 },
                 null);
 
-        api.getRoutes(request);
+        api.getRoutePlanning(request);
     }
 
     public void loadNextRecyclerviewItems() {
@@ -156,7 +156,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
             return;
         }
 
-        ExtendRoutesRequest request = new ExtendRoutesRequest(mCurrentRouteResult, ExtendRoutesRequest.Action.APPEND);
+        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ExtendRoutePlanningRequest.Action.APPEND);
         request.setCallback(
                 new TransportDataSuccessResponseListener<RoutesList>() {
                     @Override
@@ -187,7 +187,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
                         mRouteCardAdapter.setNextLoaded();
                     }
                 }, null);
-        OpenTransportApi.getDataProviderInstance().extendRoutes(request);
+        OpenTransportApi.getDataProviderInstance().extendRoutePlanning(request);
     }
 
     public void loadPreviousRecyclerviewItems() {
@@ -196,7 +196,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
             return;
         }
 
-        ExtendRoutesRequest request = new ExtendRoutesRequest(mCurrentRouteResult, ExtendRoutesRequest.Action.PREPEND);
+        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ExtendRoutePlanningRequest.Action.PREPEND);
         request.setCallback(
                 (TransportDataSuccessResponseListener<RoutesList>) (data, tag) -> {
                     resetErrorState();
@@ -222,7 +222,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
                     mRouteCardAdapter.setPrevError(true);
                     mRouteCardAdapter.setPrevLoaded();
                 }, null);
-        OpenTransportApi.getDataProviderInstance().extendRoutes(request);
+        OpenTransportApi.getDataProviderInstance().extendRoutePlanning(request);
     }
 
     protected void showData(RoutesList routeList) {

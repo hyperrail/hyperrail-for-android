@@ -23,7 +23,7 @@ import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
 import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 import eu.opentransport.irail.IrailVehicleStub;
 
 /**
@@ -34,10 +34,10 @@ public class VehicleActivity extends ResultActivity {
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    private IrailVehicleRequest mRequest;
+    private VehicleRequest mRequest;
     private VehicleFragment fragment;
 
-    public static Intent createIntent(Context context, IrailVehicleRequest request) {
+    public static Intent createIntent(Context context, VehicleRequest request) {
         Intent i = new Intent(context, VehicleActivity.class);
         i.putExtra("request", request);
         return i;
@@ -55,9 +55,9 @@ public class VehicleActivity extends ResultActivity {
 
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
-            mRequest = new IrailVehicleRequest(getIntent().getStringExtra("id"), null);
+            mRequest = new VehicleRequest(getIntent().getStringExtra("id"), null);
         } else {
-            mRequest = (IrailVehicleRequest) getIntent().getSerializableExtra("request");
+            mRequest = (VehicleRequest) getIntent().getSerializableExtra("request");
         }
 
         super.onCreate(savedInstanceState);
@@ -152,7 +152,7 @@ public class VehicleActivity extends ResultActivity {
      *
      * @param request The new request
      */
-    public void setRequest(IrailVehicleRequest request) {
+    public void setRequest(VehicleRequest request) {
         mRequest = request;
     }
 }

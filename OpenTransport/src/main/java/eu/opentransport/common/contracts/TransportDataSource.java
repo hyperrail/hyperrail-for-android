@@ -12,14 +12,14 @@
 
 package eu.opentransport.common.contracts;
 
+import eu.opentransport.common.requests.ActualDisturbancesRequest;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.ExtendRoutesRequest;
-import eu.opentransport.common.requests.IrailDisturbanceRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
-import eu.opentransport.common.requests.IrailPostOccupancyRequest;
-import eu.opentransport.common.requests.IrailRouteRequest;
-import eu.opentransport.common.requests.IrailRoutesRequest;
-import eu.opentransport.common.requests.IrailVehicleRequest;
+import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
+import eu.opentransport.common.requests.OccupancyPostRequest;
+import eu.opentransport.common.requests.RoutePlanningRequest;
+import eu.opentransport.common.requests.RouteRefreshRequest;
+import eu.opentransport.common.requests.VehicleRequest;
 import eu.opentransport.common.requests.VehicleStopRequest;
 
 /**
@@ -28,25 +28,70 @@ import eu.opentransport.common.requests.VehicleStopRequest;
  * See http://docs.irail.be/
  */
 public interface TransportDataSource {
+    /**
+     * Get actual disturbances on the network.
+     *
+     * @param requests
+     */
+    void getActualDisturbances(ActualDisturbancesRequest... requests);
 
-    void getDisturbances( IrailDisturbanceRequest... requests);
+    /**
+     * Get a liveboard with Departures and Arrivals from a stop.
+     *
+     * @param requests
+     */
+    void getLiveboard(LiveboardRequest... requests);
 
-    void getLiveboard( IrailLiveboardRequest... requests);
+    /**
+     * Extend a previous Liveboard response.
+     *
+     * @param requests
+     */
+    void extendLiveboard(ExtendLiveboardRequest... requests);
 
-    void extendLiveboard( ExtendLiveboardRequest... requests);
+    /**
+     * Run routeplanning from A to B.
+     *
+     * @param requests
+     */
+    void getRoutePlanning(RoutePlanningRequest... requests);
 
-    void getRoutes( IrailRoutesRequest... requests);
+    /**
+     * Extend a previous routeplanning response.
+     *
+     * @param requests
+     */
+    void extendRoutePlanning(ExtendRoutePlanningRequest... requests);
 
-    void extendRoutes( ExtendRoutesRequest... requests);
+    /**
+     * Get up-to-date information on a specified route.
+     */
+    void getRoute(RouteRefreshRequest... requests);
 
-    void getRoute( IrailRouteRequest... requests);
+    /**
+     * Get up-to-date information on a certain stop made by a certain vehicle.
+     *
+     * @param requests
+     */
+    void getStop(VehicleStopRequest... requests);
 
-    void getStop( VehicleStopRequest... requests);
-    
-    void getVehicle( IrailVehicleRequest... requests);
+    /**
+     * Get information on a vehicle journey.
+     *
+     * @param requests
+     */
+    void getVehicleJourney(VehicleRequest... requests);
 
-    void postOccupancy( IrailPostOccupancyRequest... requests);
+    /**
+     * Report the occupancy on a certain vehicle.
+     *
+     * @param requests
+     */
+    void postOccupancy(OccupancyPostRequest... requests);
 
+    /**
+     * Abort all running background jobs.
+     */
     void abortAllQueries();
 
 }

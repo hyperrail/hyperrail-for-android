@@ -10,13 +10,12 @@ import android.support.annotation.NonNull;
 
 import eu.opentransport.common.contracts.MeteredDataSource;
 import eu.opentransport.common.contracts.NextDataPointer;
-import eu.opentransport.common.contracts.PagedDataResource;
 import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
 import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
 import eu.opentransport.common.contracts.TransportStopsDataSource;
 import eu.opentransport.common.models.Liveboard;
 import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.IrailLiveboardRequest;
+import eu.opentransport.common.requests.LiveboardRequest;
 import eu.opentransport.irail.IrailLiveboard;
 
 /**
@@ -56,7 +55,7 @@ public class LiveboardExtendHelper implements TransportDataSuccessResponseListen
             url = (String) mLiveboard.getNextResultsPointer().getPointer();
         }
 
-        final IrailLiveboardRequest liveboardRequest = new IrailLiveboardRequest(mLiveboard,
+        final LiveboardRequest liveboardRequest = new LiveboardRequest(mLiveboard,
                 mLiveboard.getTimeDefinition(),
                 mLiveboard.getLiveboardType(),
                 mLiveboard.getSearchTime());
