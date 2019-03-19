@@ -17,12 +17,12 @@ import android.widget.RemoteViews;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.models.LiveboardType;
-import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 

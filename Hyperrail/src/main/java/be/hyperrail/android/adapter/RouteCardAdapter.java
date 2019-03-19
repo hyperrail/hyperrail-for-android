@@ -29,8 +29,8 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.viewgroup.RouteListItemLayout;
-import eu.opentransport.common.models.Route;
-import eu.opentransport.common.models.RoutesList;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RoutesList;
 
 /**
  * Recyclerview adapter to show results of route searches

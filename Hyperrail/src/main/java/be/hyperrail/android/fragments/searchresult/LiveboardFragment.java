@@ -27,15 +27,15 @@ import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
-import eu.opentransport.common.contracts.TransportDataSource;
-import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
-import eu.opentransport.common.models.Liveboard;
-import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.requests.ExtendLiveboardRequest;
-import eu.opentransport.common.requests.LiveboardRequest;
-import eu.opentransport.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
+import be.hyperrail.opentransportdata.common.models.Liveboard;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results

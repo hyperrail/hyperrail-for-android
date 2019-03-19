@@ -28,11 +28,11 @@ import org.joda.time.DateTime;
 import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
-import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
-import eu.opentransport.common.models.Disturbance;
-import eu.opentransport.common.requests.ActualDisturbancesRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
+import be.hyperrail.opentransportdata.common.models.Disturbance;
+import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
 
 /**
  * A list with disturbances

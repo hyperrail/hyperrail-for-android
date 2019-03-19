@@ -29,12 +29,12 @@ import android.widget.TextView;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.util.DurationFormatter;
-import eu.opentransport.common.models.Message;
-import eu.opentransport.common.models.OccupancyHelper;
-import eu.opentransport.common.models.Route;
-import eu.opentransport.common.models.RouteLeg;
-import eu.opentransport.common.models.RouteLegType;
-import eu.opentransport.common.models.Transfer;
+import be.hyperrail.opentransportdata.common.models.Message;
+import be.hyperrail.opentransportdata.common.models.OccupancyHelper;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RouteLeg;
+import be.hyperrail.opentransportdata.common.models.RouteLegType;
+import be.hyperrail.opentransportdata.common.models.Transfer;
 
 public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, RouteLeg> {
 

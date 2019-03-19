@@ -6,7 +6,7 @@
 
 package be.hyperrail.android.persistence;
 
-import eu.opentransport.common.contracts.TransportDataRequest;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
 
 /**
  * A suggestion wraps a suggestable object together with the reason why it was suggested

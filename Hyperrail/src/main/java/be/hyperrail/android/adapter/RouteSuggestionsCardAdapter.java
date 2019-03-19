@@ -25,7 +25,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import be.hyperrail.android.persistence.Suggestion;
-import eu.opentransport.common.requests.RoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
  * An adapter to show RouteQueries (recent/favorite routes) in a recyclerview

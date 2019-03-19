@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import eu.opentransport.common.contracts.TransportDataRequest;
-import eu.opentransport.common.requests.ActualDisturbancesRequest;
-import eu.opentransport.common.requests.LiveboardRequest;
-import eu.opentransport.common.requests.RoutePlanningRequest;
-import eu.opentransport.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
+import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 import static be.hyperrail.android.persistence.SuggestionType.HISTORY;

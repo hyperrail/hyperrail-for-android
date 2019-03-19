@@ -22,15 +22,15 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
-import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.common.models.LiveboardType;
-import eu.opentransport.common.models.Route;
-import eu.opentransport.common.models.Transfer;
-import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.models.VehicleStub;
-import eu.opentransport.common.requests.LiveboardRequest;
-import eu.opentransport.common.requests.RouteRefreshRequest;
-import eu.opentransport.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.Transfer;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.VehicleStub;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results

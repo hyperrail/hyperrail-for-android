@@ -41,8 +41,8 @@ import com.squareup.picasso.Picasso;
 
 import be.hyperrail.android.BuildConfig;
 import be.hyperrail.android.R;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 
 import static java.util.logging.Level.INFO;
 

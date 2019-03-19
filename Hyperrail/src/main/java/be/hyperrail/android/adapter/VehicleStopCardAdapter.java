@@ -15,8 +15,8 @@ import android.view.ViewGroup;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.viewgroup.VehicleStopLayout;
-import eu.opentransport.common.models.Vehicle;
-import eu.opentransport.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
 
 /**
  * Recyclerview adapter which shows stops of a train

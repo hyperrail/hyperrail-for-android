@@ -29,11 +29,11 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.viewgroup.LiveboardStopLayout;
-import eu.opentransport.common.models.Liveboard;
-import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.models.VehicleStopType;
+import be.hyperrail.opentransportdata.common.models.Liveboard;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 
-import static eu.opentransport.common.models.LiveboardType.DEPARTURES;
+import static be.hyperrail.opentransportdata.common.models.LiveboardType.DEPARTURES;
 import static org.joda.time.Days.daysBetween;
 
 /**

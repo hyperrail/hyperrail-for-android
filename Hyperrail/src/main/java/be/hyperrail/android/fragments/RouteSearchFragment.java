@@ -61,11 +61,11 @@ import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.DateTimePicker;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.common.contracts.TransportStopsDataSource;
-import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.RoutePlanningRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
  * A simple {@link Fragment} subclass.

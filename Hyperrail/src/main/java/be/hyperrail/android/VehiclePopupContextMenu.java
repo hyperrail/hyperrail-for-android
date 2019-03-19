@@ -35,16 +35,16 @@ import be.hyperrail.android.R.string;
 import be.hyperrail.android.R.style;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.util.NotificationLayoutBuilder;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.TransportDataSource;
-import eu.opentransport.common.contracts.TransportOccupancyLevel;
-import eu.opentransport.common.models.RouteLeg;
-import eu.opentransport.common.models.RouteLegType;
-import eu.opentransport.common.models.Transfer;
-import eu.opentransport.common.models.TransferType;
-import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.requests.OccupancyPostRequest;
-import eu.opentransport.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
+import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
+import be.hyperrail.opentransportdata.common.models.RouteLeg;
+import be.hyperrail.opentransportdata.common.models.RouteLegType;
+import be.hyperrail.opentransportdata.common.models.Transfer;
+import be.hyperrail.opentransportdata.common.models.TransferType;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 

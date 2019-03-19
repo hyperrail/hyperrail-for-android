@@ -55,7 +55,7 @@ import be.hyperrail.android.adapter.VehicleSuggestionsCardAdapter;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
-import eu.opentransport.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard

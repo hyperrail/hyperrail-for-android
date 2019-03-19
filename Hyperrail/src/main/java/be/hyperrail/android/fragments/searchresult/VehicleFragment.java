@@ -52,16 +52,16 @@ import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
-import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
-import eu.opentransport.common.models.LiveboardType;
-import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.models.Vehicle;
-import eu.opentransport.common.models.VehicleStop;
-import eu.opentransport.common.requests.LiveboardRequest;
-import eu.opentransport.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results

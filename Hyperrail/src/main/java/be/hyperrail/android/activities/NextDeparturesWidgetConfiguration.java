@@ -26,7 +26,7 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.persistence.Suggestion;
-import eu.opentransport.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 public class NextDeparturesWidgetConfiguration extends AppCompatActivity implements OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> {
 

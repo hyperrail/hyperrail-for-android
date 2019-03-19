@@ -28,10 +28,10 @@ import java.util.List;
 import be.hyperrail.android.R;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
-import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.common.models.LiveboardType;
-import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)

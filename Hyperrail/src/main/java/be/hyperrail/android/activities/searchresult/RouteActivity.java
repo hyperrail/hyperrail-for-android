@@ -24,11 +24,11 @@ import be.hyperrail.android.fragments.searchresult.RoutesFragment;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.util.OnDateTimeSetListener;
 import be.hyperrail.android.util.ShortcutHelper;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.QueryTimeDefinition;
-import eu.opentransport.common.exceptions.StopLocationNotResolvedException;
-import eu.opentransport.common.models.StopLocation;
-import eu.opentransport.common.requests.RoutePlanningRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 

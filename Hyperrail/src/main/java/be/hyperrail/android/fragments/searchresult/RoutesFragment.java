@@ -31,14 +31,14 @@ import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import eu.opentransport.OpenTransportApi;
-import eu.opentransport.common.contracts.TransportDataErrorResponseListener;
-import eu.opentransport.common.contracts.TransportDataSource;
-import eu.opentransport.common.contracts.TransportDataSuccessResponseListener;
-import eu.opentransport.common.models.Route;
-import eu.opentransport.common.models.RoutesList;
-import eu.opentransport.common.requests.ExtendRoutePlanningRequest;
-import eu.opentransport.common.requests.RoutePlanningRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RoutesList;
+import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
  * A fragment for showing liveboard results

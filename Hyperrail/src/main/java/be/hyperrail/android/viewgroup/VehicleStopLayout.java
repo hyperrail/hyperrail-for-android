@@ -21,9 +21,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import eu.opentransport.common.models.OccupancyHelper;
-import eu.opentransport.common.models.Vehicle;
-import eu.opentransport.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.OccupancyHelper;
+import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
 
 
 public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Vehicle, VehicleStop> {

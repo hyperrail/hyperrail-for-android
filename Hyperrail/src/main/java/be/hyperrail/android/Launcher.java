@@ -16,7 +16,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 
 import be.hyperrail.android.util.ReviewDialogProvider;
-import eu.opentransport.OpenTransportApi;
+import be.hyperrail.opentransportdata.OpenTransportApi;
 import io.fabric.sdk.android.Fabric;
 
 /**
