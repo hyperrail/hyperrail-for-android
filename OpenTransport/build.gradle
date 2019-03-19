@@ -5,12 +5,10 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'io.fabric'
-
-
 
 def VERSION_CODE = 1
 def VERSION_NAME = '1.0.0'
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'

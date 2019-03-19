@@ -137,7 +137,8 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
 
     @Override
     public String getCountryUri() {
-        throw new UnsupportedOperationException("This function is not yet implemented");
+        // TODO: implement
+        return "This function is not yet implemented";
     }
 
     public float getAvgStopTimes() {

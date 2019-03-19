@@ -16,11 +16,13 @@ import com.google.firebase.perf.metrics.AddTrace;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import eu.opentransport.R;
 import eu.opentransport.common.webdb.WebDbDataDefinition;
 
 import static eu.opentransport.irail.IrailStationsDataContract.SQL_CREATE_INDEX_ID;
@@ -41,7 +43,7 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
 
     @Override
     public String getDataSourceUrl() {
-        return "https://api.irail.be/stations/?format=json";
+        return "https://raw.githubusercontent.com/iRail/stations/master/stations.csv";
     }
 
     @Override
@@ -68,7 +70,7 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
     }
 
 
-    public String getOnlineData() {
+    private String getOnlineData() {
         URL url;
         try {
             url = new URL(getDataSourceUrl());
@@ -84,7 +86,11 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         }
     }
 
-    public IrailStopsWebDbDataDefinition(Context context) {
+    private InputStream getLocalData(){
+        return mContext.getResources().openRawResource(R.raw.stations);
+    }
+
+    IrailStopsWebDbDataDefinition(Context context) {
         mContext = context;
     }
 
@@ -117,7 +123,7 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
     private void fillStations(SQLiteDatabase db) {
 
         db.beginTransaction();
-        try (Scanner lines = new Scanner(getOnlineData())) {
+        try (Scanner lines = new Scanner(getLocalData())) {
 
             lines.useDelimiter("\n");
 

@@ -22,11 +22,13 @@ import com.google.firebase.perf.metrics.AddTrace;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import eu.opentransport.R;
 import eu.opentransport.common.webdb.WebDbDataDefinition;
 
 import static eu.opentransport.irail.IrailStationFacilitiesDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
@@ -49,7 +51,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
 
     @Override
     public String getDataSourceUrl() {
-        return null;
+        return "https://raw.githubusercontent.com/iRail/stations/master/facilities.csv";
     }
 
     @Override
@@ -75,7 +77,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         return new DateTime(httpCon.getLastModified());
     }
 
-    public String getOnlineData(){
+    private String getOnlineData(){
         URL url;
         try {
             url = new URL(getDataSourceUrl());
@@ -89,6 +91,10 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         } catch (IOException e) {
             return "";
         }
+    }
+
+    private InputStream getLocalData(){
+        return mContext.getResources().openRawResource(R.raw.stationfacilities);
     }
 
     /**
@@ -126,7 +132,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
 
         db.beginTransaction();
 
-        try (Scanner lines = new Scanner(getOnlineData())) {
+        try (Scanner lines = new Scanner(getLocalData())) {
             lines.useDelimiter("\n");
 
             while (lines.hasNext()) {
