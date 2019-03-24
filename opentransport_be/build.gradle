@@ -1,0 +1,70 @@
+apply plugin: 'com.android.library'
+
+def VERSION_CODE = 1
+def VERSION_NAME = '1.0.0'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+
+    implementation 'com.google.firebase:firebase-perf:16.2.4'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
+
+    // High performance JSON parsing for Linked Connections
+    annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.7'
+    implementation 'com.bluelinelabs:logansquare:1.3.7'
+
+    // Advanced DateTime library
+    implementation 'joda-time:joda-time:2.9.9'
+
+    // Networking
+    implementation 'com.android.volley:volley:1.1.0@aar'
+
+    // Easy communication with JSON APIs
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    // Crash logging
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9@aar'
+
+    implementation project(path: ':OpenTransport')
+
+
+    testImplementation "org.mockito:mockito-core:2.18.3"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation "org.mockito:mockito-core:2.18.3"
+}

@@ -1,1 +1,1 @@
-include ':Hyperrail', ':OpenTransport'
+include ':Hyperrail', ':OpenTransport', ':OpenTransport_be'

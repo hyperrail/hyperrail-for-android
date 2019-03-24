@@ -31,7 +31,6 @@ import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 import be.hyperrail.opentransportdata.common.models.VehicleStub;
-import be.hyperrail.opentransportdata.irail.IrailVehicleStub;
 
 /**
  * A vehicle stop, belonging to a certain vehicle.
@@ -42,7 +41,7 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
     private final VehicleStub vehicle;
 
     private final StopLocation station;
-    
+
     private final String platform;
     private final boolean isPlatformNormal;
     private boolean hasLeft;
@@ -62,7 +61,7 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
 
     private final VehicleStopType type;
 
-    public VehicleStopImpl(StopLocation station, IrailVehicleStub vehicle, String platform, boolean isPlatformNormal, @Nullable DateTime departureTime, @Nullable DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureUri, TransportOccupancyLevel occupancyLevel, VehicleStopType type) {
+    public VehicleStopImpl(StopLocation station, VehicleStub vehicle, String platform, boolean isPlatformNormal, @Nullable DateTime departureTime, @Nullable DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureUri, TransportOccupancyLevel occupancyLevel, VehicleStopType type) {
         this.station = station;
         this.isPlatformNormal = isPlatformNormal;
         this.departureTime = departureTime;
@@ -99,16 +98,16 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
     }
 
 
-    public static VehicleStopImpl buildDepartureVehicleStop(StopLocation station, IrailVehicleStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
+    public static VehicleStopImpl buildDepartureVehicleStop(StopLocation station, VehicleStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
         return new VehicleStopImpl(station, train, platform, isPlatformNormal,
-                                    departureTime, null, departureDelay, new Duration(0),
-                                    departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.DEPARTURE);
+                departureTime, null, departureDelay, new Duration(0),
+                departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.DEPARTURE);
     }
 
-    public static VehicleStopImpl buildArrivalVehicleStop(StopLocation station, IrailVehicleStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
+    public static VehicleStopImpl buildArrivalVehicleStop(StopLocation station, VehicleStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
         return new VehicleStopImpl(station, train, platform, isPlatformNormal,
-                                    null, arrivalTime, new Duration(0), arrivalDelay,
-                                    arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.ARRIVAL);
+                null, arrivalTime, new Duration(0), arrivalDelay,
+                arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.ARRIVAL);
     }
 
 

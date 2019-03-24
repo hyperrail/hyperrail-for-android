@@ -8,50 +8,33 @@ package be.hyperrail.opentransportdata;
 
 import android.content.Context;
 
+import be.hyperrail.opentransportdata.common.contracts.TransportDataProvider;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
+import be.hyperrail.opentransportdata.common.contracts.TransportStopFacilitiesDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
-import be.hyperrail.opentransportdata.irail.IrailApi;
-import be.hyperrail.opentransportdata.irail.IrailFacilitiesDataProvider;
-import be.hyperrail.opentransportdata.irail.IrailStationsDataProvider;
-import be.hyperrail.opentransportdata.experimental.lc2Irail.Lc2IrailDataSource;
-import be.hyperrail.opentransportdata.experimental.linkedconnections.LinkedConnectionsDataSource;
 
 public class OpenTransportApi {
 
     private static TransportStopsDataSource stationProviderInstance;
     private static TransportDataSource dataProviderInstance;
+    private static TransportStopFacilitiesDataSource stopFacilitiesDataSource;
 
-    public enum DataProvider {
-        BE_IRAIL_GRAPH,
-        BE_IRAIL_API,
-        BE_IRAIL_LC2IRAIL,
-        SE_GRAPH,
-        SE_LC2IRAIL
+    public static void init(Context appContext, String qualifiedName) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        init(appContext, getProviderFromQualifiedNames(qualifiedName));
     }
 
-    public static void init(Context appContext, DataProvider provider) {
-        switch (provider) {
-            case BE_IRAIL_API:
-                stationProviderInstance = new IrailStationsDataProvider(appContext);
-                dataProviderInstance = new IrailApi(appContext);
-                break;
-            case BE_IRAIL_GRAPH:
-                stationProviderInstance = new IrailStationsDataProvider(appContext);
-                dataProviderInstance = new LinkedConnectionsDataSource(appContext);
-                break;
-            case BE_IRAIL_LC2IRAIL:
-                stationProviderInstance = new IrailStationsDataProvider(appContext);
-                dataProviderInstance = new Lc2IrailDataSource(appContext);
-                break;
-            case SE_GRAPH:
-                stationProviderInstance = new IrailStationsDataProvider(appContext);
-                dataProviderInstance = new IrailApi(appContext);
-                break;
-            case SE_LC2IRAIL:
-                stationProviderInstance = new IrailStationsDataProvider(appContext);
-                dataProviderInstance = new IrailApi(appContext);
-                break;
-        }
+    public static void init(Context appContext, TransportDataProvider dataProvider) {
+        stationProviderInstance = dataProvider.getStopsDataSource(appContext);
+        stopFacilitiesDataSource = dataProvider.getStopsFacilitiesDataSource(appContext, stationProviderInstance);
+        dataProviderInstance = dataProvider.getTransportDataSource(appContext, stationProviderInstance);
+    }
+
+    private static TransportDataProvider getProviderFromQualifiedNames(String qualifiedName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        return
+                (TransportDataProvider) TransportDataProvider.class
+                        .getClassLoader()
+                        .loadClass(qualifiedName)
+                        .newInstance();
     }
 
     public static TransportStopsDataSource getStationsProviderInstance() {
@@ -68,8 +51,10 @@ public class OpenTransportApi {
         return dataProviderInstance;
     }
 
-    public static IrailFacilitiesDataProvider getFacilitiesProviderInstance() {
-        // TODO: implement
-        return null;
+    public static TransportStopFacilitiesDataSource getFacilitiesProviderInstance() {
+        if (stopFacilitiesDataSource == null) {
+            throw new IllegalStateException("Initialize OpenTransportApi using init() before trying to access the facilities provider!");
+        }
+        return stopFacilitiesDataSource;
     }
 }

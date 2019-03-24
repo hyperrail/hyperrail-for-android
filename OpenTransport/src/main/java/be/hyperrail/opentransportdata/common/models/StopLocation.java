@@ -90,4 +90,6 @@ public interface StopLocation extends Serializable, Comparable {
      * @return
      */
     float getAvgStopTimes();
+
+    StopLocationFacilities getStationFacilities();
 }

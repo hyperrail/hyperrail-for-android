@@ -20,7 +20,6 @@ package be.hyperrail.opentransportdata.common.models;
 
 import org.joda.time.DateTime;
 
-import be.hyperrail.opentransportdata.irail.IrailStation;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
@@ -73,7 +72,7 @@ public interface Vehicle extends VehicleStub  {
      * @param station The station to search for.
      * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
      */
-    int getStopNumberForStation(IrailStation station);
+    int getStopNumberForStation(StopLocation station);
 
     /**
      * Get zero-based index for this departure time in the stops list.

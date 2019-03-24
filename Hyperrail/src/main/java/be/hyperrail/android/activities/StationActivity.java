@@ -40,8 +40,8 @@ import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.models.StopLocationFacilities;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
-import be.hyperrail.opentransportdata.irail.IrailStationFacilities;
 
 public class StationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -86,7 +86,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     private void bind(StopLocation station) {
-        IrailStationFacilities facilities =
+        StopLocationFacilities facilities =
                 OpenTransportApi.getFacilitiesProviderInstance().getStationFacilitiesByUri(station.getUri());
 
         // Catch stations without details

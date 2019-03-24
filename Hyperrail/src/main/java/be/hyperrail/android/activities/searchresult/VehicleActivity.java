@@ -24,7 +24,7 @@ import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
-import be.hyperrail.opentransportdata.irail.IrailVehicleStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleStub;
 
 /**
  * Activity to show a train

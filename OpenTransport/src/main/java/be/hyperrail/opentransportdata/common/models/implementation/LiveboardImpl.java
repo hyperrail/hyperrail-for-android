@@ -30,13 +30,12 @@ import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
-import be.hyperrail.opentransportdata.irail.IrailStation;
 
 /**
  * This class represents a liveboard entity, containing departures or arrivals.
  * This class extends a station with its departures.
  */
-public class LiveboardImpl extends IrailStation implements Liveboard, Serializable {
+public class LiveboardImpl extends StopLocationImpl implements Liveboard, Serializable {
 
     private VehicleStop[] mStops;
     private DateTime mSearchTime;

@@ -24,7 +24,7 @@ import java.util.List;
 import be.hyperrail.android.R;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
-import be.hyperrail.opentransportdata.irail.IrailVehicleStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleStub;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
