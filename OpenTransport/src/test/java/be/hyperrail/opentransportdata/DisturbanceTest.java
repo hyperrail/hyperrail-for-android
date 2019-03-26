@@ -10,11 +10,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.opentransportdata.irail;
+package be.hyperrail.opentransportdata;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+
+import be.hyperrail.opentransportdata.common.models.Disturbance;
+import be.hyperrail.opentransportdata.common.models.implementation.DisturbanceImpl;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,7 +28,7 @@ public class DisturbanceTest {
 
     @Before
     public void setUp() {
-        instance = new Disturbance(1, mDateTime, "title", "description", "link");
+        instance = new DisturbanceImpl(1, mDateTime, "title", "description", "link");
     }
 
     @Test
@@ -40,12 +43,12 @@ public class DisturbanceTest {
 
     @Test
     public void getDescription() {
-        assertEquals("description", instance.getTitle());
+        assertEquals("description", instance.getDescription());
     }
 
     @Test
     public void getLink() {
-        assertEquals("link", instance.getTitle());
+        assertEquals("link", instance.getLink());
     }
 
     @Test

@@ -53,8 +53,6 @@ public class StopLocationImpl implements StopLocation {
         this.latitude = copy.getLatitude();
         this.longitude = copy.getLongitude();
         this.avgStopTimes = copy.getAvgStopTimes();
-        this.stationFacilities = copy.getStationFacilities();
-
     }
 
     public String getName() {
