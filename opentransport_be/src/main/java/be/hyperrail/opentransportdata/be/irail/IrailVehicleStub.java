@@ -20,13 +20,12 @@ package be.hyperrail.opentransportdata.be.irail;
 
 import android.support.annotation.Nullable;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import be.hyperrail.opentransportdata.common.models.VehicleStub;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 /**
  * Vehicle information, except its stops.
@@ -88,7 +87,7 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
     }
 
 
-    public static String getVehicleName( String id) {
+    public static String getVehicleName(String id) {
         return getVehicleClass(id) + " " + getVehicleNumber(id);
     }
 
@@ -128,7 +127,7 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
             if (id.length() > 5) {
                 return id.substring(0, id.length() - 4);
             } else {
-                Crashlytics.logException(new IllegalArgumentException("Failed to get vehicle class for id " + id));
+                OpenTransportLog.logException(new IllegalArgumentException("Failed to get vehicle class for id " + id));
             }
         }
 

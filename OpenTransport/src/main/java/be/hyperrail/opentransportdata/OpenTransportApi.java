@@ -12,6 +12,8 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataProvider;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopFacilitiesDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
+import be.hyperrail.opentransportdata.logging.OpenTransportLogger;
 
 public class OpenTransportApi {
 
@@ -23,10 +25,20 @@ public class OpenTransportApi {
         init(appContext, getProviderFromQualifiedNames(qualifiedName));
     }
 
+    public static void init(Context applicationContext, String qualifiedName, OpenTransportLogger logger) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        OpenTransportLog.init(logger);
+        init(applicationContext, qualifiedName);
+    }
+
     public static void init(Context appContext, TransportDataProvider dataProvider) {
         stationProviderInstance = dataProvider.getStopsDataSource(appContext);
         stopFacilitiesDataSource = dataProvider.getStopsFacilitiesDataSource(appContext, stationProviderInstance);
         dataProviderInstance = dataProvider.getTransportDataSource(appContext, stationProviderInstance);
+    }
+
+    public static void init(Context applicationContext, TransportDataProvider dataProvider, OpenTransportLogger logger) {
+        OpenTransportLog.init(logger);
+        init(applicationContext, dataProvider);
     }
 
     private static TransportDataProvider getProviderFromQualifiedNames(String qualifiedName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {

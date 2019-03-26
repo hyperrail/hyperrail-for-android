@@ -16,7 +16,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.joda.time.DateTime;
@@ -28,8 +27,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-import be.opentransport.R;
 import be.hyperrail.opentransportdata.common.webdb.WebDbDataDefinition;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
+import be.opentransport.R;
 
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.SQL_CREATE_TABLE_FACILITIES;
@@ -45,7 +45,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     private static final String LOGTAG = "IrailFacilitiesWebDb";
     private final Context mContext;
 
-    public IrailFacilitiesWebDbDataDefinition(Context context){
+    public IrailFacilitiesWebDbDataDefinition(Context context) {
         mContext = context;
     }
 
@@ -60,7 +60,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     }
 
     @Override
-    public DateTime getLastModifiedDate(){
+    public DateTime getLastModifiedDate() {
         URL url;
         try {
             url = new URL(getDataSourceUrl());
@@ -77,7 +77,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         return new DateTime(httpCon.getLastModified());
     }
 
-    private String getOnlineData(){
+    private String getOnlineData() {
         URL url;
         try {
             url = new URL(getDataSourceUrl());
@@ -93,7 +93,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         }
     }
 
-    private InputStream getLocalData(){
+    private InputStream getLocalData() {
         return mContext.getResources().openRawResource(R.raw.stationfacilities);
     }
 
@@ -104,15 +104,15 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
      */
     @AddTrace(name = "StationsDb.onCreate")
     public void onCreate(SQLiteDatabase db) {
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Creating station facilities database");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Creating station facilities database");
 
         db.execSQL(SQL_CREATE_TABLE_FACILITIES);
         db.execSQL(SQL_CREATE_INDEX_FACILITIES_ID);
 
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Filling facilities database");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Filling facilities database");
         fillFacilities(db);
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Stations facilities table ready");
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Station facilities database ready");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations facilities table ready");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Station facilities database ready");
     }
 
 

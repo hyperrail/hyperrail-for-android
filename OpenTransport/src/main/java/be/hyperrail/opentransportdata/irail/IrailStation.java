@@ -18,13 +18,13 @@
 
 package be.hyperrail.opentransportdata.irail;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.Serializable;
 import java.util.Map;
 
 import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.TransportStopFacilitiesDataSource;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.models.StopLocationFacilities;
 
 /**
  * This class represents a station, as found in irail/stationscsv
@@ -42,7 +42,7 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
     protected double longitude;
     protected float avgStopTimes;
     protected Map<String, String> translations;
-    private IrailStationFacilities stationFacilities;
+    private StopLocationFacilities stationFacilities;
 
     protected IrailStation() {
 
@@ -152,14 +152,10 @@ public class IrailStation implements StopLocation, Serializable, Comparable {
      *
      * @return A StationFacilities object for this station
      */
-    public IrailStationFacilities getStationFacilities() {
+    public StopLocationFacilities getStationFacilities() {
         if (stationFacilities == null) {
-            IrailFacilitiesDataProvider provider = OpenTransportApi.getFacilitiesProviderInstance();
-            if (!(provider instanceof IrailFacilitiesDataProvider)) {
-                Crashlytics.logException(new IllegalAccessError("Station facilities can only be retrieved through an instance of StationsDB"));
-                return null;
-            }
-            this.stationFacilities = ((IrailFacilitiesDataProvider) provider).getStationFacilitiesByUri(this.hafasId);
+            TransportStopFacilitiesDataSource provider = OpenTransportApi.getFacilitiesProviderInstance();
+            this.stationFacilities = provider.getStationFacilitiesByUri(this.hafasId);
         }
         return stationFacilities;
     }

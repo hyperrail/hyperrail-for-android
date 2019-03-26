@@ -19,7 +19,6 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import java.util.Arrays;
@@ -33,6 +32,7 @@ import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedE
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.implementation.StopLocationImpl;
 import be.hyperrail.opentransportdata.common.webdb.WebDb;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 import be.hyperrail.opentransportdata.util.StringUtils;
 
 import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.StationsDataColumns;
@@ -191,7 +191,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     public String[] getStationNames(StopLocation[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
-            Crashlytics.log(
+            OpenTransportLog.log(
                     WARNING.intValue(), LOGTAG,
                     "Tried to load station names on empty station list!"
             );
@@ -252,7 +252,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
         if (results == null) {
             if (!suppressErrors) {
-                Crashlytics.logException(
+                OpenTransportLog.logException(
                         new IllegalStateException("ID Not found in station database! " + id));
             }
             throw new StopLocationNotResolvedException(id);
@@ -341,27 +341,27 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/"));
-                Crashlytics.log(
+                OpenTransportLog.log(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
                 return getStationsByNameOrderBySize(newname);
             } else if (name.contains("(")) {
                 String newname = name.substring(0, name.indexOf("("));
-                Crashlytics.log(
+                OpenTransportLog.log(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
                 return getStationsByNameOrderBySize(newname);
             } else if (name.toLowerCase().startsWith("s ") || cleanedName.toLowerCase().startsWith("s%")) {
                 String newname = "'" + name;
-                Crashlytics.log(
+                OpenTransportLog.log(
                         WARNING.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", replacement search " + newname
                 );
                 return getStationsByNameOrderBySize(newname);
             } else {
-                Crashlytics.log(
+                OpenTransportLog.log(
                         SEVERE.intValue(), "SQLiteStationProvider",
                         "Station not found: " + name + ", cleaned search " + cleanedName
                 );
@@ -418,12 +418,12 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      */
     private StopLocation[] loadStationCursor(Cursor c) {
         if (c.isClosed()) {
-            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
+            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
             return null;
         }
 
         if (c.getCount() == 0) {
-            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
+            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
             return null;
         }
 

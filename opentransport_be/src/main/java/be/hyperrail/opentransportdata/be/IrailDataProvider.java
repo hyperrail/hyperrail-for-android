@@ -11,6 +11,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportStopFacilitiesDa
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 
 public class IrailDataProvider implements TransportDataProvider {
+
     @Override
     public TransportStopsDataSource getStopsDataSource(Context applicationContext) {
         return new IrailStationsDataProvider(applicationContext);

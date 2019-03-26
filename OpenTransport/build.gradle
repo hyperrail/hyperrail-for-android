@@ -52,9 +52,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:16.2.4'
     implementation 'com.google.firebase:firebase-core:16.0.8'
 
-    // Crash logging
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9@aar'
-
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.json:json:20160810'
     testImplementation "org.mockito:mockito-core:2.18.3"

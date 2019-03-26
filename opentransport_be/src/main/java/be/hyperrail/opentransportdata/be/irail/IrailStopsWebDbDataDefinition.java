@@ -10,7 +10,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.perf.metrics.AddTrace;
 
 import org.joda.time.DateTime;
@@ -23,6 +22,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 import be.hyperrail.opentransportdata.common.webdb.WebDbDataDefinition;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 import be.hyperrail.opentransportdata.util.StringUtils;
 import be.opentransport.R;
 
@@ -86,7 +86,7 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         }
     }
 
-    private InputStream getLocalData(){
+    private InputStream getLocalData() {
         return mContext.getResources().openRawResource(R.raw.stations);
     }
 
@@ -101,17 +101,17 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
      */
     @AddTrace(name = "StationsDb.onCreate")
     public void onCreate(SQLiteDatabase db) {
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Creating stations database");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Creating stations database");
 
         db.execSQL(SQL_CREATE_TABLE_STATIONS);
         db.execSQL(SQL_CREATE_INDEX_ID);
         db.execSQL(SQL_CREATE_INDEX_NAME);
 
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Filling stations database");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Filling stations database");
         fillStations(db);
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Stations table ready");
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Stations facilities table ready");
-        Crashlytics.log(INFO.intValue(), LOGTAG, "Stations database ready");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations table ready");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations facilities table ready");
+        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations database ready");
     }
 
     /**

@@ -10,18 +10,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.StationFacilityColumns;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopFacilitiesDataSource;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.StopLocationFacilities;
 import be.hyperrail.opentransportdata.common.models.implementation.StopLocationFacilitiesImpl;
 import be.hyperrail.opentransportdata.common.webdb.WebDb;
-import be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.StationFacilityColumns;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 import static java.util.logging.Level.SEVERE;
 
@@ -117,12 +116,12 @@ public class IrailFacilitiesDataProvider implements TransportStopFacilitiesDataS
      */
     private StopLocationFacilitiesImpl loadFacilitiesCursor(Cursor c) {
         if (c.isClosed()) {
-            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
+            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
             return null;
         }
 
         if (c.getCount() == 0) {
-            Crashlytics.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
+            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
             return null;
         }
 

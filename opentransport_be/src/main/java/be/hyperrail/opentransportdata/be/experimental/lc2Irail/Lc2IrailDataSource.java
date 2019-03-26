@@ -22,7 +22,6 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
@@ -64,6 +63,7 @@ import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 import be.opentransport.BuildConfig;
 
 import static java.util.logging.Level.WARNING;
@@ -150,11 +150,11 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                     liveboard = parser.parseLiveboard(request, response);
                     tracing.stop();
                 } catch (Exception e) {
-                    //Crashlytics.log(
+                    //OpenTransportLog.log(
                     //        WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
                     Log.w(LOGTAG, "Failed to parse liveboard", e);
                     tracing.stop();
-                    Crashlytics.logException(e);
+                    OpenTransportLog.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -169,7 +169,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             @Override
             public void onErrorResponse(VolleyError e) {
                 tracing.stop();
-                Crashlytics.log(
+                OpenTransportLog.log(
                         WARNING.intValue(), "Failed to get liveboard", e.getMessage());
                 request.notifyErrorListeners(e);
             }
@@ -224,9 +224,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                 try {
                     routeResult = parser.parseRoutes(request, response);
                 } catch (Exception e) {
-                    Crashlytics.log(
+                    OpenTransportLog.log(
                             WARNING.intValue(), "Failed to parse routes", e.getMessage());
-                    Crashlytics.logException(e);
+                    OpenTransportLog.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -240,7 +240,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError e) {
-                Crashlytics.log(
+                OpenTransportLog.log(
                         WARNING.intValue(), "Failed to get routes", e.getMessage());
                 tracing.stop();
                 request.notifyErrorListeners(e);
@@ -346,9 +346,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                 try {
                     vehicle = parser.parseVehicle(request, response);
                 } catch (Exception e) {
-                    Crashlytics.log(
+                    OpenTransportLog.log(
                             WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
-                    Crashlytics.logException(e);
+                    OpenTransportLog.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -363,7 +363,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError e) {
-                Crashlytics.log(
+                OpenTransportLog.log(
                         WARNING.intValue(), "Failed to get vehicle", e.getMessage());
                 tracing.stop();
                 request.notifyErrorListeners(e);
@@ -437,7 +437,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                     meteredRequest.setResponseType(MeteredDataSource.RESPONSE_OFFLINE);
                     successListener.onResponse(cache);
                 } catch (JSONException e) {
-                    Crashlytics.log(
+                    OpenTransportLog.log(
                             WARNING.intValue(), "Failed to get result from cache", e.getMessage());
                     errorListener.onErrorResponse(new NoConnectionError());
                     meteredRequest.setResponseType(MeteredDataSource.RESPONSE_FAILED);
