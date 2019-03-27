@@ -39,7 +39,7 @@ public class WebDb {
      */
     public WebDb(Context appContext, WebDbDataDefinition dataDefinition) {
         context = appContext;
-        db = new SqliteWebDb(appContext, new DateTime(2000, 1, 1, 0, 0), dataDefinition);
+        db = new SqliteWebDb(appContext, new DateTime(2019, 4, 1, 0, 0), dataDefinition);
 
         GetLastModifiedTask getLastModifiedTask = new GetLastModifiedTask(this, dataDefinition);
         getLastModifiedTask.execute(dataDefinition);
