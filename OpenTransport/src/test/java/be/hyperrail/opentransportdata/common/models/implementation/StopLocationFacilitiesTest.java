@@ -10,29 +10,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.opentransportdata;
+package be.hyperrail.opentransportdata.common.models.implementation;
 
 import org.joda.time.LocalTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import be.hyperrail.opentransportdata.common.models.StopLocationFacilities;
-import be.hyperrail.opentransportdata.common.models.implementation.StopLocationFacilitiesImpl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created in be.hyperrail.android.irail.db on 22/04/2018.
  */
-public class StopLocationFacilitiesTest {
-
-    @Before
-    public void setUp() throws Exception {
-    }
+class StopLocationFacilitiesTest {
 
     @Test
-    public void getOpeningHours() {
+    void getOpeningHours_shouldReturnCorrectValues() {
         LocalTime[][] hours = new LocalTime[7][2];
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 2; j++) {
@@ -53,7 +47,7 @@ public class StopLocationFacilitiesTest {
     }
 
     @Test
-    public void getStreetZipCity() {
+    void getStreetZipCity_shouldReturnCorrectValues() {
         StopLocationFacilities facilities = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 false, false, false,
                 false, false, false, false, false,
@@ -66,141 +60,141 @@ public class StopLocationFacilitiesTest {
     }
 
     @Test
-    public void hasTicketVendingMachines() {
+    void hasTicketVendingMachines_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasLuggageLockers() {
+    void hasLuggageLockers_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasFreeParking() {
+    void hasFreeParking_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasBlue_bike() {
+    void hasBlueBike_shouldReturnCorrectValues_shouldReturnCorrectValues() {
         StopLocationFacilities facilitiesTrue = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 false, false, false,
                 true, false, false, false, false,
                 false, false, false, 0,
                 false, false, false,
                 false, false);
-        Assert.assertTrue(facilitiesTrue.hasBlue_bike());
+        Assertions.assertTrue(facilitiesTrue.hasBlue_bike());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 false, true, true, true, true,
                 true, true, true, 0,
                 true, true, true,
                 true, true);
-        Assert.assertFalse(facilitiesFalse.hasBlue_bike());
+        Assertions.assertFalse(facilitiesFalse.hasBlue_bike());
     }
 
     @Test
-    public void hasBike() {
+    void hasBike_shouldReturnCorrectValues() {
         StopLocationFacilitiesImpl facilitiesTrue = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 false, false, false,
                 false, true, false, false, false,
                 false, false, false, 0,
                 false, false, false,
                 false, false);
-        Assert.assertTrue(facilitiesTrue.hasBike());
+        Assertions.assertTrue(facilitiesTrue.hasBike());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, false, true, true, true,
                 true, true, true, 0,
                 true, true, true,
                 true, true);
-        Assert.assertFalse(facilitiesFalse.hasBike());
+        Assertions.assertFalse(facilitiesFalse.hasBike());
     }
 
     @Test
-    public void hasTaxi() {
+    void hasTaxi_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasBus() {
+    void hasBus_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasTram() {
+    void hasTram_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasMetro() {
+    void hasMetro_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void isWheelchair_available() {
+    void isWheelchair_available_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasRamp() {
+    void hasRamp_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void isElevated_platform() {
+    void isElevated_platform_shouldReturnCorrectValues() {
         StopLocationFacilitiesImpl facilitiesTrue = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 false, false, false,
                 false, false, false, false, false,
                 false, false, false, 0,
                 true, false, false,
                 false, false);
-        Assert.assertTrue(facilitiesTrue.isElevated_platform());
+        Assertions.assertTrue(facilitiesTrue.isElevated_platform());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, true, true, true, true,
                 true, true, true, 0,
                 false, true, true,
                 true, true);
-        Assert.assertFalse(facilitiesFalse.isElevated_platform());
+        Assertions.assertFalse(facilitiesFalse.isElevated_platform());
     }
 
     @Test
-    public void hasEscalator_up() {
+    void hasEscalator_up_shouldReturnCorrectValues() {
         StopLocationFacilitiesImpl facilitiesTrue = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 false, false, false,
                 false, false, false, false, false,
                 false, false, false, 0,
                 false, true, false,
                 false, false);
-        Assert.assertTrue(facilitiesTrue.hasEscalator_up());
+        Assertions.assertTrue(facilitiesTrue.hasEscalator_up());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, true, true, true, true,
                 true, true, true, 0,
                 true, false, true,
                 true, true);
-        Assert.assertFalse(facilitiesFalse.hasEscalator_up());
+        Assertions.assertFalse(facilitiesFalse.hasEscalator_up());
     }
 
     @Test
-    public void hasEscalator_down() {
+    void hasEscalator_down_shouldReturnCorrectValues() {
         StopLocationFacilitiesImpl facilitiesTrue = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 false, false, false,
                 false, false, false, false, false,
                 false, false, false, 0,
                 false, false, true,
                 false, false);
-        Assert.assertTrue(facilitiesTrue.hasEscalator_down());
+        Assertions.assertTrue(facilitiesTrue.hasEscalator_down());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, true, true, true, true,
                 true, true, true, 0,
                 true, true, false,
                 true, true);
-        Assert.assertFalse(facilitiesFalse.hasEscalator_down());
+        Assertions.assertFalse(facilitiesFalse.hasEscalator_down());
     }
 
     @Test
-    public void hasElevator_platform() {
+    void hasElevator_platform_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void hasHearing_aid_signal() {
+    void hasHearing_aid_signal_shouldReturnCorrectValues() {
     }
 
     @Test
-    public void getDisabled_parking_spots() {
+    void getDisabled_parking_spots_shouldReturnCorrectValues() {
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, true, true, true, true,

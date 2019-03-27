@@ -37,7 +37,7 @@ public class TransferImpl implements Transfer, Serializable {
 
     private final TransferType type;
 
-    protected TransferImpl(@Nullable RouteLeg arrival, @Nullable RouteLeg departure) {
+    TransferImpl(@Nullable RouteLeg arrival, @Nullable RouteLeg departure) {
 
         this.mDepartureLeg = departure;
         this.mArrivalLeg = arrival;

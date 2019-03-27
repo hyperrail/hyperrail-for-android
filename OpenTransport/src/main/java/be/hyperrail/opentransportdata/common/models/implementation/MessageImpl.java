@@ -12,9 +12,6 @@
 
 package be.hyperrail.opentransportdata.common.models.implementation;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.Serializable;
 
 import be.hyperrail.opentransportdata.common.models.Message;
@@ -23,20 +20,14 @@ import be.hyperrail.opentransportdata.common.models.Message;
  * An alert or remark message
  */
 public class MessageImpl implements Message, Serializable {
-    private String header;
-    private String description;
-    private String link;
+    private final String header;
+    private final String description;
+    private final String link;
 
-    public MessageImpl(JSONObject json) {
-        try {
-            this.header = json.getString("header");
-            this.description = json.getString("description");
-            if (json.has("link")) {
-                this.link = json.getString("link");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public MessageImpl(String header, String description, String link) {
+        this.header = header;
+        this.description = description;
+        this.link = link;
     }
 
     public String getHeader() {

@@ -32,8 +32,6 @@ public interface Route extends Serializable {
 
     int getTransferCount();
 
-    int getStationCount();
-
     RouteLeg[] getLegs();
 
     Transfer getDeparture();
@@ -64,9 +62,16 @@ public interface Route extends Serializable {
 
     boolean isPartiallyCanceled();
 
+    /**
+     * Get the transfers made in this journey.
+     * Transfers including boarding the vehicle at the first stop and leaving it at the last.
+     *
+     * @return The transfers of this vehicle, including departure and arrival.
+     */
+    @Deprecated
     Transfer[] getTransfers();
 
-    void setTrainalerts(Message[][] trainalerts);
+    void setVehicleAlerts(Message[][] vehicleAlerts);
 
     void setAlerts(Message[] alerts);
 

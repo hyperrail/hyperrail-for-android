@@ -52,8 +52,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:16.2.4'
     implementation 'com.google.firebase:firebase-core:16.0.8'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.0.0'
     testImplementation 'org.json:json:20160810'
-    testImplementation "org.mockito:mockito-core:2.18.3"
-    androidTestImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.18.3'
+    androidTestImplementation 'org.junit.jupiter:junit-jupiter-engine:5.0.0'
 }

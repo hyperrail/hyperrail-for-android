@@ -126,8 +126,8 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         routesRequest.setCallback(
                 (data, tag) -> {
                     for (Route r : data.getRoutes()) {
-                        if (r.getTransfers()[0].getDepartureSemanticId() != null &&
-                                r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
+                        if (r.getDeparture().getDepartureSemanticId() != null &&
+                                r.getDeparture().getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
                             request.notifySuccessListeners(r);
                         }
                     }

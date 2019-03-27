@@ -10,10 +10,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.opentransportdata;
+package be.hyperrail.opentransportdata.common.models.implementation;
 
 import org.joda.time.DateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
@@ -21,17 +21,16 @@ import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
-import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created in be.hyperrail.android.irail.implementation on 22/04/2018.
  */
-public class LiveboardImplTest {
+class LiveboardImplTest {
 
     @Test
-    public void getSearchTime() {
+    void getSearchTime() {
         DateTime mDateTime = DateTime.now();
         StopLocation station = Mockito.mock(StopLocation.class);
         Mockito.when(station.getHafasId()).thenReturn("008814001");
@@ -43,7 +42,7 @@ public class LiveboardImplTest {
     }
 
     @Test
-    public void getTimeDefinition() {
+    void getTimeDefinition() {
         DateTime mDateTime = DateTime.now();
         StopLocation station = Mockito.mock(StopLocation.class);
         Mockito.when(station.getHafasId()).thenReturn("008814001");
@@ -57,7 +56,7 @@ public class LiveboardImplTest {
     }
 
     @Test
-    public void getLiveboardType() {
+    void getLiveboardType() {
         DateTime mDateTime = DateTime.now();
         StopLocation station = Mockito.mock(StopLocation.class);
         Mockito.when(station.getHafasId()).thenReturn("008814001");
@@ -71,7 +70,7 @@ public class LiveboardImplTest {
     }
 
     @Test
-    public void withStopsAppended() {
+    void withStopsAppended() {
         DateTime mDateTime = DateTime.now();
         StopLocation station = Mockito.mock(StopLocation.class);
         Mockito.when(station.getHafasId()).thenReturn("008814001");

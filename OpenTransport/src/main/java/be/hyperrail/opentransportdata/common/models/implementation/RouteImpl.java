@@ -25,7 +25,7 @@ public class RouteImpl implements Route, Serializable {
     private final RouteLeg[] legs;
     private final Transfer[] transfers;
     private Message[] alerts;
-    private Message[][] trainalerts;
+    private Message[][] vehicleAlerts;
     private Message[] remarks;
 
     public RouteImpl(RouteLeg[] legs) {
@@ -60,10 +60,6 @@ public class RouteImpl implements Route, Serializable {
     public int getTransferCount() {
         // minus origin and destination
         return legs.length - 1;
-    }
-
-    public int getStationCount() {
-        return legs.length + 1;
     }
 
     public RouteLeg[] getLegs() {
@@ -119,13 +115,13 @@ public class RouteImpl implements Route, Serializable {
     }
 
     public Message[][] getVehicleAlerts() {
-        return trainalerts;
+        return vehicleAlerts;
     }
 
     public boolean isPartiallyCanceled() {
         for (RouteLeg l :
                 getLegs()) {
-            if (l.getDeparture().isCanceled()) {
+            if (l.getDeparture().isCanceled() || l.getArrival().isCanceled()) {
                 return true;
             }
         }
@@ -136,8 +132,8 @@ public class RouteImpl implements Route, Serializable {
         return transfers;
     }
 
-    public void setTrainalerts(Message[][] trainalerts) {
-        this.trainalerts = trainalerts;
+    public void setVehicleAlerts(Message[][] vehicleAlerts) {
+        this.vehicleAlerts = vehicleAlerts;
     }
 
     public void setAlerts(Message[] alerts) {

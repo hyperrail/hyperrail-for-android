@@ -16,28 +16,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.opentransportdata;
+package be.hyperrail.opentransportdata.common.models.implementation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import be.hyperrail.opentransportdata.common.models.StopLocation;
-import be.hyperrail.opentransportdata.common.models.implementation.StopLocationImpl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
-public class StopLocationTest {
+class StopLocationTest {
 
     @Test
-    public void testStopLocations() {
+    void testStopLocations() {
         StopLocation station1 = new StopLocationImpl("1", "Brussels", getTranslationMap("Brussel", "fr", "de", "en"), "Brussel", "BE", 1, 2, 3);
         StopLocation station2 = new StopLocationImpl("1", "Brussels-south", getTranslationMap("Brussel-zuid", "fr", "de", "en"), "Brussel-zuid", "BE", 1, 2, 3);
         StopLocationImpl station3 = new StopLocationImpl("2", "Ghent", getTranslationMap("Gent", "Gand", "Gent", "Ghent"), "Gent", "BE", 1, 2, 3);
@@ -50,9 +45,9 @@ public class StopLocationTest {
         assertEquals("Brussel", station1.getLocalizedName());
         assertEquals("Brussels-south", station2.getName());
         assertEquals("Brussel-zuid", station2.getLocalizedName());
-        assertEquals(1, station2.getLatitude(), 0);
-        assertEquals(2, station2.getLongitude(), 0);
-        assertEquals(3, station2.getAvgStopTimes(), 0);
+        assertEquals(1, station2.getLatitude(), 0.00000001);
+        assertEquals(2, station2.getLongitude(), 0.00000001);
+        assertEquals(3, station2.getAvgStopTimes(), 0.00000001);
 
         assertEquals("http://irail.be/stations/NMBS/1", station1.getUri());
 
@@ -63,9 +58,9 @@ public class StopLocationTest {
         assertEquals(station1.getTranslations().size(), station3.getTranslations().size());
         assertEquals(station1.getLocalizedName(), station3.getLocalizedName());
         assertEquals(station1.getCountryCode(), station3.getCountryCode());
-        assertEquals(station1.getLongitude(), station3.getLongitude(), 0);
-        assertEquals(station1.getLatitude(), station3.getLatitude(), 0);
-        assertEquals(station1.getAvgStopTimes(), station3.getAvgStopTimes(), 0);
+        assertEquals(station1.getLongitude(), station3.getLongitude(), 0.00000001);
+        assertEquals(station1.getLatitude(), station3.getLatitude(), 0.00000001);
+        assertEquals(station1.getAvgStopTimes(), station3.getAvgStopTimes(), 0.00000001);
         assertEquals(station1.getUri(), station3.getUri());
     }
 
@@ -78,9 +73,15 @@ public class StopLocationTest {
         return map;
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testStopLocationInvalidId() {
+    @Test
+    void testStopLocationInvalidId() {
         // With BE.NMBS. prefix
-        StopLocation station1 = new StopLocationImpl("BE.NMBS.000000001", "Brussels", getTranslationMap("Brussel", "fr", "de", "en"), "Brussel", "BE", 1, 2, 3);
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new StopLocationImpl("BE.NMBS.000000001", "Brussels", getTranslationMap("Brussel", "fr", "de", "en"), "Brussel", "BE", 1, 2, 3);
+                }
+        );
+
     }
 }

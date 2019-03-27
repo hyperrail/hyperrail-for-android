@@ -272,8 +272,8 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                 @Override
                 public void onSuccessResponse(@NonNull RoutesList data, Object tag) {
                     for (Route r : data.getRoutes()) {
-                        if (r.getTransfers()[0].getDepartureSemanticId() != null &&
-                                r.getTransfers()[0].getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
+                        if (r.getDeparture().getDepartureSemanticId() != null &&
+                                r.getDeparture().getDepartureSemanticId().equals(request.getDepartureSemanticId())) {
                             request.notifySuccessListeners(r);
                         }
                     }

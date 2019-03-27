@@ -10,49 +10,48 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.opentransportdata;
+package be.hyperrail.opentransportdata.common.models.implementation;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import be.hyperrail.opentransportdata.common.models.Disturbance;
-import be.hyperrail.opentransportdata.common.models.implementation.DisturbanceImpl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DisturbanceTest {
+class DisturbanceTest {
 
-    Disturbance instance;
-    DateTime mDateTime = DateTime.now();
+    private Disturbance instance;
+    private DateTime mDateTime = DateTime.now();
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         instance = new DisturbanceImpl(1, mDateTime, "title", "description", "link");
     }
 
     @Test
-    public void getId() {
+    void getId() {
         assertEquals(1, instance.getId());
     }
 
     @Test
-    public void getTitle() {
+    void getTitle() {
         assertEquals("title", instance.getTitle());
     }
 
     @Test
-    public void getDescription() {
+    void getDescription() {
         assertEquals("description", instance.getDescription());
     }
 
     @Test
-    public void getLink() {
+    void getLink() {
         assertEquals("link", instance.getLink());
     }
 
     @Test
-    public void getTime() {
+    void getTime() {
         assertEquals(mDateTime, instance.getTime());
     }
 }

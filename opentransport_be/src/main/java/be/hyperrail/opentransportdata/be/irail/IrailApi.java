@@ -118,7 +118,7 @@ public class IrailApi implements TransportDataSource {
             // Create a new routerequest. A successful response will be iterated to find a matching route. An unsuccessful query will cause the original error handler to be called.
             routesRequest.setCallback((data, tag) -> {
                 for (Route r : data.getRoutes()) {
-                    if (r.getTransfers()[0].getDepartureSemanticId() != null && r.getTransfers()[0].getDepartureSemanticId().equals(
+                    if (r.getDeparture().getDepartureSemanticId() != null && r.getDeparture().getDepartureSemanticId().equals(
                             request.getDepartureSemanticId())) {
                         request.notifySuccessListeners(r);
                     }

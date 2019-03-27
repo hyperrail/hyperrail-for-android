@@ -61,6 +61,7 @@ import be.hyperrail.opentransportdata.common.models.implementation.RouteLegEndIm
 import be.hyperrail.opentransportdata.common.models.implementation.RouteLegImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 /**
  * A simple parser for api.irail.be.
@@ -164,10 +165,10 @@ class IrailApiParser {
 
             if (departure.getInt("walking") == 0) {
                 legs[0] = new RouteLegImpl(RouteLegType.TRAIN,
-                                            new IrailVehicleStub(
-                                                    departure.getString("vehicle").substring(8),
-                                                    departure.getJSONObject("direction").getString("name"), null),
-                                            departures[0], arrivals[0]);
+                        new IrailVehicleStub(
+                                departure.getString("vehicle").substring(8),
+                                departure.getJSONObject("direction").getString("name"), null),
+                        departures[0], arrivals[0]);
             } else {
                 legs[0] = new RouteLegImpl(RouteLegType.WALK, null, departures[0], arrivals[0]);
             }
@@ -179,10 +180,10 @@ class IrailApiParser {
                 // Walking should only be between 2 journeys, so only in a via
                 if (viaDeparture.getInt("walking") == 0) {
                     legs[i + 1] = new RouteLegImpl(RouteLegType.TRAIN,
-                                                    new IrailVehicleStub(
-                                                            viaDeparture.getString("vehicle").substring(8),
-                                                            viaDeparture.getJSONObject("direction").getString("name"), null),
-                                                    departures[i + 1], arrivals[i + 1]);
+                            new IrailVehicleStub(
+                                    viaDeparture.getString("vehicle").substring(8),
+                                    viaDeparture.getJSONObject("direction").getString("name"), null),
+                            departures[i + 1], arrivals[i + 1]);
                 } else {
                     legs[i + 1] = new RouteLegImpl(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
                 }
@@ -200,7 +201,7 @@ class IrailApiParser {
                     JSONArray alerts = departure.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
                     for (int i = 0; i < alerts.length(); i++) {
-                        trainalerts[t][i] = new MessageImpl(alerts.getJSONObject(i));
+                        trainalerts[t][i] = parseMessage(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
@@ -212,7 +213,7 @@ class IrailApiParser {
                     JSONArray alerts = viaDeparture.getJSONObject("alerts").getJSONArray("alert");
                     trainalerts[t] = new Message[alerts.length()];
                     for (int i = 0; i < alerts.length(); i++) {
-                        trainalerts[t][i] = new MessageImpl(alerts.getJSONObject(i));
+                        trainalerts[t][i] = parseMessage(alerts.getJSONObject(i));
                     }
                 } else {
                     trainalerts[t] = null;
@@ -225,17 +226,32 @@ class IrailApiParser {
             JSONArray alertsArray = routeObject.getJSONObject("alerts").getJSONArray("alert");
             alerts = new Message[alertsArray.length()];
             for (int i = 0; i < alertsArray.length(); i++) {
-                alerts[i] = new MessageImpl(alertsArray.getJSONObject(i));
+                alerts[i] = parseMessage(alertsArray.getJSONObject(i));
             }
         }
 
         Route r = new RouteImpl(legs);
         r.setAlerts(alerts);
-        r.setTrainalerts(trainalerts);
+        r.setVehicleAlerts(trainalerts);
         return r;
     }
 
-    public Disturbance[] parseDisturbances(JSONObject jsonData) throws JSONException {
+    private Message parseMessage(JSONObject json) {
+        try {
+            String header = json.getString("header");
+            String description = json.getString("description");
+            String link = "";
+            if (json.has("link")) {
+                link = json.getString("link");
+            }
+            return new MessageImpl(header, description, link);
+        } catch (JSONException e) {
+            OpenTransportLog.log("Failed to parse json message");
+        }
+        return null;
+    }
+
+    Disturbance[] parseDisturbances(JSONObject jsonData) throws JSONException {
 
         if (jsonData == null) {
             throw new IllegalArgumentException("JSONObject is null");
@@ -251,10 +267,10 @@ class IrailApiParser {
 
         for (int i = 0; i < items.length(); i++) {
             result[i] = new DisturbanceImpl(i,
-                                             timestamp2date(items.getJSONObject(i).getString("timestamp")),
-                                             items.getJSONObject(i).getString("title"),
-                                             items.getJSONObject(i).getString("description"),
-                                             items.getJSONObject(i).getString("link"));
+                    timestamp2date(items.getJSONObject(i).getString("timestamp")),
+                    items.getJSONObject(i).getString("title"),
+                    items.getJSONObject(i).getString("description"),
+                    items.getJSONObject(i).getString("link"));
         }
 
         return result;
@@ -371,7 +387,7 @@ class IrailApiParser {
                 type);
     }
 
-    public IrailVehicle parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException, StopLocationNotResolvedException {
+    IrailVehicle parseTrain(JSONObject jsonData, DateTime searchdate) throws JSONException, StopLocationNotResolvedException {
 
         String id = jsonData.getString("vehicle").substring(8);
         String uri = jsonData.getJSONObject("vehicleinfo").getString("@id");
@@ -397,10 +413,10 @@ class IrailApiParser {
         }
         VehicleStopImpl[] stops = new VehicleStopImpl[jsonStops.length()];
         IrailVehicleStub t = new IrailVehicleStub(id,
-                                                  jsonStops.getJSONObject(jsonStops.length() - 1)
-                                                          .getJSONObject("stationinfo")
-                                                          .getString("name"),
-                                                  uri);
+                jsonStops.getJSONObject(jsonStops.length() - 1)
+                        .getJSONObject("stationinfo")
+                        .getString("name"),
+                uri);
 
         for (int i = 0; i < jsonStops.length(); i++) {
             VehicleStopType type = VehicleStopType.STOP;
