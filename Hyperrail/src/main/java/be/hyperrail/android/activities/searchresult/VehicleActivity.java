@@ -13,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.joda.time.DateTime;
@@ -59,6 +60,7 @@ public class VehicleActivity extends ResultActivity {
         } else {
             mRequest = (VehicleRequest) getIntent().getSerializableExtra("request");
         }
+        Crashlytics.setString("vehicleId", mRequest.getVehicleId());
 
         super.onCreate(savedInstanceState);
 
