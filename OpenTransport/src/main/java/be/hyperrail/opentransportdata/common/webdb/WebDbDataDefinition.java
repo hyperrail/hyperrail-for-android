@@ -7,6 +7,7 @@
 package be.hyperrail.opentransportdata.common.webdb;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.RawRes;
 
 import org.joda.time.DateTime;
 
@@ -15,14 +16,53 @@ import org.joda.time.DateTime;
  */
 public interface WebDbDataDefinition {
 
-    String getDataSourceUrl();
-    String getDataSourceLocalName();
-    DateTime getLastModifiedDate();
+    /**
+     * Whether or not updating the data should be limited to moments when the user is connected to Wi-Fi.
+     *
+     * @return True if updates should only happen when connected to Wi-Fi.
+     */
+    boolean updateOnlyOnWifi();
 
-    void onCreate(SQLiteDatabase db);
+    /**
+     * Get the default data embedded with the application.
+     *
+     * @return The raw resource holding the data to be used when no internet connectivity is available.
+     */
+    @RawRes
+    int getEmbeddedDataResourceId();
 
-    void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
+    /**
+     * Get the online location of the data.
+     *
+     * @return The URL pointing to the data on the internet.
+     */
+    String getOnlineDataURL();
 
-    void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion);
+    /**
+     * Get the local name for the database.
+     *
+     * @return The local name for the database.
+     */
+    String getDatabaseName();
+
+    /**
+     * Get the last modified timestamp for the embedded data.
+     *
+     * @return The datetime at which the embedded data was last modified.
+     */
+    DateTime getLastModifiedLocalDate();
+
+    /**
+     * Get the last modified timestamp for the online data.
+     *
+     * @return The datetime at which the online data was last modified.
+     */
+    DateTime getLastModifiedOnlineDate();
+
+
+    void onCreate(SQLiteDatabase db, boolean useOnlineData);
+
+    void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion, boolean useOnlineData);
+
 
 }
