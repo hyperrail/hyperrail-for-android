@@ -18,8 +18,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -37,7 +35,6 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesData
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.SQL_CREATE_TABLE_FACILITIES;
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.SQL_DELETE_TABLE_FACILITIES;
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.StationFacilityColumns;
-import static java.util.logging.Level.INFO;
 
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -47,7 +44,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     private static final String LOGTAG = "IrailFacilitiesWebDb";
     private final Context mContext;
 
-    public IrailFacilitiesWebDbDataDefinition(Context context) {
+    IrailFacilitiesWebDbDataDefinition(Context context) {
         mContext = context;
     }
 
@@ -109,6 +106,43 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
          */
     }
 
+    @Override
+    public boolean loadLocalData(SQLiteDatabase db) {
+        db.beginTransaction();
+        try (Scanner lines = new Scanner(getLocalData())) {
+            importFacilities(db, lines);
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        } catch (Exception e) {
+            db.endTransaction();
+            OpenTransportLog.log("Failed to fill facilities db with offline data!");
+            OpenTransportLog.logException(e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean loadOnlineData(SQLiteDatabase db) {
+        db.beginTransaction();
+        try (Scanner lines = new Scanner(getOnlineData())) {
+            importFacilities(db, lines);
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        } catch (Exception e) {
+            OpenTransportLog.log("Failed to fill facilities db with online data!");
+            OpenTransportLog.logException(e);
+            db.endTransaction();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void clearDatabase(SQLiteDatabase db) {
+        db.execSQL(SQL_DELETE_TABLE_FACILITIES);
+    }
+
     private String getOnlineData() {
         URL url;
         try {
@@ -129,66 +163,10 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         return mContext.getResources().openRawResource(getEmbeddedDataResourceId());
     }
 
-    /**
-     * Create the database.
-     *
-     * @param db Handle in which the database should be created.
-     */
     @Override
-    @AddTrace(name = "StationsDb.onCreate")
-    public void onCreate(SQLiteDatabase db, boolean useOnlineData) {
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Creating station facilities database");
-
+    public void createDatabaseStructure(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_TABLE_FACILITIES);
         db.execSQL(SQL_CREATE_INDEX_FACILITIES_ID);
-
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Filling facilities database");
-        fillFacilities(db, useOnlineData);
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations facilities table ready");
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Station facilities database ready");
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion, boolean useOnlineData) {
-        // This database is only a cache from a local file, so just recreate it
-        db.execSQL(SQL_DELETE_TABLE_FACILITIES);
-        onCreate(db, useOnlineData);
-    }
-
-
-    @AddTrace(name = "StationsDb.fillFacilities")
-    private void fillFacilities(SQLiteDatabase db, boolean useOnlineData) {
-
-        if (useOnlineData) {
-            db.beginTransaction();
-            try (Scanner lines = new Scanner(getOnlineData())) {
-                importFacilities(db, lines);
-                db.setTransactionSuccessful();
-            } catch (Exception e) {
-                OpenTransportLog.log("Failed to fill stations db with online data! Reverting to local.");
-                OpenTransportLog.logException(e);
-                // If we can't get online data, start a new transaction to load offline data instead.
-                // This fallback should guarantee that everything keeps working should an online update wreck the schema.
-                db.endTransaction();
-                db.beginTransaction();
-                try (Scanner lines = new Scanner(getLocalData())) {
-                    importFacilities(db, lines);
-                    db.setTransactionSuccessful();
-                }
-            } finally {
-                db.endTransaction();
-            }
-        } else {
-            // Load offline data
-            db.beginTransaction();
-            try (Scanner lines = new Scanner(getLocalData())) {
-                importFacilities(db, lines);
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
-        }
-
     }
 
     private void importFacilities(SQLiteDatabase db, Scanner lines) {

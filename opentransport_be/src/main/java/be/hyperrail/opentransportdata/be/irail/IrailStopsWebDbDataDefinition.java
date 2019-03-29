@@ -12,8 +12,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -33,7 +31,6 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.
 import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_CREATE_TABLE_STATIONS;
 import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_DELETE_TABLE_STATIONS;
 import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.StationsDataColumns;
-import static java.util.logging.Level.INFO;
 
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -75,6 +72,48 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         return getSaturdayBeforeToday();
     }
 
+    @Override
+    public void createDatabaseStructure(SQLiteDatabase db) {
+        db.execSQL(SQL_CREATE_TABLE_STATIONS);
+        db.execSQL(SQL_CREATE_INDEX_ID);
+        db.execSQL(SQL_CREATE_INDEX_NAME);
+    }
+
+    @Override
+    public boolean loadLocalData(SQLiteDatabase db) {
+        db.beginTransaction();
+        try (Scanner lines = new Scanner(getLocalData())) {
+            importData(db, lines);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            db.endTransaction();
+            OpenTransportLog.log("Failed to fill stations db with local data!");
+            db.endTransaction();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean loadOnlineData(SQLiteDatabase db) {
+        db.beginTransaction();
+        try (Scanner lines = new Scanner(getOnlineData())) {
+            importData(db, lines);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            db.endTransaction();
+            OpenTransportLog.log("Failed to fill stations db with online data!");
+            OpenTransportLog.logException(e);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public void clearDatabase(SQLiteDatabase db) {
+        db.execSQL(SQL_DELETE_TABLE_STATIONS);
+    }
+
     @NonNull
     private DateTime getSaturdayBeforeToday() {
         DateTime now = DateTime.now();
@@ -107,63 +146,6 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         mContext = context;
     }
 
-    /**
-     * Create the database.
-     *
-     * @param db Handle in which the database should be created.
-     */
-    @AddTrace(name = "StationsDb.onCreate")
-    public void onCreate(SQLiteDatabase db, boolean useOnlineData) {
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Creating stations database");
-
-        db.execSQL(SQL_CREATE_TABLE_STATIONS);
-        db.execSQL(SQL_CREATE_INDEX_ID);
-        db.execSQL(SQL_CREATE_INDEX_NAME);
-
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Filling stations database");
-        fillStations(db, useOnlineData);
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations table ready");
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations facilities table ready");
-        OpenTransportLog.log(INFO.intValue(), LOGTAG, "Stations database ready");
-    }
-
-    /**
-     * Fill the database with data from the embedded CSV file (raw resource).
-     *
-     * @param db The database to fillStations
-     */
-    @AddTrace(name = "StationsDb.fillStations")
-    private void fillStations(SQLiteDatabase db, boolean useOnlineData) {
-        if (useOnlineData) {
-            db.beginTransaction();
-            try (Scanner lines = new Scanner(getOnlineData())) {
-                importData(db, lines);
-                db.setTransactionSuccessful();
-            } catch (Exception e) {
-                OpenTransportLog.log("Failed to fill stations db with online data! Reverting to local.");
-                OpenTransportLog.logException(e);
-                // If we can't get online data, start a new transaction to load offline data instead.
-                // This fallback should guarantee that everything keeps working should an online update wreck the schema.
-                db.endTransaction();
-                db.beginTransaction();
-                try (Scanner lines = new Scanner(getLocalData())) {
-                    importData(db, lines);
-                    db.setTransactionSuccessful();
-                }
-            } finally {
-                db.endTransaction();
-            }
-        } else {
-            // Load offline data
-            db.beginTransaction();
-            try (Scanner lines = new Scanner(getLocalData())) {
-                importData(db, lines);
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
-        }
-    }
 
     private void importData(SQLiteDatabase db, Scanner lines) {
         lines.useDelimiter("\n");
@@ -271,13 +253,6 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         }
         // Insert row
         db.insert(StationsDataColumns.TABLE_NAME, null, values);
-    }
-
-
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion, boolean useOnlineData) {
-        // This database is only a cache from a local file, so just recreate it
-        db.execSQL(SQL_DELETE_TABLE_STATIONS);
-        onCreate(db, useOnlineData);
     }
 
 

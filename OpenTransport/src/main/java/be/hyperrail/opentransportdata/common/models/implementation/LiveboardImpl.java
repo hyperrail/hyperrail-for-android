@@ -21,8 +21,11 @@ package be.hyperrail.opentransportdata.common.models.implementation;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import be.hyperrail.opentransportdata.common.contracts.NextDataPointer;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
@@ -82,22 +85,24 @@ public class LiveboardImpl extends StopLocationImpl implements Liveboard, Serial
      * @param other the other liveboards to merge into this one
      */
     public LiveboardImpl withStopsAppended(LiveboardImpl... other) {
-        HashMap<String, VehicleStop> stopsByUri = new HashMap<>();
-        for (VehicleStop stop :
-                mStops) {
-            stopsByUri.put(stop.getDepartureUri(), stop);
+        Set<String> knownUris = new HashSet<>();
+        List<VehicleStop> combinedStops = new ArrayList<>();
+        for (VehicleStop stop : mStops) {
+            knownUris.add(stop.getDepartureUri());
+            combinedStops.add(stop);
         }
 
-        for (LiveboardImpl liveboard : other
-                ) {
-            for (VehicleStop stop :
-                    liveboard.getStops()) {
-                stopsByUri.put(stop.getDepartureUri(), stop);
+        for (LiveboardImpl liveboard : other) {
+            for (VehicleStop stop : liveboard.getStops()) {
+                if (!knownUris.contains(stop.getDepartureUri())) {
+                    knownUris.add(stop.getDepartureUri());
+                    combinedStops.add(stop);
+                }
             }
         }
 
-        VehicleStopImpl[] stops = new VehicleStopImpl[stopsByUri.size()];
-        stops = stopsByUri.values().toArray(stops);
+        VehicleStop[] stops = new VehicleStopImpl[knownUris.size()];
+        stops = combinedStops.toArray(stops);
 
         Arrays.sort(stops, (o1, o2) -> {
             if (LiveboardImpl.this.mType == LiveboardType.DEPARTURES) {
