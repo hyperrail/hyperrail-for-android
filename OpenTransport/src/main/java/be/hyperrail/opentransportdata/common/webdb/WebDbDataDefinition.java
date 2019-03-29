@@ -59,10 +59,11 @@ public interface WebDbDataDefinition {
      */
     DateTime getLastModifiedOnlineDate();
 
+    void createDatabaseStructure(SQLiteDatabase db);
 
-    void onCreate(SQLiteDatabase db, boolean useOnlineData);
+    boolean loadLocalData(SQLiteDatabase db);
 
-    void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion, boolean useOnlineData);
+    boolean loadOnlineData(SQLiteDatabase db);
 
-
+    void clearDatabase(SQLiteDatabase db);
 }

@@ -11,8 +11,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import org.joda.time.DateTime;
-
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 /**
@@ -23,14 +21,12 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
     // Logtag for logging purpose
     private static final String LOGTAG = "WebDbSqliteBackend";
 
-    private final DateTime mLastModified;
     private final WebDbDataDefinition mDefinition;
     private boolean shouldUseOnlineData;
 
-    WebDbSqliteBackend(Context context, DateTime lastModified, WebDbDataDefinition definition, boolean shouldUseOnlineData) {
+    WebDbSqliteBackend(Context context, int version, WebDbDataDefinition definition, boolean shouldUseOnlineData) {
         // Calculate the version based on a code version and the last modified date, followed by a revision
-        super(context, definition.getDatabaseName(), null, Integer.valueOf("0" + lastModified.toString("YMd") + "00"));
-        this.mLastModified = lastModified;
+        super(context, definition.getDatabaseName(), null, version);
         this.mDefinition = definition;
         this.shouldUseOnlineData = shouldUseOnlineData;
     }
@@ -42,14 +38,14 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
      */
     public void onCreate(SQLiteDatabase db) {
         OpenTransportLog.log("Creating WebDb instance " + mDefinition.getDatabaseName());
-        mDefinition.onCreate(db, shouldUseOnlineData);
+        fillDatabase(db);
         OpenTransportLog.log("Created WebDb instance " + mDefinition.getDatabaseName());
     }
 
-
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         OpenTransportLog.log("Upgrading WebDb instance " + mDefinition.getDatabaseName());
-        mDefinition.onUpgrade(db, oldVersion, newVersion, shouldUseOnlineData);
+        wipeDatabase(db);
+        fillDatabase(db);
         OpenTransportLog.log("Upgraded WebDb instance " + mDefinition.getDatabaseName());
     }
 
@@ -57,7 +53,20 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
         // Do nothing
     }
 
-    public DateTime getLastModified() {
-        return mLastModified;
+    private void fillDatabase(SQLiteDatabase db) {
+        if (shouldUseOnlineData) {
+            // If online fetching failed
+            if (!mDefinition.loadOnlineData(db)) {
+                OpenTransportLog.log("Failed to update WebDb instance using online data. " +
+                        "Reverting to local data instead " + mDefinition.getDatabaseName());
+                mDefinition.loadLocalData(db);
+            }
+        } else {
+            mDefinition.loadLocalData(db);
+        }
+    }
+
+    private void wipeDatabase(SQLiteDatabase db) {
+        mDefinition.clearDatabase(db);
     }
 }
