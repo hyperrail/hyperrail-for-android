@@ -18,7 +18,7 @@ import org.joda.time.DateTime;
 class LinkedConnection {
 
     @JsonField(name = "@id")
-    protected String uri;
+    String semanticId;
     @JsonField(name = "departureStop")
     String departureStationUri;
     @JsonField(name = "arrivalStop")
@@ -51,8 +51,8 @@ class LinkedConnection {
         return getArrivalTime().plusSeconds(getArrivalDelay());
     }
 
-    public String getUri() {
-        return uri;
+    public String getSemanticId() {
+        return semanticId;
     }
 
     String getDepartureStationUri() {
