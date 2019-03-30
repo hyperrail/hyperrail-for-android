@@ -29,7 +29,7 @@ import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
-import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
 
 import static org.junit.Assert.assertEquals;
 
@@ -55,7 +55,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(31, liveboard.getStops().length);
 
         // START tests stop 0
-        assertEquals("008892007", liveboard.getStops()[0].getStation().getHafasId());
+        assertEquals("008892007", liveboard.getStops()[0].getStopLocation().getHafasId());
         assertEquals("De Panne", liveboard.getStops()[0].getHeadsign());
         assertEquals(new Duration(1860 * 1000), liveboard.getStops()[0].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833300 * 1000).withZone(DateTimeZone.forID("Europe/Brussels")), liveboard.getStops()[0].getDepartureTime());
@@ -70,7 +70,7 @@ public class IrailParserInstrumentedTest {
         assertEquals(TransportOccupancyLevel.UNKNOWN, liveboard.getStops()[0].getOccupancyLevel());
         // END tests stop 0
         // START tests stop 1
-        assertEquals("008892007", liveboard.getStops()[1].getStation().getHafasId());
+        assertEquals("008892007", liveboard.getStops()[1].getStopLocation().getHafasId());
         assertEquals(new Duration(60 * 1000), liveboard.getStops()[1].getDepartureDelay());
         assertEquals(new DateTime((long) 1510833600 * 1000), liveboard.getStops()[1].getDepartureTime().withZone(DateTimeZone.UTC));
         assertEquals("L783", liveboard.getStops()[1].getVehicle().getId());
@@ -89,22 +89,22 @@ public class IrailParserInstrumentedTest {
     public void trainParsingTest() throws Exception {
         // Context of the app under test.
         DateTime searchTime = new DateTime(2017, 11, 16, 13, 0);
-        Vehicle train = parser.parseTrain(new JSONObject(TRAIN_RESPONSE), searchTime);
+        VehicleJourney train = parser.parseTrain(new JSONObject(TRAIN_RESPONSE), searchTime);
 
-        assertEquals("008841004", train.getLastHaltedStop().getStation().getHafasId());
-        assertEquals(train.getLastHaltedStop().getStation().getLatitude(), train.getLatitude(), 0);
-        assertEquals(train.getLastHaltedStop().getStation().getLongitude(), train.getLongitude(), 0);
+        assertEquals("008841004", train.getLastHaltedStop().getStopLocation().getHafasId());
+        assertEquals(train.getLastHaltedStop().getStopLocation().getLatitude(), train.getCurrentPositionLatitude(), 0);
+        assertEquals(train.getLastHaltedStop().getStopLocation().getLongitude(), train.getCurrentPostionLongitude(), 0);
 
-        assertEquals("008844628", train.getOrigin().getHafasId());
+        assertEquals("008844628", train.getFirstStopLocation().getHafasId());
         assertEquals("Oostende", train.getHeadsign());
         assertEquals("IC537", train.getId());
         assertEquals("http://irail.be/vehicle/PARSETHISVALUE", train.getSemanticId());
 
         assertEquals(11, train.getStops().length);
-        assertEquals(2, train.getStopNumberForStation(new IrailStationsDataProvider(InstrumentationRegistry.getTargetContext()).getStationByHID("008844008")));
+        assertEquals(2, train.getIndexForStoplocation(new IrailStationsDataProvider(InstrumentationRegistry.getTargetContext()).getStationByHID("008844008")));
 
         // Start testing stop 2
-        assertEquals("008844008", train.getStops()[2].getStation().getHafasId());
+        assertEquals("008844008", train.getStops()[2].getStopLocation().getHafasId());
         assertEquals(new DateTime((long) 1510839480 * 1000), train.getStops()[2].getArrivalTime().withZone(DateTimeZone.UTC));
         assertEquals(new Duration(120 * 1000), train.getStops()[2].getArrivalDelay());
         assertEquals(new DateTime((long) 1510839540 * 1000), train.getStops()[2].getDepartureTime().withZone(DateTimeZone.UTC));
@@ -144,22 +144,22 @@ public class IrailParserInstrumentedTest {
         assertEquals("Reizigers tussen Brussel-Zuid en Brussel-Noord mogen met hun MIVB-ticket gebruik maken van de treinen van NMBS.", route.getVehicleAlerts()[1][0].getDescription());
 
         assertEquals(1, route.getTransferCount());
-        assertEquals("008892007", route.getTransfers()[1].getStation().getHafasId());
+        assertEquals("008892007", route.getTransfers()[1].getStopLocation().getHafasId());
 
         assertEquals("4", route.getTransfers()[1].getArrivalPlatform());
         assertEquals(true, route.getTransfers()[1].hasArrived());
         assertEquals("IC713", route.getLegs()[0].getVehicleInformation().getId());
-        assertEquals(route.getLegs()[0], route.getTransfers()[0].getDepartureLeg());
+        assertEquals(route.getLegs()[0], route.getTransfers()[0].getDepartingLeg());
         assertEquals("Poperinge", route.getLegs()[0].getVehicleInformation().getHeadsign());
         assertEquals(new DateTime((long) 1510839180 * 1000), route.getLegs()[0].getArrival().getTime().withZone(DateTimeZone.UTC));
         assertEquals(new DateTime((long) 1510839180 * 1000), route.getTransfers()[1].getArrivalTime().withZone(DateTimeZone.UTC));
 
         assertEquals(true, route.getTransfers()[1].hasLeft());
         assertEquals("11", route.getTransfers()[1].getDeparturePlatform());
-        Assert.assertNotNull(route.getTransfers()[1].getDepartureLeg());
-        assertEquals("IC1513", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getId());
+        Assert.assertNotNull(route.getTransfers()[1].getDepartingLeg());
+        assertEquals("IC1513", route.getTransfers()[1].getDepartingLeg().getVehicleInformation().getId());
         assertEquals("IC1513", route.getLegs()[1].getVehicleInformation().getId());
-        assertEquals("Genk", route.getTransfers()[1].getDepartureLeg().getVehicleInformation().getHeadsign());
+        assertEquals("Genk", route.getTransfers()[1].getDepartingLeg().getVehicleInformation().getHeadsign());
         assertEquals(new DateTime((long) 1510839600 * 1000), route.getTransfers()[1].getDepartureTime().withZone(DateTimeZone.UTC));
 
         assertEquals("IC713", route.getLegs()[0].getVehicleInformation().getId());

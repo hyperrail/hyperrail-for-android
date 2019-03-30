@@ -85,7 +85,7 @@ public class StopLocationImpl implements StopLocation {
         return hafasId.substring(2);
     }
 
-    public String getUri() {
+    public String getSemanticId() {
         return "http://irail.be/stations/NMBS/" + hafasId;
     }
 

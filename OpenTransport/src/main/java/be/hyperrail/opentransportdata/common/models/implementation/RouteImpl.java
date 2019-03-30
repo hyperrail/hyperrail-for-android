@@ -99,11 +99,11 @@ public class RouteImpl implements Route, Serializable {
     }
 
     public StopLocation getDepartureStation() {
-        return getDeparture().getStation();
+        return getDeparture().getStopLocation();
     }
 
     public StopLocation getArrivalStation() {
-        return getArrival().getStation();
+        return getArrival().getStopLocation();
     }
 
     public Message[] getRemarks() {

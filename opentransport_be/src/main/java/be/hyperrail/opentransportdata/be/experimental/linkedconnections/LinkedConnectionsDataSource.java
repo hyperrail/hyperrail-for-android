@@ -149,9 +149,9 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
     private void getStop(@NonNull final VehicleStopRequest request) {
         LiveboardRequest liveboardRequest;
         if (request.getStop().getType() == VehicleStopType.DEPARTURE || request.getStop().getType() == VehicleStopType.STOP) {
-            liveboardRequest = new LiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, request.getStop().getDepartureTime());
+            liveboardRequest = new LiveboardRequest(request.getStop().getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, request.getStop().getDepartureTime());
         } else {
-            liveboardRequest = new LiveboardRequest(request.getStop().getStation(), QueryTimeDefinition.ARRIVE_AT, LiveboardType.ARRIVALS, request.getStop().getArrivalTime());
+            liveboardRequest = new LiveboardRequest(request.getStop().getStopLocation(), QueryTimeDefinition.ARRIVE_AT, LiveboardType.ARRIVALS, request.getStop().getArrivalTime());
         }
         liveboardRequest.setCallback((data, tag) -> {
             for (VehicleStop stop :

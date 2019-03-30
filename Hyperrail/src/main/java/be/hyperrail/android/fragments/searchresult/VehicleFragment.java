@@ -58,7 +58,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorRespons
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
-import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
@@ -66,10 +66,10 @@ import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 /**
  * A fragment for showing liveboard results
  */
-public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements InfiniteScrollingDataSource,
+public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implements InfiniteScrollingDataSource,
         ResultFragment<VehicleRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop>, OnMapReadyCallback {
 
-    private Vehicle mCurrentTrain;
+    private VehicleJourney mCurrentTrain;
     private VehicleRequest mRequest;
     private VehicleStopCardAdapter mRecyclerviewAdapter;
     private GoogleMap mMap;
@@ -111,9 +111,9 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
     }
 
     @Override
-    protected Vehicle getRestoredInstanceStateItems(Bundle savedInstanceState) {
+    protected VehicleJourney getRestoredInstanceStateItems(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
-            this.mCurrentTrain = (Vehicle) savedInstanceState.get("result");
+            this.mCurrentTrain = (VehicleJourney) savedInstanceState.get("result");
         }
         return mCurrentTrain;
     }
@@ -156,9 +156,9 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
         VehicleRequest request = new VehicleRequest(mRequest.getVehicleId(),
                                                               mRequest.getSearchTime());
-        request.setCallback(new TransportDataSuccessResponseListener<Vehicle>() {
+        request.setCallback(new TransportDataSuccessResponseListener<VehicleJourney>() {
             @Override
-            public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
+            public void onSuccessResponse(@NonNull VehicleJourney data, Object tag) {
                 resetErrorState();
                 vRefreshLayout.setRefreshing(false);
                 mCurrentTrain = data;
@@ -176,12 +176,12 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
         OpenTransportApi.getDataProviderInstance().getVehicleJourney(request);
     }
 
-    protected void showData(Vehicle train) {
+    protected void showData(VehicleJourney train) {
         getActivity().setTitle(train.getName() + " " + train.getHeadsign());
 
         mRecyclerviewAdapter.updateTrain(train);
-        mRequest.setOrigin(train.getStops()[0].getStation());
-        mRequest.setDirection(train.getDirection());
+        mRequest.setOrigin(train.getStops()[0].getStopLocation());
+        mRequest.setDirection(train.getLastStopLocation());
 
         // Update the request in the activity, so additional information will be stored when marking it as favorite
         if (getActivity() instanceof VehicleActivity) {
@@ -192,7 +192,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
                 new Suggestion<>(mRequest, SuggestionType.HISTORY));
 
         if (!mRequest.isNow()) {
-            int i = train.getStopnumberForDepartureTime(mRequest.getSearchTime());
+            int i = train.getIndexForDepartureTime(mRequest.getSearchTime());
             if (i >= 0) {
                 vRecyclerView.scrollToPosition(i);
             }
@@ -220,7 +220,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
             queryTime = object.getDepartureTime();
         }
         Intent i = LiveboardActivity.createIntent(getActivity(),
-                                                  new LiveboardRequest(object.getStation(),
+                                                  new LiveboardRequest(object.getStopLocation(),
                                                                             QueryTimeDefinition.DEPART_AT,
                                                                             LiveboardType.DEPARTURES,
                                                                             queryTime));
@@ -248,7 +248,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
         BitmapDescriptor greyIcon = getMarkerIconFromDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.timeline_dot_muted));
 
         for (int i = 0; i < mCurrentTrain.getStops().length; i++) {
-            StopLocation s = mCurrentTrain.getStops()[i].getStation();
+            StopLocation s = mCurrentTrain.getStops()[i].getStopLocation();
             locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
             if (mCurrentTrain.getStops()[i].hasLeft()) {
                 passedLocations.add(locations[i]);

@@ -105,11 +105,11 @@ public class RouteLegEndImpl implements RouteLegEnd, Serializable {
     }
 
     @Nullable
-    public String getUri() {
+    public String getSemanticId() {
         return uri;
     }
 
-    public boolean hasPassed() {
+    public boolean isCompletedByVehicle() {
         return passed;
     }
 

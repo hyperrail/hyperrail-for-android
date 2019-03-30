@@ -105,7 +105,7 @@ public class IrailFacilitiesDataProvider implements TransportStopFacilitiesDataS
 
     @Override
     public StopLocationFacilities getStationFacilities(StopLocation stopLocation) {
-        return getStationFacilitiesByUri(stopLocation.getUri());
+        return getStationFacilitiesByUri(stopLocation.getSemanticId());
     }
 
     /**

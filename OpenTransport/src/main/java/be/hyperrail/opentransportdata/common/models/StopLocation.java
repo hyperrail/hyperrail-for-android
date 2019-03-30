@@ -38,7 +38,7 @@ public interface StopLocation extends Serializable, Comparable {
      * Get the 9-digit HAFAS Id for this station
      *
      * @return a 9 digit HAFAS identifier
-     * @deprecated use getUri instead
+     * @deprecated use getSemanticId instead
      */
     String getHafasId();
 
@@ -46,7 +46,7 @@ public interface StopLocation extends Serializable, Comparable {
      * Get the 7-digit UIC id for this station
      *
      * @return a 7 digit worldwide unique identifier for this station
-     * @deprecated use getUri instead
+     * @deprecated use getSemanticId instead
      */
     String getUicId();
 
@@ -55,7 +55,7 @@ public interface StopLocation extends Serializable, Comparable {
      *
      * @return
      */
-    String getUri();
+    String getSemanticId();
 
     /**
      * Get the NL, FR, DE or EN name based on the device language

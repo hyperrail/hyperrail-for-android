@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
@@ -62,9 +63,8 @@ import be.hyperrail.opentransportdata.common.models.implementation.RouteImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RouteLegImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RouteLegEndImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicle;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleStub;
 
 /**
  * A simple parser for api.irail.be.
@@ -127,9 +127,9 @@ public class Lc2IrailParser {
           "isArrivalCanceled": false,
           "isDepartureCanceled": false,
           "platform": "?",
-          "uri": "http://irail.be/connections/8841004/20180415/IC545",
+          "semanticId": "http://irail.be/connections/8841004/20180415/IC545",
           "vehicle": {
-            "uri": "http://irail.be/vehicle/IC545/20180415",
+            "semanticId": "http://irail.be/vehicle/IC545/20180415",
             "id": "IC545",
             "direction": "Ostende"
           }
@@ -141,7 +141,7 @@ public class Lc2IrailParser {
         DateTime arrivalTime = null;
         String platform = "?";
         String uri = null;
-        IrailVehicleStub vehicle = null;
+        IrailVehicleJourneyStub vehicle = null;
         boolean hasDeparted = false;
         boolean hasArrived = false;
 
@@ -163,7 +163,7 @@ public class Lc2IrailParser {
 
         platform = json.getString("platform");
 
-        uri = json.getString("uri");
+        uri = json.getString("semanticId");
 
         String headsign = json.getJSONObject("vehicle").getString("direction");
         StopLocation headsignStation = stationProvider.getStationByExactName(headsign);
@@ -171,10 +171,10 @@ public class Lc2IrailParser {
             headsign = headsignStation.getLocalizedName();
         }
 
-        vehicle = new IrailVehicleStub(
+        vehicle = new IrailVehicleJourneyStub(
                 json.getJSONObject("vehicle").getString("id"),
                 headsign,
-                json.getJSONObject("vehicle").getString("uri")
+                json.getJSONObject("vehicle").getString("semanticId")
         );
 
 
@@ -220,11 +220,11 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    public IrailVehicle parseVehicle(@NonNull VehicleRequest request, @NonNull JSONObject response) throws JSONException, StopLocationNotResolvedException {
+    public IrailVehicleJourney parseVehicle(@NonNull VehicleRequest request, @NonNull JSONObject response) throws JSONException, StopLocationNotResolvedException {
         String id = response.getString("id");
-        String uri = response.getString("uri");
+        String uri = response.getString("semanticId");
 
-        IrailVehicleStub vehicleStub = new IrailVehicleStub(id, response.getString("direction"), uri);
+        IrailVehicleJourneyStub vehicleStub = new IrailVehicleJourneyStub(id, response.getString("direction"), uri);
         JSONArray jsonStops = response.getJSONArray("stops");
         VehicleStopImpl stops[] = new VehicleStopImpl[jsonStops.length()];
 
@@ -242,15 +242,15 @@ public class Lc2IrailParser {
             stops[i] = parseVehicleStop(request, jsonStops.getJSONObject(i), vehicleStub, type);
 
             if (i == 0 || stops[i].hasLeft()) {
-                longitude = stops[i].getStation().getLongitude();
-                latitude = stops[i].getStation().getLatitude();
+                longitude = stops[i].getStopLocation().getLongitude();
+                latitude = stops[i].getStopLocation().getLatitude();
             }
         }
-        return new IrailVehicle(id, uri, longitude, latitude, stops);
+        return new IrailVehicleJourney(id, uri, longitude, latitude, stops);
     }
 
     @NonNull
-    private VehicleStopImpl parseVehicleStop(@NonNull VehicleRequest request, @NonNull JSONObject json, @NonNull IrailVehicleStub vehicle, @NonNull VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
+    private VehicleStopImpl parseVehicleStop(@NonNull VehicleRequest request, @NonNull JSONObject json, @NonNull IrailVehicleJourneyStub vehicle, @NonNull VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
         /*
         {
               "arrivalDelay": 0,
@@ -265,7 +265,7 @@ public class Lc2IrailParser {
               "station": {
                 "hid": "008844503",
                 "uicCode": "8844503",
-                "uri": "http://irail.be/stations/NMBS/008844503",
+                "semanticId": "http://irail.be/stations/NMBS/008844503",
                 "defaultName": "Welkenraedt",
                 "localizedName": "Welkenraedt",
                 "latitude": "50.659707",
@@ -273,7 +273,7 @@ public class Lc2IrailParser {
                 "countryCode": "be",
                 "countryURI": "http://sws.geonames.org/2802361/"
               },
-              "uri": "http://irail.be/connections/8844503/20180413/IC538"
+              "semanticId": "http://irail.be/connections/8844503/20180413/IC538"
         },
         */
 
@@ -290,7 +290,7 @@ public class Lc2IrailParser {
         // TODO: parse isPlatformNormal from response
         boolean isPlatformNormal = true;
 
-        StopLocation station = stationProvider.getStationByUri(json.getJSONObject("station").getString("uri"));
+        StopLocation station = stationProvider.getStationByUri(json.getJSONObject("station").getString("semanticId"));
 
         if (json.has("arrivalTime")) {
             arrivalTime = DateTime.parse(json.getString("arrivalTime"), dtf);
@@ -326,8 +326,8 @@ public class Lc2IrailParser {
             isArrivalCanceled = json.getBoolean("isArrivalCanceled");
         }
 
-        if (json.has("uri")) {
-            uri = json.getString("uri");
+        if (json.has("semanticId")) {
+            uri = json.getString("semanticId");
         }
 
         return new VehicleStopImpl(station,
@@ -347,8 +347,8 @@ public class Lc2IrailParser {
 
     @NonNull
     public RoutesListImpl parseRoutes(@NonNull RoutePlanningRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
-        StopLocation origin = stationProvider.getStationByUri(json.getJSONObject("departureStation").getString("uri"));
-        StopLocation destination = stationProvider.getStationByUri(json.getJSONObject("arrivalStation").getString("uri"));
+        StopLocation origin = stationProvider.getStationByUri(json.getJSONObject("departureStation").getString("semanticId"));
+        StopLocation destination = stationProvider.getStationByUri(json.getJSONObject("arrivalStation").getString("semanticId"));
 
         JSONArray connections = json.getJSONArray("connections");
         Route[] routes = new Route[connections.length()];
@@ -376,7 +376,7 @@ public class Lc2IrailParser {
                   "arrivalStation": {
                     "hid": "008814001",
                     "uicCode": "8814001",
-                    "uri": "http://irail.be/stations/NMBS/008814001",
+                    "semanticId": "http://irail.be/stations/NMBS/008814001",
                     "defaultName": "Brussel-Zuid/Bruxelles-Midi",
                     "localizedName": "Brussels-South/Brussels-Midi",
                     "latitude": "50.835707",
@@ -391,7 +391,7 @@ public class Lc2IrailParser {
                   "departureStation": {
                     "hid": "008841004",
                     "uicCode": "8841004",
-                    "uri": "http://irail.be/stations/NMBS/008841004",
+                    "semanticId": "http://irail.be/stations/NMBS/008841004",
                     "defaultName": "Liège-Guillemins",
                     "localizedName": "Liège-Guillemins",
                     "latitude": "50.62455",
@@ -428,14 +428,14 @@ public class Lc2IrailParser {
                 headsign = headsignStation.getLocalizedName();
             }
 
-            IrailVehicleStub vehicle = new IrailVehicleStub(
+            IrailVehicleJourneyStub vehicle = new IrailVehicleJourneyStub(
                     jsonLeg.getString("route"),
                     headsign,
                     jsonLeg.getString("trip")
             );
 
-            StopLocation departureStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("departureStation").getString("uri"));
-            StopLocation arrivalStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("arrivalStation").getString("uri"));
+            StopLocation departureStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("departureStation").getString("semanticId"));
+            StopLocation arrivalStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("arrivalStation").getString("semanticId"));
 
             DateTime departureTime = DateTime.parse(jsonLeg.getString("departureTime"), dtf);
             int departureDelay = jsonLeg.getInt("departureDelay");

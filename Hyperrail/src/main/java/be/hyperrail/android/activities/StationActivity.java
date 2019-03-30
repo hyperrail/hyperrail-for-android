@@ -87,7 +87,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
 
     private void bind(StopLocation station) {
         StopLocationFacilities facilities =
-                OpenTransportApi.getFacilitiesProviderInstance().getStationFacilitiesByUri(station.getUri());
+                OpenTransportApi.getFacilitiesProviderInstance().getStationFacilitiesByUri(station.getSemanticId());
 
         // Catch stations without details
         if (facilities == null) {

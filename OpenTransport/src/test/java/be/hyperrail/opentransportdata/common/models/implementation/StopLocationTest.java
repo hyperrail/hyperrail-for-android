@@ -49,7 +49,7 @@ class StopLocationTest {
         assertEquals(2, station2.getLongitude(), 0.00000001);
         assertEquals(3, station2.getAvgStopTimes(), 0.00000001);
 
-        assertEquals("http://irail.be/stations/NMBS/1", station1.getUri());
+        assertEquals("http://irail.be/stations/NMBS/1", station1.getSemanticId());
 
         station3.copy(station1);
         assertEquals(station1.getHafasId(), station3.getHafasId());
@@ -61,7 +61,7 @@ class StopLocationTest {
         assertEquals(station1.getLongitude(), station3.getLongitude(), 0.00000001);
         assertEquals(station1.getLatitude(), station3.getLatitude(), 0.00000001);
         assertEquals(station1.getAvgStopTimes(), station3.getAvgStopTimes(), 0.00000001);
-        assertEquals(station1.getUri(), station3.getUri());
+        assertEquals(station1.getSemanticId(), station3.getSemanticId());
     }
 
     private Map<String, String> getTranslationMap(String nl, String fr, String de, String en) {

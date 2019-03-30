@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Basic vehicle information.
  * This data is typically present in APIs without requiring a second request.
  */
-public interface VehicleStub extends Serializable {
+public interface VehicleJourneyStub extends Serializable {
 
     /**
      * Get the ID of this vehicle, used by the transport company to identify this vehicle/trip

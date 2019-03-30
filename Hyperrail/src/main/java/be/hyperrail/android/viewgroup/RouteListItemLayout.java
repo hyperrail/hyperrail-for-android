@@ -46,7 +46,7 @@ import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
 import be.hyperrail.opentransportdata.common.models.Transfer;
-import be.hyperrail.opentransportdata.common.models.VehicleStub;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
@@ -138,13 +138,13 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
                 if (object instanceof Bundle) {
                     i = VehicleActivity.createIntent(context,
                                                      new VehicleRequest(
-                                                             ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
+                                                             ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
                                                              (DateTime) ((Bundle) object).getSerializable("date")
                                                      ));
 
                 } else if (object instanceof Transfer) {
                     i = LiveboardActivity.createIntent(context, new LiveboardRequest(
-                            ((Transfer) object).getStation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
+                            ((Transfer) object).getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
                 }
                 context.startActivity(i);
             }

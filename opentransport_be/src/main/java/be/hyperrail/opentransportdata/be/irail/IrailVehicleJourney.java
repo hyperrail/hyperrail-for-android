@@ -26,14 +26,14 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import be.hyperrail.opentransportdata.common.models.StopLocation;
-import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
  * This class represents a train entity.
- * This class extends a VehicleStub with its stops.
+ * This class extends a VehicleJourneyStub with its stops.
  */
-public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializable {
+public class IrailVehicleJourney extends IrailVehicleJourneyStub implements VehicleJourney, Serializable {
 
     private final double longitude;
     private final double latitude;
@@ -41,8 +41,8 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
     private final VehicleStopImpl[] stops;
     private VehicleStopImpl lastHaltedStop;
 
-    public IrailVehicle(String id, @Nullable String uri, double longitude, double latitude, VehicleStopImpl[] stops) {
-        super(id, stops[stops.length - 1].getStation().getLocalizedName(), uri);
+    public IrailVehicleJourney(String id, @Nullable String uri, double longitude, double latitude, VehicleStopImpl[] stops) {
+        super(id, stops[stops.length - 1].getStopLocation().getLocalizedName(), uri);
         this.longitude = longitude;
         this.latitude = latitude;
         this.stops = stops;
@@ -54,8 +54,8 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
         }
     }
 
-    public StopLocation getOrigin() {
-        return stops[0].getStation();
+    public StopLocation getFirstStopLocation() {
+        return stops[0].getStopLocation();
     }
 
     public VehicleStopImpl[] getStops() {
@@ -66,11 +66,11 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
         return lastHaltedStop;
     }
 
-    public double getLongitude() {
+    public double getCurrentPostionLongitude() {
         return longitude;
     }
 
-    public double getLatitude() {
+    public double getCurrentPositionLatitude() {
         return latitude;
     }
 
@@ -80,9 +80,9 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
      * @param station The station to search for.
      * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
      */
-    public int getStopNumberForStation(StopLocation station) {
+    public int getIndexForStoplocation(StopLocation station) {
         for (int i = 0; i < stops.length; i++) {
-            if (Objects.equals(stops[i].getStation().getHafasId(), station.getHafasId())) {
+            if (Objects.equals(stops[i].getStopLocation().getHafasId(), station.getHafasId())) {
                 return i;
             }
         }
@@ -95,7 +95,7 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
      * @param time The datetime to search for
      * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
      */
-    public int getStopnumberForDepartureTime(DateTime time) {
+    public int getIndexForDepartureTime(DateTime time) {
         for (int i = 0; i < stops.length; i++) {
             if (Objects.equals(stops[i].getDepartureTime(), time)) {
                 return i;
@@ -114,7 +114,7 @@ public class IrailVehicle extends IrailVehicleStub implements Vehicle, Serializa
      * @return direction (final stop) of this train
      */
 
-    public StopLocation getDirection() {
-        return stops[stops.length - 1].getStation();
+    public StopLocation getLastStopLocation() {
+        return stops[stops.length - 1].getStopLocation();
     }
 }

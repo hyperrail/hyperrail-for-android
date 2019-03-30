@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package be.hyperrail.opentransportdata.common.models;
+package be.hyperrail.opentransportdata.util;
 
 import android.support.annotation.DrawableRes;
 

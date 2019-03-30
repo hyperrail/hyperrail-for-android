@@ -323,7 +323,7 @@ public class IrailApi implements TransportDataSource {
                 request.getSearchTime());
 
         Response.Listener<JSONObject> successListener = response -> {
-            IrailVehicle result;
+            IrailVehicleJourney result;
             try {
                 result = parser.parseTrain(response, request.getSearchTime());
             } catch (JSONException | StopLocationNotResolvedException e) {

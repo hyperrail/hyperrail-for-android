@@ -84,7 +84,7 @@ public class TransferImpl implements Transfer, Serializable {
     }
 
 
-    public StopLocation getStation() {
+    public StopLocation getStopLocation() {
         if (mDeparture != null) {
             return mDeparture.getStation();
         } else if (mArrival != null) {
@@ -137,15 +137,15 @@ public class TransferImpl implements Transfer, Serializable {
 
     @Nullable
     public String getDepartureSemanticId() {
-        return (mDeparture != null) ? mDeparture.getUri() : null;
+        return (mDeparture != null) ? mDeparture.getSemanticId() : null;
     }
 
     public boolean hasLeft() {
-        return (mDeparture != null) && mDeparture.hasPassed();
+        return (mDeparture != null) && mDeparture.isCompletedByVehicle();
     }
 
     public boolean hasArrived() {
-        return (mArrival != null) && mArrival.hasPassed();
+        return (mArrival != null) && mArrival.isCompletedByVehicle();
     }
 
     public TransferType getType() {
@@ -153,19 +153,23 @@ public class TransferImpl implements Transfer, Serializable {
     }
 
     @Nullable
-    public RouteLeg getArrivalLeg() {
+    public RouteLeg getArrivingLeg() {
         return mArrivalLeg;
     }
 
     @Nullable
-    public RouteLeg getDepartureLeg() {
+    public RouteLeg getDepartingLeg() {
         return mDepartureLeg;
     }
 
     @Nullable
-    public VehicleStopImpl toDepartureVehicleStop() {
+    public VehicleStopImpl getDepartingLegAsVehicleStop() {
         if (mDepartureLeg != null) {
-            return new VehicleStopImpl(mDepartureLeg);
+            RouteLegEnd departure = mDepartureLeg.getDeparture();
+            return VehicleStopImpl.buildDepartureVehicleStop(departure.getStation(),
+                    mDepartureLeg.getVehicleInformation(), departure.getPlatform(), departure.isPlatformNormal(),
+                    departure.getTime(), departure.getDelay(), departure.isCanceled(), departure.isCompletedByVehicle(),
+                    departure.getSemanticId(), departure.getOccupancy());
         } else {
             return null;
         }

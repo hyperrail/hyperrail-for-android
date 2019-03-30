@@ -75,6 +75,21 @@ class LiveboardImplTest {
     }
 
     @Test
+    void getSetPagination_shouldReturnCorrectValue() {
+        DateTime mDateTime = DateTime.now();
+        StopLocation station = Mockito.mock(StopLocation.class);
+        VehicleStop stop = Mockito.mock(VehicleStop.class);
+        VehicleStop[] stops = new VehicleStop[]{stop};
+        LiveboardImpl instance = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, DEPART_AT);
+        instance.setPageInfo(new StringPagePointer("prev"), new StringPagePointer("current"),
+                new StringPagePointer("next"));
+
+        assertEquals("prev", instance.getPreviousResultsPointer().getPointer());
+        assertEquals("current", instance.getCurrentResultsPointer().getPointer());
+        assertEquals("next", instance.getNextResultsPointer().getPointer());
+    }
+
+    @Test
     void withStopsAppended_stopsAfterLastDepartureInOriginalLiveboard_shouldAppendCorrectly() {
         DateTime mDateTimeOriginal = DateTime.now();
         DateTime mDateTimeToAppend = DateTime.now().plusHours(1);

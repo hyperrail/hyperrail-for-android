@@ -39,7 +39,7 @@ public interface RouteLegEnd extends Serializable {
     TransportOccupancyLevel getOccupancy();
 
     @Nullable
-    String getUri();
+    String getSemanticId();
 
-    boolean hasPassed();
+    boolean isCompletedByVehicle();
 }

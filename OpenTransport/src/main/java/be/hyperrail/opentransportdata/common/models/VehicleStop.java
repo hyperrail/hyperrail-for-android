@@ -106,7 +106,7 @@ public interface VehicleStop extends Serializable {
      *
      * @return
      */
-    StopLocation getStation();
+    StopLocation getStopLocation();
 
     /**
      * Get the type of stop the vehicle makes
@@ -120,7 +120,7 @@ public interface VehicleStop extends Serializable {
      *
      * @return The vehicleStub describing the vehicle which makes this stop.
      */
-    VehicleStub getVehicle();
+    VehicleJourneyStub getVehicle();
 
     /**
      * Whether or not the vehicle has already left this halting point.

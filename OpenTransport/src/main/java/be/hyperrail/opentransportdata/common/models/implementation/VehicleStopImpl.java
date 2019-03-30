@@ -26,11 +26,10 @@ import org.joda.time.Duration;
 import java.io.Serializable;
 
 import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
-import be.hyperrail.opentransportdata.common.models.RouteLeg;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
-import be.hyperrail.opentransportdata.common.models.VehicleStub;
 
 /**
  * A vehicle stop, belonging to a certain vehicle.
@@ -38,7 +37,7 @@ import be.hyperrail.opentransportdata.common.models.VehicleStub;
  */
 public class VehicleStopImpl implements VehicleStop, Serializable {
 
-    private final VehicleStub vehicle;
+    private final VehicleJourneyStub vehicle;
 
     private final StopLocation station;
 
@@ -61,12 +60,18 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
 
     private final VehicleStopType type;
 
-    public VehicleStopImpl(StopLocation station, VehicleStub vehicle, String platform, boolean isPlatformNormal, @Nullable DateTime departureTime, @Nullable DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureUri, TransportOccupancyLevel occupancyLevel, VehicleStopType type) {
+    public VehicleStopImpl(StopLocation station, VehicleJourneyStub vehicle, String platform, boolean isPlatformNormal, @Nullable DateTime departureTime, @Nullable DateTime arrivalTime, Duration departureDelay, Duration arrivalDelay, boolean departureCanceled, boolean arrivalCanceled, boolean hasLeft, String departureUri, TransportOccupancyLevel occupancyLevel, VehicleStopType type) {
         this.station = station;
         this.isPlatformNormal = isPlatformNormal;
         this.departureTime = departureTime;
         this.platform = platform;
-        this.departureDelay = departureDelay;
+
+        if (departureDelay == null) {
+            this.departureDelay = Duration.ZERO;
+        } else {
+            this.departureDelay = departureDelay;
+        }
+
         this.departureCanceled = departureCanceled;
         this.arrivalCanceled = departureCanceled;
         this.vehicle = vehicle;
@@ -74,44 +79,31 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
         this.departureUri = departureUri;
         this.occupancyLevel = occupancyLevel;
         this.arrivalTime = arrivalTime;
-        this.arrivalDelay = arrivalDelay;
+
+        if (arrivalDelay == null) {
+            this.arrivalDelay = Duration.ZERO;
+        } else {
+            this.arrivalDelay = arrivalDelay;
+        }
+
         this.arrivalCanceled = arrivalCanceled;
         this.type = type;
     }
 
-    public VehicleStopImpl(RouteLeg departureLeg) {
-        this.station = departureLeg.getDeparture().getStation();
-        this.isPlatformNormal = departureLeg.getDeparture().isPlatformNormal();
-        this.departureTime = departureLeg.getDeparture().getTime();
-        this.platform = departureLeg.getDeparture().getPlatform();
-        this.departureDelay = departureLeg.getDeparture().getDelay();
-        this.departureCanceled = departureLeg.getDeparture().isCanceled();
-        this.arrivalCanceled = departureCanceled;
-        this.vehicle = departureLeg.getVehicleInformation();
-        this.hasLeft = departureLeg.getDeparture().hasPassed();
-        this.departureUri = departureLeg.getDeparture().getUri();
-        this.occupancyLevel = departureLeg.getDeparture().getOccupancy();
-        this.arrivalTime = null;
-        this.arrivalDelay = new Duration(0);
-        this.arrivalCanceled = false;
-        this.type = VehicleStopType.DEPARTURE;
-    }
-
-
-    public static VehicleStopImpl buildDepartureVehicleStop(StopLocation station, VehicleStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
+    public static VehicleStopImpl buildDepartureVehicleStop(StopLocation station, VehicleJourneyStub train, String platform, boolean isPlatformNormal, DateTime departureTime, Duration departureDelay, boolean departureCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
         return new VehicleStopImpl(station, train, platform, isPlatformNormal,
-                departureTime, null, departureDelay, new Duration(0),
+                departureTime, null, departureDelay, Duration.ZERO,
                 departureCanceled, departureCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.DEPARTURE);
     }
 
-    public static VehicleStopImpl buildArrivalVehicleStop(StopLocation station, VehicleStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
+    public static VehicleStopImpl buildArrivalVehicleStop(StopLocation station, VehicleJourneyStub train, String platform, boolean isPlatformNormal, DateTime arrivalTime, Duration arrivalDelay, boolean arrivalCanceled, boolean hasLeft, String semanticDepartureConnection, TransportOccupancyLevel occupancyLevel) {
         return new VehicleStopImpl(station, train, platform, isPlatformNormal,
-                null, arrivalTime, new Duration(0), arrivalDelay,
+                null, arrivalTime, Duration.ZERO, arrivalDelay,
                 arrivalCanceled, arrivalCanceled, hasLeft, semanticDepartureConnection, occupancyLevel, VehicleStopType.ARRIVAL);
     }
 
 
-    public VehicleStub getVehicle() {
+    public VehicleJourneyStub getVehicle() {
         return vehicle;
     }
 
@@ -157,7 +149,7 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
         return vehicle.getHeadsign();
     }
 
-    public StopLocation getStation() {
+    public StopLocation getStopLocation() {
         return station;
     }
 
@@ -202,7 +194,7 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
     public boolean equals(Object obj) {
         return obj instanceof VehicleStopImpl && (
                 (this.getDepartureUri() != null && this.getDepartureUri().equals(((VehicleStopImpl) obj).getDepartureUri())) ||
-                        (this.getStation().equals(((VehicleStopImpl) obj).getStation()) && this.getVehicle().equals(((VehicleStopImpl) obj).getVehicle()))
+                        (this.getStopLocation().equals(((VehicleStopImpl) obj).getStopLocation()) && this.getVehicle().equals(((VehicleStopImpl) obj).getVehicle()))
         );
     }
 }

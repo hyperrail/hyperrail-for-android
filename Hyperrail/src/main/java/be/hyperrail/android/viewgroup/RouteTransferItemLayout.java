@@ -103,7 +103,7 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
     @Override
     public void bind(Context context, Transfer transfer, Route route, int position) {
 
-        vStation.setText(transfer.getStation().getLocalizedName());
+        vStation.setText(transfer.getStopLocation().getLocalizedName());
 
         bindTimeAndDelay(context, transfer);
 

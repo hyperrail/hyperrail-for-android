@@ -26,8 +26,8 @@ import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.Transfer;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
-import be.hyperrail.opentransportdata.common.models.VehicleStub;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
@@ -104,14 +104,14 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
             if (object instanceof Bundle) {
                 i = VehicleActivity.createIntent(getActivity(),
                                                  new VehicleRequest(
-                                ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
+                                ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
                                 (DateTime) ((Bundle) object).getSerializable("date")
                         )
                 );
 
 
             } else if (object instanceof Transfer) {
-                i = LiveboardActivity.createIntent(getActivity(), new LiveboardRequest(((Transfer) object).getStation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
+                i = LiveboardActivity.createIntent(getActivity(), new LiveboardRequest(((Transfer) object).getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
             }
             startActivity(i);
         });

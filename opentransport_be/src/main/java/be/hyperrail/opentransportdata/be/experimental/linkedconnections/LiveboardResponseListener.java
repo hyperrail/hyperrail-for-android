@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import be.hyperrail.opentransportdata.OpenTransportApi;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource.MeteredRequest;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
@@ -33,6 +33,7 @@ import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.StringPagePointer;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
@@ -89,10 +90,10 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                 continue;
             }
 
-            if (connection.getDepartureStationUri().equals(request.getStation().getUri())) {
+            if (connection.getDepartureStationUri().equals(request.getStation().getSemanticId())) {
                 departures.add(connection);
             }
-            if (connection.getArrivalStationUri().equals(request.getStation().getUri())) {
+            if (connection.getArrivalStationUri().equals(request.getStation().getSemanticId())) {
                 arrivals.add(connection);
                 departureIndexForArrivals.add(departures.size());
             }
@@ -103,9 +104,9 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
             VehicleStopImpl[] stoparray = generateStopArray();
             LiveboardImpl liveboard = new LiveboardImpl(request.getStation(), stoparray, request.getSearchTime(), request.getType(), request.getTimeDefinition());
             liveboard.setPageInfo(
-                    new LinkedConnectionsPagePointer(previous),
-                    new LinkedConnectionsPagePointer(current),
-                    new LinkedConnectionsPagePointer(next)
+                    new StringPagePointer(previous),
+                    new StringPagePointer(current),
+                    new StringPagePointer(next)
             );
             Log.i("LiveboardResponse", "Found " + stoparray.length + " results after searching " + pages + " pages");
             request.notifySuccessListeners(liveboard);
@@ -172,7 +173,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                         headsign = direction.getLocalizedName();
                     }
                     stops.add(new VehicleStopImpl(request.getStation(),
-                            new IrailVehicleStub(
+                            new IrailVehicleJourneyStub(
                                     basename(departure.getRoute()),
                                     headsign,
                                     departure.getRoute()),
@@ -185,7 +186,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                             false,
                             false,
                             departure.getDelayedDepartureTime().isAfterNow(),
-                            departure.getUri(),
+                            departure.getSemanticId(),
                             TransportOccupancyLevel.UNSUPPORTED,
                             VehicleStopType.STOP));
                 }
@@ -207,7 +208,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                 } else {
                     headsign = direction.getLocalizedName();
                 }
-                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleStub(
+                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleJourneyStub(
                         basename(departure.getRoute()),
                         headsign,
                         departure.getRoute()),
@@ -220,7 +221,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                         false,
                         false,
                         departure.getDelayedDepartureTime().isBeforeNow(),
-                        departure.getUri(),
+                        departure.getSemanticId(),
                         TransportOccupancyLevel.UNSUPPORTED,
                         VehicleStopType.DEPARTURE));
 
@@ -235,7 +236,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                 LinkedConnection arrival = arrivals.get(i);
                 StopLocation direction = request.getStation();
 
-                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleStub(
+                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleJourneyStub(
                         basename(arrival.getRoute()),
                         direction.getLocalizedName(),
                         arrival.getRoute()),
@@ -248,7 +249,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                         false,
                         false,
                         arrival.getDelayedArrivalTime().isBeforeNow(),
-                        arrival.getUri(),
+                        arrival.getSemanticId(),
                         TransportOccupancyLevel.UNSUPPORTED,
                         VehicleStopType.ARRIVAL));
 

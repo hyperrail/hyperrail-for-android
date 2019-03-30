@@ -24,8 +24,8 @@ import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
 import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleStub;
 
 /**
  * Activity to show a train
@@ -68,7 +68,7 @@ public class VehicleActivity extends ResultActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         setTitle(R.string.title_vehicle);
-        setSubTitle(IrailVehicleStub.getVehicleName(mRequest.getVehicleId()));
+        setSubTitle(IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()));
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -86,8 +86,8 @@ public class VehicleActivity extends ResultActivity {
             ShortcutHelper.createShortcut(this,
                     vLayoutRoot,
                     shortcutIntent,
-                    IrailVehicleStub.getVehicleName(mRequest.getVehicleId()),
-                    "Vehicle " + IrailVehicleStub.getVehicleName(mRequest.getVehicleId()),
+                    IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()),
+                    "VehicleJourney " + IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()),
                     R.mipmap.ic_shortcut_train);
             return true;
         }

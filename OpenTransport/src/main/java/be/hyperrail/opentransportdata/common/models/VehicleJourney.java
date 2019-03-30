@@ -24,22 +24,22 @@ import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopIm
 
 /**
  * This class represents a vehicle entity.
- * This class extends a VehicleStub with its stops.
+ * This class extends a VehicleJourneyStub with its stops.
  */
-public interface Vehicle extends VehicleStub  {
+public interface VehicleJourney extends VehicleJourneyStub {
 
     /**
      * Get the origin station of this vehicle.
-     * @return The station where the train departed
+     * @return The station where the vehicle departed
      */
-    StopLocation getOrigin();
+    StopLocation getFirstStopLocation();
 
     /**
      * Get the final stop of this train
      *
-     * @return The station where the train has reached its destination
+     * @return The station where the vehicle has reached its destination
      */
-    StopLocation getDirection();
+    StopLocation getLastStopLocation();
 
     /**
      * Get the list of all stops this vehicle will make
@@ -58,13 +58,13 @@ public interface Vehicle extends VehicleStub  {
      * Get the current longitude of this vehicle
      * @return The current longitude in degrees.
      */
-    double getLongitude();
+    double getCurrentPostionLongitude();
 
     /**
      * Get the current latitude of this vehicle
      * @return The current latitude in degrees.
      */
-    double getLatitude();
+    double getCurrentPositionLatitude();
 
     /**
      * Get zero-based index for this station in the stops list.
@@ -72,7 +72,7 @@ public interface Vehicle extends VehicleStub  {
      * @param station The station to search for.
      * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
      */
-    int getStopNumberForStation(StopLocation station);
+    int getIndexForStoplocation(StopLocation station);
 
     /**
      * Get zero-based index for this departure time in the stops list.
@@ -80,6 +80,6 @@ public interface Vehicle extends VehicleStub  {
      * @param time The datetime to search for
      * @return Get zero-based index for this station in the stops list. -1 if this stop doesn't exist.
      */
-    int getStopnumberForDepartureTime(DateTime time);
+    int getIndexForDepartureTime(DateTime time);
 
 }

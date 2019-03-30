@@ -26,7 +26,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessRespo
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
-import be.hyperrail.opentransportdata.common.models.OccupancyHelper;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 

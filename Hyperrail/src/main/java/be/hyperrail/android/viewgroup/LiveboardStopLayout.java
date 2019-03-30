@@ -22,7 +22,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
-import be.hyperrail.opentransportdata.common.models.OccupancyHelper;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 

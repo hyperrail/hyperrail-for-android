@@ -12,7 +12,7 @@ import be.hyperrail.opentransportdata.common.models.RouteLeg;
 import be.hyperrail.opentransportdata.common.models.RouteLegEnd;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
-import be.hyperrail.opentransportdata.common.models.VehicleStub;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,8 +24,8 @@ class RouteImplTest {
 
     @Test
     void getRouteDetails_delayInFirstTransfer_shouldReturnCorrectDetails() {
-        VehicleStub firstLegVehicle = Mockito.mock(VehicleStub.class);
-        VehicleStub secondLegVehicle = Mockito.mock(VehicleStub.class);
+        VehicleJourneyStub firstLegVehicle = Mockito.mock(VehicleJourneyStub.class);
+        VehicleJourneyStub secondLegVehicle = Mockito.mock(VehicleJourneyStub.class);
 
         StopLocation firstStation = Mockito.mock(StopLocation.class);
         StopLocation secondStation = Mockito.mock(StopLocation.class);
@@ -63,10 +63,10 @@ class RouteImplTest {
         assertEquals("2A", route.getArrivalPlatform());
         assertNull(route.getArrival().getDeparturePlatform());
 
-        assertEquals(firstStation, route.getDeparture().getStation());
+        assertEquals(firstStation, route.getDeparture().getStopLocation());
         assertEquals(firstStation, route.getDepartureStation());
-        assertEquals(secondStation, route.getTransfers()[1].getStation());
-        assertEquals(thirdStation, route.getArrival().getStation());
+        assertEquals(secondStation, route.getTransfers()[1].getStopLocation());
+        assertEquals(thirdStation, route.getArrival().getStopLocation());
         assertEquals(thirdStation, route.getArrivalStation());
 
         assertEquals(new Duration(900 * 1000), route.getDuration());
@@ -77,8 +77,8 @@ class RouteImplTest {
 
     @Test
     void getRouteDetails_partiallyCanceledAndDelayed_shouldReturnCorrectDetails() {
-        VehicleStub firstLegVehicle = Mockito.mock(VehicleStub.class);
-        VehicleStub secondLegVehicle = Mockito.mock(VehicleStub.class);
+        VehicleJourneyStub firstLegVehicle = Mockito.mock(VehicleJourneyStub.class);
+        VehicleJourneyStub secondLegVehicle = Mockito.mock(VehicleJourneyStub.class);
 
         StopLocation firstStation = Mockito.mock(StopLocation.class);
         StopLocation secondStation = Mockito.mock(StopLocation.class);
@@ -116,9 +116,9 @@ class RouteImplTest {
         assertEquals("2A", route.getArrivalPlatform());
         assertNull(route.getArrival().getDeparturePlatform());
 
-        assertEquals(firstStation, route.getDeparture().getStation());
-        assertEquals(secondStation, route.getTransfers()[1].getStation());
-        assertEquals(thirdStation, route.getArrival().getStation());
+        assertEquals(firstStation, route.getDeparture().getStopLocation());
+        assertEquals(secondStation, route.getTransfers()[1].getStopLocation());
+        assertEquals(thirdStation, route.getArrival().getStopLocation());
 
         assertEquals(new Duration(900 * 1000), route.getDuration());
         assertEquals(new Duration(1500 * 1000), route.getDurationIncludingDelays());
@@ -131,8 +131,8 @@ class RouteImplTest {
 
     @Test
     void setAlerts_getAlertsAfterwards_shouldReturnSameContent() {
-        VehicleStub firstLegVehicle = Mockito.mock(VehicleStub.class);
-        VehicleStub secondLegVehicle = Mockito.mock(VehicleStub.class);
+        VehicleJourneyStub firstLegVehicle = Mockito.mock(VehicleJourneyStub.class);
+        VehicleJourneyStub secondLegVehicle = Mockito.mock(VehicleJourneyStub.class);
 
         StopLocation firstStation = Mockito.mock(StopLocation.class);
         StopLocation secondStation = Mockito.mock(StopLocation.class);

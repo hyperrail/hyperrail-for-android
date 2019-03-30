@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
@@ -28,9 +29,8 @@ import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedE
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicle;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleStub;
 
 import static be.hyperrail.opentransportdata.be.experimental.linkedconnections.LinkedConnectionsDataSource.basename;
 
@@ -78,20 +78,20 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
             }
             if (stops.size() == 0) {
                 // First stop
-                stops.add(VehicleStopImpl.buildDepartureVehicleStop(departure, new IrailVehicleStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
+                stops.add(VehicleStopImpl.buildDepartureVehicleStop(departure, new IrailVehicleJourneyStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
                                                                      connection.getDepartureTime(),
                                                                      Duration.standardSeconds(connection.getDepartureDelay()),
                                                                      false, connection.getDelayedDepartureTime().isBeforeNow(),
-                                                                     connection.getUri(), TransportOccupancyLevel.UNSUPPORTED));
+                                                                     connection.getSemanticId(), TransportOccupancyLevel.UNSUPPORTED));
             } else {
                 // Some stop during the journey
                 assert lastConnection != null;
-                stops.add(new VehicleStopImpl(departure, new IrailVehicleStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
+                stops.add(new VehicleStopImpl(departure, new IrailVehicleJourneyStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
                                                connection.getDepartureTime(), lastConnection.getArrivalTime(),
                                                Duration.standardSeconds(connection.getDepartureDelay()),
                                                Duration.standardSeconds(lastConnection.getArrivalDelay()),
                                                false, false, lastConnection.getDelayedArrivalTime().isBeforeNow(),
-                                               connection.getUri(), TransportOccupancyLevel.UNSUPPORTED, VehicleStopType.STOP));
+                                               connection.getSemanticId(), TransportOccupancyLevel.UNSUPPORTED, VehicleStopType.STOP));
             }
 
             lastConnection = connection;
@@ -114,16 +114,16 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
                 headsign = lastConnection.getDirection();
             }
             // Arrival stop
-            stops.add(VehicleStopImpl.buildArrivalVehicleStop(arrival, new IrailVehicleStub(basename(lastConnection.getRoute()), headsign, lastConnection.getRoute()),
+            stops.add(VehicleStopImpl.buildArrivalVehicleStop(arrival, new IrailVehicleJourneyStub(basename(lastConnection.getRoute()), headsign, lastConnection.getRoute()),
                                                                "?", true,
                                                                lastConnection.getArrivalTime(),
                                                                Duration.standardSeconds(lastConnection.getArrivalDelay()),
                                                                false, lastConnection.getDelayedArrivalTime().isBeforeNow(),
-                                                               lastConnection.getUri(), TransportOccupancyLevel.UNSUPPORTED));
+                                                               lastConnection.getSemanticId(), TransportOccupancyLevel.UNSUPPORTED));
 
             VehicleStopImpl[] stopsArray = new VehicleStopImpl[stops.size()];
             ((MeteredDataSource.MeteredRequest)tag).setMsecParsed(DateTime.now().getMillis());
-            mRequest.notifySuccessListeners(new IrailVehicle(stops.get(0).getVehicle().getId(), lastConnection.getRoute(), 0, 0, stops.toArray(stopsArray)));
+            mRequest.notifySuccessListeners(new IrailVehicleJourney(stops.get(0).getVehicle().getId(), lastConnection.getRoute(), 0, 0, stops.toArray(stopsArray)));
         }
     }
 

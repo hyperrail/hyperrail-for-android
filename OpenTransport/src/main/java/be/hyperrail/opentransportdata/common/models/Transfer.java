@@ -38,8 +38,7 @@ public interface Transfer extends Serializable {
 
     DateTime getDelayedArrivalTime();
 
-
-    StopLocation getStation();
+    StopLocation getStopLocation();
 
     @Nullable
     String getDeparturePlatform();
@@ -74,12 +73,12 @@ public interface Transfer extends Serializable {
     TransferType getType();
 
     @Nullable
-    RouteLeg getArrivalLeg();
+    RouteLeg getArrivingLeg();
 
     @Nullable
-    RouteLeg getDepartureLeg();
+    RouteLeg getDepartingLeg();
 
     @Nullable
-    VehicleStopImpl toDepartureVehicleStop();
+    VehicleStopImpl getDepartingLegAsVehicleStop();
 
 }

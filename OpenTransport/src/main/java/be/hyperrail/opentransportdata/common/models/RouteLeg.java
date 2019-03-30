@@ -21,7 +21,7 @@ public interface RouteLeg extends Serializable {
      */
     RouteLegType getType();
 
-    VehicleStub getVehicleInformation();
+    VehicleJourneyStub getVehicleInformation();
 
     /**
      * The departure end for this leg

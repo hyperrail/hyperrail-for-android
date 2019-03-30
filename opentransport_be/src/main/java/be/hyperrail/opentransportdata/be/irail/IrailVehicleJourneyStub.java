@@ -24,14 +24,14 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import be.hyperrail.opentransportdata.common.models.VehicleStub;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 /**
- * Vehicle information, except its stops.
+ * VehicleJourney information, except its stops.
  * This data is typically present in the API without requiring a second API call.
  */
-public class IrailVehicleStub implements VehicleStub, Serializable {
+public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable {
 
     /**
      * The URI which uniquely identifies this train across time and transport providers.
@@ -51,7 +51,7 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
     private String headsign;
 
     // Direction is required, since we need to display something
-    public IrailVehicleStub(String id, String headSign, @Nullable String uri) {
+    public IrailVehicleJourneyStub(String id, String headSign, @Nullable String uri) {
         this.id = id.toUpperCase();
         this.headsign = headSign;
         this.uri = uri;
@@ -106,7 +106,7 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
     }
 
     /**
-     * Vehicle type, for example S, IC, L, P
+     * VehicleJourney type, for example S, IC, L, P
      *
      * @return The type of this train
      */
@@ -145,7 +145,7 @@ public class IrailVehicleStub implements VehicleStub, Serializable {
     }
 
     /**
-     * Vehicle number, for example 4516
+     * VehicleJourney number, for example 4516
      *
      * @return The number of this train
      */

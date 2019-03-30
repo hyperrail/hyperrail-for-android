@@ -196,7 +196,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     /**
-     * Vehicle ViewHolder, showing train, status, duration, direction
+     * VehicleJourney ViewHolder, showing train, status, duration, direction
      */
     private class RouteTrainViewHolder extends RecyclerView.ViewHolder {
 

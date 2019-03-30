@@ -24,7 +24,7 @@ import java.util.List;
 import be.hyperrail.android.R;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -58,7 +58,7 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
         final Suggestion<VehicleRequest> t = suggestedTrains.get(position);
-        String title = IrailVehicleStub.getVehicleName(t.getData().getVehicleId());
+        String title = IrailVehicleJourneyStub.getVehicleName(t.getData().getVehicleId());
         if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
             title += " - " + df.print(t.getData().getDepartureTime());

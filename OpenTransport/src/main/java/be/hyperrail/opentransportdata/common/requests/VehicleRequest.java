@@ -16,12 +16,12 @@ import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
-import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
 
 /**
  * A request for train data
  */
-public class VehicleRequest extends OpenTransportBaseRequest<Vehicle> implements TransportDataRequest<Vehicle> {
+public class VehicleRequest extends OpenTransportBaseRequest<VehicleJourney> implements TransportDataRequest<VehicleJourney> {
 
 
     private final String mVehicleId;
@@ -29,7 +29,7 @@ public class VehicleRequest extends OpenTransportBaseRequest<Vehicle> implements
     @Nullable
     private DateTime mSearchTime;
 
-    // Vehicle IDs aren't always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
+    // VehicleJourney IDs aren't always clear to end users, in order to be able to show users meaningful information on trains, some extra information is stored
 
     /**
      * The departure station of this train. Additional information for request history/favorites.

@@ -41,7 +41,7 @@ import java.util.Map;
 import be.hyperrail.opentransportdata.be.irail.IrailApi;
 import be.hyperrail.opentransportdata.be.irail.IrailLiveboardAppendHelper;
 import be.hyperrail.opentransportdata.be.irail.IrailRouteAppendHelper;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicle;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
@@ -50,7 +50,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessRespo
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
-import be.hyperrail.opentransportdata.common.models.Vehicle;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
 import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
@@ -302,9 +302,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             time = request.getStop().getArrivalTime();
         }
         VehicleRequest vehicleRequest = new VehicleRequest(request.getStop().getVehicle().getId(), time);
-        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<Vehicle>() {
+        vehicleRequest.setCallback(new TransportDataSuccessResponseListener<VehicleJourney>() {
             @Override
-            public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
+            public void onSuccessResponse(@NonNull VehicleJourney data, Object tag) {
                 for (VehicleStopImpl stop :
                         data.getStops()) {
                     if (stop.getDepartureUri().equals(request.getStop().getDepartureUri())) {
@@ -342,7 +342,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         Response.Listener<JSONObject> successListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                IrailVehicle vehicle;
+                IrailVehicleJourney vehicle;
                 try {
                     vehicle = parser.parseVehicle(request, response);
                 } catch (Exception e) {

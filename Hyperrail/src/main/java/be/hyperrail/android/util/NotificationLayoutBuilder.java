@@ -100,7 +100,7 @@ public class NotificationLayoutBuilder {
         contentView.setTextViewText(R.id.text_train_type, stop.getVehicle().getType());
         contentView.setTextViewText(R.id.text_train_number, stop.getVehicle().getNumber());
 
-        contentView.setTextViewText(R.id.text_station, stop.getStation().getLocalizedName());
+        contentView.setTextViewText(R.id.text_station, stop.getStopLocation().getLocalizedName());
         contentView.setViewVisibility(R.id.text_station, View.VISIBLE);
         contentView.setTextViewText(R.id.text_platform, stop.getPlatform());
         contentView.setViewVisibility(R.id.layout_platform_container, View.VISIBLE);
@@ -110,8 +110,8 @@ public class NotificationLayoutBuilder {
 
     public static RemoteViews createNotificationLayout(Context context, Transfer transfer) {
         DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
-        boolean hasDepartureInfo = transfer.getDepartureLeg() != null;
-        boolean hasArrivalInfo = transfer.getArrivalLeg() != null;
+        boolean hasDepartureInfo = transfer.getDepartingLeg() != null;
+        boolean hasArrivalInfo = transfer.getArrivingLeg() != null;
 
         RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_transfer);
 
@@ -182,7 +182,7 @@ public class NotificationLayoutBuilder {
             }
         }
 
-        contentView.setTextViewText(R.id.text_station, transfer.getStation().getLocalizedName());
+        contentView.setTextViewText(R.id.text_station, transfer.getStopLocation().getLocalizedName());
         contentView.setViewVisibility(R.id.text_station, View.VISIBLE);
 
         if (hasArrivalInfo) {

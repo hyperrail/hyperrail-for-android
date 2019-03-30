@@ -30,7 +30,7 @@ import android.widget.TextView;
 import be.hyperrail.android.R;
 import be.hyperrail.android.util.DurationFormatter;
 import be.hyperrail.opentransportdata.common.models.Message;
-import be.hyperrail.opentransportdata.common.models.OccupancyHelper;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RouteLeg;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;

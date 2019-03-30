@@ -19,15 +19,15 @@ import java.io.Serializable;
 import be.hyperrail.opentransportdata.common.models.RouteLeg;
 import be.hyperrail.opentransportdata.common.models.RouteLegEnd;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
-import be.hyperrail.opentransportdata.common.models.VehicleStub;
 
 /**
  * A leg of a route
  */
 public class RouteLegImpl implements RouteLeg, Serializable {
     private final RouteLegType type;
-    private final VehicleStub vehicleInformation;
+    private final VehicleJourneyStub vehicleInformation;
 
     private final RouteLegEnd departure;
     private final RouteLegEnd arrival;
@@ -50,7 +50,7 @@ public class RouteLegImpl implements RouteLeg, Serializable {
      * @param departure          The departure location and time of this leg
      * @param arrival            The arrival location and time of this leg
      */
-    public RouteLegImpl(RouteLegType type, VehicleStub vehicleInformation, RouteLegEnd departure, RouteLegEnd arrival) {
+    public RouteLegImpl(RouteLegType type, VehicleJourneyStub vehicleInformation, RouteLegEnd departure, RouteLegEnd arrival) {
         this.type = type;
         this.vehicleInformation = vehicleInformation;
         this.departure = departure;
@@ -66,7 +66,7 @@ public class RouteLegImpl implements RouteLeg, Serializable {
         return type;
     }
 
-    public VehicleStub getVehicleInformation() {
+    public VehicleJourneyStub getVehicleInformation() {
         return vehicleInformation;
     }
 
