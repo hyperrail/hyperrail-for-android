@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <public name="ic_occupancy_high" type="drawable" />
+    <public name="ic_occupancy_medium" type="drawable" />
+    <public name="ic_occupancy_low" type="drawable" />
+    <public name="ic_occupancy_unknown" type="drawable" />
+</resources>

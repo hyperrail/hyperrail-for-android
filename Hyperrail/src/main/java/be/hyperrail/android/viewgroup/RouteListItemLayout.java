@@ -40,17 +40,17 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteResult;
-import be.hyperrail.android.irail.implementation.Transfer;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.util.DurationFormatter;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RoutesList;
+import be.hyperrail.opentransportdata.common.models.Transfer;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
-public class RouteListItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<RouteResult, Route> {
+public class RouteListItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<RoutesList, Route> {
 
     protected TextView vDepartureTime;
     protected TextView vDepartureDelay;
@@ -113,7 +113,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
     }
 
     @Override
-    public void bind(final Context context, Route route, RouteResult allRoutes, int position) {
+    public void bind(final Context context, Route route, RoutesList allRoutes, int position) {
 
         DateTimeFormatter hhmm = DateTimeFormat.forPattern("HH:mm");
 
@@ -137,13 +137,14 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
                 Intent i = null;
                 if (object instanceof Bundle) {
                     i = VehicleActivity.createIntent(context,
-                                                     new IrailVehicleRequest(
-                                                             ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
+                                                     new VehicleRequest(
+                                                             ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
                                                              (DateTime) ((Bundle) object).getSerializable("date")
                                                      ));
 
                 } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null));
+                    i = LiveboardActivity.createIntent(context, new LiveboardRequest(
+                            ((Transfer) object).getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
                 }
                 context.startActivity(i);
             }
@@ -154,14 +155,11 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
         vRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         vRecyclerView.setNestedScrollingEnabled(false);
 
-        vHeaderContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (vDetailContainer.getVisibility() == View.GONE) {
-                    vDetailContainer.setVisibility(View.VISIBLE);
-                } else {
-                    vDetailContainer.setVisibility(View.GONE);
-                }
+        vHeaderContainer.setOnClickListener(v -> {
+            if (vDetailContainer.getVisibility() == View.GONE) {
+                vDetailContainer.setVisibility(View.VISIBLE);
+            } else {
+                vDetailContainer.setVisibility(View.GONE);
             }
         });
 

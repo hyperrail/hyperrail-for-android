@@ -35,29 +35,30 @@ import be.hyperrail.android.R.string;
 import be.hyperrail.android.activities.MainActivity;
 import be.hyperrail.android.activities.StationActivity;
 import be.hyperrail.android.fragments.searchresult.LiveboardFragment;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
-import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.ARRIVALS;
-import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.DEPARTURES;
+import static be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition.DEPART_AT;
+import static be.hyperrail.opentransportdata.common.models.LiveboardType.ARRIVALS;
+import static be.hyperrail.opentransportdata.common.models.LiveboardType.DEPARTURES;
+
 
 /**
  * Activity to show a liveboard
  */
 public class LiveboardActivity extends ResultActivity {
 
-    private IrailLiveboardRequest mRequest;
+    private LiveboardRequest mRequest;
 
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
     private DeparturesArrivalsAdapter departuresArrivalsAdapter;
 
-    public static Intent createIntent(Context context, IrailLiveboardRequest request) {
+    public static Intent createIntent(Context context, LiveboardRequest request) {
         Intent i = new Intent(context, LiveboardActivity.class);
         i.putExtra("request", request);
         return i;
@@ -78,11 +79,11 @@ public class LiveboardActivity extends ResultActivity {
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
             // A valid shortcut intent, for which we have to parse the station
             try {
-                this.mRequest = new IrailLiveboardRequest(
-                        IrailFactory.getStationsProviderInstance().getStationByHID(
-                                getIntent().getStringExtra("station")), RouteTimeDefinition.DEPART_AT, DEPARTURES,
+                this.mRequest = new LiveboardRequest(
+                        OpenTransportApi.getStationsProviderInstance().getStationByHID(
+                                getIntent().getStringExtra("station")), DEPART_AT, DEPARTURES,
                         null);
-            } catch (StationNotResolvedException e) {
+            } catch (StopLocationNotResolvedException e) {
                 Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
                 finish();
                 return;
@@ -94,7 +95,7 @@ public class LiveboardActivity extends ResultActivity {
                         "A liveboard activity should be created by passing a valid request");
             }
 
-            this.mRequest = (IrailLiveboardRequest) getIntent().getSerializableExtra("request");
+            this.mRequest = (LiveboardRequest) getIntent().getSerializableExtra("request");
         }
 
         super.onCreate(savedInstanceState);

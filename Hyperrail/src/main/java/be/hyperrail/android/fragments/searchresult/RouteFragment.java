@@ -22,22 +22,22 @@ import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.Transfer;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailRouteRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.Transfer;
+import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results
  */
-public class RouteFragment extends RecyclerViewFragment<Route> implements ResultFragment<IrailRouteRequest>, OnRecyclerItemClickListener<VehicleStop>{
+public class RouteFragment extends RecyclerViewFragment<Route> implements ResultFragment<RouteRefreshRequest>, OnRecyclerItemClickListener<VehicleStop>{
 
-    private IrailRouteRequest mRequest;
+    private RouteRefreshRequest mRequest;
     /**
      * The route to show
      */
@@ -53,7 +53,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")){
-            mRequest = (IrailRouteRequest) savedInstanceState.getSerializable("request");
+            mRequest = (RouteRefreshRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
@@ -80,12 +80,12 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
     }
 
     @Override
-    public void setRequest(@NonNull IrailRouteRequest request) {
+    public void setRequest(@NonNull RouteRefreshRequest request) {
         this.mRequest = request;
     }
 
     @Override
-    public IrailRouteRequest getRequest() {
+    public RouteRefreshRequest getRequest() {
         return this.mRequest;
     }
 
@@ -99,24 +99,21 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter(getActivity(), mRoute, false);
 
         // Launch intents to view details / click through
-        adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
-            @Override
-            public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
-                Intent i = null;
-                if (object instanceof Bundle) {
-                    i = VehicleActivity.createIntent(getActivity(),
-                                                     new IrailVehicleRequest(
-                                    ((VehicleStub) ((Bundle) object).getSerializable("train")).getId(),
-                                    (DateTime) ((Bundle) object).getSerializable("date")
-                            )
-                    );
+        adapter.setOnItemClickListener((sender, object) -> {
+            Intent i = null;
+            if (object instanceof Bundle) {
+                i = VehicleActivity.createIntent(getActivity(),
+                                                 new VehicleRequest(
+                                ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
+                                (DateTime) ((Bundle) object).getSerializable("date")
+                        )
+                );
 
 
-                } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(getActivity(), new IrailLiveboardRequest(((Transfer) object).getStation(), RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null));
-                }
-                startActivity(i);
+            } else if (object instanceof Transfer) {
+                i = LiveboardActivity.createIntent(getActivity(), new LiveboardRequest(((Transfer) object).getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
             }
+            startActivity(i);
         });
         return adapter;
     }
@@ -140,7 +137,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        Intent i = VehicleActivity.createIntent(getActivity().getApplicationContext(), new IrailVehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
+        Intent i = VehicleActivity.createIntent(getActivity().getApplicationContext(), new VehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 

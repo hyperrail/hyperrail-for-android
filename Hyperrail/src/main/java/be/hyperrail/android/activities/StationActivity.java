@@ -36,17 +36,18 @@ import org.joda.time.LocalTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.db.StationFacilities;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.models.StopLocationFacilities;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 public class StationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private Station mStation;
+    private StopLocation mStation;
 
-    public static Intent createIntent(Context context, Station station) {
+    public static Intent createIntent(Context context, StopLocation station) {
         Intent i = new Intent(context, StationActivity.class);
         i.putExtra("station", station);
         return i;
@@ -63,13 +64,14 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mStation = (Station) getIntent().getSerializableExtra("station");
+        mStation = (StopLocation) getIntent().getSerializableExtra("station");
 
         findViewById(R.id.floating_action_button).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(LiveboardActivity.createIntent(StationActivity.this, new IrailLiveboardRequest(mStation, RouteTimeDefinition.DEPART_AT, Liveboard.LiveboardType.DEPARTURES, null)));
+                        startActivity(LiveboardActivity.createIntent(StationActivity.this,
+                                new LiveboardRequest(mStation, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null)));
                     }
                 }
         );
@@ -83,8 +85,9 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         bind(mStation);
     }
 
-    private void bind(Station station) {
-        StationFacilities facilities = station.getStationFacilities();
+    private void bind(StopLocation station) {
+        StopLocationFacilities facilities =
+                OpenTransportApi.getFacilitiesProviderInstance().getStationFacilitiesByUri(station.getSemanticId());
 
         // Catch stations without details
         if (facilities == null) {

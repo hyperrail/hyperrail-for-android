@@ -26,12 +26,12 @@ import android.widget.TextView;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -39,12 +39,12 @@ import be.hyperrail.android.persistence.SuggestionType;
 public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationSuggestionsCardAdapter.StationViewHolder> {
 
     private final Context context;
-    private List<Suggestion<IrailLiveboardRequest>> suggestedStations;
-    private Station[] stations;
+    private List<Suggestion<LiveboardRequest>> suggestedStations;
+    private StopLocation[] stations;
     private boolean showSuggestions = true;
     private boolean nearbyOnTop;
-    private OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> longClickListener;
-    private OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<LiveboardRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> listener;
 
     private stationType currentDisplayType = stationType.UNDEFINED;
 
@@ -64,7 +64,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         UNDEFINED
     }
 
-    public StationSuggestionsCardAdapter(Context context, Station[] stations) {
+    public StationSuggestionsCardAdapter(Context context, StopLocation[] stations) {
         this.context = context;
         this.stations = stations;
     }
@@ -75,12 +75,12 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         View itemView;
 
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout",
-                                                                               false)) {
+                false)) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_station,
-                                                                        parent, false);
+                    parent, false);
         } else {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_station,
-                                                                        parent, false);
+                    parent, false);
         }
 
         return new StationViewHolder(itemView);
@@ -107,7 +107,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
     }
 
     private void bindNearbyViewHolder(StationViewHolder holder, int position, int suggestedStationsLength) {
-        Station station;
+        StopLocation station;
 
         if (!nearbyOnTop) {
             station = stations[position - suggestedStationsLength];
@@ -133,18 +133,18 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
                 break;
         }
 
-        IrailLiveboardRequest request = new IrailLiveboardRequest(station,
-                                                                  RouteTimeDefinition.DEPART_AT,
-                                                                  Liveboard.LiveboardType.DEPARTURES,
-                                                                  null);
-        final Suggestion<IrailLiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
+        LiveboardRequest request = new LiveboardRequest(station,
+                QueryTimeDefinition.DEPART_AT,
+                LiveboardType.DEPARTURES,
+                null);
+        final Suggestion<LiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listener != null) {
                     listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this,
-                                                 suggestion);
+                            suggestion);
                 }
             }
         });
@@ -154,7 +154,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             public boolean onLongClick(View view) {
                 if (longClickListener != null) {
                     longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
-                                                              suggestion);
+                            suggestion);
                 }
                 return false;
             }
@@ -166,7 +166,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
             position = position - stations.length;
         }
 
-        final Suggestion<IrailLiveboardRequest> suggestion = suggestedStations.get(position);
+        final Suggestion<LiveboardRequest> suggestion = suggestedStations.get(position);
 
         holder.vStation.setText(suggestion.getData().getStation().getLocalizedName());
 
@@ -206,12 +206,12 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         });
     }
 
-    public void setSuggestedStations(List<Suggestion<IrailLiveboardRequest>> suggestedStations) {
+    public void setSuggestedStations(List<Suggestion<LiveboardRequest>> suggestedStations) {
         this.suggestedStations = suggestedStations;
         this.notifyDataSetChanged();
     }
 
-    public void setSearchResultStations(Station[] stations) {
+    public void setSearchResultStations(StopLocation[] stations) {
         this.stations = stations;
         this.notifyDataSetChanged();
     }
@@ -226,11 +226,11 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailLiveboardRequest>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailLiveboardRequest>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<LiveboardRequest>> listener) {
         this.longClickListener = listener;
     }
 

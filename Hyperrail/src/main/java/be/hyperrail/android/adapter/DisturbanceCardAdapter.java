@@ -24,7 +24,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Disturbance;
+import be.hyperrail.opentransportdata.common.models.Disturbance;
 
 /**
  * Recyclerview adapter to show a list with disturbances on the net

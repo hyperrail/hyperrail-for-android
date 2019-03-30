@@ -27,26 +27,27 @@ import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.requests.ExtendLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
+import be.hyperrail.opentransportdata.common.models.Liveboard;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results
  */
-public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implements InfiniteScrollingDataSource, ResultFragment<IrailLiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
+public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implements InfiniteScrollingDataSource,
+        ResultFragment<LiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
 
     private Liveboard mCurrentLiveboard;
     private LiveboardCardAdapter mLiveboardCardAdapter;
-    private IrailLiveboardRequest mRequest;
+    private LiveboardRequest mRequest;
 
-    public static LiveboardFragment createInstance(IrailLiveboardRequest request) {
+    public static LiveboardFragment createInstance(LiveboardRequest request) {
         // Clone the request so we can't accidentally modify the original
         LiveboardFragment frg = new LiveboardFragment();
         frg.mRequest = request;
@@ -57,7 +58,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailLiveboardRequest) savedInstanceState.getSerializable("request");
+            mRequest = (LiveboardRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
@@ -83,13 +84,13 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
     }
 
     @Override
-    public void setRequest(@NonNull IrailLiveboardRequest request) {
+    public void setRequest(@NonNull LiveboardRequest request) {
         this.mRequest = request;
         getInitialData();
     }
 
     @Override
-    public IrailLiveboardRequest getRequest() {
+    public LiveboardRequest getRequest() {
         return this.mRequest;
     }
 
@@ -128,10 +129,10 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
             mLiveboardCardAdapter.setInfiniteScrolling(true);
         }
 
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
+        TransportDataSource api = OpenTransportApi.getDataProviderInstance();
         // Don't abort all queries: there might be multiple fragments at the same screen!
 
-        mRequest.setCallback(new IRailSuccessResponseListener<Liveboard>() {
+        mRequest.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 resetErrorState();
@@ -154,7 +155,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
                 ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
             }
 
-        }, new IRailErrorResponseListener() {
+        }, new TransportDataErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 vRefreshLayout.setRefreshing(false);
@@ -175,7 +176,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }
 
         ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.APPEND);
-        request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
+        request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 resetErrorState();
@@ -195,14 +196,14 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
                     mgr.scrollToPositionWithOffset(1, 0);
                 }
             }
-        }, new IRailErrorResponseListener() {
+        }, new TransportDataErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 mLiveboardCardAdapter.setNextError(true);
                 mLiveboardCardAdapter.setNextLoaded();
             }
         }, null);
-        IrailFactory.getDataProviderInstance().extendLiveboard(request);
+        OpenTransportApi.getDataProviderInstance().extendLiveboard(request);
     }
 
     @Override
@@ -214,7 +215,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }
 
         ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.PREPEND);
-        request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
+        request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
                 resetErrorState();
@@ -235,14 +236,14 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
 
                 mLiveboardCardAdapter.setPrevLoaded();
             }
-        }, new IRailErrorResponseListener() {
+        }, new TransportDataErrorResponseListener() {
             @Override
             public void onErrorResponse(@NonNull Exception e, Object tag) {
                 mLiveboardCardAdapter.setPrevError(true);
                 mLiveboardCardAdapter.setPrevLoaded();
             }
         }, null);
-        IrailFactory.getDataProviderInstance().extendLiveboard(request);
+        OpenTransportApi.getDataProviderInstance().extendLiveboard(request);
     }
 
     @Override
@@ -253,7 +254,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        Intent i = VehicleActivity.createIntent(getActivity(), new IrailVehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
+        Intent i = VehicleActivity.createIntent(getActivity(), new VehicleRequest(object.getVehicle().getId(), object.getDepartureTime()));
         startActivity(i);
     }
 

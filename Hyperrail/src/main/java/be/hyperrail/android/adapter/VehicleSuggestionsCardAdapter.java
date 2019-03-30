@@ -22,9 +22,9 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -32,10 +32,10 @@ import be.hyperrail.android.persistence.Suggestion;
 public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleSuggestionsCardAdapter.TrainViewHolder> {
 
     private final Context context;
-    private List<Suggestion<IrailVehicleRequest>> suggestedTrains;
+    private List<Suggestion<VehicleRequest>> suggestedTrains;
 
-    private OnRecyclerItemLongClickListener<Suggestion<IrailVehicleRequest>> longClickListener;
-    private OnRecyclerItemClickListener<Suggestion<IrailVehicleRequest>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<VehicleRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<VehicleRequest>> listener;
 
     public VehicleSuggestionsCardAdapter(Context context) {
         this.context = context;
@@ -57,8 +57,8 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
     @Override
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
-        final Suggestion<IrailVehicleRequest> t = suggestedTrains.get(position);
-        String title = VehicleStub.getVehicleName(t.getData().getVehicleId());
+        final Suggestion<VehicleRequest> t = suggestedTrains.get(position);
+        String title = IrailVehicleJourneyStub.getVehicleName(t.getData().getVehicleId());
         if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
             title += " - " + df.print(t.getData().getDepartureTime());
@@ -105,16 +105,16 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
         });
     }
 
-    public void setSuggestedTrains(List<Suggestion<IrailVehicleRequest>> suggestions) {
+    public void setSuggestedTrains(List<Suggestion<VehicleRequest>> suggestions) {
         this.suggestedTrains = suggestions;
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailVehicleRequest>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<VehicleRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailVehicleRequest>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<VehicleRequest>> listener) {
         this.longClickListener = listener;
     }
 

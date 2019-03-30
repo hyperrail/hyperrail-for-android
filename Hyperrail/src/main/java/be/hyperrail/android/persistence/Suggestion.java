@@ -6,14 +6,14 @@
 
 package be.hyperrail.android.persistence;
 
-import be.hyperrail.android.irail.contracts.IrailRequest;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
 
 /**
  * A suggestion wraps a suggestable object together with the reason why it was suggested
  *
  * @param <T>
  */
-public class Suggestion<T extends IrailRequest>  {
+public class Suggestion<T extends TransportDataRequest>  {
 
     private final T data;
     private final SuggestionType type;

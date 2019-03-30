@@ -66,15 +66,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final int VIEW_TYPE_LIVEBOARD = 0;
     private static final int VIEW_TYPE_ROUTE = 10;
-    private static final int VIEW_TYPE_DISTURBANCE = 20;
-    private static final int VIEW_TYPE_TRAIN = 30;
+    private static final int VIEW_TYPE_TRAIN = 20;
+    private static final int VIEW_TYPE_DISTURBANCE = 30;
     private static final int VIEW_TYPE_SETTINGS = 40;
     private static final int VIEW_TYPE_FEEDBACK = 50;
 
     private boolean mDualPane = false;
 
     // Define this as an enumeration type, so compilers can give better advice on possible errors
-    @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_DISTURBANCE, VIEW_TYPE_TRAIN, VIEW_TYPE_SETTINGS, VIEW_TYPE_FEEDBACK})
+    @IntDef({VIEW_TYPE_LIVEBOARD, VIEW_TYPE_ROUTE, VIEW_TYPE_TRAIN, VIEW_TYPE_DISTURBANCE, VIEW_TYPE_SETTINGS, VIEW_TYPE_FEEDBACK})
     public @interface ViewType {
     }
 
@@ -166,14 +166,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences defaultPreferences = PreferenceManager.getDefaultSharedPreferences(
                 this.getApplicationContext());
         int defaultView = Integer.parseInt(defaultPreferences.getString("pref_startup_screen",
-                                                                        String.valueOf(
-                                                                                VIEW_TYPE_ROUTE)));
+                String.valueOf(
+                        VIEW_TYPE_ROUTE)));
 
         if (!PreferenceManager.getDefaultSharedPreferences(this).contains("first_launch_guide")) {
             Intent i = new Intent(this, FirstLaunchGuide.class);
             startActivity(i);
         } else {
-            ReviewDialogProvider.showDialogIf(this,7,3);
+            ReviewDialogProvider.showDialogIf(this, 7, 3);
         }
 
         // Decide which view to show
@@ -314,15 +314,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-                                                Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
-                                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                            Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 }
 
                 try {
                     startActivity(goToMarket);
                 } catch (ActivityNotFoundException e) {
                     startActivity(new Intent(Intent.ACTION_VIEW,
-                                             Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
+                            Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
                 }
                 break;
             case R.id.action_beta_test:

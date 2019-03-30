@@ -28,13 +28,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Message;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteLeg;
-import be.hyperrail.android.irail.implementation.RouteLegType;
-import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
+import be.hyperrail.opentransportdata.common.models.Message;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RouteLeg;
+import be.hyperrail.opentransportdata.common.models.RouteLegType;
+import be.hyperrail.opentransportdata.common.models.Transfer;
 
 public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, RouteLeg> {
 

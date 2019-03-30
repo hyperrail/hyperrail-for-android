@@ -14,21 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Vehicle;
-import be.hyperrail.android.irail.implementation.VehicleStop;
 import be.hyperrail.android.viewgroup.VehicleStopLayout;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
 
 /**
  * Recyclerview adapter which shows stops of a train
  */
 public class VehicleStopCardAdapter extends RecyclerView.Adapter<VehicleStopCardAdapter.TrainStopViewHolder> {
 
-    private Vehicle mTrain;
+    private VehicleJourney mTrain;
     private final Context context;
     private OnRecyclerItemClickListener<VehicleStop> clickListener;
     private OnRecyclerItemLongClickListener<VehicleStop> longClickListener;
 
-    public VehicleStopCardAdapter(Context context, Vehicle train) {
+    public VehicleStopCardAdapter(Context context, VehicleJourney train) {
         this.context = context;
         this.mTrain = train;
     }
@@ -87,7 +87,7 @@ public class VehicleStopCardAdapter extends RecyclerView.Adapter<VehicleStopCard
         this.longClickListener = listener;
     }
 
-    public void updateTrain(Vehicle train) {
+    public void updateTrain(VehicleJourney train) {
         this.mTrain = train;
         notifyDataSetChanged();
     }

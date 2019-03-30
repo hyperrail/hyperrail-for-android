@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.viewgroup.RouteListItemLayout;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RoutesList;
 
 /**
  * Recyclerview adapter to show results of route searches
@@ -49,14 +49,14 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         this.context = context;
     }
 
-    public void updateRoutes(RouteResult routeResult) {
-        if (routeResult == null || routeResult.getRoutes() == null || routeResult.getRoutes().length < 1) {
+    public void updateRoutes(RoutesList RoutesList) {
+        if (RoutesList == null || RoutesList.getRoutes() == null || RoutesList.getRoutes().length < 1) {
             this.routes = null;
             this.displayList = null;
             return;
         }
 
-        this.routes = routeResult.getRoutes();
+        this.routes = RoutesList.getRoutes();
 
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
@@ -67,9 +67,9 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
             if (routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay().isBefore(lastday)) {
                 // If the first stop is not today, add date separators everywhere
                 lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
-            } else if (!routeResult.getSearchTime().withTimeAtStartOfDay().withZone(DateTimeZone.UTC).equals(routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
+            } else if (!RoutesList.getSearchTime().withTimeAtStartOfDay().withZone(DateTimeZone.UTC).equals(routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
                 // If the search results differ from the date searched, everything after the date searched should have separators
-                lastday = routeResult.getSearchTime().withTimeAtStartOfDay();
+                lastday = RoutesList.getSearchTime().withTimeAtStartOfDay();
             }
             for (int i = 0; i < routes.length; i++) {
                 Route route = routes[i];
@@ -149,7 +149,7 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         RouteViewHolder holder = (RouteViewHolder) genericHolder;
         final Route route = (Route) displayList[position];
 
-        holder.routeListItemLayout.bind(context,route,null,position);
+        holder.routeListItemLayout.bind(context, route, null, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

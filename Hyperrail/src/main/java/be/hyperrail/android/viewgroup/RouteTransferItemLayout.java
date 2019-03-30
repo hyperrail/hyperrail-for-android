@@ -33,9 +33,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.Transfer;
 
 public class RouteTransferItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, Transfer> {
     protected TextView vDepartureTime;
@@ -103,7 +103,7 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
     @Override
     public void bind(Context context, Transfer transfer, Route route, int position) {
 
-        vStation.setText(transfer.getStation().getLocalizedName());
+        vStation.setText(transfer.getStopLocation().getLocalizedName());
 
         bindTimeAndDelay(context, transfer);
 
