@@ -85,9 +85,10 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         try (Scanner lines = new Scanner(getLocalData())) {
             importData(db, lines);
             db.setTransactionSuccessful();
-        } catch (Exception e) {
             db.endTransaction();
+        } catch (Exception e) {
             OpenTransportLog.log("Failed to fill stations db with local data!");
+            OpenTransportLog.logException(e);
             db.endTransaction();
             return false;
         }

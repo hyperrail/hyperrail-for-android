@@ -38,14 +38,14 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
      */
     public void onCreate(SQLiteDatabase db) {
         OpenTransportLog.log("Creating WebDb instance " + mDefinition.getDatabaseName());
-        fillDatabase(db);
+        createAndFillDb(db);
         OpenTransportLog.log("Created WebDb instance " + mDefinition.getDatabaseName());
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         OpenTransportLog.log("Upgrading WebDb instance " + mDefinition.getDatabaseName());
         wipeDatabase(db);
-        fillDatabase(db);
+        createAndFillDb(db);
         OpenTransportLog.log("Upgraded WebDb instance " + mDefinition.getDatabaseName());
     }
 
@@ -53,7 +53,8 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
         // Do nothing
     }
 
-    private void fillDatabase(SQLiteDatabase db) {
+    private void createAndFillDb(SQLiteDatabase db) {
+        mDefinition.createDatabaseStructure(db);
         if (shouldUseOnlineData) {
             // If online fetching failed
             if (!mDefinition.loadOnlineData(db)) {

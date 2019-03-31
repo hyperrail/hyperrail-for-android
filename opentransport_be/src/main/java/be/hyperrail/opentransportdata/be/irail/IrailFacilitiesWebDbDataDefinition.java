@@ -114,9 +114,9 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
             db.setTransactionSuccessful();
             db.endTransaction();
         } catch (Exception e) {
-            db.endTransaction();
             OpenTransportLog.log("Failed to fill facilities db with offline data!");
             OpenTransportLog.logException(e);
+            db.endTransaction();
             return false;
         }
         return true;

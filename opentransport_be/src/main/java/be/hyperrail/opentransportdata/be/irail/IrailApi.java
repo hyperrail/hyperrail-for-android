@@ -182,7 +182,7 @@ public class IrailApi implements TransportDataSource {
                 );
             } catch (JSONException e) {
                 OpenTransportLog.log(
-                        WARNING.intValue(), "Failed to parse routes", e.getMessage());
+                        WARNING.intValue(), LOGTAG, "Failed to parse routes: " + e.getMessage());
                 OpenTransportLog.logException(e);
                 request.notifyErrorListeners(e);
                 return;
@@ -192,7 +192,7 @@ public class IrailApi implements TransportDataSource {
 
         Response.ErrorListener errorListener = e -> {
             OpenTransportLog.log(
-                    WARNING.intValue(), "Failed to get routes", e.getMessage());
+                    WARNING.intValue(), LOGTAG, "Failed to get routes: " + e.getMessage());
             request.notifyErrorListeners(e);
         };
 
@@ -275,7 +275,7 @@ public class IrailApi implements TransportDataSource {
             try {
                 result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
             } catch (JSONException | StopLocationNotResolvedException e) {
-                OpenTransportLog.log(WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
+                OpenTransportLog.log(WARNING.intValue(), LOGTAG, "Failed to parse liveboard: " + e.getMessage());
                 OpenTransportLog.logException(e);
                 request.notifyErrorListeners(e);
                 return;
@@ -287,7 +287,7 @@ public class IrailApi implements TransportDataSource {
         Response.ErrorListener errorListener = e -> {
             Log.w(LOGTAG, "Tried loading liveboard from " + url + " failed with error " + e);
             OpenTransportLog.log(
-                    WARNING.intValue(), "Failed to get liveboard", e.getMessage());
+                    WARNING.intValue(), LOGTAG, "Failed to get liveboard: " + e.getMessage());
             request.notifyErrorListeners(e);
         };
 
@@ -328,7 +328,7 @@ public class IrailApi implements TransportDataSource {
                 result = parser.parseTrain(response, request.getSearchTime());
             } catch (JSONException | StopLocationNotResolvedException e) {
                 OpenTransportLog.log(
-                        WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
+                        WARNING.intValue(), LOGTAG, "Failed to parse vehicle: " + e.getMessage());
                 OpenTransportLog.logException(e);
                 request.notifyErrorListeners(e);
                 return;
@@ -337,8 +337,7 @@ public class IrailApi implements TransportDataSource {
         };
 
         Response.ErrorListener errorListener = e -> {
-            OpenTransportLog.log(
-                    WARNING.intValue(), "Failed to get vehicle", e.getMessage());
+            OpenTransportLog.log(WARNING.intValue(), LOGTAG, "Failed to get vehicle:" + e.getMessage());
             request.notifyErrorListeners(e);
         };
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -408,7 +407,7 @@ public class IrailApi implements TransportDataSource {
             try {
                 result = parser.parseDisturbances(response);
             } catch (JSONException e) {
-                OpenTransportLog.log(WARNING.intValue(), "Failed to parse disturbances", e.getMessage());
+                OpenTransportLog.log(WARNING.intValue(), LOGTAG, "Failed to parse disturbances: " + e.getMessage());
                 OpenTransportLog.logException(e);
                 request.notifyErrorListeners(e);
                 return;
@@ -417,7 +416,7 @@ public class IrailApi implements TransportDataSource {
         };
 
         Response.ErrorListener errorListener = e -> {
-            OpenTransportLog.log(WARNING.intValue(), "Failed to get disturbances", e.getMessage());
+            OpenTransportLog.log(WARNING.intValue(), LOGTAG, "Failed to get disturbances: " + e.getMessage());
             request.notifyErrorListeners(e);
         };
 
@@ -454,7 +453,7 @@ public class IrailApi implements TransportDataSource {
                     successListener.onResponse(cache);
                 } catch (JSONException e) {
                     OpenTransportLog.log(
-                            WARNING.intValue(), "Failed to get result from cache", e.getMessage());
+                            WARNING.intValue(), LOGTAG, "Failed to get result from cache: " + e.getMessage());
                     errorListener.onErrorResponse(new NoConnectionError());
                 }
 
