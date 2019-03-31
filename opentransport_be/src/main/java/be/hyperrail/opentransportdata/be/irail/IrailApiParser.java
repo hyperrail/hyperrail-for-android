@@ -71,6 +71,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 class IrailApiParser {
 
     private final TransportStopsDataSource stationProvider;
+    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailApiParser.class);
 
     IrailApiParser(TransportStopsDataSource stationProvider) {
         this.stationProvider = stationProvider;
@@ -246,7 +247,7 @@ class IrailApiParser {
             }
             return new MessageImpl(header, description, link);
         } catch (JSONException e) {
-            OpenTransportLog.log("Failed to parse json message");
+            log.severe("Failed to parse json message");
         }
         return null;
     }

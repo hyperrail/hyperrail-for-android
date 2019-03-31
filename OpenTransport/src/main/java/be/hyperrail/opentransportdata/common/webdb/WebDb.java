@@ -33,6 +33,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class WebDb {
 
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(WebDb.class);
     private WebDbSqliteBackend db;
     private Context context;
     private WebDbDataDefinition dataDefinition;
@@ -52,7 +53,7 @@ public class WebDb {
 
         int currentVersion = webDbConfig.getCurrentDatabaseVersion(dataDefinition.getDatabaseName());
         int embeddedVersion = getVersionCodeForDateTime(dataDefinition.getLastModifiedLocalDate());
-        if (currentVersion <embeddedVersion ) {
+        if (currentVersion < embeddedVersion) {
             currentVersion = embeddedVersion;
         }
         this.db = new WebDbSqliteBackend(appContext, currentVersion, dataDefinition, false);
@@ -61,13 +62,13 @@ public class WebDb {
         if (webDbConfig.getTimeOfLastCheck(dataDefinition.getDatabaseName()).isBefore(DateTime.now().minusDays(2))) {
             // If not restricted to Wifi, or if connecected to wifi, check for updates
             boolean isConnectedToWifi = isConnectedToWifi();
-            OpenTransportLog.log("WLAN: " + isConnectedToWifi);
+            log.info("WLAN: " + isConnectedToWifi);
             if (!dataDefinition.updateOnlyOnWifi() || isConnectedToWifi) {
-                OpenTransportLog.log("Starting update check for " + dataDefinition.getDatabaseName());
+                log.info("Starting update check for " + dataDefinition.getDatabaseName());
                 GetLastModifiedTask getLastModifiedTask = new GetLastModifiedTask(this, dataDefinition);
                 getLastModifiedTask.execute(dataDefinition);
             } else {
-                OpenTransportLog.log("Not starting update check for " + dataDefinition.getDatabaseName());
+                log.info("Not starting update check for " + dataDefinition.getDatabaseName());
             }
         }
     }
@@ -115,17 +116,17 @@ public class WebDb {
                 return;
             }
 
-            OpenTransportLog.log("Online last modified date check for " +
+            log.info("Online last modified date check for " +
                     webDbRef.get().dataDefinition.getDatabaseName() + " resulted in " + lastModifiedOnline.toString("YYYY-MM-HH HH:mm"));
             String databaseName = definition.getDatabaseName();
 
             if (lastModifiedOnline.isAfter(webDbRef.get().webDbConfig.getTimeOfLastOnlineUpdate(databaseName))) {
-                OpenTransportLog.log("Re-creating database using online data: " + databaseName);
+                log.info("Re-creating database using online data: " + databaseName);
                 webDbRef.get().db = new WebDbSqliteBackend(webDbRef.get().context, getVersionCodeForDateTime(lastModifiedOnline), definition, true);
-                OpenTransportLog.log("Re-created database using online data: " + databaseName);
+                log.info("Re-created database using online data: " + databaseName);
                 webDbRef.get().webDbConfig.setTimeOfLastOnlineUpdateToNow(databaseName);
             } else {
-                OpenTransportLog.log("No newer data available: " + databaseName);
+                log.info("No newer data available: " + databaseName);
             }
             webDbRef.get().webDbConfig.setTimeOfLastCheckToNow(databaseName);
         }

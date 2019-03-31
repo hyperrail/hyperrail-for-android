@@ -34,7 +34,7 @@ public class ReviewDialogProvider {
 
     private static FirebaseAnalytics mFirebaseAnalytics;
 
-    @AddTrace(name = "reviewDialogProvider.init")
+    @AddTrace(name = "reviewDialogProvider.initLogWriter")
     public static void init(Context context) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         launches = sharedPreferences.getInt("rvd_app_launches", 0);

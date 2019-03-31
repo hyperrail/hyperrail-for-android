@@ -1,38 +1,77 @@
 package be.hyperrail.android.logging;
 
+import java.util.logging.Level;
+
 public class HyperRailLog {
 
-    private static HyperRailLogger loggerInstance;
+    private static HyperRailLogWriter loggerInstance;
+    private final Class callingClass;
 
-    public static void init(HyperRailLogger logger) {
+    private HyperRailLog(Class c) {
+        this.callingClass = c;
+    }
+
+    public static void initLogWriter(HyperRailLogWriter logger) {
         loggerInstance = logger;
     }
 
-    private static HyperRailLogger getLoggerInstance() {
+    private static HyperRailLogWriter getLogWriter() {
         if (loggerInstance == null) {
-            loggerInstance = new HyperRailConsoleLogger();
+            loggerInstance = new HyperRailConsoleLogWriter();
         }
 
         return loggerInstance;
     }
 
-    public static void logException(Throwable throwable) {
-        getLoggerInstance().logException(throwable);
+    public static HyperRailLog getLogger(Class c) {
+        return new HyperRailLog(c);
     }
 
-    public static void log(String msg) {
-        getLoggerInstance().log(msg);
+    public void logException(Throwable throwable) {
+        getLogWriter().logException(callingClass.getSimpleName(), throwable);
     }
 
-    public static void log(int priority, String tag, String msg) {
-        getLoggerInstance().log(priority, tag, msg);
+    public void log(Level priority, String msg) {
+        getLogWriter().log(priority, callingClass.getSimpleName(), msg);
     }
 
-    public static void setDebugVariable(String key, String value) {
-        getLoggerInstance().setDebugVariable(key, value);
+    public void setDebugVariable(String key, String value) {
+        getLogWriter().setDebugVariable(callingClass.getSimpleName(), key, value);
     }
 
-    public static void setDebugVariable(String key, int value) {
-        getLoggerInstance().setDebugVariable(key, value);
+    public void setDebugVariable(String key, int value) {
+        getLogWriter().setDebugVariable(callingClass.getSimpleName(), key, value);
     }
+
+    public void info(String message) {
+        log(Level.INFO, message);
+    }
+
+    public void warning(String message) {
+        log(Level.WARNING, message);
+    }
+
+    public void severe(String message) {
+        log(Level.SEVERE, message);
+    }
+
+    public void debug(String message) {
+        log(Level.FINE, message);
+    }
+
+    public void info(String message, Throwable throwable) {
+        info(message);
+        logException(throwable);
+    }
+
+    public void warning(String message, Throwable throwable) {
+        warning(message);
+        logException(throwable);
+    }
+
+    public void severe(String message, Throwable throwable) {
+        severe(message);
+        logException(throwable);
+    }
+
 }

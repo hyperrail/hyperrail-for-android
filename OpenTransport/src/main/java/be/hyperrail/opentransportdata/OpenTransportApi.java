@@ -13,7 +13,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopFacilitiesDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
-import be.hyperrail.opentransportdata.logging.OpenTransportLogger;
+import be.hyperrail.opentransportdata.logging.OpenTransportLogWriter;
 
 public class OpenTransportApi {
 
@@ -25,8 +25,8 @@ public class OpenTransportApi {
         init(appContext, getProviderFromQualifiedNames(qualifiedName));
     }
 
-    public static void init(Context applicationContext, String qualifiedName, OpenTransportLogger logger) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        OpenTransportLog.init(logger);
+    public static void init(Context applicationContext, String qualifiedName, OpenTransportLogWriter logger) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        OpenTransportLog.initLogWriter(logger);
         init(applicationContext, qualifiedName);
     }
 
@@ -36,8 +36,8 @@ public class OpenTransportApi {
         dataProviderInstance = dataProvider.getTransportDataSource(appContext, stationProviderInstance);
     }
 
-    public static void init(Context applicationContext, TransportDataProvider dataProvider, OpenTransportLogger logger) {
-        OpenTransportLog.init(logger);
+    public static void init(Context applicationContext, TransportDataProvider dataProvider, OpenTransportLogWriter logger) {
+        OpenTransportLog.initLogWriter(logger);
         init(applicationContext, dataProvider);
     }
 
@@ -51,21 +51,21 @@ public class OpenTransportApi {
 
     public static TransportStopsDataSource getStationsProviderInstance() {
         if (stationProviderInstance == null) {
-            throw new IllegalStateException("Initialize OpenTransportApi using init() before trying to access the stations provider!");
+            throw new IllegalStateException("Initialize OpenTransportApi using initLogWriter() before trying to access the stations provider!");
         }
         return stationProviderInstance;
     }
 
     public static TransportDataSource getDataProviderInstance() {
         if (dataProviderInstance == null) {
-            throw new IllegalStateException("Initialize OpenTransportApi using init() before trying to access the data provider!");
+            throw new IllegalStateException("Initialize OpenTransportApi using initLogWriter() before trying to access the data provider!");
         }
         return dataProviderInstance;
     }
 
     public static TransportStopFacilitiesDataSource getFacilitiesProviderInstance() {
         if (stopFacilitiesDataSource == null) {
-            throw new IllegalStateException("Initialize OpenTransportApi using init() before trying to access the facilities provider!");
+            throw new IllegalStateException("Initialize OpenTransportApi using initLogWriter() before trying to access the facilities provider!");
         }
         return stopFacilitiesDataSource;
     }

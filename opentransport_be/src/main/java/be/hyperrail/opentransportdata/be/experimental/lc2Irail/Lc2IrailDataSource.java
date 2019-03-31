@@ -10,7 +10,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NoConnectionError;
@@ -66,15 +65,13 @@ import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 import be.opentransport.BuildConfig;
 
-import static java.util.logging.Level.WARNING;
-
 /**
  * Created in be.hyperrail.android.irail.implementation on 13/04/2018.
  */
 public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSource {
 
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(Lc2IrailDataSource.class);
     private static final String UA = "OpenTransport for Android - " + BuildConfig.VERSION_NAME;
-    private static final String LOGTAG = "Lc2IrailDataSource";
 
     private final Context mContext;
     private final Lc2IrailParser parser;
@@ -150,11 +147,9 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                     liveboard = parser.parseLiveboard(request, response);
                     tracing.stop();
                 } catch (Exception e) {
-                    //OpenTransportLog.log(
-                    //        WARNING.intValue(), "Failed to parse liveboard", e.getMessage());
-                    Log.w(LOGTAG, "Failed to parse liveboard", e);
+                    log.severe("Failed to parse liveboard", e);
                     tracing.stop();
-                    OpenTransportLog.logException(e);
+                    log.logException(e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -169,8 +164,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             @Override
             public void onErrorResponse(VolleyError e) {
                 tracing.stop();
-                OpenTransportLog.log(
-                        WARNING.intValue(), "Failed to get liveboard", e.getMessage());
+                log.warning("Failed to get liveboard", e);
                 request.notifyErrorListeners(e);
             }
         };
@@ -224,9 +218,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                 try {
                     routeResult = parser.parseRoutes(request, response);
                 } catch (Exception e) {
-                    OpenTransportLog.log(
-                            WARNING.intValue(), "Failed to parse routes", e.getMessage());
-                    OpenTransportLog.logException(e);
+                    log.warning("Failed to parse routes", e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -240,8 +232,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError e) {
-                OpenTransportLog.log(
-                        WARNING.intValue(), "Failed to get routes", e.getMessage());
+                log.warning("Failed to get routes", e);
                 tracing.stop();
                 request.notifyErrorListeners(e);
             }
@@ -346,9 +337,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                 try {
                     vehicle = parser.parseVehicle(request, response);
                 } catch (Exception e) {
-                    OpenTransportLog.log(
-                            WARNING.intValue(), "Failed to parse vehicle", e.getMessage());
-                    OpenTransportLog.logException(e);
+                    log.warning("Failed to parse vehicle", e);
                     request.notifyErrorListeners(e);
                     return;
                 }
@@ -363,8 +352,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError e) {
-                OpenTransportLog.log(
-                        WARNING.intValue(), "Failed to get vehicle", e.getMessage());
+                log.warning("Failed to get vehicle", e);
                 tracing.stop();
                 request.notifyErrorListeners(e);
             }
@@ -408,10 +396,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             }
         };
 
-
         jsObjRequest.setRetryPolicy(requestPolicy);
-
-
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
 
         if (isInternetAvailable()) {
@@ -422,14 +407,14 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                     successListener.onResponse(new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data)));
                     return;
                 } catch (JSONException e) {
-                    Log.e(LOGTAG, "Failed to return result from cache", e);
+                    log.debug("Failed to return result from cache", e);
                     meteredRequest.setResponseType(MeteredDataSource.RESPONSE_ONLINE);
                     requestQueue.add(jsObjRequest);
                 }
             }
             requestQueue.add(jsObjRequest);
         } else {
-            Log.d(LOGTAG, "Trying to get data without internet");
+            log.debug("Trying to get data without internet");
             if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
                 try {
                     JSONObject cache;
@@ -437,14 +422,13 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
                     meteredRequest.setResponseType(MeteredDataSource.RESPONSE_OFFLINE);
                     successListener.onResponse(cache);
                 } catch (JSONException e) {
-                    OpenTransportLog.log(
-                            WARNING.intValue(), "Failed to get result from cache", e.getMessage());
+                    log.warning("Failed to get result from cache", e);
                     errorListener.onErrorResponse(new NoConnectionError());
                     meteredRequest.setResponseType(MeteredDataSource.RESPONSE_FAILED);
                 }
 
             } else {
-                Log.d(LOGTAG, "No cache available");
+                log.debug("No cache available");
                 errorListener.onErrorResponse(new NoConnectionError());
                 meteredRequest.setResponseType(MeteredDataSource.RESPONSE_FAILED);
             }

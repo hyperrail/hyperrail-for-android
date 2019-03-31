@@ -18,8 +18,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 class WebDbSqliteBackend extends SQLiteOpenHelper {
 
-    // Logtag for logging purpose
-    private static final String LOGTAG = "WebDbSqliteBackend";
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(WebDbSqliteBackend.class);
 
     private final WebDbDataDefinition mDefinition;
     private boolean shouldUseOnlineData;
@@ -37,16 +36,16 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
      * @param db Handle in which the database should be created.
      */
     public void onCreate(SQLiteDatabase db) {
-        OpenTransportLog.log("Creating WebDb instance " + mDefinition.getDatabaseName());
+        log.info("Creating WebDb instance " + mDefinition.getDatabaseName());
         createAndFillDb(db);
-        OpenTransportLog.log("Created WebDb instance " + mDefinition.getDatabaseName());
+        log.info("Created WebDb instance " + mDefinition.getDatabaseName());
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        OpenTransportLog.log("Upgrading WebDb instance " + mDefinition.getDatabaseName());
+        log.info("Upgrading WebDb instance " + mDefinition.getDatabaseName());
         wipeDatabase(db);
         createAndFillDb(db);
-        OpenTransportLog.log("Upgraded WebDb instance " + mDefinition.getDatabaseName());
+        log.info("Upgraded WebDb instance " + mDefinition.getDatabaseName());
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -58,7 +57,7 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
         if (shouldUseOnlineData) {
             // If online fetching failed
             if (!mDefinition.loadOnlineData(db)) {
-                OpenTransportLog.log("Failed to update WebDb instance using online data. " +
+                log.warning("Failed to update WebDb instance using online data. " +
                         "Reverting to local data instead " + mDefinition.getDatabaseName());
                 mDefinition.loadLocalData(db);
             }

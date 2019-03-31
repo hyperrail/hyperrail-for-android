@@ -37,7 +37,7 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.
  * (c) Bert Marcelis 2018
  */
 class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
-    private static final String LOGTAG = "IrailWebDb";
+    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailStopsWebDbDataDefinition.class);
     private final Context mContext;
 
     @Override
@@ -87,8 +87,7 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
             db.setTransactionSuccessful();
             db.endTransaction();
         } catch (Exception e) {
-            OpenTransportLog.log("Failed to fill stations db with local data!");
-            OpenTransportLog.logException(e);
+            log.severe("Failed to fill stations db with local data!", e);
             db.endTransaction();
             return false;
         }
@@ -103,8 +102,7 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
             db.setTransactionSuccessful();
         } catch (Exception e) {
             db.endTransaction();
-            OpenTransportLog.log("Failed to fill stations db with online data!");
-            OpenTransportLog.logException(e);
+            log.severe("Failed to fill stations db with online data!", e);
             return false;
         }
         return false;

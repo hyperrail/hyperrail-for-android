@@ -41,7 +41,7 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesData
  * (c) Bert Marcelis 2018
  */
 class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
-    private static final String LOGTAG = "IrailFacilitiesWebDb";
+    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailFacilitiesWebDbDataDefinition.class);
     private final Context mContext;
 
     IrailFacilitiesWebDbDataDefinition(Context context) {
@@ -114,8 +114,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
             db.setTransactionSuccessful();
             db.endTransaction();
         } catch (Exception e) {
-            OpenTransportLog.log("Failed to fill facilities db with offline data!");
-            OpenTransportLog.logException(e);
+            log.severe("Failed to fill facilities db with offline data!", e);
             db.endTransaction();
             return false;
         }
@@ -130,11 +129,11 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
             db.setTransactionSuccessful();
             db.endTransaction();
         } catch (Exception e) {
-            OpenTransportLog.log("Failed to fill facilities db with online data!");
-            OpenTransportLog.logException(e);
+            log.severe("Failed to fill facilities db with online data!", e);
             db.endTransaction();
             return false;
         }
+        log.info("Filled station facilities DB");
         return true;
     }
 

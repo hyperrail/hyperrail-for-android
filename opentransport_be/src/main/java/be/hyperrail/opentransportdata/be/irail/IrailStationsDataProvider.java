@@ -36,16 +36,13 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 import be.hyperrail.opentransportdata.util.StringUtils;
 
 import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.StationsDataColumns;
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
 
 /**
  * Database for querying stations
  */
 public class IrailStationsDataProvider implements TransportStopsDataSource {
 
-    // Logtag for logging purpose
-    private static final String LOGTAG = "database";
+    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailStationsDataProvider.class);
 
     private final Context context;
 
@@ -191,10 +188,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     public String[] getStationNames(StopLocation[] Stations) {
 
         if (Stations == null || Stations.length == 0) {
-            OpenTransportLog.log(
-                    WARNING.intValue(), LOGTAG,
-                    "Tried to load station names on empty station list!"
-            );
+            log.warning("Tried to load station names on empty station list!");
             return new String[0];
         }
 
@@ -252,8 +246,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
         if (results == null) {
             if (!suppressErrors) {
-                OpenTransportLog.logException(
-                        new IllegalStateException("ID Not found in station database! " + id));
+                log.logException(new IllegalStateException("ID Not found in station database! " + id));
             }
             throw new StopLocationNotResolvedException(id);
         }
@@ -341,30 +334,19 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
             if (name.contains("/")) {
                 String newname = name.substring(0, name.indexOf("/"));
-                OpenTransportLog.log(
-                        WARNING.intValue(), "SQLiteStationProvider",
-                        "Station not found: " + name + ", replacement search " + newname
-                );
+                log.warning("Station not found: " + name + ", replacement search " + newname);
                 return getStationsByNameOrderBySize(newname);
             } else if (name.contains("(")) {
                 String newname = name.substring(0, name.indexOf("("));
-                OpenTransportLog.log(
-                        WARNING.intValue(), "SQLiteStationProvider",
-                        "Station not found: " + name + ", replacement search " + newname
-                );
+                log.warning("Station not found: " + name + ", replacement search " + newname);
                 return getStationsByNameOrderBySize(newname);
             } else if (name.toLowerCase().startsWith("s ") || cleanedName.toLowerCase().startsWith("s%")) {
                 String newname = "'" + name;
-                OpenTransportLog.log(
-                        WARNING.intValue(), "SQLiteStationProvider",
-                        "Station not found: " + name + ", replacement search " + newname
+                log.warning("Station not found: " + name + ", replacement search " + newname
                 );
                 return getStationsByNameOrderBySize(newname);
             } else {
-                OpenTransportLog.log(
-                        SEVERE.intValue(), "SQLiteStationProvider",
-                        "Station not found: " + name + ", cleaned search " + cleanedName
-                );
+                log.severe("Station not found: " + name + ", cleaned search " + cleanedName);
                 return null;
             }
         }
@@ -418,12 +400,12 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      */
     private StopLocation[] loadStationCursor(Cursor c) {
         if (c.isClosed()) {
-            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
+            log.severe("Tried to load closed cursor");
             return null;
         }
 
         if (c.getCount() == 0) {
-            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
+            log.warning("Tried to load cursor with 0 results!");
             return null;
         }
 

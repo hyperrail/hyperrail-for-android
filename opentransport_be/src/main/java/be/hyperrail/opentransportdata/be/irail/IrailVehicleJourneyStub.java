@@ -33,6 +33,8 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable {
 
+    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailVehicleJourneyStub.class);
+
     /**
      * The URI which uniquely identifies this train across time and transport providers.
      */
@@ -127,7 +129,8 @@ public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable
             if (id.length() > 5) {
                 return id.substring(0, id.length() - 4);
             } else {
-                OpenTransportLog.logException(new IllegalArgumentException("Failed to get vehicle class for id " + id));
+                // Logging an exception will make it more visible, allowing possible new formats to be detected more easily.
+                log.logException(new IllegalArgumentException("Failed to get vehicle class for id " + id));
             }
         }
 

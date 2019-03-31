@@ -22,15 +22,12 @@ import be.hyperrail.opentransportdata.common.models.implementation.StopLocationF
 import be.hyperrail.opentransportdata.common.webdb.WebDb;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
-import static java.util.logging.Level.SEVERE;
-
 /**
  * Database for querying stations
  */
 public class IrailFacilitiesDataProvider implements TransportStopFacilitiesDataSource {
 
-    // Logtag for logging purpose
-    private static final String LOGTAG = "database";
+    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailFacilitiesDataProvider.class);
 
     private final Context context;
     private WebDb mWebDb;
@@ -116,12 +113,12 @@ public class IrailFacilitiesDataProvider implements TransportStopFacilitiesDataS
      */
     private StopLocationFacilitiesImpl loadFacilitiesCursor(Cursor c) {
         if (c.isClosed()) {
-            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load closed cursor");
+            log.severe("Tried to load closed cursor");
             return null;
         }
 
         if (c.getCount() == 0) {
-            OpenTransportLog.log(SEVERE.intValue(), LOGTAG, "Tried to load cursor with 0 results!");
+            log.severe("Tried to load cursor with 0 results!");
             return null;
         }
 
