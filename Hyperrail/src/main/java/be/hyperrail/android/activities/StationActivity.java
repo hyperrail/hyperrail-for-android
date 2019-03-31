@@ -13,7 +13,6 @@
 package be.hyperrail.android.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -24,15 +23,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.joda.time.LocalTime;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
@@ -43,9 +40,25 @@ import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.StopLocationFacilities;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
-public class StationActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class StationActivity extends AppCompatActivity {
 
     private StopLocation mStation;
+    private MapView mMap;
+    private RotationGestureOverlay mRotationGestureOverlay;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMap.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMap.onResume();
+    }
+
+    private MyLocationNewOverlay mLocationOverlay;
 
     public static Intent createIntent(Context context, StopLocation station) {
         Intent i = new Intent(context, StationActivity.class);
@@ -65,22 +78,13 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         }
 
         mStation = (StopLocation) getIntent().getSerializableExtra("station");
-
+        mMap = findViewById(R.id.map);
         findViewById(R.id.floating_action_button).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(LiveboardActivity.createIntent(StationActivity.this,
-                                new LiveboardRequest(mStation, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null)));
-                    }
-                }
+                v -> startActivity(LiveboardActivity.createIntent(StationActivity.this,
+                        new LiveboardRequest(mStation, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null)))
         );
 
         setTitle(mStation.getLocalizedName());
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         bind(mStation);
     }
@@ -94,17 +98,11 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
             AlertDialog errorDialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.station_details_not_available_title)
                     .setMessage(R.string.station_details_not_available_description)
-                    .setNegativeButton(R.string.action_close, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            StationActivity.this.finish();
-                        }
-                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            StationActivity.this.finish();
-                        }
-                    }).show();
+                    .setNegativeButton(R.string.action_close,
+                            (dialog, which) -> StationActivity.this.finish())
+                    .setOnCancelListener(
+                            dialog -> StationActivity.this.finish())
+                    .show();
             return;
         }
 
@@ -142,20 +140,37 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         findViewById(R.id.image_blue_bike).setVisibility(facilities.hasBlue_bike() ? View.VISIBLE : View.GONE);
         findViewById(R.id.text_blue_bike).setVisibility(facilities.hasBlue_bike() ? View.VISIBLE : View.GONE);
         // TODO: display information on accessibility
+
+        displayOsmMap(station);
     }
 
-    @Override
-    public void onMapReady(GoogleMap map) {
-        LatLng stationLocation = new LatLng(mStation.getLatitude(), mStation.getLongitude());
-        map.addMarker(new MarkerOptions().position(stationLocation).title(mStation.getLocalizedName()));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(stationLocation, 15));
-        map.setBuildingsEnabled(true);
-        map.setTrafficEnabled(false);
-        map.setMinZoomPreference(10);
-        map.setMaxZoomPreference(18);
-        map.setLatLngBoundsForCameraTarget(new LatLngBounds(stationLocation, stationLocation));
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
+    public void displayOsmMap(StopLocation station) {
+        GeoPoint stationLocation = new GeoPoint(mStation.getLatitude(), mStation.getLongitude());
+        Marker marker = new Marker(mMap);
+        marker.setTitle(station.getLocalizedName());
+        marker.setPosition(stationLocation);
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            enableOsmCurrentLocationView();
         }
+
+        enableOsmGestures();
     }
+
+
+    private void enableOsmCurrentLocationView() {
+        this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mMap);
+        this.mLocationOverlay.enableMyLocation();
+        mMap.getOverlays().add(this.mLocationOverlay);
+    }
+
+    private void enableOsmGestures() {
+        mMap.setMultiTouchControls(true);
+        mRotationGestureOverlay = new RotationGestureOverlay(this, mMap);
+        mRotationGestureOverlay.setEnabled(true);
+        mMap.setMultiTouchControls(true);
+        mMap.getOverlays().add(this.mRotationGestureOverlay);
+    }
+
 }

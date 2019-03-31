@@ -8,9 +8,6 @@ package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,26 +16,24 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.JointType;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-
 import org.joda.time.DateTime;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBox;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import be.hyperrail.android.R;
@@ -54,8 +49,6 @@ import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleJourney;
@@ -67,12 +60,14 @@ import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
  * A fragment for showing liveboard results
  */
 public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implements InfiniteScrollingDataSource,
-        ResultFragment<VehicleRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop>, OnMapReadyCallback {
+        ResultFragment<VehicleRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
 
     private VehicleJourney mCurrentTrain;
     private VehicleRequest mRequest;
     private VehicleStopCardAdapter mRecyclerviewAdapter;
-    private GoogleMap mMap;
+    private MapView mMap;
+    private MyLocationNewOverlay mLocationOverlay;
+    private RotationGestureOverlay mRotationGestureOverlay;
 
     public static VehicleFragment createInstance(VehicleRequest request) {
         VehicleFragment frg = new VehicleFragment();
@@ -93,10 +88,10 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("trains_map", true)) {
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+            mMap = view.findViewById(R.id.map);
+            mMap.setTileSource(TileSourceFactory.MAPNIK);
         } else {
-            View mapView = getChildFragmentManager().findFragmentById(R.id.map).getView();
+            View mapView = view.findViewById(R.id.map);
             if (mapView != null) {
                 mapView.setVisibility(View.GONE);
             }
@@ -155,23 +150,17 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
         OpenTransportApi.getDataProviderInstance().abortAllQueries();
 
         VehicleRequest request = new VehicleRequest(mRequest.getVehicleId(),
-                                                              mRequest.getSearchTime());
-        request.setCallback(new TransportDataSuccessResponseListener<VehicleJourney>() {
-            @Override
-            public void onSuccessResponse(@NonNull VehicleJourney data, Object tag) {
-                resetErrorState();
-                vRefreshLayout.setRefreshing(false);
-                mCurrentTrain = data;
-                showData(mCurrentTrain);
-            }
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                vRefreshLayout.setRefreshing(false);
+                mRequest.getSearchTime());
+        request.setCallback((data, tag) -> {
+            resetErrorState();
+            vRefreshLayout.setRefreshing(false);
+            mCurrentTrain = data;
+            showData(mCurrentTrain);
+        }, (e, tag) -> {
+            vRefreshLayout.setRefreshing(false);
 
-                // only finish if we're loading new data
-                showError(e);
-            }
+            // only finish if we're loading new data
+            showError(e);
         }, null);
         OpenTransportApi.getDataProviderInstance().getVehicleJourney(request);
     }
@@ -197,9 +186,22 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
                 vRecyclerView.scrollToPosition(i);
             }
         }
+
         if (mMap != null) {
-            onMapReady(mMap);
+            visualizeDataOnMap();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMap.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMap.onResume();
     }
 
     @Override
@@ -214,16 +216,15 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        // TODO: VehicleStop objects should have a way to distinguish the first and last stop
         DateTime queryTime = object.getArrivalTime();
         if (queryTime == null) {
             queryTime = object.getDepartureTime();
         }
         Intent i = LiveboardActivity.createIntent(getActivity(),
-                                                  new LiveboardRequest(object.getStopLocation(),
-                                                                            QueryTimeDefinition.DEPART_AT,
-                                                                            LiveboardType.DEPARTURES,
-                                                                            queryTime));
+                new LiveboardRequest(object.getStopLocation(),
+                        QueryTimeDefinition.DEPART_AT,
+                        LiveboardType.DEPARTURES,
+                        queryTime));
         startActivity(i);
     }
 
@@ -232,93 +233,115 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
         (new VehiclePopupContextMenu(getActivity(), stop)).show();
     }
 
-    @Override
-    public void onMapReady(final GoogleMap map) {
-        mMap = map;
-
+    public void visualizeDataOnMap() {
         if (mCurrentTrain == null) {
             return;
         }
 
-        final LatLng locations[] = new LatLng[mCurrentTrain.getStops().length];
-        final List<LatLng> passedLocations = new ArrayList<>();
-        final List<LatLng> futureLocations = new ArrayList<>();
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        BitmapDescriptor colorIcon = getMarkerIconFromDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.timeline_dot));
-        BitmapDescriptor greyIcon = getMarkerIconFromDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.timeline_dot_muted));
+        IMapController mapController = mMap.getController();
+        mapController.setZoom(9.5);
+
+        GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
+        mapController.setCenter(startPoint);
+
+        enableOsmGestures();
+
+        final GeoPoint stopLocations[] = new GeoPoint[mCurrentTrain.getStops().length];
+        final List<GeoPoint> passedLocations = new ArrayList<>();
+        final List<GeoPoint> futureLocations = new ArrayList<>();
+
+        Drawable coloredMarker = ContextCompat.getDrawable(getActivity(), R.drawable.timeline_dot);
+        Drawable mutedMarker = ContextCompat.getDrawable(getActivity(), R.drawable.timeline_dot_muted);
 
         for (int i = 0; i < mCurrentTrain.getStops().length; i++) {
             StopLocation s = mCurrentTrain.getStops()[i].getStopLocation();
-            locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
+            stopLocations[i] = new GeoPoint(s.getLatitude(), s.getLongitude());
             if (mCurrentTrain.getStops()[i].hasLeft()) {
-                passedLocations.add(locations[i]);
-                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(colorIcon).anchor(0.5f, 0.5f));
+                passedLocations.add(stopLocations[i]);
+                addMarkerToMap(mutedMarker, s, stopLocations[i]);
             } else {
-                futureLocations.add(locations[i]);
-                map.addMarker(new MarkerOptions().position(locations[i]).title(s.getLocalizedName()).icon(greyIcon).anchor(0.5f, 0.5f));
+                futureLocations.add(stopLocations[i]);
+                addMarkerToMap(coloredMarker, s, stopLocations[i]);
             }
-            builder.include(locations[i]);
+
         }
 
-        LatLngBounds bounds = builder.build();
-        map.addPolyline(new PolylineOptions()
-                                .add(passedLocations.toArray(new LatLng[0]))
-                                .color(getActivity().getResources().getColor(R.color.colorPrimary))
-                                .geodesic(false)
-                                .clickable(false)
-                                .jointType(JointType.DEFAULT)
-        );
-        map.addPolyline(new PolylineOptions()
-                                .add(futureLocations.toArray(new LatLng[futureLocations.size()]))
-                                .color(getActivity().getResources().getColor(R.color.colorMuted))
-                                .geodesic(false)
-                                .clickable(false)
-                                .jointType(JointType.DEFAULT)
-        );
+        addPolylineToMap(passedLocations, R.color.colorMuted);
+        addPolylineToMap(futureLocations, R.color.colorPrimary);
 
         if (passedLocations.size() > 0 && futureLocations.size() > 0) {
-            map.addPolyline(new PolylineOptions()
-                                    .add(passedLocations.get(passedLocations.size() - 1))
-                                    .add(futureLocations.get(0))
-                                    .color(getActivity().getResources().getColor(R.color.colorPrimary))
-                                    .geodesic(false)
-                                    .clickable(false)
-                                    .jointType(JointType.DEFAULT));
+            addPolylineToMap(
+                    Arrays.asList(passedLocations.get(passedLocations.size() - 1), futureLocations.get(0)),
+                    R.color.colorPrimary);
         }
-        try {
-            map.setBuildingsEnabled(true);
-            map.setTrafficEnabled(false);
-            map.setMinZoomPreference(7);
-            map.setMaxZoomPreference(14);
-            map.setLatLngBoundsForCameraTarget(bounds);
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 120));
-        } catch (IllegalStateException illegalStateException) {
-            try {
-                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, size.x, (int) (size.y * 0.4), 120));
-            } catch (Exception e) {
-                View mapView = getChildFragmentManager().findFragmentById(R.id.map).getView();
-                if (mapView != null) {
-                    mapView.setVisibility(View.GONE);
-                }
-            }
-        }
+
+        mMap.zoomToBoundingBox(calculateBoundingBox(Arrays.asList(stopLocations)), false);
+
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
+            enableOsmCurrentLocationView();
         }
 
     }
 
+    private void addPolylineToMap(List<GeoPoint> passedLocations, int p) {
+        Polyline passedPolyline = new Polyline(mMap);
+        passedPolyline.setPoints(passedLocations);
+        passedPolyline.setColor(p);
+        passedPolyline.setGeodesic(false);
+        mMap.getOverlayManager().add(passedPolyline);
+    }
 
-    private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
-        Canvas canvas = new Canvas();
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        drawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getHeight() / 2, bitmap.getWidth() / 2, true));
+    private void addMarkerToMap(Drawable mutedMarker, StopLocation s, GeoPoint stopLocation) {
+        Marker newMarker = new Marker(mMap);
+        newMarker.setDraggable(false);
+        newMarker.setIcon(mutedMarker);
+        newMarker.setPosition(stopLocation);
+        newMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+        newMarker.setTitle(s.getLocalizedName());
+        mMap.getOverlays().add(newMarker);
+    }
+
+    private void enableOsmCurrentLocationView() {
+        this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getView().getContext()), mMap);
+        this.mLocationOverlay.enableMyLocation();
+        mMap.getOverlays().add(this.mLocationOverlay);
+    }
+
+    private void enableOsmGestures() {
+        mMap.setMultiTouchControls(true);
+        mRotationGestureOverlay = new RotationGestureOverlay(getView().getContext(), mMap);
+        mRotationGestureOverlay.setEnabled(true);
+        mMap.setMultiTouchControls(true);
+        mMap.getOverlays().add(this.mRotationGestureOverlay);
+    }
+
+    public BoundingBox calculateBoundingBox(List<GeoPoint> points) {
+
+        if (points == null || points.size() == 0) {
+            return new BoundingBox(0, 0, 0, 0);
+        }
+
+        double north = points.get(0).getLatitude();
+        double south = points.get(0).getLatitude();
+        double east = points.get(0).getLongitude();
+        double west = points.get(0).getLongitude();
+
+        for (int i = 0; i < points.size(); i++) {
+            if (points.get(i) == null) {
+                continue;
+            }
+
+            double lat = points.get(i).getLatitude();
+            double lon = points.get(i).getLongitude();
+
+            north = Math.max(lat, north);
+            south = Math.min(lat, south);
+            east = Math.max(lon, east);
+            west = Math.min(lon, west);
+        }
+
+        return new BoundingBox(north, east, south, west);
+
     }
 }

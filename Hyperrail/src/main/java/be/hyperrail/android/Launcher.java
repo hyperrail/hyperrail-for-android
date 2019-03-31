@@ -15,6 +15,10 @@ package be.hyperrail.android;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 
+import org.osmdroid.config.Configuration;
+
+import java.io.File;
+
 import be.hyperrail.android.logging.HyperRailCrashlyticsLogger;
 import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.android.util.ReviewDialogProvider;
@@ -42,6 +46,11 @@ public class Launcher extends android.app.Application {
         // Initialize Fabric with the debug-disabled crashlytics.
         Fabric.with(this, crashlyticsKit);
         ReviewDialogProvider.init(this);
+
+        Configuration.getInstance().setOsmdroidTileCache(new File(this.getExternalCacheDir(), this.getPackageName() +
+                "/osmdroid"));
+        Configuration.getInstance().setUserAgentValue("HyperRailBelgium");
+
         super.onCreate();
     }
 
