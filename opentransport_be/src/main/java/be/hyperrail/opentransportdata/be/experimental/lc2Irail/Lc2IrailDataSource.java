@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 import be.hyperrail.opentransportdata.be.irail.IrailApi;
-import be.hyperrail.opentransportdata.be.irail.IrailLiveboardAppendHelper;
-import be.hyperrail.opentransportdata.be.irail.IrailRouteAppendHelper;
+import be.hyperrail.opentransportdata.be.irail.IrailLiveboardExtendHelper;
+import be.hyperrail.opentransportdata.be.irail.IrailRouteExtendHelper;
 import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
@@ -176,7 +176,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     public void extendLiveboard(@NonNull ExtendLiveboardRequest... requests) {
         for (ExtendLiveboardRequest request :
                 requests) {
-            IrailLiveboardAppendHelper helper = new IrailLiveboardAppendHelper();
+            IrailLiveboardExtendHelper helper = new IrailLiveboardExtendHelper();
             helper.extendLiveboard(request);
         }
     }
@@ -245,7 +245,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     public void extendRoutePlanning(@NonNull ExtendRoutePlanningRequest... requests) {
         for (ExtendRoutePlanningRequest request :
                 requests) {
-            IrailRouteAppendHelper helper = new IrailRouteAppendHelper();
+            IrailRouteExtendHelper helper = new IrailRouteExtendHelper();
             helper.extendRoutesRequest(request);
         }
     }

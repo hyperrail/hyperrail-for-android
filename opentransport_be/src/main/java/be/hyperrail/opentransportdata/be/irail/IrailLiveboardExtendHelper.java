@@ -34,7 +34,7 @@ import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 /**
  * A class which allows to withStopsAppended liveboards.
  */
-public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseListener<Liveboard>, TransportDataErrorResponseListener {
+public class IrailLiveboardExtendHelper implements TransportDataSuccessResponseListener<Liveboard>, TransportDataErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;

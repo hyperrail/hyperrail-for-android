@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="be.hyperrail.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,7 +20,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false"
-        android:theme="@style/Hyperrail">
+        android:theme="@style/Hyperrail"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <uses-library
             android:name="org.apache.http.legacy"

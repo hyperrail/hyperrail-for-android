@@ -138,7 +138,7 @@ public class IrailApi implements TransportDataSource {
     public void extendRoutePlanning(ExtendRoutePlanningRequest... requests) {
         for (ExtendRoutePlanningRequest request :
                 requests) {
-            IrailRouteAppendHelper helper = new IrailRouteAppendHelper();
+            IrailRouteExtendHelper helper = new IrailRouteExtendHelper();
             helper.extendRoutesRequest(request);
         }
     }
@@ -219,7 +219,7 @@ public class IrailApi implements TransportDataSource {
     public void extendLiveboard(ExtendLiveboardRequest... requests) {
         for (ExtendLiveboardRequest request :
                 requests) {
-            IrailLiveboardAppendHelper helper = new IrailLiveboardAppendHelper();
+            IrailLiveboardExtendHelper helper = new IrailLiveboardExtendHelper();
             helper.extendLiveboard(request);
         }
     }

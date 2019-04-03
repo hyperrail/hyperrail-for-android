@@ -35,7 +35,7 @@ import be.hyperrail.opentransportdata.util.ArrayUtils;
 /**
  * A class which allows to withStopsAppended route results.
  */
-public class IrailRouteAppendHelper implements TransportDataSuccessResponseListener<RoutesList>, TransportDataErrorResponseListener {
+public class IrailRouteExtendHelper implements TransportDataSuccessResponseListener<RoutesList>, TransportDataErrorResponseListener {
 
     private final int TAG_APPEND = 0;
     private final int TAG_PREPEND = 1;
