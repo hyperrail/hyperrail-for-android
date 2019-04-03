@@ -42,7 +42,7 @@ import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
-import static be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition.DEPART_AT;
+import static be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition.EQUAL_OR_LATER;
 import static be.hyperrail.opentransportdata.common.models.LiveboardType.ARRIVALS;
 import static be.hyperrail.opentransportdata.common.models.LiveboardType.DEPARTURES;
 
@@ -81,7 +81,7 @@ public class LiveboardActivity extends ResultActivity {
             try {
                 this.mRequest = new LiveboardRequest(
                         OpenTransportApi.getStationsProviderInstance().getStationByHID(
-                                getIntent().getStringExtra("station")), DEPART_AT, DEPARTURES,
+                                getIntent().getStringExtra("station")), EQUAL_OR_LATER, DEPARTURES,
                         null);
             } catch (StopLocationNotResolvedException e) {
                 Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();

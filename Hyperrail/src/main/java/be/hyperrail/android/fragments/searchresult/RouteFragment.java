@@ -111,7 +111,7 @@ public class RouteFragment extends RecyclerViewFragment<Route> implements Result
 
 
             } else if (object instanceof Transfer) {
-                i = LiveboardActivity.createIntent(getActivity(), new LiveboardRequest(((Transfer) object).getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
+                i = LiveboardActivity.createIntent(getActivity(), new LiveboardRequest(((Transfer) object).getStopLocation(), QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null));
             }
             startActivity(i);
         });

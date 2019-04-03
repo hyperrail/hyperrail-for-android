@@ -69,7 +69,7 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
         } else {
             lastSearchTime = originalRouteResult.getSearchTime().plusHours(1);
         }
-        RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.DEPART_AT, lastSearchTime);
+        RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.EQUAL_OR_LATER, lastSearchTime);
         request.setCallback(this, this, TAG_APPEND);
         api.getRoutePlanning(request);
     }
@@ -85,7 +85,7 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
             lastSearchTime = originalRouteResult.getSearchTime();
         }
 
-        RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.ARRIVE_AT, lastSearchTime);
+        RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.EQUAL_OR_EARLIER, lastSearchTime);
         request.setCallback(this, this, TAG_PREPEND);
         api.getRoutePlanning(request);
     }
@@ -116,7 +116,7 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
             attempt++;
             lastSearchTime = lastSearchTime.minusHours(2);
             if (attempt < 12) {
-                RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.ARRIVE_AT, lastSearchTime);
+                RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.EQUAL_OR_EARLIER, lastSearchTime);
                 request.setCallback(this, this, TAG_PREPEND);
                 api.getRoutePlanning(request);
             } else {
@@ -139,7 +139,7 @@ public class IrailRouteAppendHelper implements TransportDataSuccessResponseListe
             attempt++;
             lastSearchTime = lastSearchTime.plusHours(2);
             if (attempt < 12) {
-                RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.DEPART_AT, lastSearchTime);
+                RoutePlanningRequest request = new RoutePlanningRequest(originalRouteResult.getOrigin(), originalRouteResult.getDestination(), QueryTimeDefinition.EQUAL_OR_LATER, lastSearchTime);
                 request.setCallback(this, this, TAG_APPEND);
                 api.getRoutePlanning(request);
             } else {

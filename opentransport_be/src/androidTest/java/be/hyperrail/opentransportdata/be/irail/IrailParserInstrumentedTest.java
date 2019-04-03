@@ -47,7 +47,7 @@ public class IrailParserInstrumentedTest {
     public void liveboardParsingTest() throws Exception {
         // Context of the app under test.
         DateTime searchTime = new DateTime(2017, 11, 16, 13, 0);
-        Liveboard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime, LiveboardType.DEPARTURES, QueryTimeDefinition.DEPART_AT);
+        Liveboard liveboard = parser.parseLiveboard(new JSONObject(LIVEBOARD_RESPONSE), searchTime, LiveboardType.DEPARTURES, QueryTimeDefinition.EQUAL_OR_LATER);
 
         assertEquals(searchTime, liveboard.getSearchTime());
         assertEquals("008892007", liveboard.getHafasId());
@@ -119,7 +119,7 @@ public class IrailParserInstrumentedTest {
         IrailStationsDataProvider stationProvider = new IrailStationsDataProvider(InstrumentationRegistry.getTargetContext());
         DateTime searchTime = new DateTime(2017, 11, 16, 14, 0);
         RoutesList routes = parser.parseRouteResult(new JSONObject(ROUTE_RESPONSE), stationProvider.getStationByHID("008893120"),
-                                                     stationProvider.getStationByHID("008832375"), searchTime, QueryTimeDefinition.DEPART_AT);
+                                                     stationProvider.getStationByHID("008832375"), searchTime, QueryTimeDefinition.EQUAL_OR_LATER);
 
         assertEquals(6, routes.getRoutes().length);
         Route route = routes.getRoutes()[0];

@@ -352,9 +352,9 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         QueryTimeDefinition timedef;
         if (vArriveDepart.getSelectedItemPosition() == 0) {
-            timedef = QueryTimeDefinition.DEPART_AT;
+            timedef = QueryTimeDefinition.EQUAL_OR_LATER;
         } else {
-            timedef = QueryTimeDefinition.ARRIVE_AT;
+            timedef = QueryTimeDefinition.EQUAL_OR_EARLIER;
         }
 
         DateTime d = null;

@@ -221,7 +221,7 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
         }
         Intent i = LiveboardActivity.createIntent(getActivity(),
                                                   new LiveboardRequest(object.getStopLocation(),
-                                                                            QueryTimeDefinition.DEPART_AT,
+                                                                            QueryTimeDefinition.EQUAL_OR_LATER,
                                                                             LiveboardType.DEPARTURES,
                                                                             queryTime));
         startActivity(i);

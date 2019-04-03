@@ -72,7 +72,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
                 finish();
                 return;
             }
-            this.mRequest = new RoutePlanningRequest(origin, destination, QueryTimeDefinition.DEPART_AT, null);
+            this.mRequest = new RoutePlanningRequest(origin, destination, QueryTimeDefinition.EQUAL_OR_LATER, null);
         } else {
             this.mRequest = (RoutePlanningRequest) getIntent().getSerializableExtra("request");
         }

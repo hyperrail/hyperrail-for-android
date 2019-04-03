@@ -71,7 +71,7 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
             id = id.substring(8);
         }
         this.station = OpenTransportApi.getStationsProviderInstance().getStationByHID(id);
-        timeDefinition = QueryTimeDefinition.DEPART_AT;
+        timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         type = LiveboardType.DEPARTURES;
         searchTime = null;
     }

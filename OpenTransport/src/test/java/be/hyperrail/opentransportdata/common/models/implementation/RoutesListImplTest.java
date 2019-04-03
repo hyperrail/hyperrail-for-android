@@ -20,7 +20,7 @@ class RoutesListImplTest {
         StopLocation secondStation = Mockito.mock(StopLocation.class);
         Route[] routes = new Route[]{Mockito.mock(Route.class)};
         DateTime now = DateTime.now();
-        RoutesList list = new RoutesListImpl(firstStation, secondStation, now, QueryTimeDefinition.DEPART_AT, routes);
+        RoutesList list = new RoutesListImpl(firstStation, secondStation, now, QueryTimeDefinition.EQUAL_OR_LATER, routes);
 
         assertEquals(firstStation, list.getOrigin());
         assertEquals(secondStation, list.getDestination());
@@ -34,7 +34,7 @@ class RoutesListImplTest {
         StopLocation secondStation = Mockito.mock(StopLocation.class);
         Route[] routes = new Route[]{Mockito.mock(Route.class)};
         DateTime now = DateTime.now();
-        RoutesListImpl list = new RoutesListImpl(firstStation, secondStation, now, QueryTimeDefinition.DEPART_AT, routes);
+        RoutesListImpl list = new RoutesListImpl(firstStation, secondStation, now, QueryTimeDefinition.EQUAL_OR_LATER, routes);
 
         NextDataPointer next = Mockito.mock(NextDataPointer.class);
         NextDataPointer current = Mockito.mock(NextDataPointer.class);

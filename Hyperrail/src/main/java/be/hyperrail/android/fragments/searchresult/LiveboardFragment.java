@@ -35,6 +35,7 @@ import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
@@ -175,7 +176,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
             return;
         }
 
-        ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.APPEND);
+        ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ResultExtensionType.APPEND);
         request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
@@ -214,7 +215,7 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
             return;
         }
 
-        ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ExtendLiveboardRequest.Action.PREPEND);
+        ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ResultExtensionType.PREPEND);
         request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
             @Override
             public void onSuccessResponse(@NonNull Liveboard data, Object tag) {

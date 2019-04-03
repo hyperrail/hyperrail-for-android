@@ -144,7 +144,7 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
 
                 } else if (object instanceof Transfer) {
                     i = LiveboardActivity.createIntent(context, new LiveboardRequest(
-                            ((Transfer) object).getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null));
+                            ((Transfer) object).getStopLocation(), QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null));
                 }
                 context.startActivity(i);
             }

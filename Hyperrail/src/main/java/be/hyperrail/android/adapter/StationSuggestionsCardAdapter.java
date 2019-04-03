@@ -134,7 +134,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         }
 
         LiveboardRequest request = new LiveboardRequest(station,
-                QueryTimeDefinition.DEPART_AT,
+                QueryTimeDefinition.EQUAL_OR_LATER,
                 LiveboardType.DEPARTURES,
                 null);
         final Suggestion<LiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);

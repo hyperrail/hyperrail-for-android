@@ -163,7 +163,7 @@ public class IrailApi implements TransportDataSource {
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
                 + "&lang=" + locale.substring(0, 2);
 
-        if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+        if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
             url += "&timeSel=depart";
         } else {
             url += "&timeSel=arrive";
@@ -207,7 +207,7 @@ public class IrailApi implements TransportDataSource {
     @Override
     public void getLiveboard(LiveboardRequest... requests) {
         for (LiveboardRequest request : requests) {
-            if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+            if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
                 getLiveboardAfter(request);
             } else {
                 getLiveboardBefore(request);
@@ -244,7 +244,7 @@ public class IrailApi implements TransportDataSource {
             //noinspection SuspiciousToArrayCall
             request.notifySuccessListeners(
                     new LiveboardImpl(data, stops.toArray(new VehicleStopImpl[]{}),
-                            data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.ARRIVE_AT
+                            data.getSearchTime(), data.getLiveboardType(), QueryTimeDefinition.EQUAL_OR_EARLIER
                     ));
         }, (e, tag) -> request.notifyErrorListeners(e), actualRequest.getTag());
         getLiveboardAfter(request);

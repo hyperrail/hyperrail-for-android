@@ -384,7 +384,7 @@ public class VehiclePopupContextMenu {
                     resultIntent = LiveboardActivity.createIntent(mContext,
                                                                   new LiveboardRequest(
                                                                           mTransfer.getStopLocation(),
-                                                                          RouteTimeDefinition.DEPART_AT,
+                                                                          RouteTimeDefinition.EQUAL_OR_LATER,
                                                                           Liveboard.LiveboardType.DEPARTURES,
                                                                           mTransfer.getArrivalTime()));
 

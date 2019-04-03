@@ -126,7 +126,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
         String url;
         // https://lc2irail.thesis.bertmarcelis.be/liveboard/008841004/after/2018-04-13T13:13:47+00:00
-        if (request.getTimeDefinition() == QueryTimeDefinition.ARRIVE_AT) {
+        if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_EARLIER) {
             url = "https://lc2irail.thesis.bertmarcelis.be/liveboard/"
                     + request.getStation().getHafasId() + "/before/"
                     + fmt.print(request.getSearchTime());
@@ -201,7 +201,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         String url = "https://lc2irail.thesis.bertmarcelis.be/connections/"
                 + request.getOrigin().getHafasId() + "/"
                 + request.getDestination().getHafasId() + "/";
-        if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+        if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
             url += "departing/";
         } else {
             url += "arriving/";

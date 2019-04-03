@@ -64,7 +64,7 @@ public class RoutePlanningRequest extends OpenTransportBaseRequest<RoutesList> i
         this.origin = OpenTransportApi.getStationsProviderInstance().getStationByHID(from);
         this.destination = OpenTransportApi.getStationsProviderInstance().getStationByHID(to);
 
-        timeDefinition = QueryTimeDefinition.DEPART_AT;
+        timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         searchTime = null;
     }
 

@@ -29,6 +29,7 @@ import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 
 /**
  * A class which allows to withStopsAppended liveboards.
@@ -64,18 +65,29 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
 
         if (originalLiveboard.getStops().length > 0) {
             if (originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getType() == VehicleStopType.DEPARTURE) {
-                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getDepartureTime();
+                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getDepartureTime().minusMinutes(3);
             } else {
-                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getArrivalTime();
+                this.lastSearchTime = originalLiveboard.getStops()[originalLiveboard.getStops().length - 1].getArrivalTime().minusMinutes(3);
             }
         } else {
             this.lastSearchTime = originalLiveboard.getSearchTime().plusHours(1);
         }
 
-        LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.DEPART_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
-        request.setCallback(this, this, TAG_APPEND);
-        api.getLiveboard(request);
+        makeLiveboardRequest(ResultExtensionType.APPEND);
     }
+
+    private void makeLiveboardRequest(ResultExtensionType action) {
+        if (action == ResultExtensionType.APPEND) {
+            LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.EQUAL_OR_LATER, originalLiveboard.getLiveboardType(), lastSearchTime);
+            request.setCallback(this, this, TAG_APPEND);
+            api.getLiveboard(request);
+        } else {
+            LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.EQUAL_OR_EARLIER, originalLiveboard.getLiveboardType(), lastSearchTime);
+            request.setCallback(this, this, TAG_PREPEND);
+            api.getLiveboard(request);
+        }
+    }
+
 
     private void prependLiveboard(ExtendLiveboardRequest extendRequest) {
         this.originalLiveboard = (LiveboardImpl) extendRequest.getLiveboard();
@@ -90,9 +102,8 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
         } else {
             this.lastSearchTime = originalLiveboard.getSearchTime().minusHours(1);
         }
-        LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.ARRIVE_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
-        request.setCallback(this, this, TAG_PREPEND);
-        api.getLiveboard(request);
+
+        makeLiveboardRequest(ResultExtensionType.PREPEND);
     }
 
     @Override
@@ -121,9 +132,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
             lastSearchTime = lastSearchTime.minusHours(1);
 
             if (attempt < 12) {
-                LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.ARRIVE_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
-                request.setCallback(this, this, TAG_PREPEND);
-                api.getLiveboard(request);
+                makeLiveboardRequest(ResultExtensionType.PREPEND);
             } else {
                 mExtendRequest.notifySuccessListeners(originalLiveboard);
             }
@@ -172,9 +181,7 @@ public class IrailLiveboardAppendHelper implements TransportDataSuccessResponseL
             lastSearchTime = lastSearchTime.plusHours(2);
 
             if (attempt < 12) {
-                LiveboardRequest request = new LiveboardRequest(originalLiveboard, QueryTimeDefinition.DEPART_AT, originalLiveboard.getLiveboardType(), lastSearchTime);
-                request.setCallback(this, this, TAG_APPEND);
-                api.getLiveboard(request);
+                makeLiveboardRequest(ResultExtensionType.APPEND);
             } else {
                 mExtendRequest.notifySuccessListeners(originalLiveboard);
             }

@@ -77,7 +77,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
             next = data.next;
         }
 
-        if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+        if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
             // Moving forward through pages
             next = data.next;
         } else {
@@ -115,7 +115,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
             Log.i("LiveboardResponse", "Found no results");
             String link = data.next;
             // When searching for "arrive before", we need to look backwards
-            if (request.getTimeDefinition() == QueryTimeDefinition.ARRIVE_AT) {
+            if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_EARLIER) {
                 link = data.previous;
             }
 

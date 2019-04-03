@@ -22,8 +22,8 @@ import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 
-import static be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition.ARRIVE_AT;
-import static be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition.DEPART_AT;
+import static be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition.EQUAL_OR_EARLIER;
+import static be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition.EQUAL_OR_LATER;
 import static be.hyperrail.opentransportdata.common.models.LiveboardType.ARRIVALS;
 import static be.hyperrail.opentransportdata.common.models.LiveboardType.DEPARTURES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,7 +41,7 @@ class LiveboardImplTest {
         Mockito.when(station.getHafasId()).thenReturn("008814001");
         VehicleStop stop = Mockito.mock(VehicleStop.class);
         VehicleStop[] stops = new VehicleStop[]{stop};
-        Liveboard instance = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, DEPART_AT);
+        Liveboard instance = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, EQUAL_OR_LATER);
 
         assertEquals(mDateTime, instance.getSearchTime());
     }
@@ -53,11 +53,11 @@ class LiveboardImplTest {
         Mockito.when(station.getHafasId()).thenReturn("008814001");
         VehicleStop stop = Mockito.mock(VehicleStop.class);
         VehicleStop[] stops = new VehicleStop[]{stop};
-        Liveboard departing = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, DEPART_AT);
-        Liveboard arriving = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, QueryTimeDefinition.ARRIVE_AT);
+        Liveboard departing = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, EQUAL_OR_LATER);
+        Liveboard arriving = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, QueryTimeDefinition.EQUAL_OR_EARLIER);
 
-        assertEquals(DEPART_AT, departing.getTimeDefinition());
-        assertEquals(QueryTimeDefinition.ARRIVE_AT, arriving.getTimeDefinition());
+        assertEquals(EQUAL_OR_LATER, departing.getTimeDefinition());
+        assertEquals(QueryTimeDefinition.EQUAL_OR_EARLIER, arriving.getTimeDefinition());
     }
 
     @Test
@@ -67,8 +67,8 @@ class LiveboardImplTest {
         Mockito.when(station.getHafasId()).thenReturn("008814001");
         VehicleStop stop = Mockito.mock(VehicleStop.class);
         VehicleStop[] stops = new VehicleStop[]{stop};
-        Liveboard departing = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, DEPART_AT);
-        Liveboard arriving = new LiveboardImpl(station, stops, mDateTime, LiveboardType.ARRIVALS, DEPART_AT);
+        Liveboard departing = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, EQUAL_OR_LATER);
+        Liveboard arriving = new LiveboardImpl(station, stops, mDateTime, LiveboardType.ARRIVALS, EQUAL_OR_LATER);
 
         assertEquals(DEPARTURES, departing.getLiveboardType());
         assertEquals(LiveboardType.ARRIVALS, arriving.getLiveboardType());
@@ -80,7 +80,7 @@ class LiveboardImplTest {
         StopLocation station = Mockito.mock(StopLocation.class);
         VehicleStop stop = Mockito.mock(VehicleStop.class);
         VehicleStop[] stops = new VehicleStop[]{stop};
-        LiveboardImpl instance = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, DEPART_AT);
+        LiveboardImpl instance = new LiveboardImpl(station, stops, mDateTime, DEPARTURES, EQUAL_OR_LATER);
         instance.setPageInfo(new StringPagePointer("prev"), new StringPagePointer("current"),
                 new StringPagePointer("next"));
 
@@ -113,10 +113,10 @@ class LiveboardImplTest {
         Mockito.when(secondStopToAppend.getDepartureTime()).thenReturn(new DateTime(2019, 2, 1, 10, 20));
 
         VehicleStop[] originalStops = new VehicleStop[]{firstOriginalStop, secondOriginalStop};
-        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, DEPARTURES, DEPART_AT);
+        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, DEPARTURES, EQUAL_OR_LATER);
 
         VehicleStop[] stopsToAppend = new VehicleStop[]{firstStopToAppend, secondStopToAppend};
-        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, DEPARTURES, DEPART_AT);
+        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, DEPARTURES, EQUAL_OR_LATER);
 
         LiveboardImpl combined = original.withStopsAppended(dataToAppend);
 
@@ -124,7 +124,7 @@ class LiveboardImplTest {
         assertNotEquals(dataToAppend.getSearchTime(), combined.getCurrentResultsPointer());
 
         assertEquals(DEPARTURES, combined.getLiveboardType());
-        assertEquals(DEPART_AT, combined.getTimeDefinition());
+        assertEquals(EQUAL_OR_LATER, combined.getTimeDefinition());
 
         assertEquals(4, combined.getStops().length);
         assertEquals(firstOriginalStop, combined.getStops()[0]);
@@ -157,10 +157,10 @@ class LiveboardImplTest {
         Mockito.when(secondStopToAppend.getDepartureTime()).thenReturn(new DateTime(2019, 2, 1, 10, 20));
 
         VehicleStop[] originalStops = new VehicleStop[]{firstOriginalStop, secondOriginalStop};
-        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, DEPARTURES, DEPART_AT);
+        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, DEPARTURES, EQUAL_OR_LATER);
 
         VehicleStop[] stopsToAppend = new VehicleStop[]{firstStopToAppend, secondStopToAppend};
-        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, DEPARTURES, DEPART_AT);
+        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, DEPARTURES, EQUAL_OR_LATER);
 
         LiveboardImpl combined = original.withStopsAppended(dataToAppend);
 
@@ -168,7 +168,7 @@ class LiveboardImplTest {
         assertNotEquals(dataToAppend.getSearchTime(), combined.getCurrentResultsPointer());
 
         assertEquals(DEPARTURES, combined.getLiveboardType());
-        assertEquals(DEPART_AT, combined.getTimeDefinition());
+        assertEquals(EQUAL_OR_LATER, combined.getTimeDefinition());
 
         assertEquals(4, combined.getStops().length);
         assertEquals(firstOriginalStop, combined.getStops()[0]);
@@ -201,10 +201,10 @@ class LiveboardImplTest {
         Mockito.when(secondStopToAppend.getArrivalTime()).thenReturn(new DateTime(2019, 2, 1, 10, 20));
 
         VehicleStop[] originalStops = new VehicleStop[]{firstOriginalStop, secondOriginalStop};
-        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, ARRIVALS, ARRIVE_AT);
+        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, ARRIVALS, EQUAL_OR_EARLIER);
 
         VehicleStop[] stopsToAppend = new VehicleStop[]{firstStopToAppend, secondStopToAppend};
-        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, ARRIVALS, ARRIVE_AT);
+        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, ARRIVALS, EQUAL_OR_EARLIER);
 
         LiveboardImpl combined = original.withStopsAppended(dataToAppend);
 
@@ -212,7 +212,7 @@ class LiveboardImplTest {
         assertNotEquals(dataToAppend.getSearchTime(), combined.getCurrentResultsPointer());
 
         assertEquals(ARRIVALS, combined.getLiveboardType());
-        assertEquals(ARRIVE_AT, combined.getTimeDefinition());
+        assertEquals(EQUAL_OR_EARLIER, combined.getTimeDefinition());
 
         assertEquals(4, combined.getStops().length);
         assertEquals(firstOriginalStop, combined.getStops()[0]);
@@ -245,10 +245,10 @@ class LiveboardImplTest {
         Mockito.when(secondStopToAppend.getArrivalTime()).thenReturn(new DateTime(2019, 2, 1, 10, 20));
 
         VehicleStop[] originalStops = new VehicleStop[]{firstOriginalStop, secondOriginalStop};
-        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, ARRIVALS, ARRIVE_AT);
+        LiveboardImpl original = new LiveboardImpl(station, originalStops, mDateTimeOriginal, ARRIVALS, EQUAL_OR_EARLIER);
 
         VehicleStop[] stopsToAppend = new VehicleStop[]{firstStopToAppend, secondStopToAppend};
-        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, ARRIVALS, ARRIVE_AT);
+        LiveboardImpl dataToAppend = new LiveboardImpl(station, stopsToAppend, mDateTimeToAppend, ARRIVALS, EQUAL_OR_EARLIER);
 
         LiveboardImpl combined = original.withStopsAppended(dataToAppend);
 
@@ -256,7 +256,7 @@ class LiveboardImplTest {
         assertNotEquals(dataToAppend.getSearchTime(), combined.getCurrentResultsPointer());
 
         assertEquals(ARRIVALS, combined.getLiveboardType());
-        assertEquals(ARRIVE_AT, combined.getTimeDefinition());
+        assertEquals(EQUAL_OR_EARLIER, combined.getTimeDefinition());
 
         assertEquals(4, combined.getStops().length);
         assertEquals(firstOriginalStop, combined.getStops()[0]);

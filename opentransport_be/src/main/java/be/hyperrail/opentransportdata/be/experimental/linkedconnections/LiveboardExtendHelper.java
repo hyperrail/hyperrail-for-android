@@ -14,9 +14,10 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorRespons
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
+import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
-import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
+import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 
 /**
  * Created in be.hyperrail.android.irail.implementation.linkedconnections on 17/04/2018.
@@ -49,7 +50,7 @@ public class LiveboardExtendHelper implements TransportDataSuccessResponseListen
         mLiveboard = liveboard;
         String url;
 
-        if (mRequest.getAction() == ExtendLiveboardRequest.Action.PREPEND) {
+        if (mRequest.getAction() == ResultExtensionType.PREPEND) {
             url = (String) mLiveboard.getPreviousResultsPointer().getPointer();
         } else {
             url = (String) mLiveboard.getNextResultsPointer().getPointer();
@@ -85,7 +86,7 @@ public class LiveboardExtendHelper implements TransportDataSuccessResponseListen
         NextDataPointer current =  mRequest.getLiveboard().getPreviousResultsPointer();
         NextDataPointer next =  mRequest.getLiveboard().getPreviousResultsPointer();
 
-        if (mRequest.getAction() == ExtendLiveboardRequest.Action.APPEND) {
+        if (mRequest.getAction() == ResultExtensionType.APPEND) {
             next =  data.getNextResultsPointer();
         } else {
             previous =  data.getPreviousResultsPointer();

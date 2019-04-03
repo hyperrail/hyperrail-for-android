@@ -61,7 +61,7 @@ public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> impleme
     public RouteRefreshRequest(Route route) {
         this.origin = route.getDepartureStation();
         this.destination = route.getArrivalStation();
-        this.timeDefinition = QueryTimeDefinition.DEPART_AT;
+        this.timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         this.searchTime = route.getDepartureTime();
         if (route.getDeparture().getDepartureSemanticId() == null) {
             throw new IllegalStateException("Cannot create a route request when no departure semantic id is provided");
@@ -75,7 +75,7 @@ public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> impleme
         this.origin = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
         this.destination = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
 
-        timeDefinition = QueryTimeDefinition.DEPART_AT;
+        timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         searchTime = new DateTime(jsonObject.getLong("time"));
     }
 

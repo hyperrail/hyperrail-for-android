@@ -71,7 +71,7 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
                     @Override
                     public void onClick(View v) {
                         startActivity(LiveboardActivity.createIntent(StationActivity.this,
-                                new LiveboardRequest(mStation, QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, null)));
+                                new LiveboardRequest(mStation, QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null)));
                     }
                 }
         );

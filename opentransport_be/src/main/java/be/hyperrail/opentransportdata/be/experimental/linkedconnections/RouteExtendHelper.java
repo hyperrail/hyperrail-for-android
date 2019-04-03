@@ -19,6 +19,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessRespo
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
@@ -58,19 +59,19 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
         mRoutes = routes;
         String start;
         DateTime departureLimit;
-        if (mRequest.getRoutes().getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+        if (mRequest.getRoutes().getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
             departureLimit = mRequest.getRoutes().getSearchTime();
             if (mRequest.getRoutes().getRoutes().length > 0) {
                 departureLimit = mRequest.getRoutes().getRoutes()[mRequest.getRoutes().getRoutes().length - 1].getDepartureTime();
             }
-            if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.PREPEND) {
+            if (mRequest.getAction() == ResultExtensionType.PREPEND) {
                 start = (String) mRequest.getRoutes().getCurrentResultsPointer().getPointer();
             } else {
                 start = (String) mRequest.getRoutes().getNextResultsPointer().getPointer();
             }
         } else {
             departureLimit = null;
-            if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.PREPEND) {
+            if (mRequest.getAction() == ResultExtensionType.PREPEND) {
                 start = (String) mRequest.getRoutes().getPreviousResultsPointer().getPointer();
             } else {
                 start = (String) mRequest.getRoutes().getNextResultsPointer().getPointer();
@@ -86,13 +87,13 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
         routesRequest.setCallback(this, this, mMeteredRequest);
 
         RouteResponseListener listener;
-        if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.PREPEND) {
+        if (mRequest.getAction() == ResultExtensionType.PREPEND) {
             listener = new RouteResponseListener(mLinkedConnectionsProvider, mStationProvider, routesRequest, null);
         } else {
             listener = new RouteResponseListener(mLinkedConnectionsProvider, mStationProvider, routesRequest, departureLimit, 12 * 60);
         }
 
-        if (mRequest.getRoutes().getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+        if (mRequest.getRoutes().getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
             DateTime limit;
             if (mRoutes.getRoutes() != null && mRoutes.getRoutes().length > 0) {
                 limit = mRoutes.getRoutes()[mRoutes.getRoutes().length - 1].getDepartureTime();
@@ -124,7 +125,7 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
                 newData.getCurrentResultsPointer(),
                 newData.getNextResultsPointer()
         );
-        if (mRequest.getAction() == ExtendRoutePlanningRequest.Action.APPEND) {
+        if (mRequest.getAction() == ResultExtensionType.APPEND) {
             if (originalWithAppended.getRoutes().length > mRoutes.getRoutes().length) {
                 mRequest.notifySuccessListeners(originalWithAppended);
             } else {

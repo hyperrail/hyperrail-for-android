@@ -38,6 +38,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessRespo
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
@@ -156,7 +157,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
             return;
         }
 
-        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ExtendRoutePlanningRequest.Action.APPEND);
+        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ResultExtensionType.APPEND);
         request.setCallback(
                 new TransportDataSuccessResponseListener<RoutesList>() {
                     @Override
@@ -196,7 +197,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
             return;
         }
 
-        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ExtendRoutePlanningRequest.Action.PREPEND);
+        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ResultExtensionType.PREPEND);
         request.setCallback(
                 (TransportDataSuccessResponseListener<RoutesList>) (data, tag) -> {
                     resetErrorState();

@@ -149,9 +149,9 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
     private void getStop(@NonNull final VehicleStopRequest request) {
         LiveboardRequest liveboardRequest;
         if (request.getStop().getType() == VehicleStopType.DEPARTURE || request.getStop().getType() == VehicleStopType.STOP) {
-            liveboardRequest = new LiveboardRequest(request.getStop().getStopLocation(), QueryTimeDefinition.DEPART_AT, LiveboardType.DEPARTURES, request.getStop().getDepartureTime());
+            liveboardRequest = new LiveboardRequest(request.getStop().getStopLocation(), QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, request.getStop().getDepartureTime());
         } else {
-            liveboardRequest = new LiveboardRequest(request.getStop().getStopLocation(), QueryTimeDefinition.ARRIVE_AT, LiveboardType.ARRIVALS, request.getStop().getArrivalTime());
+            liveboardRequest = new LiveboardRequest(request.getStop().getStopLocation(), QueryTimeDefinition.EQUAL_OR_EARLIER, LiveboardType.ARRIVALS, request.getStop().getArrivalTime());
         }
         liveboardRequest.setCallback((data, tag) -> {
             for (VehicleStop stop :
@@ -299,7 +299,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
 
             DateTime departureLimit;
 
-            if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+            if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
                 departureLimit = request.getSearchTime();
             } else {
                 departureLimit = request.getSearchTime().minusHours(24);
@@ -307,7 +307,7 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
 
             final RouteResponseListener listener = new RouteResponseListener(api.mLinkedConnectionsProvider, api.mStationsProvider, request, departureLimit);
 
-            if (request.getTimeDefinition() == QueryTimeDefinition.DEPART_AT) {
+            if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
                 DateTime end = request.getSearchTime();
                 if (end.getHourOfDay() < 18 && end.getHourOfDay() >= 6) {
                     end = request.getSearchTime().plusHours(4);

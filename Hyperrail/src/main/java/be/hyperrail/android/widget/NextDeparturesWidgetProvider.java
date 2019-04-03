@@ -66,7 +66,7 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
         // Create an Intent to launch ExampleActivity
         Intent onClickIntent = LiveboardActivity.createIntent(context,
                                                               new LiveboardRequest(mStation,
-                                                                                        QueryTimeDefinition.DEPART_AT,
+                                                                                        QueryTimeDefinition.EQUAL_OR_LATER,
                                                                                         LiveboardType.DEPARTURES,
                                                                                         null));
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, 0);

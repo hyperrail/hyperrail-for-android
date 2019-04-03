@@ -18,9 +18,9 @@ public class ExtendLiveboardRequest extends OpenTransportBaseRequest<Liveboard> 
 
     private final Liveboard mLiveboard;
 
-    private final Action mAction;
+    private final ResultExtensionType mAction;
 
-    public ExtendLiveboardRequest(Liveboard liveboard, Action action) {
+    public ExtendLiveboardRequest(Liveboard liveboard, ResultExtensionType action) {
         this.mLiveboard = liveboard;
         this.mAction = action;
     }
@@ -31,7 +31,7 @@ public class ExtendLiveboardRequest extends OpenTransportBaseRequest<Liveboard> 
     }
 
     @Override
-    public int compareTo( TransportDataRequest o) {
+    public int compareTo(TransportDataRequest o) {
         return 0;
     }
 
@@ -41,12 +41,8 @@ public class ExtendLiveboardRequest extends OpenTransportBaseRequest<Liveboard> 
     }
 
 
-    public Action getAction() {
+    public ResultExtensionType getAction() {
         return mAction;
     }
 
-    public enum Action {
-        APPEND,
-        PREPEND
-    }
 }

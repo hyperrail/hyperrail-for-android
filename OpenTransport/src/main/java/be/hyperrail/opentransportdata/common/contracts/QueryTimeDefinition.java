@@ -11,13 +11,13 @@ package be.hyperrail.opentransportdata.common.contracts;
  */
 public enum QueryTimeDefinition {
     /**
-     * DEPART_AT indicates that a query is made to find results where the departure is at or after the given time.
+     * EQUAL_OR_LATER indicates that a query is made to find results where the results lie at or after the given time.
      */
-    DEPART_AT,
+    EQUAL_OR_LATER,
 
     /**
-     * ARRIVE_AT indicates that a query is made to find results where the departure is at or before the given time.
+     * EQUAL_OR_EARLIER indicates that a query is made to find results where the results lie at or before the given time.
      */
-    ARRIVE_AT
+    EQUAL_OR_EARLIER
 }
 

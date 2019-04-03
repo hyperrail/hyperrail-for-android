@@ -17,9 +17,9 @@ public class ExtendRoutePlanningRequest extends OpenTransportBaseRequest<RoutesL
 
     private final RoutesList routes;
 
-    private final Action mAction;
+    private final ResultExtensionType mAction;
 
-    public ExtendRoutePlanningRequest(RoutesList routes, Action action) {
+    public ExtendRoutePlanningRequest(RoutesList routes, ResultExtensionType action) {
         this.routes = routes;
         mAction = action;
     }
@@ -30,7 +30,7 @@ public class ExtendRoutePlanningRequest extends OpenTransportBaseRequest<RoutesL
     }
 
     @Override
-    public int compareTo( TransportDataRequest o) {
+    public int compareTo(TransportDataRequest o) {
         return 0;
     }
 
@@ -40,12 +40,7 @@ public class ExtendRoutePlanningRequest extends OpenTransportBaseRequest<RoutesL
     }
 
 
-    public Action getAction() {
+    public ResultExtensionType getAction() {
         return mAction;
-    }
-
-    public enum Action {
-        APPEND,
-        PREPEND
     }
 }
