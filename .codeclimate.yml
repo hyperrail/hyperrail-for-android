@@ -1,0 +1,40 @@
+version: "2"         # required to adjust maintainability checks
+checks:
+  argument-count:
+    config:
+      threshold: 8
+  complex-logic:
+    config:
+      threshold: 4
+  file-lines:
+    config:
+      threshold: 250
+  method-complexity:
+    config:
+      threshold: 15
+  method-count:
+    config:
+      threshold: 20
+  method-lines:
+    config:
+      threshold: 50
+  nested-control-flow:
+    config:
+      threshold: 4
+  return-statements:
+    config:
+      threshold: 4
+  similar-code:
+    enabled: false
+  identical-code:
+    enabled: false
+plugins:
+  sonar-java:
+    enabled: true
+    config:
+      sonar.java.source: "7"
+      tests_patterns:
+      - Hyperrail/src/test/**
+      - Hyperrail/src/androidTest/**
+      - OpenTransport/src/test/**
+      - OpenTransport/src/androidTest/**
