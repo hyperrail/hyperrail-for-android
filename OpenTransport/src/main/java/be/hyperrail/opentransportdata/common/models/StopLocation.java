@@ -40,6 +40,7 @@ public interface StopLocation extends Serializable, Comparable {
      * @return a 9 digit HAFAS identifier
      * @deprecated use getSemanticId instead
      */
+    @Deprecated
     String getHafasId();
 
     /**
@@ -48,6 +49,7 @@ public interface StopLocation extends Serializable, Comparable {
      * @return a 7 digit worldwide unique identifier for this station
      * @deprecated use getSemanticId instead
      */
+    @Deprecated
     String getUicId();
 
     /**

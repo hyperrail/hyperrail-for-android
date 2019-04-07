@@ -32,9 +32,7 @@ import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.opentransportdata.OpenTransportApi;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
@@ -46,6 +44,8 @@ import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
  */
 public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements InfiniteScrollingDataSource, ResultFragment<RoutePlanningRequest>, OnRecyclerItemClickListener<Route>, OnRecyclerItemLongClickListener<Route> {
 
+    public static final String INSTANCESTATE_KEY_REQUEST = "request";
+    public static final String INSTANCESTATE_KEY_RESULT = "result";
     private RoutesList mCurrentRouteResult;
     private RouteCardAdapter mRouteCardAdapter;
     private RoutePlanningRequest mRequest;
@@ -59,8 +59,8 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (RoutePlanningRequest) savedInstanceState.getSerializable("request");
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCESTATE_KEY_REQUEST)) {
+            mRequest = (RoutePlanningRequest) savedInstanceState.getSerializable(INSTANCESTATE_KEY_REQUEST);
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
@@ -90,14 +90,14 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("result", mCurrentRouteResult);
-        outState.putSerializable("request", mRequest);
+        outState.putSerializable(INSTANCESTATE_KEY_RESULT, mCurrentRouteResult);
+        outState.putSerializable(INSTANCESTATE_KEY_REQUEST, mRequest);
     }
 
     @Override
     protected RoutesList getRestoredInstanceStateItems(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
-            this.mCurrentRouteResult = (RoutesList) savedInstanceState.get("result");
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCESTATE_KEY_RESULT)) {
+            this.mCurrentRouteResult = (RoutesList) savedInstanceState.get(INSTANCESTATE_KEY_RESULT);
         }
         return mCurrentRouteResult;
     }
@@ -159,34 +159,27 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
 
         ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ResultExtensionType.APPEND);
         request.setCallback(
-                new TransportDataSuccessResponseListener<RoutesList>() {
-                    @Override
-                    public void onSuccessResponse(@NonNull RoutesList data, Object tag) {
-                        // data consists of both old and new routes
-                        resetErrorState();
-                        if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                            mRouteCardAdapter.disableInfiniteNext(); // Nothing new anymore
-                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
-                        }
-
-                        mCurrentRouteResult = data;
-                        showData(mCurrentRouteResult);
-
-                        mRouteCardAdapter.setNextLoaded();
-
-                        // Scroll past the "load earlier"
-                        LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
-                        if (mgr.findFirstVisibleItemPosition() == 0) {
-                            mgr.scrollToPositionWithOffset(1, 0);
-                        }
-
+                (data, tag) -> {
+                    // data consists of both old and new routes
+                    resetErrorState();
+                    if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
+                        mRouteCardAdapter.disableInfiniteNext(); // Nothing new anymore
                     }
-                }, new TransportDataErrorResponseListener() {
-                    @Override
-                    public void onErrorResponse(@NonNull Exception e, Object tag) {
-                        mRouteCardAdapter.setNextError(true);
-                        mRouteCardAdapter.setNextLoaded();
+
+                    mCurrentRouteResult = data;
+                    showData(mCurrentRouteResult);
+
+                    mRouteCardAdapter.setNextLoaded();
+
+                    // Scroll past the "load earlier"
+                    LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
+                    if (mgr.findFirstVisibleItemPosition() == 0) {
+                        mgr.scrollToPositionWithOffset(1, 0);
                     }
+
+                }, (e, tag) -> {
+                    mRouteCardAdapter.setNextError(true);
+                    mRouteCardAdapter.setNextLoaded();
                 }, null);
         OpenTransportApi.getDataProviderInstance().extendRoutePlanning(request);
     }
@@ -199,12 +192,11 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
 
         ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ResultExtensionType.PREPEND);
         request.setCallback(
-                (TransportDataSuccessResponseListener<RoutesList>) (data, tag) -> {
+                (data, tag) -> {
                     resetErrorState();
 
                     // data consists of both old and new routes
                     if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                        // mLiveboardCardAdapter.setPrevError(true); //TODO: find a way to make clear to the user that no data is available
                         mRouteCardAdapter.disableInfinitePrevious();
                     }
 

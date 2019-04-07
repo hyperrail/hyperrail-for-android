@@ -1,5 +1,7 @@
 package be.hyperrail.opentransportdata.common.contracts;
 
-public interface NextDataPointer {
+import java.io.Serializable;
+
+public interface NextDataPointer extends Serializable {
     Object getPointer();
 }

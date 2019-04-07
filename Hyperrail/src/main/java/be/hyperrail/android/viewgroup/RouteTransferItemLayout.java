@@ -107,13 +107,13 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
 
         bindTimeAndDelay(context, transfer);
 
-        bindPlatform(context, transfer.getDeparturePlatform(),  transfer.isDeparturePlatformNormal(),transfer.isDepartureCanceled(),
-                     vDeparturePlatformContainer,
-                     vDeparturePlatform);
+        bindPlatform(context, transfer.getDeparturePlatform(), transfer.isDeparturePlatformNormal(), transfer.isDepartureCanceled(),
+                vDeparturePlatformContainer,
+                vDeparturePlatform);
 
-        bindPlatform(context, transfer.getArrivalPlatform(),  transfer.isArrivalPlatformNormal(),transfer.isArrivalCanceled(),
-                     vArrivalPlatformContainer,
-                     vArrivalPlatform);
+        bindPlatform(context, transfer.getArrivalPlatform(), transfer.isArrivalPlatformNormal(), transfer.isArrivalCanceled(),
+                vArrivalPlatformContainer,
+                vArrivalPlatform);
 
         bindTimelineDrawable(context, transfer, route, position);
     }
@@ -143,7 +143,7 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
         // if we have a departure delay, set the departure delay
         if (transfer.getDepartureDelay().getStandardSeconds() > 0) {
             vDepartureDelay.setText(context.getString(R.string.delay,
-                                                      transfer.getDepartureDelay().getStandardMinutes()));
+                    transfer.getDepartureDelay().getStandardMinutes()));
         } else {
             vDepartureDelay.setText("");
         }
@@ -159,7 +159,7 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
         // if we have an arrival delay, set the arrival delay
         if (transfer.getArrivalDelay().getStandardSeconds() > 0) {
             vArrivalDelay.setText(context.getString(R.string.delay,
-                                                    transfer.getArrivalDelay().getStandardMinutes()));
+                    transfer.getArrivalDelay().getStandardMinutes()));
         } else {
             vArrivalDelay.setText("");
         }
@@ -183,7 +183,7 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
                     Drawable drawable = container.getBackground();
                     drawable.mutate();
                     drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay),
-                                            PorterDuff.Mode.SRC_ATOP);
+                            PorterDuff.Mode.SRC_ATOP);
                 }
             }
 
@@ -196,34 +196,30 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
 
     private void bindTimelineDrawable(Context context, Transfer transfer, Route route, int position) {
         if (position == 0) {
-            if (transfer.hasLeft()) {
-                vTimeline.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
-            } else {
-                vTimeline.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
-            }
+            bindDepartureDrawable(context, transfer);
         } else if (position == route.getTransfers().length - 1) {
-            if (transfer.hasArrived()) {
-                vTimeline.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
-            } else {
-                vTimeline.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
-            }
+            bindArrivalDrawable(context, transfer);
         } else {
-            if (transfer.hasArrived()) {
-                if (transfer.hasLeft()) {
-                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context,
-                                                                         R.drawable.timeline_transfer_filled));
-                } else {
-                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context,
-                                                                         R.drawable.timeline_transfer_inprogress));
-                }
-            } else {
-                vTimeline.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
-            }
+            bindStopDrawable(context, transfer);
+        }
+    }
+
+    private void bindDepartureDrawable(Context context, Transfer transfer) {
+        int drawable = transfer.hasLeft() ? R.drawable.timeline_departure_filled : R.drawable.timeline_departure_hollow;
+        vTimeline.setImageDrawable(ContextCompat.getDrawable(context, drawable));
+    }
+
+    private void bindArrivalDrawable(Context context, Transfer transfer) {
+        int drawable = transfer.hasArrived() ? R.drawable.timeline_arrival_filled : R.drawable.timeline_arrival_hollow;
+        vTimeline.setImageDrawable(ContextCompat.getDrawable(context, drawable));
+    }
+
+    private void bindStopDrawable(Context context, Transfer transfer) {
+        if (transfer.hasArrived()) {
+            int drawable = transfer.hasLeft() ? R.drawable.timeline_transfer_filled : R.drawable.timeline_transfer_inprogress;
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, drawable));
+        } else {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
         }
     }
 }

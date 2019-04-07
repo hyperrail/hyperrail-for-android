@@ -26,11 +26,11 @@ public class VehicleStopRequest extends OpenTransportBaseRequest<VehicleStop> im
      *
      * @param stop the stop for which information should be obtained
      */
-    public VehicleStopRequest( VehicleStopImpl stop) {
+    public VehicleStopRequest(VehicleStopImpl stop) {
         mStop = stop;
     }
 
-    public VehicleStopRequest( JSONObject jsonObject) throws JSONException {
+    public VehicleStopRequest(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         throw new UnsupportedOperationException("VehicleStopRequests can't be serialized");
     }
@@ -47,7 +47,7 @@ public class VehicleStopRequest extends OpenTransportBaseRequest<VehicleStop> im
     }
 
     @Override
-    public int compareTo( TransportDataRequest o) {
+    public int compareTo(TransportDataRequest o) {
         return 0;
     }
 

@@ -2,7 +2,9 @@ package be.hyperrail.opentransportdata.common.models;
 
 import org.joda.time.LocalTime;
 
-public interface StopLocationFacilities {
+import java.io.Serializable;
+
+public interface StopLocationFacilities extends Serializable {
     /**
      * Return the opening hours for a certain day
      * @param day The day, where 0 is monday and 6 is sunday

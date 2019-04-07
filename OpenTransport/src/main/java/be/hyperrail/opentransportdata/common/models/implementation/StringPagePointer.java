@@ -1,10 +1,12 @@
 package be.hyperrail.opentransportdata.common.models.implementation;
 
+import java.io.Serializable;
+
 import be.hyperrail.opentransportdata.common.contracts.NextDataPointer;
 
-public class StringPagePointer implements NextDataPointer {
+public class StringPagePointer implements NextDataPointer, Serializable {
 
-    String value;
+    private final String value;
 
     public StringPagePointer(String value) {
         this.value = value;
