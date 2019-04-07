@@ -59,7 +59,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         LiveboardRequest request = null;
         try {
             request = new LiveboardRequest(
-                    OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(id),
+                    OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(id),
                     QueryTimeDefinition.EQUAL_OR_LATER,
                     LiveboardType.DEPARTURES,
                     null

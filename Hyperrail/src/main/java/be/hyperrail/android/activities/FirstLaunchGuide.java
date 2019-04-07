@@ -94,12 +94,12 @@ public class FirstLaunchGuide extends AppCompatActivity {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                // Not used
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                // Not used
             }
         });
 
@@ -148,9 +148,6 @@ public class FirstLaunchGuide extends AppCompatActivity {
         private static final String ARG_TITLE = "title";
         private static final String ARG_IMG = "image";
         private static final String ARG_DESCRIPTION = "description";
-
-        public FirstLaunchFragment() {
-        }
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -238,11 +235,11 @@ public class FirstLaunchGuide extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                log.info("Preparing stations database ahead of time");
-                OpenTransportApi.getStationsProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
-                log.info("Prepared stations database ahead of time");
+                log.info("Preparing stoplocations database ahead of time");
+                OpenTransportApi.getStopLocationProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
+                log.info("Prepared stations stoplocations ahead of time");
             } catch (StopLocationNotResolvedException e) {
-                e.printStackTrace();
+               log.severe("Failed to initialize stoplocations database in background", e);
             }
             return null;
         }

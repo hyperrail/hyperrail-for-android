@@ -18,7 +18,7 @@ import android.net.NetworkInfo;
 
 public class NetworkStateChangeReceiver extends BroadcastReceiver {
 
-    public ConnectionReceiverListener connectionReceiverListener;
+    public final ConnectionReceiverListener connectionReceiverListener;
 
     public NetworkStateChangeReceiver(ConnectionReceiverListener listener) {
         connectionReceiverListener = listener;

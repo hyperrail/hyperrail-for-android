@@ -14,19 +14,14 @@ package be.hyperrail.opentransportdata.be.irail;
 
 import org.joda.time.DateTime;
 
-import java.util.Arrays;
-
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
-import be.hyperrail.opentransportdata.common.models.LiveboardType;
-import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
-import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
@@ -36,15 +31,15 @@ import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
  */
 public class IrailLiveboardExtendHelper implements TransportDataSuccessResponseListener<Liveboard>, TransportDataErrorResponseListener {
 
-    private final int TAG_APPEND = 0;
-    private final int TAG_PREPEND = 1;
+    private static final int TAG_APPEND = 0;
+    private static final int TAG_PREPEND = 1;
 
     private int attempt = 0;
     private DateTime lastSearchTime;
     private LiveboardImpl originalLiveboard;
     private ExtendLiveboardRequest mExtendRequest;
 
-    TransportDataSource api = OpenTransportApi.getDataProviderInstance();
+    private TransportDataSource api = OpenTransportApi.getDataProviderInstance();
 
     public void extendLiveboard(ExtendLiveboardRequest extendRequest) {
         switch (extendRequest.getAction()) {
@@ -115,6 +110,8 @@ public class IrailLiveboardExtendHelper implements TransportDataSuccessResponseL
             case TAG_PREPEND:
                 handlePrependSuccessResponse((LiveboardImpl) data);
                 break;
+            default:
+                throw new IllegalArgumentException("Invalid tag");
         }
     }
 
@@ -145,35 +142,10 @@ public class IrailLiveboardExtendHelper implements TransportDataSuccessResponseL
      * @param data The newly received data
      */
     private void handleAppendSuccessResponse(LiveboardImpl data) {
-        VehicleStop[] newStops = data.getStops();
+        Liveboard withNewStops = originalLiveboard.withStopsAppended(data);
 
-        if (newStops.length > 0) {
-            // It can happen that a scheduled departure was before the search time.
-            // In this case, prevent duplicates by searching the first stop which isn't before
-            // the searchdate, and removing all earlier stops.
-            int i = 0;
-
-            if (data.getLiveboardType() == LiveboardType.DEPARTURES) {
-                while (i < newStops.length && newStops[i].getDepartureTime().isBefore(data.getSearchTime())) {
-                    i++;
-                }
-            } else {
-                while (i < newStops.length && newStops[i].getArrivalTime().isBefore(data.getSearchTime())) {
-                    i++;
-                }
-            }
-
-            if (i > 0) {
-                if (i <= data.getStops().length - 1) {
-                    newStops = Arrays.copyOfRange(data.getStops(), i, data.getStops().length - 1);
-                } else {
-                    newStops = new VehicleStopImpl[0];
-                }
-            }
-        }
-
-        if (newStops.length > 0) {
-            mExtendRequest.notifySuccessListeners(originalLiveboard.withStopsAppended(data));
+        if (withNewStops.getStops().length > originalLiveboard.getStops().length) {
+            mExtendRequest.notifySuccessListeners(withNewStops);
         } else {
             // No results, search two hours further in case this day doesn't have results.
             // Skip 2 hours at once, possible due to large API pages.

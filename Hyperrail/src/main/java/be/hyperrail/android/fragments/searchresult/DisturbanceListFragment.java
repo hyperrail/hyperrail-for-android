@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +28,6 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.adapter.DisturbanceCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.opentransportdata.OpenTransportApi;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.Disturbance;
 import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
 
@@ -39,6 +36,7 @@ import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
  */
 public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]> implements ResultFragment<ActualDisturbancesRequest>, OnRecyclerItemClickListener<Disturbance> {
 
+    public static final String INSTANCESTATE_KEY_REQUEST = "request";
     private Disturbance[] disturbances;
     private DateTime lastUpdate;
 
@@ -59,17 +57,11 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (ActualDisturbancesRequest) savedInstanceState.getSerializable("request");
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCESTATE_KEY_REQUEST)) {
+            mRequest = (ActualDisturbancesRequest) savedInstanceState.getSerializable(INSTANCESTATE_KEY_REQUEST);
         }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
-    }
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -87,21 +79,15 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
         OpenTransportApi.getDataProviderInstance().abortAllQueries();
 
         ActualDisturbancesRequest request = new ActualDisturbancesRequest();
-        request.setCallback(new TransportDataSuccessResponseListener<Disturbance[]>() {
-            @Override
-            public void onSuccessResponse(@NonNull Disturbance[] data, Object tag) {
-                resetErrorState();
-                vRefreshLayout.setRefreshing(false);
-                lastUpdate = new DateTime();
-                showData(data);
-            }
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                vRefreshLayout.setRefreshing(false);
-                // Don't finish, this is the main activity
-               showError(e);
-            }
+        request.setCallback((data, tag) -> {
+            resetErrorState();
+            vRefreshLayout.setRefreshing(false);
+            lastUpdate = new DateTime();
+            showData(data);
+        }, (e, tag) -> {
+            vRefreshLayout.setRefreshing(false);
+            // Don't finish, this is the main activity
+           showError(e);
         }, null);
         OpenTransportApi.getDataProviderInstance().getActualDisturbances(request);
     }
@@ -120,7 +106,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (lastUpdate != null) {
-            outState.putSerializable("request", mRequest);
+            outState.putSerializable(INSTANCESTATE_KEY_REQUEST, mRequest);
             outState.putSerializable("disturbances", disturbances);
             outState.putLong("updated", lastUpdate.getMillis());
         }

@@ -29,7 +29,9 @@ public class DateTimePicker implements DatePickerDialog.OnDateSetListener, TimeP
 
     private final Context context;
     private OnDateTimeSetListener listener;
-    private int year, month, day;
+    private int year;
+    private int month;
+    private int day;
 
     public DateTimePicker(Context context) {
         this.context = context;

@@ -201,7 +201,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     }
 
     private void loadStations(String s) {
-        TransportStopsDataSource stationProvider = OpenTransportApi.getStationsProviderInstance();
+        TransportStopsDataSource stationProvider = OpenTransportApi.getStopLocationProviderInstance();
 
         // remove whitespaces
         s = s.trim();

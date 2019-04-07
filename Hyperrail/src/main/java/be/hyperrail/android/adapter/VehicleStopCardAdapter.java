@@ -8,6 +8,7 @@ package be.hyperrail.android.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,8 +34,9 @@ public class VehicleStopCardAdapter extends RecyclerView.Adapter<VehicleStopCard
         this.mTrain = train;
     }
 
+    @NonNull
     @Override
-    public TrainStopViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TrainStopViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
 
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
@@ -46,28 +48,22 @@ public class VehicleStopCardAdapter extends RecyclerView.Adapter<VehicleStopCard
     }
 
     @Override
-    public void onBindViewHolder(TrainStopViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TrainStopViewHolder holder, int position) {
         final VehicleStop stop = mTrain.getStops()[position];
 
         holder.mVehicleStopLayout.bind(context, stop, mTrain, position);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (clickListener != null) {
-                    clickListener.onRecyclerItemClick(VehicleStopCardAdapter.this, stop);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onRecyclerItemClick(VehicleStopCardAdapter.this, stop);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(VehicleStopCardAdapter.this, stop);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (longClickListener != null) {
+                longClickListener.onRecyclerItemLongClick(VehicleStopCardAdapter.this, stop);
             }
+            return false;
         });
     }
 

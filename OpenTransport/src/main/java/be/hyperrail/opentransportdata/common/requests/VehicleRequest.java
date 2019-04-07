@@ -62,7 +62,7 @@ public class VehicleRequest extends OpenTransportBaseRequest<VehicleJourney> imp
         super(jsonObject);
 
         if (jsonObject.has("direction")) {
-            this.mVehicleDirection = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("direction"));
+            this.mVehicleDirection = OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(jsonObject.getString("direction"));
         } else {
             this.mVehicleDirection = null;
         }

@@ -18,7 +18,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
@@ -38,14 +37,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import be.opentransport.BuildConfig;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
-
-import static be.hyperrail.opentransportdata.common.contracts.MeteredDataSource.RESPONSE_CACHED;
-import static be.hyperrail.opentransportdata.common.contracts.MeteredDataSource.RESPONSE_OFFLINE;
-import static be.hyperrail.opentransportdata.common.contracts.MeteredDataSource.RESPONSE_ONLINE;
+import be.opentransport.BuildConfig;
 
 /**
  * Created in be.hyperrail.android.irail.implementation.linkedconnections on 15/03/2018.
@@ -56,7 +51,8 @@ public class LinkedConnectionsProvider {
     private static final String GTFS_REGULAR = "gtfs:Regular";
     private static final String GTFS_DROP_OFF_TYPE = "gtfs:dropOffType";
     private static final String GTFS_PICKUP_TYPE = "gtfs:pickupType";
-    public static final String BASE_URL = "https://graph.irail.be/sncb/connections?departureTime=";
+
+    private static final String BASE_URL = "https://graph.irail.be/sncb/connections?departureTime=";
     private final LinkedConnectionsOfflineCache mLinkedConnectionsOfflineCache;
     private final RequestQueue requestQueue;
     private final RetryPolicy requestPolicy;
@@ -72,7 +68,7 @@ public class LinkedConnectionsProvider {
                 activeNetwork.isConnectedOrConnecting();
     }
 
-    public LinkedConnectionsProvider(Context context) {
+    LinkedConnectionsProvider(Context context) {
         this.mLinkedConnectionsOfflineCache = new LinkedConnectionsOfflineCache(context);
 
         BasicNetwork network;
@@ -90,7 +86,7 @@ public class LinkedConnectionsProvider {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    public void getLinkedConnectionsByDate(DateTime startTime, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, Object tag) {
+    void getLinkedConnectionsByDate(DateTime startTime, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, Object tag) {
         startTime = startTime.withMillisOfSecond(0);
         startTime = startTime.withSecondOfMinute(0);
         String url = getLinkedConnectionsUrl(startTime);
@@ -99,27 +95,27 @@ public class LinkedConnectionsProvider {
     }
 
     @NonNull
-    public String getLinkedConnectionsUrl(DateTime timestamp) {
+    private String getLinkedConnectionsUrl(DateTime timestamp) {
         return BASE_URL +
                 timestamp.withZone(DateTimeZone.UTC).toString(ISODateTimeFormat.dateTime());
     }
 
-    public void queryLinkedConnections(DateTime startTime, final QueryResponseListener.LinkedConnectionsQuery query, Object tag) {
+    void queryLinkedConnections(DateTime startTime, final QueryResponseListener.LinkedConnectionsQuery query, Object tag) {
         QueryResponseListener responseListener = new QueryResponseListener(this, query);
         getLinkedConnectionsByDate(startTime, responseListener, responseListener, tag);
     }
 
-    public void queryLinkedConnections(String startUrl, final QueryResponseListener.LinkedConnectionsQuery query, Object tag) {
+    private void queryLinkedConnections(String startUrl, final QueryResponseListener.LinkedConnectionsQuery query, Object tag) {
         QueryResponseListener responseListener = new QueryResponseListener(this, query);
         getLinkedConnectionsByUrl(startUrl, responseListener, responseListener, tag);
     }
 
-    public void getLinkedConnectionsByDateForTimeSpan(DateTime startTime, final DateTime endTime, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, Object tag) {
+    void getLinkedConnectionsByDateForTimeSpan(DateTime startTime, final DateTime endTime, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, Object tag) {
         TimespanQueryResponseListener listener = new TimespanQueryResponseListener(endTime, TimespanQueryResponseListener.DIRECTION_FORWARD, successListener, errorListener, tag);
         queryLinkedConnections(startTime, listener, tag);
     }
 
-    public void getLinkedConnectionsByUrlForTimeSpanBackwards(String startUrl, final DateTime endTime, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, Object tag) {
+    void getLinkedConnectionsByUrlForTimeSpanBackwards(String startUrl, final DateTime endTime, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, Object tag) {
         TimespanQueryResponseListener listener = new TimespanQueryResponseListener(endTime, TimespanQueryResponseListener.DIRECTION_BACKWARD, successListener, errorListener, tag);
         queryLinkedConnections(startUrl, listener, tag);
     }
@@ -130,7 +126,7 @@ public class LinkedConnectionsProvider {
     }
 
 
-    public void getLinkedConnectionsByUrl(final String url, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, final Object tag) {
+    void getLinkedConnectionsByUrl(final String url, final TransportDataSuccessResponseListener<LinkedConnections> successListener, final TransportDataErrorResponseListener errorListener, final Object tag) {
         // https://graph.irail.be/sncb/connections?departureTime={ISO8601}
         if (BuildConfig.DEBUG) {
             Log.i("LCProvider", "Loading " + url);
@@ -140,55 +136,9 @@ public class LinkedConnectionsProvider {
         final Trace tracing = FirebasePerformance.getInstance().newTrace("LinkedConnectionsProvider.getByUrl");
         tracing.start();
 
-        Response.Listener<String> volleySuccessListener = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (BuildConfig.DEBUG) {
-                    Log.w("LCProvider", "Getting LC page successful: " + url);
-                }
-                try {
-                    LinkedConnections result = getLinkedConnectionsFromJson(response);
-                    mLinkedConnectionsOfflineCache.store(result, response.toString());
-                    tracing.stop();
-                    successListener.onSuccessResponse(result, tag);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    tracing.stop();
-                    errorListener.onErrorResponse(e, tag);
-                }
+        Response.Listener<String> volleySuccessListener = buildSuccessListener(url, successListener, errorListener, tag, tracing);
 
-
-            }
-        };
-
-        Response.ErrorListener volleyErrorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                if (BuildConfig.DEBUG) {
-                    Log.w("LCProvider", "Getting LC page " + url + " failed: " + error.getMessage());
-                }
-                LinkedConnectionsOfflineCache.CachedLinkedConnections cache = mLinkedConnectionsOfflineCache.load(url);
-                if (cache == null) {
-                    if (BuildConfig.DEBUG) {
-                        Log.w("LCProvider", "Getting LC page " + url + " failed: offline cache missed!");
-                    }
-                    tracing.stop();
-                    errorListener.onErrorResponse(error, tag);
-                } else {
-                    try {
-                        if (BuildConfig.DEBUG) {
-                            Log.w("LCProvider", "Getting LC page " + url + " failed: offline cache hit!");
-                        }
-                        LinkedConnections result = getLinkedConnectionsFromJson(cache.data);
-                        successListener.onSuccessResponse(result, tag);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        tracing.stop();
-                        errorListener.onErrorResponse(error, tag);
-                    }
-                }
-            }
-        };
+        Response.ErrorListener volleyErrorListener = buildErrorListener(url, successListener, errorListener, tag, tracing);
 
         StringRequest jsObjRequest = new StringRequest(Request.Method.GET, url,
                 volleySuccessListener,
@@ -241,13 +191,63 @@ public class LinkedConnectionsProvider {
     }
 
     @NonNull
+    private Response.ErrorListener buildErrorListener(String url, TransportDataSuccessResponseListener<LinkedConnections> successListener, TransportDataErrorResponseListener errorListener, Object tag, Trace tracing) {
+        return error -> {
+            if (BuildConfig.DEBUG) {
+                Log.w("LCProvider", "Getting LC page " + url + " failed: " + error.getMessage());
+            }
+            LinkedConnectionsOfflineCache.CachedLinkedConnections cache = mLinkedConnectionsOfflineCache.load(url);
+            if (cache == null) {
+                if (BuildConfig.DEBUG) {
+                    Log.w("LCProvider", "Getting LC page " + url + " failed: offline cache missed!");
+                }
+                tracing.stop();
+                errorListener.onErrorResponse(error, tag);
+            } else {
+                try {
+                    if (BuildConfig.DEBUG) {
+                        Log.w("LCProvider", "Getting LC page " + url + " failed: offline cache hit!");
+                    }
+                    LinkedConnections result = getLinkedConnectionsFromJson(cache.data);
+                    successListener.onSuccessResponse(result, tag);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    tracing.stop();
+                    errorListener.onErrorResponse(error, tag);
+                }
+            }
+        };
+    }
+
+    @NonNull
+    private Response.Listener<String> buildSuccessListener(String url, TransportDataSuccessResponseListener<LinkedConnections> successListener, TransportDataErrorResponseListener errorListener, Object tag, Trace tracing) {
+        return response -> {
+            if (BuildConfig.DEBUG) {
+                Log.w("LCProvider", "Getting LC page successful: " + url);
+            }
+            try {
+                LinkedConnections result = getLinkedConnectionsFromJson(response);
+                mLinkedConnectionsOfflineCache.store(result, response.toString());
+                tracing.stop();
+                successListener.onSuccessResponse(result, tag);
+            } catch (Exception e) {
+                e.printStackTrace();
+                tracing.stop();
+                errorListener.onErrorResponse(e, tag);
+            }
+
+
+        };
+    }
+
+    @NonNull
     @AddTrace(name = "LinkedConnectionsProvider.fromJsonLS")
     private LinkedConnections getLinkedConnectionsFromJson(String response) throws
             IOException {
         return LoganSquare.parse(response, LinkedConnections.class);
     }
 
-    public void setCacheEnabled(boolean cacheEnabled) {
+    void setCacheEnabled(boolean cacheEnabled) {
         mCacheEnabled = cacheEnabled;
     }
 }

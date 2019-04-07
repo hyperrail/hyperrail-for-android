@@ -21,6 +21,10 @@ public class OpenTransportApi {
     private static TransportDataSource dataProviderInstance;
     private static TransportStopFacilitiesDataSource stopFacilitiesDataSource;
 
+    private OpenTransportApi() {
+        // No constructor needed
+    }
+
     public static void init(Context appContext, String qualifiedName) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         init(appContext, getProviderFromQualifiedNames(qualifiedName));
     }
@@ -49,7 +53,7 @@ public class OpenTransportApi {
                         .newInstance();
     }
 
-    public static TransportStopsDataSource getStationsProviderInstance() {
+    public static TransportStopsDataSource getStopLocationProviderInstance() {
         if (stationProviderInstance == null) {
             throw new IllegalStateException("Initialize OpenTransportApi using initLogWriter() before trying to access the stations provider!");
         }

@@ -70,7 +70,7 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
         if (id.startsWith("BE.NMBS.")) {
             id = id.substring(8);
         }
-        this.station = OpenTransportApi.getStationsProviderInstance().getStationByHID(id);
+        this.station = OpenTransportApi.getStopLocationProviderInstance().getStationByHID(id);
         timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         type = LiveboardType.DEPARTURES;
         searchTime = null;

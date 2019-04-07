@@ -100,13 +100,13 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
         if (stops.size() > 0 && lastConnection != null) {
             StopLocation arrival;
             try {
-                arrival = OpenTransportApi.getStationsProviderInstance().getStationByUri(lastConnection.getArrivalStationUri());
+                arrival = OpenTransportApi.getStopLocationProviderInstance().getStationByUri(lastConnection.getArrivalStationUri());
             } catch (StopLocationNotResolvedException e) {
                 mRequest.notifyErrorListeners(e);
                 return;
             }
 
-            StopLocation direction = OpenTransportApi.getStationsProviderInstance().getStationByExactName(lastConnection.getDirection());
+            StopLocation direction = OpenTransportApi.getStopLocationProviderInstance().getStationByExactName(lastConnection.getDirection());
             String headsign;
             if (direction != null) {
                 headsign = direction.getLocalizedName();

@@ -89,7 +89,7 @@ public class IrailParserInstrumentedTest {
     public void trainParsingTest() throws Exception {
         // Context of the app under test.
         DateTime searchTime = new DateTime(2017, 11, 16, 13, 0);
-        VehicleJourney train = parser.parseTrain(new JSONObject(TRAIN_RESPONSE), searchTime);
+        VehicleJourney train = parser.parseVehicleJourney(new JSONObject(TRAIN_RESPONSE));
 
         assertEquals("008841004", train.getLastHaltedStop().getStopLocation().getHafasId());
         assertEquals(train.getLastHaltedStop().getStopLocation().getLatitude(), train.getCurrentPositionLatitude(), 0);

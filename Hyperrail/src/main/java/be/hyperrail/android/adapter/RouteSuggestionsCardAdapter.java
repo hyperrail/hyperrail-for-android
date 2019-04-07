@@ -74,25 +74,21 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
             case FAVORITE:
                 holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.ic_star));
                 break;
+            default:
+                throw new IllegalArgumentException("Only history and favorite routes can be shown here");
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(RouteSuggestionsCardAdapter.this, query);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRecyclerItemClick(RouteSuggestionsCardAdapter.this, query);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(RouteSuggestionsCardAdapter.this, query);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (longClickListener != null) {
+                longClickListener.onRecyclerItemLongClick(RouteSuggestionsCardAdapter.this, query);
             }
+            return false;
         });
     }
 
@@ -106,7 +102,7 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
 
     @Override
     public int getItemCount() {
-        if (queries == null){
+        if (queries == null) {
             return 0;
         }
         return queries.size();
@@ -114,11 +110,11 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
 
     class RouteHistoryViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vFrom;
-        protected final TextView vTo;
-        protected final ImageView vIcon;
+        final TextView vFrom;
+        final TextView vTo;
+        final ImageView vIcon;
 
-        public RouteHistoryViewHolder(View v) {
+        RouteHistoryViewHolder(View v) {
             super(v);
 
             vFrom = v.findViewById(be.hyperrail.android.R.id.text_from);

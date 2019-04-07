@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R.color;
 import be.hyperrail.android.R.drawable;
@@ -58,6 +59,7 @@ public class VehiclePopupContextMenu {
     private static final int TYPE_ROUTE_TRAIN = 2;
 
     private static final String NOTIFICATION_CHANNEL_GLIMPSE = "glimpse";
+    public static final DateTimeFormatter DATETIMEFORMAT_HHMM = DateTimeFormat.forPattern("HH:mm");
     private final View mActivityView;
     private final VehicleStop mVehicleStop;
     private final Activity mContext;
@@ -177,7 +179,7 @@ public class VehiclePopupContextMenu {
 
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
-                    DateTimeFormat.forPattern("HH:mm").print(
+                    DATETIMEFORMAT_HHMM.print(
                             mLeg.getDeparture().getDelayedTime()),
                     mLeg.getDeparture().getStation().getLocalizedName(),
                     mLeg.getVehicleInformation().getName());
@@ -187,7 +189,7 @@ public class VehiclePopupContextMenu {
 
         if (mLeg.getType() != RouteLegType.WALK) {
             mArrivalEtaText = String.format(mContext.getString(string.ETA_transfer_arrival),
-                    DateTimeFormat.forPattern("HH:mm").print(
+                    DATETIMEFORMAT_HHMM.print(
                             mLeg.getArrival().getDelayedTime()),
                     mLeg.getArrival().getStation().getLocalizedName(),
                     mLeg.getVehicleInformation().getName());
@@ -223,7 +225,7 @@ public class VehiclePopupContextMenu {
 
             mDepartureEtaText = String.format(
                     mContext.getString(string.ETA_transfer_departure),
-                    DateTimeFormat.forPattern("HH:mm").print(
+                    DATETIMEFORMAT_HHMM.print(
                             mTransfer.getDelayedDepartureTime()),
                     mTransfer.getStopLocation().getLocalizedName(),
                     mTransfer.getDepartingLeg().getVehicleInformation().getName());
@@ -233,7 +235,7 @@ public class VehiclePopupContextMenu {
 
         if (mTransfer.getType() == TransferType.ARRIVAL || mTransfer.getType() == TransferType.TRANSFER) {
             mArrivalEtaText = String.format(mContext.getString(string.ETA_transfer_arrival),
-                    DateTimeFormat.forPattern("HH:mm").print(
+                    DATETIMEFORMAT_HHMM.print(
                             mTransfer.getDelayedArrivalTime()),
                     mTransfer.getStopLocation().getLocalizedName(),
                     mTransfer.getArrivingLeg().getVehicleInformation().getName());
@@ -266,14 +268,14 @@ public class VehiclePopupContextMenu {
                 mVehicleStop.getStopLocation().getLocalizedName());
 
         String mDepartureEtaText = String.format(mContext.getString(string.ETA_stop_departure),
-                DateTimeFormat.forPattern("HH:mm").print(
+                DATETIMEFORMAT_HHMM.print(
                         mVehicleStop.getDelayedDepartureTime()
                 ),
                 mVehicleStop.getStopLocation().getLocalizedName(),
                 mVehicleStop.getVehicle().getName());
 
         String mArrivalEtaText = String.format(mContext.getString(string.ETA_stop_arrival),
-                DateTimeFormat.forPattern("HH:mm").print(
+                DATETIMEFORMAT_HHMM.print(
                         mVehicleStop.getDelayedArrivalTime()
                 ),
                 mVehicleStop.getStopLocation().getLocalizedName(),
@@ -378,20 +380,6 @@ public class VehiclePopupContextMenu {
                             mVehicleStop.getVehicle().getId(), mVehicleStop.getDepartureTime()));
                     notificationTag = mVehicleStop.getDepartureUri();
                 } else {
-                /*
-                  mBuilder.setSubText(
-                            "Transfer at  " + mTransfer.getStopLocation().getLocalizedName());
-                    resultIntent = LiveboardActivity.createIntent(mContext,
-                                                                  new LiveboardRequest(
-                                                                          mTransfer.getStopLocation(),
-                                                                          RouteTimeDefinition.EQUAL_OR_LATER,
-                                                                          Liveboard.LiveboardType.DEPARTURES,
-                                                                          mTransfer.getArrivalTime()));
-
-                    mBuilder.setCustomBigContentView(
-                            NotificationLayoutBuilder.createNotificationLayout(mContext,
-                                                                               mTransfer));
-                */
                     VehicleStop notificationStop = mTransfer.getDepartingLegAsVehicleStop();
                     mBuilder.setCustomBigContentView(
                             NotificationLayoutBuilder.createNotificationLayout(mContext,
@@ -490,16 +478,14 @@ public class VehiclePopupContextMenu {
 
     private void setButtonConfirmationCallback(OccupancyPostRequest request) {
         request.setCallback(
-                (data, tag) -> {
-                    Snackbar.make(VehiclePopupContextMenu.this.mActivityView,
-                            string.spitsgids_feedback_sent,
-                            Snackbar.LENGTH_LONG).show();
-
-                }, (error, tag) -> {
-                    Snackbar.make(VehiclePopupContextMenu.this.mActivityView,
-                            string.spitsgids_feedback_error,
-                            Snackbar.LENGTH_LONG).show();
-                }
+                (data, tag) -> Snackbar.make(
+                        VehiclePopupContextMenu.this.mActivityView,
+                        string.spitsgids_feedback_sent,
+                        Snackbar.LENGTH_LONG).show(),
+                (error, tag) -> Snackbar.make(
+                        VehiclePopupContextMenu.this.mActivityView,
+                        string.spitsgids_feedback_error,
+                        Snackbar.LENGTH_LONG).show()
                 , null);
     }
 }

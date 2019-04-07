@@ -74,7 +74,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
@@ -82,7 +82,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Create an instance of GoogleAPIClient.
         persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());
@@ -116,25 +116,17 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         vTrainSearchField = view.findViewById(R.id.input_train);
 
         // Handle special keys in "from" text
-        vTrainSearchField.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (vTrainSearchField.getText().length() != 0) {
-                        doSearch();
-                    }
-                    return true;
+        vTrainSearchField.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (vTrainSearchField.getText().length() != 0) {
+                    doSearch();
                 }
-                return false;
+                return true;
             }
+            return false;
         });
 
-        view.findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doSearch();
-            }
-        });
+        view.findViewById(R.id.button_search).setOnClickListener(v -> doSearch());
     }
 
     @Override

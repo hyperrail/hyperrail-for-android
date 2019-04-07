@@ -44,6 +44,8 @@ import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implements InfiniteScrollingDataSource,
         ResultFragment<LiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
 
+    public static final String INSTANCESTATE_KEY_LIVEBOARD = "result";
+    public static final String INSTANCESTATE_KEY_REQUEST = "request";
     private Liveboard mCurrentLiveboard;
     private LiveboardCardAdapter mLiveboardCardAdapter;
     private LiveboardRequest mRequest;
@@ -58,28 +60,23 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (LiveboardRequest) savedInstanceState.getSerializable("request");
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCESTATE_KEY_REQUEST)) {
+            mRequest = (LiveboardRequest) savedInstanceState.getSerializable(INSTANCESTATE_KEY_REQUEST);
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("request", mRequest);
-        outState.putSerializable("result", mCurrentLiveboard);
+        outState.putSerializable(INSTANCESTATE_KEY_REQUEST, mRequest);
+        outState.putSerializable(INSTANCESTATE_KEY_LIVEBOARD, mCurrentLiveboard);
     }
 
     @Override
     protected Liveboard getRestoredInstanceStateItems(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
-            mCurrentLiveboard = (Liveboard) savedInstanceState.getSerializable("result");
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCESTATE_KEY_LIVEBOARD)) {
+            mCurrentLiveboard = (Liveboard) savedInstanceState.getSerializable(INSTANCESTATE_KEY_LIVEBOARD);
         }
         return mCurrentLiveboard;
     }
@@ -122,13 +119,8 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         mCurrentLiveboard = null;
         showData(null);
 
-        if (this.vRefreshLayout.isRefreshing()) {
-            // Disable infinite scrolling for now to prevent having 2 loading icons
-            mLiveboardCardAdapter.setInfiniteScrolling(false);
-        } else {
-            // Restore if it was disabled earlier on. Will still be blocked since currentLiveboard == null
-            mLiveboardCardAdapter.setInfiniteScrolling(true);
-        }
+        // Disable infinite scrolling while refreshing to prevent having 2 loading icons
+        mLiveboardCardAdapter.setInfiniteScrolling(!this.vRefreshLayout.isRefreshing());
 
         TransportDataSource api = OpenTransportApi.getDataProviderInstance();
         // Don't abort all queries: there might be multiple fragments at the same screen!

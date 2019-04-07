@@ -43,12 +43,12 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
 
     private Liveboard liveboard;
     private final Context context;
-    private final static int STYLE_LIST = 0;
-    private final static int STYLE_CARD = 1;
+    private static final int STYLE_LIST = 0;
+    private static final int STYLE_CARD = 1;
     private int style = STYLE_LIST;
     private Object[] displayList;
 
-    protected final static int VIEW_TYPE_DATE = 1;
+    private static final int VIEW_TYPE_DATE = 1;
 
     public LiveboardCardAdapter(Activity context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
@@ -94,7 +94,6 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
             }
         }
 
-        // Log.d("DateSeparator", "Detected " + daySeparatorPositions.size() + " day changes");
         this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
 
         // Convert to array + take previous separators into account for position of next separator
@@ -118,11 +117,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
             resultPosition++;
         }
 
-        mRecyclerView.post(new Runnable() {
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        mRecyclerView.post(this::notifyDataSetChanged);
     }
 
     @Override

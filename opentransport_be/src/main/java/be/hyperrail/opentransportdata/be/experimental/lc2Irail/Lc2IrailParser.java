@@ -71,7 +71,7 @@ import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopIm
  *
  * @inheritDoc
  */
-public class Lc2IrailParser {
+class Lc2IrailParser {
 
     private final TransportStopsDataSource stationProvider;
     private DateTimeFormatter dtf = ISODateTimeFormat.dateTimeNoMillis();
@@ -81,7 +81,7 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    public LiveboardImpl parseLiveboard(@NonNull LiveboardRequest request, @NonNull JSONObject json) throws JSONException {
+    LiveboardImpl parseLiveboard(@NonNull LiveboardRequest request, @NonNull JSONObject json) throws JSONException {
         List<VehicleStopImpl> stops = new ArrayList<>();
         JSONArray jsonStops = json.getJSONArray("stops");
         for (int i = 0; i < jsonStops.length(); i++) {
@@ -100,19 +100,21 @@ public class Lc2IrailParser {
 
         VehicleStopImpl[] stopArray = new VehicleStopImpl[stops.size()];
         stops.toArray(stopArray);
-        Arrays.sort(stopArray, (o1, o2) -> {
-            if (o1.getDepartureTime() != null && o2.getDepartureTime() != null) {
-                return o1.getDepartureTime().compareTo(o2.getDepartureTime());
-            }
-            if (o1.getArrivalTime() != null && o2.getArrivalTime() != null) {
-                return o1.getArrivalTime().compareTo(o2.getArrivalTime());
-            }
-            if (o1.getDepartureTime() != null && o2.getArrivalTime() != null) {
-                return o1.getDepartureTime().compareTo(o2.getArrivalTime());
-            }
-            return o1.getArrivalTime().compareTo(o2.getDepartureTime());
-        });
+        Arrays.sort(stopArray, this::compareLiveboardEntriesByTime);
         return new LiveboardImpl(request.getStation(), stopArray, request.getSearchTime(), request.getType(), request.getTimeDefinition());
+    }
+
+    private int compareLiveboardEntriesByTime(VehicleStopImpl o1, VehicleStopImpl o2) {
+        if (o1.getDepartureTime() != null && o2.getDepartureTime() != null) {
+            return o1.getDepartureTime().compareTo(o2.getDepartureTime());
+        }
+        if (o1.getArrivalTime() != null && o2.getArrivalTime() != null) {
+            return o1.getArrivalTime().compareTo(o2.getArrivalTime());
+        }
+        if (o1.getDepartureTime() != null && o2.getArrivalTime() != null) {
+            return o1.getDepartureTime().compareTo(o2.getArrivalTime());
+        }
+        return o1.getArrivalTime().compareTo(o2.getDepartureTime());
     }
 
     @NonNull
@@ -139,10 +141,10 @@ public class Lc2IrailParser {
         int arrivalDelay = 0;
         DateTime departureTime = null;
         DateTime arrivalTime = null;
-        String platform = "?";
-        String uri = null;
-        IrailVehicleJourneyStub vehicle = null;
-        boolean hasDeparted = false;
+        String platform;
+        String uri;
+        IrailVehicleJourneyStub vehicle;
+        boolean hasDeparted;
         boolean hasArrived = false;
 
         if (json.has("arrivalTime")) {
@@ -154,22 +156,14 @@ public class Lc2IrailParser {
             departureDelay = json.getInt("departureDelay");
         }
 
-        if (json.has("hasDeparted")) {
-            hasDeparted = json.getBoolean("hasDeparted");
-        }
-        if (json.has("hasArrived")) {
-            hasArrived = json.getBoolean("hasArrived");
-        }
+        hasDeparted = parseBooleanIfPresent(json, false, "hasDeparted");
+        hasArrived = parseBooleanIfPresent(json, false, "hasArrived");
 
         platform = json.getString("platform");
 
         uri = json.getString("semanticId");
 
-        String headsign = json.getJSONObject("vehicle").getString("direction");
-        StopLocation headsignStation = stationProvider.getStationByExactName(headsign);
-        if (headsignStation != null) {
-            headsign = headsignStation.getLocalizedName();
-        }
+        String headsign = parseHeadsign(json.getJSONObject("vehicle"));
 
         vehicle = new IrailVehicleJourneyStub(
                 json.getJSONObject("vehicle").getString("id"),
@@ -178,30 +172,13 @@ public class Lc2IrailParser {
         );
 
 
-        VehicleStopType type;
-        if (departureTime != null) {
-            if (arrivalTime != null) {
-                type = VehicleStopType.STOP;
-            } else {
-                type = VehicleStopType.DEPARTURE;
-            }
-        } else {
-            if (arrivalTime != null) {
-                type = VehicleStopType.ARRIVAL;
-            } else {
-                throw new IllegalStateException("Departure time or arrival time is required!");
-            }
-        }
+        VehicleStopType type = parseVehicleStopType(departureTime, arrivalTime);
 
-        boolean departureCanceled = false;
-        if (json.has("isDepartureCanceled")) {
-            departureCanceled = json.getBoolean("isDepartureCanceled");
-        }
+        boolean departureCanceled;
+        departureCanceled = parseBooleanIfPresent(json, false, "isDepartureCanceled");
 
-        boolean arrivalCanceled = false;
-        if (json.has("isArrivalCanceled")) {
-            arrivalCanceled = json.getBoolean("isArrivalCanceled");
-        }
+        boolean arrivalCanceled;
+        arrivalCanceled = parseBooleanIfPresent(json, false, "isArrivalCanceled");
 
         return new VehicleStopImpl(request.getStation(),
                                     vehicle,
@@ -219,8 +196,36 @@ public class Lc2IrailParser {
 
     }
 
+    private String parseHeadsign(JSONObject vehicle2) throws JSONException {
+        String headsign = vehicle2.getString("direction");
+        StopLocation headsignStation = stationProvider.getStationByExactName(headsign);
+        if (headsignStation != null) {
+            headsign = headsignStation.getLocalizedName();
+        }
+        return headsign;
+    }
+
     @NonNull
-    public IrailVehicleJourney parseVehicle(@NonNull VehicleRequest request, @NonNull JSONObject response) throws JSONException, StopLocationNotResolvedException {
+    private VehicleStopType parseVehicleStopType(DateTime departureTime, DateTime arrivalTime) {
+        VehicleStopType type;
+        if (departureTime != null) {
+            if (arrivalTime != null) {
+                type = VehicleStopType.STOP;
+            } else {
+                type = VehicleStopType.DEPARTURE;
+            }
+        } else {
+            if (arrivalTime != null) {
+                type = VehicleStopType.ARRIVAL;
+            } else {
+                throw new IllegalStateException("Departure time or arrival time is required!");
+            }
+        }
+        return type;
+    }
+
+    @NonNull
+    IrailVehicleJourney parseVehicleJourney(@NonNull VehicleRequest request, @NonNull JSONObject response) throws JSONException, StopLocationNotResolvedException {
         String id = response.getString("id");
         String uri = response.getString("semanticId");
 
@@ -283,12 +288,6 @@ public class Lc2IrailParser {
         DateTime arrivalTime = null;
         String platform = "?";
         String uri = null;
-        boolean hasArrived = false;
-        boolean hasDeparted = false;
-        boolean isDepartureCanceled = false;
-        boolean isArrivalCanceled = false;
-        // TODO: parse isPlatformNormal from response
-        boolean isPlatformNormal = true;
 
         StopLocation station = stationProvider.getStationByUri(json.getJSONObject("station").getString("semanticId"));
 
@@ -306,25 +305,15 @@ public class Lc2IrailParser {
             platform = json.getString("platform");
         }
 
-        if (json.has("hasDeparted")) {
-            hasDeparted = json.getBoolean("hasDeparted");
-        }
+        boolean hasDeparted = parseBooleanIfPresent(json, false, "hasDeparted");
 
-        if (json.has("isPlatformNormal")) {
-            isPlatformNormal = json.getBoolean("isPlatformNormal");
-        }
+        boolean  isPlatformNormal = parseBooleanIfPresent(json, true, "isPlatformNormal");
 
-        if (json.has("hasArrived")) {
-            hasArrived = json.getBoolean("hasArrived");
-        }
+        boolean  hasArrived = parseBooleanIfPresent(json, false, "hasArrived");
 
-        if (json.has("isDepartureCanceled")) {
-            isDepartureCanceled = json.getBoolean("isDepartureCanceled");
-        }
+        boolean   isDepartureCanceled = parseBooleanIfPresent(json, false, "isDepartureCanceled");
 
-        if (json.has("isArrivalCanceled")) {
-            isArrivalCanceled = json.getBoolean("isArrivalCanceled");
-        }
+        boolean   isArrivalCanceled = parseBooleanIfPresent(json, false, "isArrivalCanceled");
 
         if (json.has("semanticId")) {
             uri = json.getString("semanticId");
@@ -346,7 +335,7 @@ public class Lc2IrailParser {
     }
 
     @NonNull
-    public RoutesListImpl parseRoutes(@NonNull RoutePlanningRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
+    RoutesListImpl parseRoutes(@NonNull RoutePlanningRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
         StopLocation origin = stationProvider.getStationByUri(json.getJSONObject("departureStation").getString("semanticId"));
         StopLocation destination = stationProvider.getStationByUri(json.getJSONObject("arrivalStation").getString("semanticId"));
 
@@ -422,11 +411,7 @@ public class Lc2IrailParser {
         for (int i = 0; i < jsonlegs.length(); i++) {
             JSONObject jsonLeg = jsonlegs.getJSONObject(i);
 
-            String headsign = jsonLeg.getString("direction");
-            StopLocation headsignStation = stationProvider.getStationByExactName(headsign);
-            if (headsignStation != null) {
-                headsign = headsignStation.getLocalizedName();
-            }
+            String headsign = parseHeadsign(jsonLeg);
 
             IrailVehicleJourneyStub vehicle = new IrailVehicleJourneyStub(
                     jsonLeg.getString("route"),
@@ -440,18 +425,9 @@ public class Lc2IrailParser {
             DateTime departureTime = DateTime.parse(jsonLeg.getString("departureTime"), dtf);
             int departureDelay = jsonLeg.getInt("departureDelay");
 
-            boolean isDepartureCanceled = false;
-            if (jsonLeg.has("isDepartureCanceled")) {
-                isDepartureCanceled = jsonLeg.getBoolean("isDepartureCanceled");
-            }
-            boolean isDeparturePlatformNormal = true;
-            if (jsonLeg.has("isDeparturePlatformNormal")) {
-                isDeparturePlatformNormal = jsonLeg.getBoolean("isDeparturePlatformNormal");
-            }
-            boolean hasDeparted = false;
-            if (jsonLeg.has("hasLeft")) {
-                hasDeparted = jsonLeg.getBoolean("hasLeft");
-            }
+            boolean isDepartureCanceled = parseBooleanIfPresent(jsonLeg, false, "isDepartureCanceled");
+            boolean isDeparturePlatformNormal = parseBooleanIfPresent(jsonLeg, true, "isDeparturePlatformNormal");
+            boolean hasDeparted = parseBooleanIfPresent(jsonLeg, false, "hasLeft");
 
             RouteLegEnd departure = new RouteLegEndImpl(departureStation,
                                                     departureTime,
@@ -463,18 +439,9 @@ public class Lc2IrailParser {
                                                     jsonLeg.getString("departureUri"),
                                                     TransportOccupancyLevel.UNSUPPORTED);
 
-            boolean isArrivalCanceled = false;
-            if (jsonLeg.has("isArrivalCanceled")) {
-                isArrivalCanceled = jsonLeg.getBoolean("isArrivalCanceled");
-            }
-            boolean isArrivalPlatformNormal = true;
-            if (jsonLeg.has("isArrivalPlatformNormal")) {
-                isArrivalPlatformNormal = jsonLeg.getBoolean("isArrivalPlatformNormal");
-            }
-            boolean hasArrived = false;
-            if (jsonLeg.has("hasArrived")) {
-                hasArrived = jsonLeg.getBoolean("hasArrived");
-            }
+            boolean isArrivalCanceled = parseBooleanIfPresent(jsonLeg, false, "isArrivalCanceled");
+            boolean isArrivalPlatformNormal = parseBooleanIfPresent(jsonLeg, true, "isArrivalPlatformNormal");
+            boolean hasArrived = parseBooleanIfPresent(jsonLeg, false, "hasArrived");
             DateTime arrivalTime = DateTime.parse(jsonLeg.getString("arrivalTime"), dtf);
             int arrivalDelay = jsonLeg.getInt("arrivalDelay");
 
@@ -491,5 +458,12 @@ public class Lc2IrailParser {
             legs[i] = new RouteLegImpl(RouteLegType.TRAIN, vehicle, departure, arrival);
         }
         return new RouteImpl(legs);
+    }
+
+    private boolean parseBooleanIfPresent(JSONObject object, boolean defaultValue, String isDepartureCanceled2) throws JSONException {
+        if (object.has(isDepartureCanceled2)) {
+            defaultValue = object.getBoolean(isDepartureCanceled2);
+        }
+        return defaultValue;
     }
 }

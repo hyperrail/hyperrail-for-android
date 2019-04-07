@@ -99,7 +99,7 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
         if ((suggestionsVisible &&
                 (position < suggestedStationsLength && !nearbyOnTop) ||
                 (position >= stations.length && nearbyOnTop))
-                ) {
+        ) {
             bindSuggestionViewHolder(holder, position);
         } else {
             bindNearbyViewHolder(holder, position, suggestedStationsLength);
@@ -139,25 +139,19 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
                 null);
         final Suggestion<LiveboardRequest> suggestion = new Suggestion<>(request, SuggestionType.LIST);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this,
-                            suggestion);
-                }
+        holder.itemView.setOnClickListener(view -> {
+            if (listener != null) {
+                listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this,
+                        suggestion);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
-                            suggestion);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (longClickListener != null) {
+                longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this,
+                        suggestion);
             }
+            return false;
         });
     }
 
@@ -186,23 +180,17 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
                 break;
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, suggestion);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRecyclerItemClick(StationSuggestionsCardAdapter.this, suggestion);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, suggestion);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (longClickListener != null) {
+                longClickListener.onRecyclerItemLongClick(StationSuggestionsCardAdapter.this, suggestion);
             }
+            return false;
         });
     }
 
@@ -252,8 +240,8 @@ public class StationSuggestionsCardAdapter extends RecyclerView.Adapter<StationS
      */
     class StationViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vStation;
-        protected final ImageView vIcon;
+        final TextView vStation;
+        final ImageView vIcon;
 
         StationViewHolder(View v) {
             super(v);

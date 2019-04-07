@@ -315,7 +315,7 @@ public class IrailApi implements TransportDataSource {
         Response.Listener<JSONObject> successListener = response -> {
             IrailVehicleJourney result;
             try {
-                result = parser.parseTrain(response, request.getSearchTime());
+                result = parser.parseVehicleJourney(response);
             } catch (JSONException | StopLocationNotResolvedException e) {
                 log.warning("Failed to parse vehicle: " + e.getMessage(), e);
                 request.notifyErrorListeners(e);
@@ -435,8 +435,7 @@ public class IrailApi implements TransportDataSource {
         } else {
             if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
                 try {
-                    JSONObject cache;
-                    cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
+                    JSONObject cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
                     successListener.onResponse(cache);
                 } catch (JSONException e) {
                     log.warning("Failed to get result from cache: " + e.getMessage());

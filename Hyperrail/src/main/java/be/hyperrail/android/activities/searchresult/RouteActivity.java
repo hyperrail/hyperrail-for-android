@@ -65,8 +65,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
             StopLocation origin;
             StopLocation destination;
             try {
-                origin = OpenTransportApi.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("from"));
-                destination = OpenTransportApi.getStationsProviderInstance().getStationByHID(getIntent().getStringExtra("to"));
+                origin = OpenTransportApi.getStopLocationProviderInstance().getStationByHID(getIntent().getStringExtra("from"));
+                destination = OpenTransportApi.getStopLocationProviderInstance().getStationByHID(getIntent().getStringExtra("to"));
             } catch (StopLocationNotResolvedException e) {
                 Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
                 finish();

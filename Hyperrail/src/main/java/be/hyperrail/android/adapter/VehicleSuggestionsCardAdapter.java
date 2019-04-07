@@ -8,6 +8,7 @@ package be.hyperrail.android.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,8 +42,9 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
         this.context = context;
     }
 
+    @NonNull
     @Override
-    public TrainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TrainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
 
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
@@ -85,23 +87,17 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
                 break;
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(VehicleSuggestionsCardAdapter.this, t);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRecyclerItemClick(VehicleSuggestionsCardAdapter.this, t);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(VehicleSuggestionsCardAdapter.this, t);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (longClickListener != null) {
+                longClickListener.onRecyclerItemLongClick(VehicleSuggestionsCardAdapter.this, t);
             }
+            return false;
         });
     }
 
@@ -131,8 +127,8 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
      */
     class TrainViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vStation;
-        protected final ImageView vIcon;
+        final TextView vStation;
+        final ImageView vIcon;
 
         TrainViewHolder(View v) {
             super(v);

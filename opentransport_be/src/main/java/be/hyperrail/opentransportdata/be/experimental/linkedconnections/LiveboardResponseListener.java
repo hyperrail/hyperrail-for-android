@@ -163,7 +163,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                     handledConnections.add(departure);
                     handledConnections.add(arrival);
 
-                    StopLocation direction = OpenTransportApi.getStationsProviderInstance().getStationByExactName(
+                    StopLocation direction = OpenTransportApi.getStopLocationProviderInstance().getStationByExactName(
                             departure.getDirection());
 
                     String headsign;

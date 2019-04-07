@@ -181,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Based on intent
             setView(this.getIntent().getIntExtra("view", defaultView),
                     this.getIntent().getExtras());
-            // mCurrentFragment.setParameters(this.getIntent().getExtras());
 
         } else if (savedInstanceState == null) {
             // Default
@@ -194,11 +193,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("view", mCurrentView);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     /**
@@ -240,17 +234,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mCurrentFragment = frg;
         mCurrentView = i;
 
-        // Allow drawer to close smooth
-       /* mDrawerNavigationHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!MainActivity.this.isFinishing()) {*/
         MainActivity.this.getSupportFragmentManager().beginTransaction().replace(
                 R.id.fragment_container, frg, "ChildViewTag").setCustomAnimations(
                 android.R.animator.fade_in, android.R.animator.fade_out).commit();
-        /*        }
-            }
-        }, 200);*/
 
         // Close drawer before loading next fragment
         mDrawerLayout.closeDrawer(Gravity.START);

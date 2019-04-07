@@ -169,7 +169,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             }
         };
 
-        tryOnlineOrServerCache(url, successListener, errorListener, mMeteredRequest);
+        tryOnlineOrServeCache(url, successListener, errorListener, mMeteredRequest);
     }
 
     @Override
@@ -238,7 +238,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             }
         };
 
-        tryOnlineOrServerCache(url, successListener, errorListener, mMeteredRequest);
+        tryOnlineOrServeCache(url, successListener, errorListener, mMeteredRequest);
     }
 
     @Override
@@ -335,7 +335,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             public void onResponse(JSONObject response) {
                 IrailVehicleJourney vehicle;
                 try {
-                    vehicle = parser.parseVehicle(request, response);
+                    vehicle = parser.parseVehicleJourney(request, response);
                 } catch (Exception e) {
                     log.warning("Failed to parse vehicle", e);
                     request.notifyErrorListeners(e);
@@ -358,7 +358,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
             }
         };
 
-        tryOnlineOrServerCache(url, successListener, errorListener, mMeteredRequest);
+        tryOnlineOrServeCache(url, successListener, errorListener, mMeteredRequest);
     }
 
     @Override
@@ -385,7 +385,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
      * @param successListener The listener for successful responses, which will be used by the cache
      * @param errorListener   The listener for unsuccessful responses
      */
-    private void tryOnlineOrServerCache(String url, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener, MeteredRequest meteredRequest) {
+    private void tryOnlineOrServeCache(String url, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener, MeteredRequest meteredRequest) {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, successListener, errorListener) {
             @Override
@@ -400,39 +400,46 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
         jsObjRequest.setTag(TAG_IRAIL_API_GET);
 
         if (isInternetAvailable()) {
-            meteredRequest.setResponseType(MeteredDataSource.RESPONSE_ONLINE);
-            if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null && !requestQueue.getCache().get(jsObjRequest.getCacheKey()).isExpired()) {
-                meteredRequest.setResponseType(MeteredDataSource.RESPONSE_CACHED);
-                try {
-                    successListener.onResponse(new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data)));
-                    return;
-                } catch (JSONException e) {
-                    log.debug("Failed to return result from cache", e);
-                    meteredRequest.setResponseType(MeteredDataSource.RESPONSE_ONLINE);
-                    requestQueue.add(jsObjRequest);
-                }
-            }
-            requestQueue.add(jsObjRequest);
+            makeInternetRequest(successListener, meteredRequest, jsObjRequest);
         } else {
-            log.debug("Trying to get data without internet");
-            if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
-                try {
-                    JSONObject cache;
-                    cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
-                    meteredRequest.setResponseType(MeteredDataSource.RESPONSE_OFFLINE);
-                    successListener.onResponse(cache);
-                } catch (JSONException e) {
-                    log.warning("Failed to get result from cache", e);
-                    errorListener.onErrorResponse(new NoConnectionError());
-                    meteredRequest.setResponseType(MeteredDataSource.RESPONSE_FAILED);
-                }
+            tryToServeCache(successListener, errorListener, meteredRequest, jsObjRequest);
+        }
+    }
 
-            } else {
-                log.debug("No cache available");
+    private void tryToServeCache(Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener, MeteredRequest meteredRequest, JsonObjectRequest jsObjRequest) {
+        log.debug("Trying to get data without internet");
+        if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
+            try {
+                JSONObject cache;
+                cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
+                meteredRequest.setResponseType(MeteredDataSource.RESPONSE_OFFLINE);
+                successListener.onResponse(cache);
+            } catch (JSONException e) {
+                log.warning("Failed to get result from cache", e);
                 errorListener.onErrorResponse(new NoConnectionError());
                 meteredRequest.setResponseType(MeteredDataSource.RESPONSE_FAILED);
             }
+        } else {
+            log.debug("No cache available");
+            errorListener.onErrorResponse(new NoConnectionError());
+            meteredRequest.setResponseType(MeteredDataSource.RESPONSE_FAILED);
         }
+    }
+
+    private void makeInternetRequest(Response.Listener<JSONObject> successListener, MeteredRequest meteredRequest, JsonObjectRequest jsObjRequest) {
+        meteredRequest.setResponseType(MeteredDataSource.RESPONSE_ONLINE);
+        if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null && !requestQueue.getCache().get(jsObjRequest.getCacheKey()).isExpired()) {
+            meteredRequest.setResponseType(MeteredDataSource.RESPONSE_CACHED);
+            try {
+                successListener.onResponse(new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data)));
+                return;
+            } catch (JSONException e) {
+                log.debug("Failed to return result from cache", e);
+                meteredRequest.setResponseType(MeteredDataSource.RESPONSE_ONLINE);
+                requestQueue.add(jsObjRequest);
+            }
+        }
+        requestQueue.add(jsObjRequest);
     }
 
     @Override

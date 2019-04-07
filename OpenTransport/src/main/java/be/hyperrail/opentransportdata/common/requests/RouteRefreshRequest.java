@@ -72,8 +72,8 @@ public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> impleme
     public RouteRefreshRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
         this.departureSemanticId = jsonObject.getString("departure_semantic_id");
-        this.origin = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
-        this.destination = OpenTransportApi.getStationsProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
+        this.origin = OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
+        this.destination = OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
 
         timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         searchTime = new DateTime(jsonObject.getLong("time"));
