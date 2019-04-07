@@ -71,6 +71,39 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
             return;
         }
 
+        detectNumberOfDayChanges(liveBoard, daySeparatorPositions);
+
+        this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
+
+        weaveDataWithDayHeaders(liveBoard, daySeparatorPositions);
+
+        mRecyclerView.post(this::notifyDataSetChanged);
+    }
+
+    private void weaveDataWithDayHeaders(Liveboard liveBoard, ArrayList<Integer> daySeparatorPositions) {
+        // Convert to array + take previous separators into account for position of next separator
+        int dayPosition = 0;
+        int stopPosition = 0;
+        int resultPosition = 0;
+        while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
+            // Keep in mind that position shifts with the number of already placed date separators
+            if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
+                if (liveboard.getLiveboardType() == DEPARTURES) {
+                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
+                } else {
+                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getArrivalTime();
+                }
+                dayPosition++;
+            } else {
+                this.displayList[resultPosition] = liveboard.getStops()[stopPosition];
+                stopPosition++;
+            }
+
+            resultPosition++;
+        }
+    }
+
+    private void detectNumberOfDayChanges(Liveboard liveBoard, ArrayList<Integer> daySeparatorPositions) {
         // Default day to compare to is today
         DateTime dateCompareObj = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
         DateTime stoptime = liveBoard.getStops()[0].getType() == VehicleStopType.DEPARTURE ?
@@ -93,31 +126,6 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
                 daySeparatorPositions.add(i);
             }
         }
-
-        this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
-
-        // Convert to array + take previous separators into account for position of next separator
-        int dayPosition = 0;
-        int stopPosition = 0;
-        int resultPosition = 0;
-        while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
-            // Keep in mind that position shifts with the number of already placed date separators
-            if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                if (liveboard.getLiveboardType() == DEPARTURES) {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
-                } else {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getArrivalTime();
-                }
-                dayPosition++;
-            } else {
-                this.displayList[resultPosition] = liveboard.getStops()[stopPosition];
-                stopPosition++;
-            }
-
-            resultPosition++;
-        }
-
-        mRecyclerView.post(this::notifyDataSetChanged);
     }
 
     @Override

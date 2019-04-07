@@ -64,28 +64,15 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
-
-        // Default day to compare to is today
-        DateTime lastday = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
-
-        if (routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay().isBefore(lastday)) {
-            // If the first stop is not today, add date separators everywhere
-            lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
-        } else if (!newRoutes.getSearchTime().withTimeAtStartOfDay().withZone(DateTimeZone.UTC).equals(routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
-            // If the search results differ from the date searched, everything after the date searched should have separators
-            lastday = newRoutes.getSearchTime().withTimeAtStartOfDay();
-        }
-        for (int i = 0; i < routes.length; i++) {
-            Route route = routes[i];
-
-            if (route.getDepartureTime().withTimeAtStartOfDay().isAfter(lastday)) {
-                lastday = route.getDepartureTime().withTimeAtStartOfDay();
-                daySeparatorPositions.add(i);
-            }
-        }
+        initializeDataAndDayHeaders(newRoutes, daySeparatorPositions);
 
         this.displayList = new Object[daySeparatorPositions.size() + routes.length];
+        weaveDataAndDayHeaders(daySeparatorPositions);
 
+        mRecyclerView.post(this::notifyDataSetChanged);
+    }
+
+    private void weaveDataAndDayHeaders(ArrayList<Integer> daySeparatorPositions) {
         // Convert to array + take previous separators into account for position of next separator
         int dayPosition = 0;
         int routePosition = 0;
@@ -104,8 +91,27 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
             resultPosition++;
         }
+    }
 
-        mRecyclerView.post(this::notifyDataSetChanged);
+    private void initializeDataAndDayHeaders(RoutesList newRoutes, ArrayList<Integer> daySeparatorPositions) {
+        // Default day to compare to is today
+        DateTime lastday = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
+
+        if (routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay().isBefore(lastday)) {
+            // If the first stop is not today, add date separators everywhere
+            lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
+        } else if (!newRoutes.getSearchTime().withTimeAtStartOfDay().withZone(DateTimeZone.UTC).equals(routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
+            // If the search results differ from the date searched, everything after the date searched should have separators
+            lastday = newRoutes.getSearchTime().withTimeAtStartOfDay();
+        }
+        for (int i = 0; i < routes.length; i++) {
+            Route route = routes[i];
+
+            if (route.getDepartureTime().withTimeAtStartOfDay().isAfter(lastday)) {
+                lastday = route.getDepartureTime().withTimeAtStartOfDay();
+                daySeparatorPositions.add(i);
+            }
+        }
     }
 
     @Override
