@@ -45,7 +45,6 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
         if (id == null) {
             Log.w("widgets", "No station ID found for " + "NextDepartures:" + appWidgetId);
             return;
-            //throw new IllegalStateException("No station ID found for " + "NextDepartures:" + appWidgetId);
         }
 
         StopLocation mStation = null;

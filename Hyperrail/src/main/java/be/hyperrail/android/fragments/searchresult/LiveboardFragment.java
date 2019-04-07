@@ -28,9 +28,7 @@ import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.opentransportdata.OpenTransportApi;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
@@ -125,36 +123,29 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         TransportDataSource api = OpenTransportApi.getDataProviderInstance();
         // Don't abort all queries: there might be multiple fragments at the same screen!
 
-        mRequest.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
-            @Override
-            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
-                resetErrorState();
-                vRefreshLayout.setRefreshing(false);
+        mRequest.setCallback((data, tag) -> {
+            resetErrorState();
+            vRefreshLayout.setRefreshing(false);
 
-                // store retrieved data
-                mCurrentLiveboard = data;
-                // Show retrieved data
-                showData(mCurrentLiveboard);
+            // store retrieved data
+            mCurrentLiveboard = data;
+            // Show retrieved data
+            showData(mCurrentLiveboard);
 
-                // If we didn't get a result, try the next data
-                if (data.getStops().length == 0) {
-                    LiveboardFragment.this.loadNextRecyclerviewItems();
-                } else {
-                    // Enable infinite scrolling again
-                    mLiveboardCardAdapter.setInfiniteScrolling(true);
-                }
-
-                // Scroll past the load earlier item
-                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+            // If we didn't get a result, try the next data
+            if (data.getStops().length == 0) {
+                LiveboardFragment.this.loadNextRecyclerviewItems();
+            } else {
+                // Enable infinite scrolling again
+                mLiveboardCardAdapter.setInfiniteScrolling(true);
             }
 
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                vRefreshLayout.setRefreshing(false);
-                // only finish if we're loading new data
-                showError(e);
-            }
+            // Scroll past the load earlier item
+            ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(1, 0);
+        }, (e, tag) -> {
+            vRefreshLayout.setRefreshing(false);
+            // only finish if we're loading new data
+            showError(e);
         }, null);
         api.getLiveboard(mRequest);
     }
@@ -169,32 +160,26 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }
 
         ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ResultExtensionType.APPEND);
-        request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
-            @Override
-            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
-                resetErrorState();
-                // Compare the new one with the old one to check if stops have been added
-                if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    showError(new FileNotFoundException("No results"));
-                    mLiveboardCardAdapter.disableInfiniteNext();
-                }
-                mCurrentLiveboard = data;
-                showData(mCurrentLiveboard);
-
-                mLiveboardCardAdapter.setNextLoaded();
-
-                // Scroll past the "load earlier"
-                LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
-                if (mgr.findFirstVisibleItemPosition() == 0) {
-                    mgr.scrollToPositionWithOffset(1, 0);
-                }
+        request.setCallback((data, tag) -> {
+            resetErrorState();
+            // Compare the new one with the old one to check if stops have been added
+            if (data.getStops().length == mCurrentLiveboard.getStops().length) {
+                showError(new FileNotFoundException("No results"));
+                mLiveboardCardAdapter.disableInfiniteNext();
             }
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                mLiveboardCardAdapter.setNextError(true);
-                mLiveboardCardAdapter.setNextLoaded();
+            mCurrentLiveboard = data;
+            showData(mCurrentLiveboard);
+
+            mLiveboardCardAdapter.setNextLoaded();
+
+            // Scroll past the "load earlier"
+            LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
+            if (mgr.findFirstVisibleItemPosition() == 0) {
+                mgr.scrollToPositionWithOffset(1, 0);
             }
+        }, (e, tag) -> {
+            mLiveboardCardAdapter.setNextError(true);
+            mLiveboardCardAdapter.setNextLoaded();
         }, null);
         OpenTransportApi.getDataProviderInstance().extendLiveboard(request);
     }
@@ -208,33 +193,26 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
         }
 
         ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ResultExtensionType.PREPEND);
-        request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
-            @Override
-            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
-                resetErrorState();
-                // Compare the new one with the old one to check if stops have been added
-                if (data.getStops().length == mCurrentLiveboard.getStops().length) {
-                    // mLiveboardCardAdapter.setPrevError(true); //TODO: find a way to make clear to the user that no data is available
-                    mLiveboardCardAdapter.disableInfinitePrevious();
-                }
-
-                int oldLength = mLiveboardCardAdapter.getItemCount();
-
-                mCurrentLiveboard = data;
-                showData(mCurrentLiveboard);
-
-                int newLength = mLiveboardCardAdapter.getItemCount();
-                // Scroll past the load earlier item
-                ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newLength - oldLength, 0);
-
-                mLiveboardCardAdapter.setPrevLoaded();
+        request.setCallback((data, tag) -> {
+            resetErrorState();
+            // Compare the new one with the old one to check if stops have been added
+            if (data.getStops().length == mCurrentLiveboard.getStops().length) {
+                mLiveboardCardAdapter.disableInfinitePrevious();
             }
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                mLiveboardCardAdapter.setPrevError(true);
-                mLiveboardCardAdapter.setPrevLoaded();
-            }
+
+            int oldLength = mLiveboardCardAdapter.getItemCount();
+
+            mCurrentLiveboard = data;
+            showData(mCurrentLiveboard);
+
+            int newLength = mLiveboardCardAdapter.getItemCount();
+            // Scroll past the load earlier item
+            ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newLength - oldLength, 0);
+
+            mLiveboardCardAdapter.setPrevLoaded();
+        }, (e, tag) -> {
+            mLiveboardCardAdapter.setPrevError(true);
+            mLiveboardCardAdapter.setPrevLoaded();
         }, null);
         OpenTransportApi.getDataProviderInstance().extendLiveboard(request);
     }

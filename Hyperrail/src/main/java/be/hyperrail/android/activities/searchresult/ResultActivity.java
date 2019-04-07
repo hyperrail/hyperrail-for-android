@@ -31,8 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
 
 import be.hyperrail.android.R;
@@ -173,10 +171,6 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
 
         return true;
     }
-
-
-    @Override
-    public abstract void onDateTimePicked(DateTime date);
 
     /**
      * Set or unset the favorite display state

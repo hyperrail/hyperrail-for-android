@@ -19,12 +19,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
 import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
@@ -40,6 +40,8 @@ import static be.hyperrail.android.persistence.SuggestionType.LIST;
  * For code-duplication reasons, all data is stored as a RoutePlanningRequest. Stations are stored as a query from the station, with an empty string as destination.
  */
 public class PersistentQueryProvider implements Serializable {
+
+    private static final HyperRailLog log = HyperRailLog.getLogger(PersistentQueryProvider.class);
 
     /**
      * Tag under which recent routes are stored
@@ -71,6 +73,11 @@ public class PersistentQueryProvider implements Serializable {
      */
     private static final String TAG_FAV_TRAINS = "fav_trains";
 
+    private static final String PREF_ROUTES_ORDER = "routes_order";
+    private static final String PREF_ROUTES_HISTORY_COUNT = "routes_history_count";
+    public static final String PREF_STOPLOCATIONS_HISTORY_COUNT = "stations_history_count";
+    public static final String PREF_STATIONS_ORDER = "stations_order";
+
     /**
      * An instance of sharedPreferences
      */
@@ -101,8 +108,10 @@ public class PersistentQueryProvider implements Serializable {
      */
     public List<Suggestion<RoutePlanningRequest>> getAllRoutes() {
 
-        int recentLimit = Integer.valueOf(sharedPreferences.getString("routes_history_count", "3"));
-        int order = Integer.valueOf(sharedPreferences.getString("routes_order", "0"));
+        //noinspection ConstantConditions
+        int recentLimit = Integer.valueOf(sharedPreferences.getString(PREF_ROUTES_HISTORY_COUNT, "3"));
+        //noinspection ConstantConditions
+        int order = Integer.valueOf(sharedPreferences.getString(PREF_ROUTES_ORDER, "0"));
         // 0: recents before favorites
         // 1: favorites before recents
 
@@ -116,7 +125,7 @@ public class PersistentQueryProvider implements Serializable {
         List<Suggestion<RoutePlanningRequest>> recents = getRoutes(HISTORY,
                 recentLimit + favorites.size());
 
-        recents = (List<Suggestion<RoutePlanningRequest>>) removeFromCollection(recents, favorites);
+        removeFromCollection(recents, favorites);
 
         if (recents.size() > recentLimit) {
             recents = recents.subList(0, recentLimit);
@@ -137,9 +146,11 @@ public class PersistentQueryProvider implements Serializable {
      * @return Sorted array with favorite and recent liveboard requests
      */
     public List<Suggestion<LiveboardRequest>> getAllStations() {
+        //noinspection ConstantConditions
         int recentLimit = Integer.valueOf(
-                sharedPreferences.getString("stations_history_count", "3"));
-        int order = Integer.valueOf(sharedPreferences.getString("stations_order", "0"));
+                sharedPreferences.getString(PREF_STOPLOCATIONS_HISTORY_COUNT, "3"));
+        //noinspection ConstantConditions
+        int order = Integer.valueOf(sharedPreferences.getString(PREF_STATIONS_ORDER, "0"));
         // 0 || 2: recents before favorites
         // 1 || 3: favorites before recents
 
@@ -153,8 +164,7 @@ public class PersistentQueryProvider implements Serializable {
         List<Suggestion<LiveboardRequest>> recents = getStations(HISTORY,
                 recentLimit + favorites.size());
 
-        recents = (List<Suggestion<LiveboardRequest>>) removeFromCollection(recents,
-                favorites);
+        removeFromCollection(recents, favorites);
 
         if (recents.size() > recentLimit) {
             recents = recents.subList(0, recentLimit);
@@ -175,7 +185,9 @@ public class PersistentQueryProvider implements Serializable {
      * @return Sorted array with favorite and recent vehicle requests
      */
     public List<Suggestion<VehicleRequest>> getAllTrains() {
+        //noinspection ConstantConditions
         int recentLimit = Integer.valueOf(sharedPreferences.getString("trains_history_count", "3"));
+        //noinspection ConstantConditions
         int order = Integer.valueOf(sharedPreferences.getString("trains_order", "0"));
         // 0: recents before favorites
         // 1: favorites before recents
@@ -190,7 +202,7 @@ public class PersistentQueryProvider implements Serializable {
         List<Suggestion<VehicleRequest>> recents = getTrains(HISTORY,
                 recentLimit + favorites.size());
 
-        recents = (List<Suggestion<VehicleRequest>>) removeFromCollection(recents, favorites);
+        removeFromCollection(recents, favorites);
 
         if (recents.size() > recentLimit) {
             recents = recents.subList(0, recentLimit);
@@ -205,43 +217,43 @@ public class PersistentQueryProvider implements Serializable {
         }
     }
 
-    public List<Suggestion<RoutePlanningRequest>> getRoutes(SuggestionType type) {
+    private List<Suggestion<RoutePlanningRequest>> getRoutes(SuggestionType type) {
         return getRoutes(type, MAX_STORED);
     }
 
-    public List<Suggestion<RoutePlanningRequest>> getRoutes(SuggestionType type, int limit) {
+    private List<Suggestion<RoutePlanningRequest>> getRoutes(SuggestionType type, int limit) {
         if (type == FAVORITE) {
             return load(TAG_FAV_ROUTES, limit, type, RoutePlanningRequest.class);
         } else if (type == HISTORY) {
             return load(TAG_RECENT_ROUTES, limit, true, type, RoutePlanningRequest.class);
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    public List<Suggestion<LiveboardRequest>> getStations(SuggestionType type) {
+    private List<Suggestion<LiveboardRequest>> getStations(SuggestionType type) {
         return getStations(type, MAX_STORED);
     }
 
-    public List<Suggestion<LiveboardRequest>> getStations(SuggestionType type, int limit) {
+    private List<Suggestion<LiveboardRequest>> getStations(SuggestionType type, int limit) {
         if (type == FAVORITE) {
             return load(TAG_FAV_STATIONS, limit, type, LiveboardRequest.class);
         } else if (type == HISTORY) {
             return load(TAG_RECENT_STATIONS, limit, true, type, LiveboardRequest.class);
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    public List<Suggestion<VehicleRequest>> getTrains(SuggestionType type) {
+    private List<Suggestion<VehicleRequest>> getTrains(SuggestionType type) {
         return getTrains(type, MAX_STORED);
     }
 
-    public List<Suggestion<VehicleRequest>> getTrains(SuggestionType type, int limit) {
+    private List<Suggestion<VehicleRequest>> getTrains(SuggestionType type, int limit) {
         if (type == FAVORITE) {
             return load(TAG_FAV_TRAINS, limit, type, VehicleRequest.class);
         } else if (type == HISTORY) {
             return load(TAG_RECENT_TRAINS, limit, true, type, VehicleRequest.class);
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public <T extends TransportDataRequest> void store(Suggestion<T> query) {
@@ -302,21 +314,21 @@ public class PersistentQueryProvider implements Serializable {
      */
     private <T extends TransportDataRequest> void store(String tag, T object, Class<T> classInstance) {
         Set<String> items = new HashSet<>(
-                sharedPreferences.getStringSet(tag, new HashSet<String>()));
+                sharedPreferences.getStringSet(tag, new HashSet<>()));
 
         // If this query is already in the recents list, remove it (so we can update it)
-        items = removeFromPersistentSet(items, object);
+        removeOneFromPersistentSet(items, object);
 
         // Keep the amount of items under the set threshold
         while (items.size() >= MAX_STORED) {
             ArrayList<Suggestion<T>> queries = setToList(items, LIST, classInstance);
-            queries = sortByTime(queries);
+            sortByTime(queries);
 
             if (queries.isEmpty()) {
                 break;
             }
             // Remove latest query
-            items = removeFromPersistentSet(items, queries.get(queries.size() - 1).getData());
+            removeOneFromPersistentSet(items, queries.get(queries.size() - 1).getData());
         }
 
         // Store as JSON
@@ -329,32 +341,45 @@ public class PersistentQueryProvider implements Serializable {
             editor.apply();
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            log.severe("Failed to store query", e);
         }
     }
 
     public <T extends TransportDataRequest> boolean isFavorite(T toCheck) {
-        // TODO: reduce code duplication
         if (toCheck.getClass() == RoutePlanningRequest.class) {
-            for (Suggestion<RoutePlanningRequest> favorite : getRoutes(FAVORITE)) {
-                if (toCheck.equalsIgnoringTime(favorite.getData())) {
-                    return true;
-                }
-            }
+            return isFavoriteRouteplanningRequest(toCheck);
         } else if (toCheck.getClass() == LiveboardRequest.class) {
-            for (Suggestion<LiveboardRequest> favorite : getStations(FAVORITE)) {
-                if (toCheck.equalsIgnoringTime(favorite.getData())) {
-                    return true;
-                }
-            }
+            return isFavoriteLiveboardRequest(toCheck);
         } else if (toCheck.getClass() == VehicleRequest.class) {
-            for (Suggestion<VehicleRequest> favorite : getTrains(FAVORITE)) {
-                if (toCheck.equalsIgnoringTime(favorite.getData())) {
-                    return true;
-                }
+            return isFavoriteVehicleRequest(toCheck);
+        }
+        return false;
+    }
+
+    private <T extends TransportDataRequest> boolean isFavoriteRouteplanningRequest(T toCheck) {
+        for (Suggestion<RoutePlanningRequest> favorite : getRoutes(FAVORITE)) {
+            if (toCheck.equalsIgnoringTime(favorite.getData())) {
+                return true;
             }
         }
+        return false;
+    }
 
+    private <T extends TransportDataRequest> boolean isFavoriteLiveboardRequest(T toCheck) {
+        for (Suggestion<LiveboardRequest> favorite : getStations(FAVORITE)) {
+            if (toCheck.equalsIgnoringTime(favorite.getData())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private <T extends TransportDataRequest> boolean isFavoriteVehicleRequest(T toCheck) {
+        for (Suggestion<VehicleRequest> favorite : getTrains(FAVORITE)) {
+            if (toCheck.equalsIgnoringTime(favorite.getData())) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -395,7 +420,7 @@ public class PersistentQueryProvider implements Serializable {
 
         // apply time sort
         if (timeSensitive) {
-            results = sortByTime(results);
+            sortByTime(results);
         }
 
         // apply limit
@@ -417,7 +442,7 @@ public class PersistentQueryProvider implements Serializable {
                 sharedPreferences.getStringSet(tag, new HashSet<String>()));
 
         // If this query is already in the recents list, remove it (so we can update it)
-        items = removeFromPersistentSet(items, query);
+        removeOneFromPersistentSet(items, query);
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putStringSet(tag, items);
@@ -425,32 +450,12 @@ public class PersistentQueryProvider implements Serializable {
     }
 
     /**
-     * Clear a tag
-     *
-     * @param tag The tag for which all queries should be cleared
-     */
-    private void clear(String tag) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putStringSet(tag, new HashSet<String>());
-        editor.apply();
-    }
-
-    /**
      * Sort a list by time, newest first
      *
      * @param items the routeQueries
-     * @return The sorted items
      */
-    private <T extends TransportDataRequest> ArrayList<Suggestion<T>> sortByTime(ArrayList<Suggestion<T>> items) {
-
-        Collections.sort(items, new Comparator<Suggestion<T>>() {
-            @Override
-            public int compare(Suggestion<T> o1, Suggestion<T> o2) {
-                return o2.getData().getCreatedAt().compareTo(o1.getData().getCreatedAt());
-            }
-        });
-
-        return items;
+    private <T extends TransportDataRequest> void sortByTime(ArrayList<Suggestion<T>> items) {
+        Collections.sort(items, (o1, o2) -> o2.getData().getCreatedAt().compareTo(o1.getData().getCreatedAt()));
     }
 
     /**
@@ -474,8 +479,6 @@ public class PersistentQueryProvider implements Serializable {
                     suggestionData = new RoutePlanningRequest(object);
                 } else if (objectClass == VehicleRequest.class) {
                     suggestionData = new VehicleRequest(object);
-                } else if (objectClass == RoutePlanningRequest.class) {
-                    suggestionData = new RoutePlanningRequest(object);
                 } else if (objectClass == ActualDisturbancesRequest.class) {
                     suggestionData = new ActualDisturbancesRequest(object);
                 } else {
@@ -503,10 +506,8 @@ public class PersistentQueryProvider implements Serializable {
      *
      * @param collection The items from which should be removed
      * @param remove     The item to remove
-     * @return The filtered collection
      */
-    private <T extends TransportDataRequest> Set<String> removeFromPersistentSet(Set<String> collection, T remove) {
-        // TODO: this will not work for trains - they will need a better way to compare
+    private <T extends TransportDataRequest> void removeOneFromPersistentSet(Set<String> collection, T remove) {
         Set<String> toBeRemoved = new HashSet<>();
 
         for (String entry : collection) {
@@ -520,9 +521,7 @@ public class PersistentQueryProvider implements Serializable {
                 // ignored
             }
         }
-
         collection.removeAll(toBeRemoved);
-        return collection;
     }
 
     /**
@@ -530,9 +529,8 @@ public class PersistentQueryProvider implements Serializable {
      *
      * @param collection The items from which should be removed
      * @param remove     The items to remove
-     * @return The filtered collection
      */
-    private <T extends TransportDataRequest> Collection<Suggestion<T>> removeFromCollection(Collection<Suggestion<T>> collection, Collection<Suggestion<T>> remove) {
+    private <T extends TransportDataRequest> void removeFromCollection(Collection<Suggestion<T>> collection, Collection<Suggestion<T>> remove) {
 
         Set<Suggestion<T>> toBeRemoved = new HashSet<>();
         for (Suggestion<T> entry : collection) {
@@ -544,7 +542,6 @@ public class PersistentQueryProvider implements Serializable {
         }
 
         collection.removeAll(toBeRemoved);
-        return collection;
     }
 
 }

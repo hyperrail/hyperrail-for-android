@@ -125,18 +125,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vTrainType.setVisibility(View.VISIBLE);
         vDirection.setText(routeLeg.getVehicleInformation().getHeadsign());
 
-        if (transferBefore.hasLeft()) {
-            if (transferAfter.hasArrived()) {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
-                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
-            } else {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
-                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-            }
-        } else {
-            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
-            vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-        }
+        bindTimelineDrawable(context, transferBefore, transferAfter);
 
         bindDuration(transferBefore, transferAfter);
 
@@ -148,6 +137,12 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
             vOccupancy.setVisibility(View.VISIBLE);
             vStatusContainer.setVisibility(View.GONE);
         }
+        bindAlerts(route, position);
+
+        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+    }
+
+    private void bindAlerts(Route route, int position) {
         if (route.getVehicleAlerts() != null && route.getVehicleAlerts().length > position) {
             Message[] trainAlerts = route.getVehicleAlerts()[position];
             if (trainAlerts != null && trainAlerts.length > 0) {
@@ -168,8 +163,21 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         } else {
             vAlertContainer.setVisibility(View.GONE);
         }
+    }
 
-        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+    private void bindTimelineDrawable(Context context, Transfer transferBefore, Transfer transferAfter) {
+        if (transferBefore.hasLeft()) {
+            if (transferAfter.hasArrived()) {
+                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
+                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
+            } else {
+                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+            }
+        } else {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
+            vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+        }
     }
 
     private void bindDuration(Transfer transferBefore, Transfer transferAfter) {

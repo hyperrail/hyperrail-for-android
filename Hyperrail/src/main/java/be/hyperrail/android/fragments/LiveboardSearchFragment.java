@@ -46,8 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.perf.metrics.AddTrace;
 
@@ -74,12 +73,14 @@ import static be.hyperrail.android.persistence.SuggestionType.HISTORY;
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<LiveboardRequest>>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnRecyclerItemLongClickListener<Suggestion<LiveboardRequest>> {
+public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<LiveboardRequest>>, OnRecyclerItemLongClickListener<Suggestion<LiveboardRequest>> {
 
     private static final int COARSE_LOCATION_REQUEST = 1;
+    public static final String PREF_ENABLE_NEARBY_STATIONS = "stations_enable_nearby";
+    public static final String PREF_STATIONS_ORDER = "stations_order";
+    public static final String PREF_STATIONS_NEARBY_COUNT = "stations_nearby_count";
 
     private RecyclerView stationRecyclerView;
-    private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private EditText vStationSearchField;
 
@@ -96,6 +97,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      * This alternative onclicklistener allows to "catch" clicks. This way we can reuse this fragment for purposes other than just searching to show liveboards
      */
     private OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> alternativeOnClickListener;
+    private FusedLocationProviderClient mFusedLocationClient;
 
     public LiveboardSearchFragment() {
         // Required empty public constructor
@@ -128,7 +130,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         mStationAdapter = new StationSuggestionsCardAdapter(this.getActivity(), null);
         mStationAdapter.setOnItemClickListener(this);
         mStationAdapter.setOnLongItemClickListener(this);
-        // Hide the recyclerview when empty - a placeholder will shift into place automaticly
+        // Hide the recyclerview when empty - a placeholder will shift into place automatically
         mStationAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -144,9 +146,11 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
-        mNumberOfNearbyStations = Integer.valueOf(preferences.getString("stations_nearby_count", "3"));
+        //noinspection ConstantConditions
+        mNumberOfNearbyStations = Integer.valueOf(preferences.getString(PREF_STATIONS_NEARBY_COUNT, "3"));
 
-        int order = Integer.valueOf(preferences.getString("stations_order", "0"));
+        //noinspection ConstantConditions
+        int order = Integer.valueOf(preferences.getString(PREF_STATIONS_ORDER, "0"));
         // 0 || 1: suggestions before nearby
         // 2 || 3: nearby before suggestions
         mNearbyOnTop = (order == 2 || order == 3);
@@ -154,14 +158,6 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());
         activeSuggestionsUpdateTask = new UpdateSuggestionsTask(this);
         activeSuggestionsUpdateTask.execute(persistentQueryProvider);
-
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
         vStationSearchField = view.findViewById(R.id.input_station);
 
@@ -177,7 +173,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
         vStationSearchField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                // Not needed
             }
 
             @Override
@@ -187,10 +183,11 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                // Not needed
             }
         });
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         // Setting suggested stations will be handled on fragment start
     }
 
@@ -232,23 +229,13 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
-
+        getLastLocation();
         // If not pending or running, start a new task
         if (activeSuggestionsUpdateTask.getStatus() == AsyncTask.Status.FINISHED) {
             activeSuggestionsUpdateTask.cancel(true);
             activeSuggestionsUpdateTask = new UpdateSuggestionsTask(this);
             activeSuggestionsUpdateTask.execute(persistentQueryProvider);
         }
-    }
-
-    /**
-     * On stop, enable location
-     */
-    @Override
-    public void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
     }
 
     /**
@@ -318,104 +305,66 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
      */
     private void getLastLocation() {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
-        if (preferences.contains("stations_enable_nearby") && !preferences.getBoolean("stations_enable_nearby", true)) {
+        if (preferences.contains(PREF_ENABLE_NEARBY_STATIONS) && !preferences.getBoolean(PREF_ENABLE_NEARBY_STATIONS, true)) {
             // Don't use this feature if it's disabled in settings
             return;
         }
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED || !preferences.contains("stations_enable_nearby")) {
+                != PackageManager.PERMISSION_GRANTED || !preferences.contains(PREF_ENABLE_NEARBY_STATIONS)) {
 
-            // Should we show an explanation?
-            // Explain anyway
-            /*if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) */
-
-            if (permissionExplanationDialog != null && permissionExplanationDialog.isShowing()){
+            if (permissionExplanationDialog != null && permissionExplanationDialog.isShowing()) {
                 // We're already showing an instance
                 return;
             }
             permissionExplanationDialog = (new AlertDialog.Builder(this.getActivity())).create();
             permissionExplanationDialog.setTitle(R.string.permission_description_location_title);
             permissionExplanationDialog.setMessage(getResources().getString(R.string.permission_description_location_description));
-            permissionExplanationDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    preferences.edit().putBoolean("stations_enable_nearby", true).apply();
-                    // Ask
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        LiveboardSearchFragment.this.requestPermissions(
-                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                COARSE_LOCATION_REQUEST);
-                    }
+            permissionExplanationDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.Yes), (dialog, which) -> {
+                preferences.edit().putBoolean(PREF_ENABLE_NEARBY_STATIONS, true).apply();
+                // Ask
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    LiveboardSearchFragment.this.requestPermissions(
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            COARSE_LOCATION_REQUEST);
                 }
             });
-            permissionExplanationDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Disable
-                    preferences.edit().putBoolean("stations_enable_nearby", false).apply();
-                }
+            permissionExplanationDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.No), (dialog, which) -> {
+                // Disable
+                preferences.edit().putBoolean(PREF_ENABLE_NEARBY_STATIONS, false).apply();
             });
 
             permissionExplanationDialog.show();
         } else {
-            // TODO: update to https://developers.google.com/android/reference/com/google/android/gms/location/FusedLocationProviderClient AFTER updating to Google Play Libraries to 12.0
-            // https://stackoverflow.com/a/46482065/1889679
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-
-            if (mLastLocation != null) {
-                loadStations(vStationSearchField.getText().toString());
-            }
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            mLastLocation = location;
+                            // Load the stations again. Location will be considered as it is available in a field.
+                            loadStations(vStationSearchField.getText().toString());
+                        }
+                    });
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == COARSE_LOCATION_REQUEST) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-        switch (requestCode) {
-            case COARSE_LOCATION_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // fire this event again
+                getLastLocation();
 
-                    // fire this event again
-                    getLastLocation();
+            } else {
+                PreferenceManager.getDefaultSharedPreferences(this.getActivity()).edit().putBoolean(PREF_ENABLE_NEARBY_STATIONS, true).apply();
+                // Don't use this feature if we don't have permission
 
-                } else {
-                    PreferenceManager.getDefaultSharedPreferences(this.getActivity()).edit().putBoolean("stations_enable_nearby", true).apply();
-                    // Don't use this feature if we don't have permission
-
-                }
-                break;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    /**
-     * On Google play location service connection
-     *
-     * @inheritDoc
-     */
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        getLastLocation();
     }
 
     public void setAlternativeOnClickListener(OnRecyclerItemClickListener<Suggestion<LiveboardRequest>> alternativeOnClickListener) {
@@ -442,7 +391,9 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
             // get a reference to the activity if it is still there
             LiveboardSearchFragment fragment = fragmentReference.get();
-            if (fragment == null) return;
+            if (fragment == null) {
+                return;
+            }
 
             fragment.mStationAdapter.setSuggestedStations(suggestions);
         }

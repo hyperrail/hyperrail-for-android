@@ -54,8 +54,6 @@ import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleJourney;
@@ -121,7 +119,6 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
     @Override
     public void setRequest(@NonNull VehicleRequest request) {
         this.mRequest = request;
-        //getInitialData();
     }
 
     @Override
@@ -156,22 +153,16 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
 
         VehicleRequest request = new VehicleRequest(mRequest.getVehicleId(),
                                                               mRequest.getSearchTime());
-        request.setCallback(new TransportDataSuccessResponseListener<VehicleJourney>() {
-            @Override
-            public void onSuccessResponse(@NonNull VehicleJourney data, Object tag) {
-                resetErrorState();
-                vRefreshLayout.setRefreshing(false);
-                mCurrentTrain = data;
-                showData(mCurrentTrain);
-            }
-        }, new TransportDataErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                vRefreshLayout.setRefreshing(false);
+        request.setCallback((data, tag) -> {
+            resetErrorState();
+            vRefreshLayout.setRefreshing(false);
+            mCurrentTrain = data;
+            showData(mCurrentTrain);
+        }, (e, tag) -> {
+            vRefreshLayout.setRefreshing(false);
 
-                // only finish if we're loading new data
-                showError(e);
-            }
+            // only finish if we're loading new data
+            showError(e);
         }, null);
         OpenTransportApi.getDataProviderInstance().getVehicleJourney(request);
     }
@@ -214,7 +205,6 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        // TODO: VehicleStop objects should have a way to distinguish the first and last stop
         DateTime queryTime = object.getArrivalTime();
         if (queryTime == null) {
             queryTime = object.getDepartureTime();

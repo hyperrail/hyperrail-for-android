@@ -38,7 +38,6 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.activities.searchresult.VehicleActivity;
-import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.RouteDetailCardAdapter;
 import be.hyperrail.android.util.DurationFormatter;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
@@ -131,23 +130,20 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
         RouteDetailCardAdapter adapter = new RouteDetailCardAdapter((Activity) context, route, true);
 
         // Launch intents to view details / click through
-        adapter.setOnItemClickListener(new OnRecyclerItemClickListener<Object>() {
-            @Override
-            public void onRecyclerItemClick(RecyclerView.Adapter sender, Object object) {
-                Intent i = null;
-                if (object instanceof Bundle) {
-                    i = VehicleActivity.createIntent(context,
-                                                     new VehicleRequest(
-                                                             ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
-                                                             (DateTime) ((Bundle) object).getSerializable("date")
-                                                     ));
+        adapter.setOnItemClickListener((sender, object) -> {
+            Intent i = null;
+            if (object instanceof Bundle) {
+                i = VehicleActivity.createIntent(context,
+                                                 new VehicleRequest(
+                                                         ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
+                                                         (DateTime) ((Bundle) object).getSerializable("date")
+                                                 ));
 
-                } else if (object instanceof Transfer) {
-                    i = LiveboardActivity.createIntent(context, new LiveboardRequest(
-                            ((Transfer) object).getStopLocation(), QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null));
-                }
-                context.startActivity(i);
+            } else if (object instanceof Transfer) {
+                i = LiveboardActivity.createIntent(context, new LiveboardRequest(
+                        ((Transfer) object).getStopLocation(), QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null));
             }
+            context.startActivity(i);
         });
 
         vRecyclerView.setAdapter(adapter);
