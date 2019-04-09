@@ -25,23 +25,22 @@ import be.hyperrail.android.logging.HyperRailLog;
 
 public class ReviewDialogProvider {
 
-    private static final HyperRailLog log = HyperRailLog.getLogger(ReviewDialogProvider.class);
-
-    private static final String PREFERENCES_KEY_LAUNCH_COUNT = "rvd_app_launches";
+    private static final String FIREBASE_CAMPAIGN_RATE_DIALOG = "rate_dialog";
+    
+    private static final String PREFERENCES_KEY_DONT_SHOW_AGAIN = "rvd_dont_show_again";
     private static final String PREFERENCES_KEY_FIRST_LAUNCH = "rvd_app_firstlaunch";
-    public static final String FIREBASE_CAMPAIGN_RATE_DIALOG = "rate_dialog";
+    private static final String PREFERENCES_KEY_LAUNCH_COUNT = "rvd_app_launches";
 
-    private ReviewDialogProvider() {
-        // No public constructor
-    }
-
-    private static final String KEY_DONT_SHOW_AGAIN = "rvd_dont_show_again";
+    private static final HyperRailLog log = HyperRailLog.getLogger(ReviewDialogProvider.class);
 
     private static SharedPreferences sharedPreferences;
     private static int launches;
     private static long firstLaunch;
-
     private static FirebaseAnalytics mFirebaseAnalytics;
+
+    private ReviewDialogProvider() {
+        // No public constructor
+    }
 
     @AddTrace(name = "reviewDialogProvider.initLogWriter")
     public static void init(Context context) {
@@ -59,7 +58,7 @@ public class ReviewDialogProvider {
 
     public static void showDialogIf(Context context, int daysSinceInstall, int minLaunches) {
 
-        if (sharedPreferences == null || sharedPreferences.getBoolean(KEY_DONT_SHOW_AGAIN, false)) {
+        if (sharedPreferences == null || sharedPreferences.getBoolean(PREFERENCES_KEY_DONT_SHOW_AGAIN, false)) {
             return;
         }
         DateTime installDate = new DateTime(firstLaunch);
@@ -139,7 +138,7 @@ public class ReviewDialogProvider {
 
     private static void setOptOut(boolean optOut) {
         if (sharedPreferences != null) {
-            sharedPreferences.edit().putBoolean(KEY_DONT_SHOW_AGAIN, optOut).apply();
+            sharedPreferences.edit().putBoolean(PREFERENCES_KEY_DONT_SHOW_AGAIN, optOut).apply();
         }
     }
 

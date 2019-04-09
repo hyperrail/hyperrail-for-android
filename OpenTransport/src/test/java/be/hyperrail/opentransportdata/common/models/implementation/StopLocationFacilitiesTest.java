@@ -79,14 +79,14 @@ class StopLocationFacilitiesTest {
                 false, false, false, 0,
                 false, false, false,
                 false, false);
-        Assertions.assertTrue(facilitiesTrue.hasBlue_bike());
+        Assertions.assertTrue(facilitiesTrue.hasBlueBike());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 false, true, true, true, true,
                 true, true, true, 0,
                 true, true, true,
                 true, true);
-        Assertions.assertFalse(facilitiesFalse.hasBlue_bike());
+        Assertions.assertFalse(facilitiesFalse.hasBlueBike());
     }
 
     @Test
@@ -139,14 +139,14 @@ class StopLocationFacilitiesTest {
                 false, false, false, 0,
                 true, false, false,
                 false, false);
-        Assertions.assertTrue(facilitiesTrue.isElevated_platform());
+        Assertions.assertTrue(facilitiesTrue.isElevatedPlatform());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, true, true, true, true,
                 true, true, true, 0,
                 false, true, true,
                 true, true);
-        Assertions.assertFalse(facilitiesFalse.isElevated_platform());
+        Assertions.assertFalse(facilitiesFalse.isElevatedPlatform());
     }
 
     @Test
@@ -157,14 +157,14 @@ class StopLocationFacilitiesTest {
                 false, false, false, 0,
                 false, true, false,
                 false, false);
-        Assertions.assertTrue(facilitiesTrue.hasEscalator_up());
+        Assertions.assertTrue(facilitiesTrue.hasEscalatorUp());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, true, true, true, true,
                 true, true, true, 0,
                 true, false, true,
                 true, true);
-        Assertions.assertFalse(facilitiesFalse.hasEscalator_up());
+        Assertions.assertFalse(facilitiesFalse.hasEscalatorUp());
     }
 
     @Test
@@ -175,14 +175,14 @@ class StopLocationFacilitiesTest {
                 false, false, false, 0,
                 false, false, true,
                 false, false);
-        Assertions.assertTrue(facilitiesTrue.hasEscalator_down());
+        Assertions.assertTrue(facilitiesTrue.hasEscalatorDown());
         StopLocationFacilitiesImpl facilitiesFalse = new StopLocationFacilitiesImpl(new LocalTime[7][0], "street", "zip", "city",
                 true, true, true,
                 true, true, true, true, true,
                 true, true, true, 0,
                 true, true, false,
                 true, true);
-        Assertions.assertFalse(facilitiesFalse.hasEscalator_down());
+        Assertions.assertFalse(facilitiesFalse.hasEscalatorDown());
     }
 
     @Test
@@ -201,6 +201,6 @@ class StopLocationFacilitiesTest {
                 true, true, true, 5,
                 true, true, true,
                 true, true);
-        assertEquals(5, facilitiesFalse.getDisabled_parking_spots());
+        assertEquals(5, facilitiesFalse.getDisabledParkingSpots());
     }
 }

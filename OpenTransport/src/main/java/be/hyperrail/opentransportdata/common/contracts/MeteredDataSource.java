@@ -14,7 +14,15 @@ import android.support.annotation.IntDef;
  */
 public interface MeteredDataSource {
 
+    int RESPONSE_ONLINE = 1;
+    int RESPONSE_CACHED = 2;
+    int RESPONSE_OFFLINE = 4;
+    int RESPONSE_FAILED = 8;
+
     MeteredRequest[] getMeteredRequests();
+    @IntDef({RESPONSE_ONLINE, RESPONSE_CACHED, RESPONSE_OFFLINE, RESPONSE_FAILED})
+    @interface responseType {
+    }
 
     class MeteredRequest {
         private String mTag;
@@ -27,12 +35,12 @@ public interface MeteredDataSource {
         private long rxBbytesAtStart = 0;
         private long txBbytesAtStart = 0;
 
-        public MeteredRequest() {
-
-        }
-
         public String getTag() {
             return mTag;
+        }
+
+        public void setTag(String tag) {
+            mTag = tag;
         }
 
         public long getBytesSent() {
@@ -47,28 +55,18 @@ public interface MeteredDataSource {
             return mMsecStart;
         }
 
-        public long getMsecUsableResult() {
-            return mMsecUsableResult;
-        }
-
-        public long getMsecParsed() {
-            return mMsecParsed;
-        }
-
-        public void setTag(String tag) {
-            mTag = tag;
-        }
-
         public void setMsecStart(long msecStart) {
             mMsecStart = msecStart;
             rxBbytesAtStart = TrafficStats.getTotalRxBytes();
             txBbytesAtStart = TrafficStats.getTotalTxBytes();
         }
 
-        public void setMsecUsableNetworkResponse(long msecFirstByte) {
-            if (mMsecUsableResult == 0) {
-                mMsecUsableResult = msecFirstByte;
-            }
+        public long getMsecUsableResult() {
+            return mMsecUsableResult;
+        }
+
+        public long getMsecParsed() {
+            return mMsecParsed;
         }
 
         public void setMsecParsed(long msecParsed) {
@@ -79,8 +77,18 @@ public interface MeteredDataSource {
             mBytesSent = TrafficStats.getTotalTxBytes() - txBbytesAtStart;
         }
 
+        public void setMsecUsableNetworkResponse(long msecFirstByte) {
+            if (mMsecUsableResult == 0) {
+                mMsecUsableResult = msecFirstByte;
+            }
+        }
+
         public int getResponseType() {
             return mResponseType;
+        }
+
+        public void setResponseType(@responseType int responseType) {
+            mResponseType |= responseType;
         }
 
         String getResponseTypeList() {
@@ -103,22 +111,9 @@ public interface MeteredDataSource {
             return result;
         }
 
-        public void setResponseType(@responseType int responseType) {
-            mResponseType |= responseType;
-        }
-
         @Override
         public String toString() {
             return mTag + "," + mMsecStart + "," + mMsecUsableResult + "," + mMsecParsed + "," + mBytesReceived + "," + mBytesSent + "," + getResponseTypeList();
         }
     }
-
-    @IntDef({RESPONSE_ONLINE, RESPONSE_CACHED, RESPONSE_OFFLINE, RESPONSE_FAILED})
-    @interface responseType {
-    }
-
-    int RESPONSE_ONLINE = 1;
-    int RESPONSE_CACHED = 2;
-    int RESPONSE_OFFLINE = 4;
-    int RESPONSE_FAILED = 8;
 }

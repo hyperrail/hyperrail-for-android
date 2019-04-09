@@ -118,8 +118,8 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         findViewById(R.id.image_bike).setVisibility(facilities.hasBike() ? View.VISIBLE : View.GONE);
         findViewById(R.id.text_bike).setVisibility(facilities.hasBike() ? View.VISIBLE : View.GONE);
 
-        findViewById(R.id.image_blue_bike).setVisibility(facilities.hasBlue_bike() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.text_blue_bike).setVisibility(facilities.hasBlue_bike() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.image_blue_bike).setVisibility(facilities.hasBlueBike() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.text_blue_bike).setVisibility(facilities.hasBlueBike() ? View.VISIBLE : View.GONE);
         // TODO: display information on accessibility
     }
 

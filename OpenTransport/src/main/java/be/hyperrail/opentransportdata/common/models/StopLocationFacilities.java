@@ -24,7 +24,7 @@ public interface StopLocationFacilities extends Serializable {
 
     boolean hasFreeParking();
 
-    boolean hasBlue_bike();
+    boolean hasBlueBike();
 
     boolean hasBike();
 
@@ -36,19 +36,19 @@ public interface StopLocationFacilities extends Serializable {
 
     boolean hasMetro();
 
-    boolean isWheelchair_available();
+    boolean isWheelchairAvailable();
 
     boolean hasRamp();
 
-    boolean isElevated_platform();
+    boolean isElevatedPlatform();
 
-    boolean hasEscalator_up();
+    boolean hasEscalatorUp();
 
-    boolean hasEscalator_down();
+    boolean hasEscalatorDown();
 
-    boolean hasElevator_platform();
+    boolean hasElevatorToPlatform();
 
-    boolean hasHearing_aid_signal();
+    boolean hasHearingAidSignal();
 
-    int getDisabled_parking_spots();
+    int getDisabledParkingSpots();
 }
