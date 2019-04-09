@@ -36,7 +36,7 @@ public interface RouteLegEnd extends Serializable {
     boolean isPlatformNormal();
 
     @Nullable
-    TransportOccupancyLevel getOccupancy();
+    TransportOccupancyLevel getOccupancyLevel();
 
     @Nullable
     String getSemanticId();

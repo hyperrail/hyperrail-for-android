@@ -236,7 +236,7 @@ public class FirstLaunchGuide extends AppCompatActivity {
         protected Void doInBackground(Void... voids) {
             try {
                 log.info("Preparing stoplocations database ahead of time");
-                OpenTransportApi.getStopLocationProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
+                OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId("http://irail.be/stations/NMBS/008814001");
                 log.info("Prepared stations stoplocations ahead of time");
             } catch (StopLocationNotResolvedException e) {
                log.severe("Failed to initialize stoplocations database in background", e);

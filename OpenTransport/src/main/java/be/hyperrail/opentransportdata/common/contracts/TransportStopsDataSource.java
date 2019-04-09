@@ -28,20 +28,12 @@ public interface TransportStopsDataSource {
     /**
      * Get all station names, localized.
      *
-     * @param Stations The list of stations for which a name should be retrieved.
+     * @param stopLocations The list of stations for which a name should be retrieved.
      * @return An array of localized station names.
      */
     @NonNull
-    String[] getStationNames(@NonNull StopLocation[] Stations);
+    String[] getStoplocationsNames(@NonNull StopLocation[] stopLocations);
 
-    /**
-     * Get a station by its UIC ID (International Railway Station ID)
-     *
-     * @param id a 7 digit ID string
-     * @return The station object, null if not found
-     */
-    @Nullable
-    StopLocation getStationByUIC(String id) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its Hafas ID (This format is similar to the UIC format, but longer and can include bus stops
@@ -49,19 +41,11 @@ public interface TransportStopsDataSource {
      *
      * @param id a 9 digit ID String
      * @return The station object.
+     * @deprecated use getStoplocationBySemanticId instead.
      */
     @Nullable
-    StopLocation getStationByHID(String id) throws StopLocationNotResolvedException;
-
-    /**
-     * Get a station by its ID
-     *
-     * @param id an ID string, in BE.NMBS.XXXXXXXX or Hafas ID format
-     * @return The station object.
-     */
     @Deprecated
-    @Nullable
-    StopLocation getStationByIrailApiId(String id) throws StopLocationNotResolvedException;
+    StopLocation getStoplocationByHafasId(String id) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its URI
@@ -70,7 +54,7 @@ public interface TransportStopsDataSource {
      * @return The station object.
      */
     @Nullable
-    StopLocation getStationByUri(String uri) throws StopLocationNotResolvedException;
+    StopLocation getStoplocationBySemanticId(String uri) throws StopLocationNotResolvedException;
 
     /**
      * Get a station by its name.
@@ -79,7 +63,7 @@ public interface TransportStopsDataSource {
      * @return The station object.
      */
     @Nullable
-    StopLocation getStationByExactName(String name);
+    StopLocation getStoplocationByExactName(String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their size, measured in average train stops per day.
@@ -88,7 +72,7 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
     @NonNull
-    StopLocation[] getStationsByNameOrderBySize(String name);
+    StopLocation[] getStoplocationsByNameOrderBySize(String name);
 
     /**
      * Get stations by their name (or a part thereof), ordered by their distance from a given location
@@ -98,7 +82,7 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their distance from the given location
      */
     @NonNull
-    StopLocation[] getStationsByNameOrderByLocation(String name, Location location);
+    StopLocation[] getStoplocationsByNameOrderByLocation(String name, Location location);
 
     /**
      * Get all stations ordered by their distance from a given location
@@ -107,7 +91,7 @@ public interface TransportStopsDataSource {
      * @return An array of all station objects ordered by their distance from the given location
      */
     @NonNull
-    StopLocation[] getStationsOrderByLocation(Location location);
+    StopLocation[] getStoplocationsOrderedByLocation(Location location);
 
     /**
      * Get all stations ordered by their size, measured in average train stops per day.
@@ -115,7 +99,7 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
     @NonNull
-    StopLocation[] getStationsOrderBySize();
+    StopLocation[] getStoplocationsOrderedBySize();
 
     /**
      * Get the n closest stations to a location, ordered by their size, measured in average train stops per day.
@@ -125,5 +109,5 @@ public interface TransportStopsDataSource {
      * @return An array of station objects ordered by their size, measured in average train stops per day.
      */
     @NonNull
-    StopLocation[] getStationsOrderByLocationAndSize(Location location, int limit);
+    StopLocation[] getStoplocationsOrderedByLocationAndSize(Location location, int limit);
 }

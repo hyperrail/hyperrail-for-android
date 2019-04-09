@@ -80,7 +80,7 @@ public class LiveboardActivity extends ResultActivity {
             // A valid shortcut intent, for which we have to parse the station
             try {
                 this.mRequest = new LiveboardRequest(
-                        OpenTransportApi.getStopLocationProviderInstance().getStationByHID(
+                        OpenTransportApi.getStopLocationProviderInstance().getStoplocationByHafasId(
                                 getIntent().getStringExtra("station")), EQUAL_OR_LATER, DEPARTURES,
                         null);
             } catch (StopLocationNotResolvedException e) {

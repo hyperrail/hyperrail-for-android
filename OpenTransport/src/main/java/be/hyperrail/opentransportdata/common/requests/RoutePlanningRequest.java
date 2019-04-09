@@ -26,6 +26,8 @@ import be.hyperrail.opentransportdata.common.models.StopLocation;
 public class RoutePlanningRequest extends OpenTransportBaseRequest<RoutesList> implements TransportDataRequest<RoutesList> {
 
 
+    private static final String JSON_KEY_FROM_URI = "from";
+    private static final String JSON_KEY_TO_URI = "to";
     private final StopLocation origin;
 
 
@@ -51,18 +53,12 @@ public class RoutePlanningRequest extends OpenTransportBaseRequest<RoutesList> i
 
     public RoutePlanningRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
-        String from = jsonObject.getString("from");
-        if (from.startsWith("BE.NMBS.")) {
-            from = from.substring(8);
-        }
 
-        String to = jsonObject.getString("to");
-        if (to.startsWith("BE.NMBS.")) {
-            to = to.substring(8);
-        }
+        String from = jsonObject.getString(JSON_KEY_FROM_URI);
+        String to = jsonObject.getString(JSON_KEY_TO_URI);
 
-        this.origin = OpenTransportApi.getStopLocationProviderInstance().getStationByHID(from);
-        this.destination = OpenTransportApi.getStopLocationProviderInstance().getStationByHID(to);
+        this.origin = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(from);
+        this.destination = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(to);
 
         timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         searchTime = null;
@@ -72,8 +68,8 @@ public class RoutePlanningRequest extends OpenTransportBaseRequest<RoutesList> i
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("from", origin.getHafasId());
-        json.put("to", destination.getHafasId());
+        json.put(JSON_KEY_FROM_URI, origin.getSemanticId());
+        json.put(JSON_KEY_TO_URI, destination.getSemanticId());
         return json;
     }
 
@@ -95,9 +91,11 @@ public class RoutePlanningRequest extends OpenTransportBaseRequest<RoutesList> i
 
     public DateTime getSearchTime() {
         if (this.searchTime == null) {
-            return new DateTime(); // return now;
+            // current time as a default;
+            return new DateTime();
         }
-        return searchTime; // return the actual query time
+        // the actual query time
+        return searchTime;
     }
 
     public void setSearchTime(@Nullable DateTime searchTime) {

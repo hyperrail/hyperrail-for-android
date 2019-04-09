@@ -312,8 +312,8 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         TransportStopsDataSource stopLocationProvider = OpenTransportApi.getStopLocationProviderInstance();
-        StopLocation fromStopLocation = stopLocationProvider.getStationByExactName(from);
-        StopLocation toStopLocation = stopLocationProvider.getStationByExactName(to);
+        StopLocation fromStopLocation = stopLocationProvider.getStoplocationByExactName(from);
+        StopLocation toStopLocation = stopLocationProvider.getStoplocationByExactName(to);
 
         doSearch(fromStopLocation, toStopLocation);
     }
@@ -445,7 +445,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         @Override
         protected String[] doInBackground(TransportStopsDataSource... provider) {
-            return provider[0].getStationNames(provider[0].getStationsOrderBySize());
+            return provider[0].getStoplocationsNames(provider[0].getStoplocationsOrderedBySize());
 
         }
 

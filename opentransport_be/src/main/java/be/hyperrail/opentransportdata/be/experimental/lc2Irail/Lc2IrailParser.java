@@ -198,7 +198,7 @@ class Lc2IrailParser {
 
     private String parseHeadsign(JSONObject vehicle2) throws JSONException {
         String headsign = vehicle2.getString("direction");
-        StopLocation headsignStation = stationProvider.getStationByExactName(headsign);
+        StopLocation headsignStation = stationProvider.getStoplocationByExactName(headsign);
         if (headsignStation != null) {
             headsign = headsignStation.getLocalizedName();
         }
@@ -289,7 +289,7 @@ class Lc2IrailParser {
         String platform = "?";
         String uri = null;
 
-        StopLocation station = stationProvider.getStationByUri(json.getJSONObject("station").getString("semanticId"));
+        StopLocation station = stationProvider.getStoplocationBySemanticId(json.getJSONObject("station").getString("semanticId"));
 
         if (json.has("arrivalTime")) {
             arrivalTime = DateTime.parse(json.getString("arrivalTime"), dtf);
@@ -336,8 +336,8 @@ class Lc2IrailParser {
 
     @NonNull
     RoutesListImpl parseRoutes(@NonNull RoutePlanningRequest request, @NonNull JSONObject json) throws JSONException, StopLocationNotResolvedException {
-        StopLocation origin = stationProvider.getStationByUri(json.getJSONObject("departureStation").getString("semanticId"));
-        StopLocation destination = stationProvider.getStationByUri(json.getJSONObject("arrivalStation").getString("semanticId"));
+        StopLocation origin = stationProvider.getStoplocationBySemanticId(json.getJSONObject("departureStation").getString("semanticId"));
+        StopLocation destination = stationProvider.getStoplocationBySemanticId(json.getJSONObject("arrivalStation").getString("semanticId"));
 
         JSONArray connections = json.getJSONArray("connections");
         Route[] routes = new Route[connections.length()];
@@ -419,8 +419,8 @@ class Lc2IrailParser {
                     jsonLeg.getString("trip")
             );
 
-            StopLocation departureStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("departureStation").getString("semanticId"));
-            StopLocation arrivalStation = stationProvider.getStationByUri(jsonLeg.getJSONObject("arrivalStation").getString("semanticId"));
+            StopLocation departureStation = stationProvider.getStoplocationBySemanticId(jsonLeg.getJSONObject("departureStation").getString("semanticId"));
+            StopLocation arrivalStation = stationProvider.getStoplocationBySemanticId(jsonLeg.getJSONObject("arrivalStation").getString("semanticId"));
 
             DateTime departureTime = DateTime.parse(jsonLeg.getString("departureTime"), dtf);
             int departureDelay = jsonLeg.getInt("departureDelay");

@@ -38,6 +38,7 @@ import be.hyperrail.opentransportdata.common.models.StopLocation;
 public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implements TransportDataRequest<Liveboard> {
 
 
+    private static final String JSON_KEY_STOPLOCATION_URI = "id";
     private final StopLocation station;
 
 
@@ -66,11 +67,9 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
 
     public LiveboardRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
-        String id = jsonObject.getString("id");
-        if (id.startsWith("BE.NMBS.")) {
-            id = id.substring(8);
-        }
-        this.station = OpenTransportApi.getStopLocationProviderInstance().getStationByHID(id);
+
+        String id = jsonObject.getString(JSON_KEY_STOPLOCATION_URI);
+        this.station = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(id);
         timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
         type = LiveboardType.DEPARTURES;
         searchTime = null;
@@ -87,7 +86,7 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("id", station.getHafasId());
+        json.put(JSON_KEY_STOPLOCATION_URI, station.getSemanticId());
         return json;
     }
 
@@ -116,9 +115,9 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
 
     public DateTime getSearchTime() {
         if (this.searchTime == null) {
-            return new DateTime(); // return now;
+            return new DateTime(); // the current time as default;
         }
-        return searchTime; // return the actual query time
+        return searchTime; // the actual query time
     }
 
 
@@ -155,7 +154,7 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
     @Override
     public boolean equals(Object o) {
 
-        if (o instanceof JSONObject){
+        if (o instanceof JSONObject) {
             try {
                 o = new LiveboardRequest((JSONObject) o);
             } catch (JSONException | StopLocationNotResolvedException e) {
@@ -172,7 +171,7 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
     }
 
     @Override
-    public int compareTo( TransportDataRequest o) {
+    public int compareTo(TransportDataRequest o) {
         if (!(o instanceof LiveboardRequest)) {
             return -1;
         }

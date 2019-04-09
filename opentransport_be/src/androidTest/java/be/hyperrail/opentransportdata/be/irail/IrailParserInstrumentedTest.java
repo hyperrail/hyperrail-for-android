@@ -101,7 +101,7 @@ public class IrailParserInstrumentedTest {
         assertEquals("http://irail.be/vehicle/PARSETHISVALUE", train.getSemanticId());
 
         assertEquals(11, train.getStops().length);
-        assertEquals(2, train.getIndexForStoplocation(new IrailStationsDataProvider(InstrumentationRegistry.getTargetContext()).getStationByHID("008844008")));
+        assertEquals(2, train.getIndexForStoplocation(new IrailStationsDataProvider(InstrumentationRegistry.getTargetContext()).getStoplocationByHafasId("008844008")));
 
         // Start testing stop 2
         assertEquals("008844008", train.getStops()[2].getStopLocation().getHafasId());
@@ -118,8 +118,8 @@ public class IrailParserInstrumentedTest {
         // Context of the app under test.
         IrailStationsDataProvider stationProvider = new IrailStationsDataProvider(InstrumentationRegistry.getTargetContext());
         DateTime searchTime = new DateTime(2017, 11, 16, 14, 0);
-        RoutesList routes = parser.parseRouteResult(new JSONObject(ROUTE_RESPONSE), stationProvider.getStationByHID("008893120"),
-                                                     stationProvider.getStationByHID("008832375"), searchTime, QueryTimeDefinition.EQUAL_OR_LATER);
+        RoutesList routes = parser.parseRouteResult(new JSONObject(ROUTE_RESPONSE), stationProvider.getStoplocationByHafasId("008893120"),
+                                                     stationProvider.getStoplocationByHafasId("008832375"), searchTime, QueryTimeDefinition.EQUAL_OR_LATER);
 
         assertEquals(6, routes.getRoutes().length);
         Route route = routes.getRoutes()[0];

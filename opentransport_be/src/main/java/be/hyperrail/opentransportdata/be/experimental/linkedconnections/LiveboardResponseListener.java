@@ -163,7 +163,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                     handledConnections.add(departure);
                     handledConnections.add(arrival);
 
-                    StopLocation direction = OpenTransportApi.getStopLocationProviderInstance().getStationByExactName(
+                    StopLocation direction = OpenTransportApi.getStopLocationProviderInstance().getStoplocationByExactName(
                             departure.getDirection());
 
                     String headsign;
@@ -200,7 +200,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                 }
 
                 LinkedConnection departure = departures.get(i);
-                StopLocation direction = mStationProvider.getStationByExactName(
+                StopLocation direction = mStationProvider.getStoplocationByExactName(
                         departure.getDirection());
                 String headsign;
                 if (direction == null) {

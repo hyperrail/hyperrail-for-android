@@ -17,12 +17,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.firebase.perf.metrics.AddTrace;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -42,17 +42,24 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.
  */
 public class IrailStationsDataProvider implements TransportStopsDataSource {
 
-    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailStationsDataProvider.class);
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailStationsDataProvider.class);
+    private static final String ISO2_NL = "nl";
+    private static final String ISO2_FR = "fr";
+    private static final String ISO2_DE = "de";
+    private static final String ISO2_EN = "en";
+
+    private static final String SQL_SELECT_NAME_LIKE = StationsDataColumns.COLUMN_NAME_NAME + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL +
+            " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?";
 
     private final Context context;
 
     // The underlying webDb instance, ensuring that the local SQLite database stays up-to-date with the online data
     private WebDb mWebDb;
 
-    HashMap<String, StopLocation> mStationIdCache = new HashMap<>();
-    HashMap<String, StopLocation> mStationNameCache = new HashMap<>();
+    private HashMap<String, StopLocation> mStationIdCache = new HashMap<>();
+    private HashMap<String, StopLocation> mStationNameCache = new HashMap<>();
 
-    StopLocation[] stationsOrderedBySizeCache;
+    private StopLocation[] stationsOrderedBySizeCache;
 
     public IrailStationsDataProvider(Context appContext) {
         this.context = appContext;
@@ -92,10 +99,10 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
         };
     }
 
-
     @Override
-    @AddTrace(name = "StationsDb.getStationsOrderBySize")
-    public StopLocation[] getStationsOrderBySize() {
+    @AddTrace(name = "StationsDb.getStoplocationsOrderedBySize")
+    @NonNull
+    public StopLocation[] getStoplocationsOrderedBySize() {
 
         if (stationsOrderedBySizeCache != null) {
             return stationsOrderedBySizeCache;
@@ -115,12 +122,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
         StopLocation[] stations = loadStationCursor(c);
         c.close();
 
-        if (stations == null) {
-            return new StopLocation[0];
-        }
-
         stationsOrderedBySizeCache = stations;
-
         return stations;
     }
 
@@ -128,24 +130,20 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      * @inheritDoc
      */
 
+    @NonNull
     @Override
-    @AddTrace(name = "StationsDb.getStationsOrderByLocation")
-    public StopLocation[] getStationsOrderByLocation(Location location) {
-        StopLocation[] results = this.getStationsByNameOrderByLocation("", location);
-        if (results == null) {
-            return new StopLocation[0];
-        }
-        return results;
+    @AddTrace(name = "StationsDb.getStoplocationsOrderedByLocation")
+    public StopLocation[] getStoplocationsOrderedByLocation(Location location) {
+        return this.getStoplocationsByNameOrderByLocation("", location);
     }
-
 
     /**
      * @inheritDoc
      */
-
     @Override
-    @AddTrace(name = "StationsDb.getStationsOrderByLocationAndSize")
-    public StopLocation[] getStationsOrderByLocationAndSize(Location location, int limit) {
+    @AddTrace(name = "StationsDb.getStoplocationsOrderedByLocationAndSize")
+    @NonNull
+    public StopLocation[] getStoplocationsOrderedByLocationAndSize(Location location, int limit) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
         double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
@@ -162,20 +160,9 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
         );
 
         StopLocation[] stations = loadStationCursor(c);
-
         c.close();
 
-
-        if (stations == null) {
-            return new StopLocation[0];
-        }
-
-        Arrays.sort(stations, new Comparator<StopLocation>() {
-            @Override
-            public int compare(StopLocation o1, StopLocation o2) {
-                return Float.compare(o2.getAvgStopTimes(), o1.getAvgStopTimes());
-            }
-        });
+        Arrays.sort(stations, (o1, o2) -> Float.compare(o2.getAvgStopTimes(), o1.getAvgStopTimes()));
 
         return stations;
     }
@@ -183,43 +170,25 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     /**
      * @inheritDoc
      */
+    @NonNull
     @Override
-    @AddTrace(name = "StationsDb.getStationNames")
-    public String[] getStationNames(StopLocation[] Stations) {
-
-        if (Stations == null || Stations.length == 0) {
+    @AddTrace(name = "StationsDb.getStoplocationsNames")
+    public String[] getStoplocationsNames(@NonNull StopLocation[] stopLocations) {
+        if (stopLocations.length == 0) {
             log.warning("Tried to load station names on empty station list!");
             return new String[0];
         }
 
-        String[] results = new String[Stations.length];
-        for (int i = 0; i < Stations.length; i++) {
-            results[i] = Stations[i].getLocalizedName();
+        String[] results = new String[stopLocations.length];
+        for (int i = 0; i < stopLocations.length; i++) {
+            results[i] = stopLocations[i].getLocalizedName();
         }
         return results;
     }
 
-
+    @Nullable
     @Override
-    public StopLocation getStationByUIC(String id) throws StopLocationNotResolvedException {
-        return getStationByUIC(id, false);
-    }
-
-
-    @Override
-    public StopLocation getStationByUIC(String id, boolean suppressErrors) throws StopLocationNotResolvedException {
-        return getStationByHID("00" + id, false);
-    }
-
-
-    @Override
-    public StopLocation getStationByHID(String id) throws StopLocationNotResolvedException {
-        return getStationByHID(id, false);
-    }
-
-
-    @Override
-    public StopLocation getStationByHID(String id, boolean suppressErrors) throws StopLocationNotResolvedException {
+    public StopLocation getStoplocationByHafasId(String id) throws StopLocationNotResolvedException {
         if (mStationIdCache.containsKey(id)) {
             return mStationIdCache.get(id);
         }
@@ -244,49 +213,41 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
         c.close();
 
-        if (results == null) {
-            if (!suppressErrors) {
-                log.logException(new IllegalStateException("ID Not found in station database! " + id));
-            }
+        if (results.length == 0) {
+            log.logException(new IllegalStateException("ID Not found in station database! " + id));
             throw new StopLocationNotResolvedException(id);
         }
         mStationIdCache.put(id, results[0]);
         return results[0];
     }
 
-
+    @Nullable
     @Override
-    public StopLocation getStationByIrailApiId(String id) throws StopLocationNotResolvedException {
+    public StopLocation getStoplocationBySemanticId(String id) throws StopLocationNotResolvedException {
         if (id.startsWith("BE.NMBS.")) {
+            // Handle old iRail ids
             id = id.substring(8);
         }
-        return getStationByHID(id);
-    }
-
-
-    @Override
-    public StopLocation getStationByUri(String uri) throws StopLocationNotResolvedException {
-        return getStationByUri(uri, false);
-    }
-
-
-    @Override
-    public StopLocation getStationByUri(String uri, boolean suppressErrors) throws StopLocationNotResolvedException {
-        return getStationByHID(uri.substring(uri.lastIndexOf('/') + 1), suppressErrors);
+        if (id.contains("/")){
+            // Handle URIs
+            id = id.substring(id.lastIndexOf('/') + 1);
+        }
+        return getStoplocationByHafasId(id);
     }
 
     /**
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "StationsDb.getStationByExactName")
+    @AddTrace(name = "StationsDb.getStoplocationByExactName")
     @Nullable
-    public StopLocation getStationByExactName(String name) {
+    public StopLocation getStoplocationByExactName(@NonNull String name) {
         if (mStationNameCache.containsKey(name)) {
             return mStationNameCache.get(name);
         }
         StopLocation[] results = getStationsByNameOrderBySize(name, true);
-        if (results == null) {
+
+        if (results.length < 1) {
             return null;
         }
 
@@ -298,17 +259,14 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      * @inheritDoc
      */
     @Override
-    @Nullable
-    @AddTrace(name = "StationsDb.getStationsByNameOrderBySize")
-    public StopLocation[] getStationsByNameOrderBySize(String name) {
+    @AddTrace(name = "StationsDb.getStoplocationsByNameOrderBySize")
+    @NonNull
+    public StopLocation[] getStoplocationsByNameOrderBySize(@NonNull String name) {
         return getStationsByNameOrderBySize(name, false);
     }
 
-    private final static String stationNameSelection = StationsDataColumns.COLUMN_NAME_NAME + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL +
-            " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?";
-
-    @Nullable
-    public StopLocation[] getStationsByNameOrderBySize(String name, boolean exact) {
+    @NonNull
+    private StopLocation[] getStationsByNameOrderBySize(@NonNull String name, boolean exact) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
         name = StringUtils.cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
@@ -321,7 +279,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 getDefaultQueryColumns(),
-                stationNameSelection,
+                SQL_SELECT_NAME_LIKE,
                 new String[]{cleanedName, cleanedName, cleanedName, cleanedName, cleanedName},
                 null,
                 null,
@@ -333,41 +291,35 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
             c.close();
 
             if (name.contains("/")) {
-                String newname = name.substring(0, name.indexOf("/"));
-                log.warning("Station not found: " + name + ", replacement search " + newname);
-                return getStationsByNameOrderBySize(newname);
+                String newname = name.substring(0, name.indexOf('/'));
+                log.warning(String.format("Station not found: %s, replacement search %s", name, newname));
+                return getStoplocationsByNameOrderBySize(newname);
             } else if (name.contains("(")) {
-                String newname = name.substring(0, name.indexOf("("));
-                log.warning("Station not found: " + name + ", replacement search " + newname);
-                return getStationsByNameOrderBySize(newname);
+                String newname = name.substring(0, name.indexOf('('));
+                log.warning(String.format("Station not found: %s, replacement search %s", name, newname));
+                return getStoplocationsByNameOrderBySize(newname);
             } else if (name.toLowerCase().startsWith("s ") || cleanedName.toLowerCase().startsWith("s%")) {
                 String newname = "'" + name;
-                log.warning("Station not found: " + name + ", replacement search " + newname
-                );
-                return getStationsByNameOrderBySize(newname);
+                log.warning(String.format("Station not found: %s, replacement search %s", name, newname));
+                return getStoplocationsByNameOrderBySize(newname);
             } else {
-                log.severe("Station not found: " + name + ", cleaned search " + cleanedName);
-                return null;
+                log.severe(String.format("Station not found: %s, cleaned search %s", name, cleanedName));
+                return new StopLocation[0];
             }
         }
 
         StopLocation[] results = loadStationCursor(c);
-
         c.close();
-
-
-        if (results == null) {
-            return null;
-        }
         return results;
     }
 
     /**
      * @inheritDoc
      */
+    @NonNull
     @Override
-    @AddTrace(name = "StationsDb.getStationsByNameOrderByLocation")
-    public StopLocation[] getStationsByNameOrderByLocation(String name, Location location) {
+    @AddTrace(name = "StationsDb.getStoplocationsByNameOrderByLocation")
+    public StopLocation[] getStoplocationsByNameOrderByLocation(String name, Location location) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
 
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
@@ -398,15 +350,16 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      * @param c The cursor from which stations should be loaded.
      * @return The array of loaded stations
      */
-    private StopLocation[] loadStationCursor(Cursor c) {
+    @NonNull
+    private StopLocation[] loadStationCursor(@NonNull Cursor c) {
         if (c.isClosed()) {
             log.severe("Tried to load closed cursor");
-            return null;
+            return new StopLocation[0];
         }
 
         if (c.getCount() == 0) {
             log.warning("Tried to load cursor with 0 results!");
-            return null;
+            return new StopLocation[0];
         }
 
         c.moveToFirst();
@@ -416,7 +369,8 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
             String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
                     "pref_stations_language", "");
-            if (locale.isEmpty()) {
+
+            if (locale == null || locale.isEmpty()) {
                 // Only get locale when needed
                 locale = Locale.getDefault().getISO3Language();
                 PreferenceManager.getDefaultSharedPreferences(context).edit().putString(
@@ -424,30 +378,31 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
             }
 
             String name = c.getString(c.getColumnIndex(StationsDataColumns.COLUMN_NAME_NAME));
-            String localizedName = null;
+            String localizedName;
 
             Map<String, String> localizedNames = new HashMap<>();
-            localizedNames.put("nl_BE", c.getString(
+            localizedNames.put(ISO2_NL, c.getString(
                     c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL)));
-            localizedNames.put("fr_FR", c.getString(
+            localizedNames.put(ISO2_FR, c.getString(
                     c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR)));
-            localizedNames.put("de_DE", c.getString(
+            localizedNames.put(ISO2_DE, c.getString(
                     c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE)));
-            localizedNames.put("en_UK", c.getString(
+            localizedNames.put(ISO2_EN, c.getString(
                     c.getColumnIndex(StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN)));
 
             switch (locale) {
                 case "nld":
-                    localizedName = localizedNames.get("nl_BE");
+                    localizedName = localizedNames.get(ISO2_NL);
                     break;
                 case "fra":
-                    localizedName = localizedNames.get("fr_FR");
+                    localizedName = localizedNames.get(ISO2_FR);
                     break;
                 case "deu":
-                    localizedName = localizedNames.get("de_DE");
+                    localizedName = localizedNames.get(ISO2_DE);
                     break;
                 case "eng":
-                    localizedName = localizedNames.get("en_UK");
+                default:
+                    localizedName = localizedNames.get(ISO2_EN);
                     break;
             }
 

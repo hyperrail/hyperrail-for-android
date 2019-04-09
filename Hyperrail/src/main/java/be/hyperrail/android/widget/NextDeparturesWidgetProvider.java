@@ -49,7 +49,7 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
 
         StopLocation mStation = null;
         try {
-            mStation = OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(id);
+            mStation = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(id);
         } catch (StopLocationNotResolvedException e) {
             RemoteViews views = new RemoteViews(context.getPackageName(),
                                                 R.layout.widget_nextdepartures_error);

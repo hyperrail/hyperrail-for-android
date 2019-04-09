@@ -62,7 +62,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
 
             StopLocation departure;
             try {
-                departure = mStationProvider.getStationByUri(connection.getDepartureStationUri());
+                departure = mStationProvider.getStoplocationBySemanticId(connection.getDepartureStationUri());
             } catch (StopLocationNotResolvedException e) {
                 mRequest.notifyErrorListeners(e);
                 return;
@@ -92,7 +92,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
         if (!stops.isEmpty()) {
             StopLocation arrival;
             try {
-                arrival = mStationProvider.getStationByUri(lastConnection.getArrivalStationUri());
+                arrival = mStationProvider.getStoplocationBySemanticId(lastConnection.getArrivalStationUri());
             } catch (StopLocationNotResolvedException e) {
                 mRequest.notifyErrorListeners(e);
                 return;
@@ -114,7 +114,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
     }
 
     private String parseHeadsign(LinkedConnection connection) {
-        StopLocation direction = mStationProvider.getStationByExactName(connection.getDirection());
+        StopLocation direction = mStationProvider.getStoplocationByExactName(connection.getDirection());
         String headsign;
         if (direction != null) {
             headsign = direction.getLocalizedName();

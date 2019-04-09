@@ -132,7 +132,7 @@ public class TransferImpl implements Transfer, Serializable {
 
     @Nullable
     public TransportOccupancyLevel getDepartureOccupancy() {
-        return (mDeparture != null) ? mDeparture.getOccupancy() : null;
+        return (mDeparture != null) ? mDeparture.getOccupancyLevel() : null;
     }
 
     @Nullable
@@ -169,7 +169,7 @@ public class TransferImpl implements Transfer, Serializable {
             return VehicleStopImpl.buildDepartureVehicleStop(departure.getStation(),
                     mDepartureLeg.getVehicleInformation(), departure.getPlatform(), departure.isPlatformNormal(),
                     departure.getTime(), departure.getDelay(), departure.isCanceled(), departure.isCompletedByVehicle(),
-                    departure.getSemanticId(), departure.getOccupancy());
+                    departure.getSemanticId(), departure.getOccupancyLevel());
         } else {
             return null;
         }

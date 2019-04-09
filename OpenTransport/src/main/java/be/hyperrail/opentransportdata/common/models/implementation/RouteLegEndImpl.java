@@ -38,13 +38,13 @@ public class RouteLegEndImpl implements RouteLegEnd, Serializable {
     private boolean isPlatformNormal;
 
 
-    private Duration delay = Duration.ZERO;
+    private Duration delay;
     private boolean canceled;
 
     private boolean passed;
 
     @Nullable
-    private TransportOccupancyLevel Occupancy = TransportOccupancyLevel.UNKNOWN;
+    private TransportOccupancyLevel occupancyLevel;
 
     @Nullable
     private String uri;
@@ -64,7 +64,7 @@ public class RouteLegEndImpl implements RouteLegEnd, Serializable {
         this.isPlatformNormal = normal;
 
         this.uri = semanticId;
-        this.Occupancy = occupancy;
+        this.occupancyLevel = occupancy;
     }
 
 
@@ -100,8 +100,8 @@ public class RouteLegEndImpl implements RouteLegEnd, Serializable {
     }
 
     @Nullable
-    public TransportOccupancyLevel getOccupancy() {
-        return Occupancy;
+    public TransportOccupancyLevel getOccupancyLevel() {
+        return occupancyLevel;
     }
 
     @Nullable

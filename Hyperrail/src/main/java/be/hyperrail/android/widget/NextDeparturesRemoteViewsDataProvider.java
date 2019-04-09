@@ -9,7 +9,6 @@ package be.hyperrail.android.widget;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -22,13 +21,12 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
-import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
-import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
@@ -59,7 +57,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         LiveboardRequest request = null;
         try {
             request = new LiveboardRequest(
-                    OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(id),
+                    OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(id),
                     QueryTimeDefinition.EQUAL_OR_LATER,
                     LiveboardType.DEPARTURES,
                     null
@@ -68,12 +66,9 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             this.mError = true;
             return;
         }
-        request.setCallback(new TransportDataSuccessResponseListener<Liveboard>() {
-            @Override
-            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
-                Log.w("widgets", "Received iRail data...");
-                NextDeparturesRemoteViewsDataProvider.this.mLiveboard = data;
-            }
+        request.setCallback((data, tag) -> {
+            Log.w("widgets", "Received iRail data...");
+            NextDeparturesRemoteViewsDataProvider.this.mLiveboard = data;
         }, null, null);
         Log.w("widgets", "Requesting iRail data...");
         OpenTransportApi.getDataProviderInstance().getLiveboard(request);
@@ -81,7 +76,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         try {
             Thread.sleep(2500);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // Nothing to do
         }
     }
 

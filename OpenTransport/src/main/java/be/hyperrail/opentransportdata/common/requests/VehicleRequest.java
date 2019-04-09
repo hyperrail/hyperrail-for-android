@@ -24,6 +24,10 @@ import be.hyperrail.opentransportdata.common.models.VehicleJourney;
 public class VehicleRequest extends OpenTransportBaseRequest<VehicleJourney> implements TransportDataRequest<VehicleJourney> {
 
 
+    private static final String JSON_KEY_DIRECTION_URI = "direction";
+    private static final String JSON_KEY_DEPARTURETIME_MILLIS = "departure_time";
+    private static final String JSON_KEY_ORIGIN_URI = "origin";
+    private static final String JSON_KEY_VEHICLE_ID = "id";
     private final String mVehicleId;
 
     @Nullable
@@ -61,14 +65,12 @@ public class VehicleRequest extends OpenTransportBaseRequest<VehicleJourney> imp
     public VehicleRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
 
-        if (jsonObject.has("direction")) {
-            this.mVehicleDirection = OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(jsonObject.getString("direction"));
+        if (jsonObject.has(JSON_KEY_DIRECTION_URI)) {
+            this.mVehicleDirection = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(jsonObject.getString(JSON_KEY_DIRECTION_URI));
         } else {
             this.mVehicleDirection = null;
         }
-
-        // TODO: ids should not be tightly coupled to irail
-        this.mVehicleId = jsonObject.getString("id");
+        this.mVehicleId = jsonObject.getString(JSON_KEY_VEHICLE_ID);
     }
 
 
@@ -76,15 +78,15 @@ public class VehicleRequest extends OpenTransportBaseRequest<VehicleJourney> imp
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
 
-        json.put("id", getVehicleId());
+        json.put(JSON_KEY_VEHICLE_ID, getVehicleId());
         if (getDirection() != null) {
-            json.put("direction", getDirection().getHafasId());
+            json.put(JSON_KEY_DIRECTION_URI, getDirection().getSemanticId());
         }
         if (this.getDepartureTime() != null) {
-            json.put("departure_time", getDepartureTime().getMillis());
+            json.put(JSON_KEY_DEPARTURETIME_MILLIS, getDepartureTime().getMillis());
         }
         if (this.getOrigin() != null) {
-            json.put("origin", getOrigin().getHafasId());
+            json.put(JSON_KEY_ORIGIN_URI, getOrigin().getSemanticId());
         }
         return json;
     }

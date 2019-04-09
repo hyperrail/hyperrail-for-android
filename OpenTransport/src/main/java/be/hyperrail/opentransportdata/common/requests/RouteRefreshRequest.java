@@ -24,6 +24,10 @@ import be.hyperrail.opentransportdata.common.models.StopLocation;
 public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> implements TransportDataRequest<Route> {
 
 
+    private static final String JSON_KEY_FROM_URI = "from";
+    private static final String JSON_KEY_DEPARTURE_URI = "departure_semantic_id";
+    private static final String JSON_KEY_TO_URI = "to";
+    private static final String JSON_KEY_SEARCHTIME_MILLIS = "time";
     private final StopLocation origin;
 
 
@@ -69,24 +73,24 @@ public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> impleme
         this.departureSemanticId = route.getDeparture().getDepartureSemanticId();
     }
 
-    public RouteRefreshRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
+    private RouteRefreshRequest(JSONObject jsonObject) throws JSONException, StopLocationNotResolvedException {
         super(jsonObject);
-        this.departureSemanticId = jsonObject.getString("departure_semantic_id");
-        this.origin = OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(jsonObject.getString("from"));
-        this.destination = OpenTransportApi.getStopLocationProviderInstance().getStationByIrailApiId(jsonObject.getString("to"));
+        this.departureSemanticId = jsonObject.getString(JSON_KEY_DEPARTURE_URI);
+        this.origin = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(jsonObject.getString(JSON_KEY_FROM_URI));
+        this.destination = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(jsonObject.getString(JSON_KEY_TO_URI));
 
         timeDefinition = QueryTimeDefinition.EQUAL_OR_LATER;
-        searchTime = new DateTime(jsonObject.getLong("time"));
+        searchTime = new DateTime(jsonObject.getLong(JSON_KEY_SEARCHTIME_MILLIS));
     }
 
 
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
-        json.put("departure_semantic_id", getDepartureSemanticId());
-        json.put("from", getOrigin().getHafasId());
-        json.put("to", getDestination().getHafasId());
-        json.put("time", searchTime.getMillis());
+        json.put(JSON_KEY_DEPARTURE_URI, getDepartureSemanticId());
+        json.put(JSON_KEY_FROM_URI, getOrigin().getSemanticId());
+        json.put(JSON_KEY_TO_URI, getDestination().getSemanticId());
+        json.put(JSON_KEY_SEARCHTIME_MILLIS, searchTime.getMillis());
         return json;
     }
 
@@ -118,7 +122,6 @@ public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> impleme
 
     @Override
     public boolean equals(Object o) {
-
         if (o instanceof JSONObject){
             try {
                 o = new RouteRefreshRequest((JSONObject) o);

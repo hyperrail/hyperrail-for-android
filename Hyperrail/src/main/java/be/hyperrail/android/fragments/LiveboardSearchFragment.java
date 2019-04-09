@@ -205,18 +205,18 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
         if (s.length() > 0) {
             // Text search
-            setStations(stationProvider.getStationsByNameOrderBySize(s), StationSuggestionsCardAdapter.stationType.SEARCHED);
+            setStations(stationProvider.getStoplocationsByNameOrderBySize(s), StationSuggestionsCardAdapter.stationType.SEARCHED);
             mStationAdapter.setSuggestionsVisible(false);
             mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.SEARCHED);
         } else if (mLastLocation != null) {
             // Nearby stations
-            setStations(stationProvider.getStationsOrderByLocationAndSize(mLastLocation, mNumberOfNearbyStations), StationSuggestionsCardAdapter.stationType.NEARBY);
+            setStations(stationProvider.getStoplocationsOrderedByLocationAndSize(mLastLocation, mNumberOfNearbyStations), StationSuggestionsCardAdapter.stationType.NEARBY);
             mStationAdapter.showNearbyStationsOnTop(mNearbyOnTop);
             mStationAdapter.setSuggestionsVisible(true);
             mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.NEARBY);
         } else {
             // Just a list of popular stations as fallback
-            setStations(stationProvider.getStationsOrderBySize(), StationSuggestionsCardAdapter.stationType.UNDEFINED);
+            setStations(stationProvider.getStoplocationsOrderedBySize(), StationSuggestionsCardAdapter.stationType.UNDEFINED);
             mStationAdapter.showNearbyStationsOnTop(false);
             mStationAdapter.setSuggestionsVisible(true);
             mStationAdapter.setSearchResultType(StationSuggestionsCardAdapter.stationType.UNDEFINED);
@@ -330,6 +330,7 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
                             COARSE_LOCATION_REQUEST);
                 }
             });
+
             permissionExplanationDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.No), (dialog, which) -> {
                 // Disable
                 preferences.edit().putBoolean(PREF_ENABLE_NEARBY_STATIONS, false).apply();
