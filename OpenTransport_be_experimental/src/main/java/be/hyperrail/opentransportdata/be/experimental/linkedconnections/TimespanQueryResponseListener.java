@@ -25,13 +25,15 @@ public class TimespanQueryResponseListener implements QueryResponseListener.Link
     private final TransportDataSuccessResponseListener<LinkedConnections> mSuccessListener;
     private final TransportDataErrorResponseListener mErrorListener;
     private final Object mTag;
-    public final static int DIRECTION_FORWARD = 1;
-    public final static int DIRECTION_BACKWARD = -1;
+    static final int DIRECTION_FORWARD = 1;
+    static final int DIRECTION_BACKWARD = -1;
 
     private final int mDirection;
 
     private List<LinkedConnection> result = new ArrayList<>();
-    private String previous, current, next;
+    private String previous;
+    private String current;
+    private String next;
 
     TimespanQueryResponseListener(final DateTime endTime, int direction, @Nullable final TransportDataSuccessResponseListener<LinkedConnections> successListener, @Nullable final TransportDataErrorResponseListener errorListener, @Nullable Object tag) {
         mEndTime = endTime;

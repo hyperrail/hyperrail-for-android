@@ -32,16 +32,16 @@ public class RouteExtendHelper implements TransportDataSuccessResponseListener<R
     private final ExtendRoutePlanningRequest mRequest;
     private final MeteredDataSource.MeteredRequest mMeteredRequest;
     private LinkedConnectionsRoutesList mRoutes;
-    int attempts = 0;
+    private int attempts = 0;
 
-    public RouteExtendHelper(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, ExtendRoutePlanningRequest request, MeteredDataSource.MeteredRequest meteredRequest) {
+    RouteExtendHelper(LinkedConnectionsProvider linkedConnectionsProvider, TransportStopsDataSource stationProvider, ExtendRoutePlanningRequest request, MeteredDataSource.MeteredRequest meteredRequest) {
         mLinkedConnectionsProvider = linkedConnectionsProvider;
         mStationProvider = stationProvider;
         mRequest = request;
         mMeteredRequest = meteredRequest;
     }
 
-    public void extend() {
+    void extend() {
         if (!(mRequest.getRoutes() instanceof LinkedConnectionsRoutesList)) {
             throw new IllegalArgumentException("Routeslist should be of type LinkedConnectionsRoutesList!");
         }

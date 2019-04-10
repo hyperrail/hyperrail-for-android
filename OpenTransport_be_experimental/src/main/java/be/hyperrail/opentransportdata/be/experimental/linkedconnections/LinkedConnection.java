@@ -18,29 +18,29 @@ import org.joda.time.DateTime;
 class LinkedConnection {
 
     @JsonField(name = "@id")
-    String semanticId;
+    private String semanticId;
     @JsonField(name = "departureStop")
-    String departureStationUri;
+    private String departureStationUri;
     @JsonField(name = "arrivalStop")
-    String arrivalStationUri;
+    private String arrivalStationUri;
     @JsonField(name = "departureTime", typeConverter = DateTimeConverter.class)
-    DateTime departureTime;
+    private DateTime departureTime;
     @JsonField(name = "arrivalTime", typeConverter = DateTimeConverter.class)
     private DateTime arrivalTime;
     @JsonField(name = "departureDelay")
-    int departureDelay = 0;
+    private int departureDelay = 0;
     @JsonField(name = "arrivalDelay")
-    int arrivalDelay = 0;
+    private int arrivalDelay = 0;
     @JsonField(name = "direction")
-    protected String direction;
+    private String direction;
     @JsonField(name = "gtfs:route")
-    protected String route;
+    private String route;
     @JsonField(name = "gtfs:trip")
     private String trip;
     @JsonField(name = "gtfs:pickupType")
-    String pickupType;
+    private String pickupType;
     @JsonField(name = "gtfs:dropOffType")
-    String dropoffType;
+    private String dropoffType;
 
 
     DateTime getDelayedDepartureTime() {
@@ -51,7 +51,7 @@ class LinkedConnection {
         return getArrivalTime().plusSeconds(getArrivalDelay());
     }
 
-    public String getSemanticId() {
+    String getSemanticId() {
         return semanticId;
     }
 
@@ -67,7 +67,7 @@ class LinkedConnection {
         return departureTime;
     }
 
-    public DateTime getArrivalTime() {
+    DateTime getArrivalTime() {
         return arrivalTime;
     }
 
@@ -75,19 +75,19 @@ class LinkedConnection {
         this.arrivalTime = arrivalTime;
     }
 
-    public int getDepartureDelay() {
+    int getDepartureDelay() {
         return departureDelay;
     }
 
-    public int getArrivalDelay() {
+    int getArrivalDelay() {
         return arrivalDelay;
     }
 
-    public String getDirection() {
+    String getDirection() {
         return direction;
     }
 
-    public String getRoute() {
+    String getRoute() {
         return route;
     }
 

@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
 import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
@@ -55,16 +56,15 @@ import be.hyperrail.opentransportdata.common.models.RouteLegEnd;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
+import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RouteImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RouteLegEndImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RouteLegImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
-import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
-import be.hyperrail.opentransportdata.common.models.implementation.RouteImpl;
-import be.hyperrail.opentransportdata.common.models.implementation.RouteLegImpl;
-import be.hyperrail.opentransportdata.common.models.implementation.RouteLegEndImpl;
-import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
-import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 
 /**
  * A simple parser for api.irail.be.
