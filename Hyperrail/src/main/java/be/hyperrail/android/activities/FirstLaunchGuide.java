@@ -26,7 +26,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,31 +35,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
 import be.hyperrail.android.BuildConfig;
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.factories.IrailFactory;
-
-import static java.util.logging.Level.INFO;
+import be.hyperrail.android.logging.HyperRailLog;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 
 public class FirstLaunchGuide extends AppCompatActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private static final HyperRailLog log = HyperRailLog.getLogger(FirstLaunchGuide.class);
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
     TabLayout mTabLayout;
     private Button mNext;
 
@@ -68,38 +54,31 @@ public class FirstLaunchGuide extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_launch_guide);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.container);
+        ViewPager mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mTabLayout = findViewById(R.id.dotTab);
         mTabLayout.setupWithViewPager(mViewPager, true);
 
         mNext = findViewById(R.id.button_next);
-        findViewById(R.id.button_next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mTabLayout.getSelectedTabPosition() == mTabLayout.getTabCount() - 1) {
-                    FirstLaunchGuide.this.finish();
-                } else {
-                    TabLayout.Tab tab = mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() + 1);
-                    if (tab != null) {
-                        tab.select();
-                    }
+        findViewById(R.id.button_next).setOnClickListener(v -> {
+            if (mTabLayout.getSelectedTabPosition() == mTabLayout.getTabCount() - 1) {
+                FirstLaunchGuide.this.finish();
+            } else {
+                TabLayout.Tab tab = mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() + 1);
+                if (tab != null) {
+                    tab.select();
                 }
             }
         });
 
         Button skip = findViewById(R.id.button_skip);
-        skip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirstLaunchGuide.this.finish();
-            }
-        });
+        skip.setOnClickListener(v -> FirstLaunchGuide.this.finish());
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -110,17 +89,17 @@ public class FirstLaunchGuide extends AppCompatActivity {
                     mNext.setText(R.string.next);
                 }
 
-                Crashlytics.log(Log.INFO, "FirstLaunchGuide", "Switching to tab " + mTabLayout.getSelectedTabPosition() + " " + Picasso.get().getSnapshot().size + Picasso.get().getSnapshot().maxSize);
+                log.info("Switching to tab " + mTabLayout.getSelectedTabPosition() + " " + Picasso.get().getSnapshot().size + Picasso.get().getSnapshot().maxSize);
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                // Not used
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                // Not used
             }
         });
 
@@ -170,9 +149,6 @@ public class FirstLaunchGuide extends AppCompatActivity {
         private static final String ARG_IMG = "image";
         private static final String ARG_DESCRIPTION = "description";
 
-        public FirstLaunchFragment() {
-        }
-
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -210,14 +186,11 @@ public class FirstLaunchGuide extends AppCompatActivity {
             super.onViewCreated(view, savedInstanceState);
             if (getActivity() != null) {
                 final ImageView imageView = view.findViewById(R.id.image);
-                imageView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        int width = imageView.getWidth();
-                        int height = imageView.getHeight();
-                        int size = Math.min(width,height);
-                        Picasso.get().load(getArguments().getInt(ARG_IMG)).config(Bitmap.Config.RGB_565).resize(size,size).into(imageView);
-                    }
+                imageView.post(() -> {
+                    int width = imageView.getWidth();
+                    int height = imageView.getHeight();
+                    int size = Math.min(width, height);
+                    Picasso.get().load(getArguments().getInt(ARG_IMG)).config(Bitmap.Config.RGB_565).resize(size, size).into(imageView);
                 });
             }
         }
@@ -256,14 +229,17 @@ public class FirstLaunchGuide extends AppCompatActivity {
     }
 
     private static class SetupStationsDbTask extends AsyncTask<Void, Void, Void> {
+
+        private static final HyperRailLog log = HyperRailLog.getLogger(SetupStationsDbTask.class);
+
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                Crashlytics.log(INFO.intValue(), "FirstLaunchGuide","Preparing stations database ahead of time");
-                IrailFactory.getStationsProviderInstance().getStationByUri("http://irail.be/stations/NMBS/008814001");
-                Crashlytics.log(INFO.intValue(), "FirstLaunchGuide","Prepared stations database ahead of time");
-            } catch (StationNotResolvedException e) {
-                e.printStackTrace();
+                log.info("Preparing stoplocations database ahead of time");
+                OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId("http://irail.be/stations/NMBS/008814001");
+                log.info("Prepared stations stoplocations ahead of time");
+            } catch (StopLocationNotResolvedException e) {
+               log.severe("Failed to initialize stoplocations database in background", e);
             }
             return null;
         }

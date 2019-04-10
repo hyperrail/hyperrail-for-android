@@ -29,6 +29,10 @@ import be.hyperrail.android.R;
  */
 public class ShortcutHelper {
 
+    private ShortcutHelper(){
+        // No public constructor
+    }
+
     public static void createShortcut(final Context context, final View layoutRoot, final Intent intent, String defaultTitle, final String longLabel, @DrawableRes final int icon) {
 
         // Ask users if they want to set a custom title

@@ -28,13 +28,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Message;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteLeg;
-import be.hyperrail.android.irail.implementation.RouteLegType;
-import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.util.DurationFormatter;
+import be.hyperrail.opentransportdata.common.models.Message;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RouteLeg;
+import be.hyperrail.opentransportdata.common.models.RouteLegType;
+import be.hyperrail.opentransportdata.common.models.Transfer;
 
 public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, RouteLeg> {
 
@@ -125,18 +125,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vTrainType.setVisibility(View.VISIBLE);
         vDirection.setText(routeLeg.getVehicleInformation().getHeadsign());
 
-        if (transferBefore.hasLeft()) {
-            if (transferAfter.hasArrived()) {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
-                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
-            } else {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
-                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-            }
-        } else {
-            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
-            vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-        }
+        bindTimelineDrawable(context, transferBefore, transferAfter);
 
         bindDuration(transferBefore, transferAfter);
 
@@ -148,6 +137,12 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
             vOccupancy.setVisibility(View.VISIBLE);
             vStatusContainer.setVisibility(View.GONE);
         }
+        bindAlerts(route, position);
+
+        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+    }
+
+    private void bindAlerts(Route route, int position) {
         if (route.getVehicleAlerts() != null && route.getVehicleAlerts().length > position) {
             Message[] trainAlerts = route.getVehicleAlerts()[position];
             if (trainAlerts != null && trainAlerts.length > 0) {
@@ -168,8 +163,21 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         } else {
             vAlertContainer.setVisibility(View.GONE);
         }
+    }
 
-        vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
+    private void bindTimelineDrawable(Context context, Transfer transferBefore, Transfer transferAfter) {
+        if (transferBefore.hasLeft()) {
+            if (transferAfter.hasArrived()) {
+                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
+                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
+            } else {
+                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+            }
+        } else {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
+            vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+        }
     }
 
     private void bindDuration(Transfer transferBefore, Transfer transferAfter) {

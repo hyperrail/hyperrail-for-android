@@ -8,6 +8,7 @@ package be.hyperrail.android.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,9 +23,9 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.List;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -32,17 +33,18 @@ import be.hyperrail.android.persistence.Suggestion;
 public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleSuggestionsCardAdapter.TrainViewHolder> {
 
     private final Context context;
-    private List<Suggestion<IrailVehicleRequest>> suggestedTrains;
+    private List<Suggestion<VehicleRequest>> suggestedTrains;
 
-    private OnRecyclerItemLongClickListener<Suggestion<IrailVehicleRequest>> longClickListener;
-    private OnRecyclerItemClickListener<Suggestion<IrailVehicleRequest>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<VehicleRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<VehicleRequest>> listener;
 
     public VehicleSuggestionsCardAdapter(Context context) {
         this.context = context;
     }
 
+    @NonNull
     @Override
-    public TrainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TrainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
 
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("use_card_layout", false)) {
@@ -57,8 +59,8 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
     @Override
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
-        final Suggestion<IrailVehicleRequest> t = suggestedTrains.get(position);
-        String title = VehicleStub.getVehicleName(t.getData().getVehicleId());
+        final Suggestion<VehicleRequest> t = suggestedTrains.get(position);
+        String title = IrailVehicleJourneyStub.getVehicleName(t.getData().getVehicleId());
         if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
             title += " - " + df.print(t.getData().getDepartureTime());
@@ -85,36 +87,30 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
                 break;
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(VehicleSuggestionsCardAdapter.this, t);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRecyclerItemClick(VehicleSuggestionsCardAdapter.this, t);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(VehicleSuggestionsCardAdapter.this, t);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (longClickListener != null) {
+                longClickListener.onRecyclerItemLongClick(VehicleSuggestionsCardAdapter.this, t);
             }
+            return false;
         });
     }
 
-    public void setSuggestedTrains(List<Suggestion<IrailVehicleRequest>> suggestions) {
+    public void setSuggestedTrains(List<Suggestion<VehicleRequest>> suggestions) {
         this.suggestedTrains = suggestions;
         this.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailVehicleRequest>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<VehicleRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailVehicleRequest>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<VehicleRequest>> listener) {
         this.longClickListener = listener;
     }
 
@@ -131,8 +127,8 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
      */
     class TrainViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vStation;
-        protected final ImageView vIcon;
+        final TextView vStation;
+        final ImageView vIcon;
 
         TrainViewHolder(View v) {
             super(v);

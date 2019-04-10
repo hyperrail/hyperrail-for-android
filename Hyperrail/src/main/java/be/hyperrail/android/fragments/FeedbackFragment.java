@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,39 +36,37 @@ public class FeedbackFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_feedback, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final EditText vFeedbackText = view.findViewById(R.id.input_text);
 
-        view.findViewById(R.id.button_send).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Context context = FeedbackFragment.this.getActivity();
-                String version = "unknown";
-
-                try {
-                    PackageInfo pInfo = context.getPackageManager().getPackageInfo(
-                            context.getPackageName(), 0);
-                    version = pInfo.versionName;
-                } catch (Exception e) {
-                    // Ignored
-                }
-
-                Intent feedbackEmail = new Intent(Intent.ACTION_SEND);
-
-                feedbackEmail.setType("text/email");
-                feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"feedback@hyperrail.be"});
-                feedbackEmail.putExtra(Intent.EXTRA_SUBJECT, "Feedback for hyperrail " + version);
-                feedbackEmail.putExtra(Intent.EXTRA_TEXT, vFeedbackText.getText());
-                startActivity(Intent.createChooser(feedbackEmail, "Send feedback mail:"));
+        view.findViewById(R.id.button_send).setOnClickListener(view1 -> {
+            Context context = FeedbackFragment.this.getActivity();
+            // Default for version
+            String version = "unknown";
+            // Try to get the current version from the package
+            try {
+                PackageInfo pInfo = context.getPackageManager().getPackageInfo(
+                        context.getPackageName(), 0);
+                version = pInfo.versionName;
+            } catch (Exception e) {
+                // Ignored
             }
+
+            Intent feedbackEmail = new Intent(Intent.ACTION_SEND);
+
+            feedbackEmail.setType("text/email");
+            feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"feedback@hyperrail.be"});
+            feedbackEmail.putExtra(Intent.EXTRA_SUBJECT, "Feedback for hyperrail " + version);
+            feedbackEmail.putExtra(Intent.EXTRA_TEXT, vFeedbackText.getText());
+            startActivity(Intent.createChooser(feedbackEmail, "Send feedback mail:"));
         });
     }
 }

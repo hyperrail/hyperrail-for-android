@@ -8,13 +8,11 @@ package be.hyperrail.android.util;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.perf.metrics.AddTrace;
@@ -23,38 +21,48 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.logging.HyperRailLog;
 
 public class ReviewDialogProvider {
 
-    private final static String KEY_DONT_SHOW_AGAIN = "rvd_dont_show_again";
+    private static final String FIREBASE_CAMPAIGN_RATE_DIALOG = "rate_dialog";
+    
+    private static final String PREFERENCES_KEY_DONT_SHOW_AGAIN = "rvd_dont_show_again";
+    private static final String PREFERENCES_KEY_FIRST_LAUNCH = "rvd_app_firstlaunch";
+    private static final String PREFERENCES_KEY_LAUNCH_COUNT = "rvd_app_launches";
+
+    private static final HyperRailLog log = HyperRailLog.getLogger(ReviewDialogProvider.class);
 
     private static SharedPreferences sharedPreferences;
     private static int launches;
     private static long firstLaunch;
-
     private static FirebaseAnalytics mFirebaseAnalytics;
 
-    @AddTrace(name = "reviewDialogProvider.init")
+    private ReviewDialogProvider() {
+        // No public constructor
+    }
+
+    @AddTrace(name = "reviewDialogProvider.initLogWriter")
     public static void init(Context context) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        launches = sharedPreferences.getInt("rvd_app_launches", 0);
-        firstLaunch = sharedPreferences.getLong("rvd_app_firstlaunch", 0);
+        launches = sharedPreferences.getInt(PREFERENCES_KEY_LAUNCH_COUNT, 0);
+        firstLaunch = sharedPreferences.getLong(PREFERENCES_KEY_FIRST_LAUNCH, 0);
 
         if (firstLaunch == 0) {
             firstLaunch = DateTime.now().getMillis();
         }
 
-        sharedPreferences.edit().putInt("rvd_app_launches", launches + 1).putLong("rvd_app_firstlaunch", firstLaunch).apply();
+        sharedPreferences.edit().putInt(PREFERENCES_KEY_LAUNCH_COUNT, launches + 1).putLong(PREFERENCES_KEY_FIRST_LAUNCH, firstLaunch).apply();
     }
 
 
     public static void showDialogIf(Context context, int daysSinceInstall, int minLaunches) {
 
-        if (sharedPreferences == null || sharedPreferences.getBoolean(KEY_DONT_SHOW_AGAIN, false)) {
+        if (sharedPreferences == null || sharedPreferences.getBoolean(PREFERENCES_KEY_DONT_SHOW_AGAIN, false)) {
             return;
         }
         DateTime installDate = new DateTime(firstLaunch);
-        Log.i("RateDialog", (new Duration(installDate, DateTime.now())).getStandardHours() + "h since install. Rate dialog will show starting day " + daysSinceInstall);
+        log.info((new Duration(installDate, DateTime.now())).getStandardHours() + "h since install. Rate dialog will show starting day " + daysSinceInstall);
         if ((new Duration(installDate, DateTime.now())).getStandardDays() >= daysSinceInstall && launches >= minLaunches) {
             // Show dialog
             showRateDialog(context);
@@ -70,76 +78,67 @@ public class ReviewDialogProvider {
 
         int titleId = R.string.rate_dialog_title;
         int messageId = R.string.rate_dialog_message;
-        int cancelButtonID = R.string.rate_dialog_button_later;
-        int thanksButtonID = R.string.rate_dialog_button_no_thanks;
-        int rateButtonID = R.string.rate_dialog_button_rate;
+        int cancelButtonText = R.string.rate_dialog_button_later;
+        int thanksButtonText = R.string.rate_dialog_button_no_thanks;
+        int rateButtonText = R.string.rate_dialog_button_rate;
         builder.setTitle(titleId);
         builder.setMessage(messageId);
 
-        builder.setPositiveButton(rateButtonID, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                String appPackage = context.getPackageName();
-                String url = "market://details?id=" + appPackage;
-
-                try {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                } catch (android.content.ActivityNotFoundException anfe) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + context.getPackageName())));
-                }
-
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, "rate_dialog");
-                bundle.putString(FirebaseAnalytics.Param.SUCCESS, "yes");
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
-
-                setOptOut(true);
-            }
-        });
-        builder.setNeutralButton(cancelButtonID, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // reset the first launch timer, so it won't show again the next day(s)
-                firstLaunch = DateTime.now().getMillis();
-                sharedPreferences.edit().putLong("rvd_app_firstlaunch", firstLaunch).putInt("rvd_app_launches", 0).apply();
-
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, "rate_dialog");
-                bundle.putString(FirebaseAnalytics.Param.SUCCESS, "later");
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
-            }
-        });
-        builder.setNegativeButton(thanksButtonID, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, "rate_dialog");
-                bundle.putString(FirebaseAnalytics.Param.SUCCESS, "no");
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
-
-                setOptOut(true);
-            }
-        });
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, "rate_dialog");
-                bundle.putString(FirebaseAnalytics.Param.SUCCESS, "dismiss");
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
-                // reset the first launch timer, so it won't show again the next day(s)
-                firstLaunch = DateTime.now().getMillis();
-                sharedPreferences.edit().putLong("rvd_app_firstlaunch", firstLaunch).putInt("rvd_app_launches", 0).apply();
-            }
-        });
+        setDialogButtonActions(context, builder, cancelButtonText, thanksButtonText, rateButtonText);
 
         builder.show();
     }
 
+    private static void setDialogButtonActions(Context context, AlertDialog.Builder builder, int cancelButtonText, int thanksButtonText, int rateButtonText) {
+        builder.setPositiveButton(rateButtonText, (dialog, which) -> {
+            String appPackage = context.getPackageName();
+            String url = "market://details?id=" + appPackage;
+
+            try {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + context.getPackageName())));
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, FIREBASE_CAMPAIGN_RATE_DIALOG);
+            bundle.putString(FirebaseAnalytics.Param.SUCCESS, "yes");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
+
+            setOptOut(true);
+        });
+        builder.setNeutralButton(cancelButtonText, (dialog, which) -> {
+            // reset the first launch timer, so it won't show again the next day(s)
+            firstLaunch = DateTime.now().getMillis();
+            sharedPreferences.edit().putLong(PREFERENCES_KEY_FIRST_LAUNCH, firstLaunch).putInt(PREFERENCES_KEY_LAUNCH_COUNT, 0).apply();
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, FIREBASE_CAMPAIGN_RATE_DIALOG);
+            bundle.putString(FirebaseAnalytics.Param.SUCCESS, "later");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
+        });
+        builder.setNegativeButton(thanksButtonText, (dialog, which) -> {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, FIREBASE_CAMPAIGN_RATE_DIALOG);
+            bundle.putString(FirebaseAnalytics.Param.SUCCESS, "no");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
+
+            setOptOut(true);
+        });
+        builder.setOnCancelListener(dialog -> {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CAMPAIGN, FIREBASE_CAMPAIGN_RATE_DIALOG);
+            bundle.putString(FirebaseAnalytics.Param.SUCCESS, "dismiss");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.CAMPAIGN_DETAILS, bundle);
+            // reset the first launch timer, so it won't show again the next day(s)
+            firstLaunch = DateTime.now().getMillis();
+            sharedPreferences.edit().putLong(PREFERENCES_KEY_FIRST_LAUNCH, firstLaunch).putInt(PREFERENCES_KEY_LAUNCH_COUNT, 0).apply();
+        });
+    }
+
     private static void setOptOut(boolean optOut) {
         if (sharedPreferences != null) {
-            sharedPreferences.edit().putBoolean(KEY_DONT_SHOW_AGAIN, optOut).apply();
+            sharedPreferences.edit().putBoolean(PREFERENCES_KEY_DONT_SHOW_AGAIN, optOut).apply();
         }
     }
 

@@ -24,8 +24,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
  * An adapter to show RouteQueries (recent/favorite routes) in a recyclerview
@@ -33,17 +33,17 @@ import be.hyperrail.android.persistence.Suggestion;
 public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSuggestionsCardAdapter.RouteHistoryViewHolder> {
 
     private final Context context;
-    private List<Suggestion<IrailRoutesRequest>> queries;
+    private List<Suggestion<RoutePlanningRequest>> queries;
 
-    private OnRecyclerItemClickListener<Suggestion<IrailRoutesRequest>> listener;
-    private OnRecyclerItemLongClickListener<Suggestion<IrailRoutesRequest>> longClickListener;
+    private OnRecyclerItemClickListener<Suggestion<RoutePlanningRequest>> listener;
+    private OnRecyclerItemLongClickListener<Suggestion<RoutePlanningRequest>> longClickListener;
 
-    public RouteSuggestionsCardAdapter(Context context, List<Suggestion<IrailRoutesRequest>> queries) {
+    public RouteSuggestionsCardAdapter(Context context, List<Suggestion<RoutePlanningRequest>> queries) {
         this.queries = queries;
         this.context = context;
     }
 
-    public void setSuggestedRoutes(List<Suggestion<IrailRoutesRequest>> queries) {
+    public void setSuggestedRoutes(List<Suggestion<RoutePlanningRequest>> queries) {
         this.queries = queries;
         this.notifyDataSetChanged();
     }
@@ -62,7 +62,7 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
 
     @Override
     public void onBindViewHolder(RouteHistoryViewHolder holder, int position) {
-        final Suggestion<IrailRoutesRequest> query = queries.get(position);
+        final Suggestion<RoutePlanningRequest> query = queries.get(position);
 
         holder.vFrom.setText(query.getData().getOrigin().getLocalizedName());
         holder.vTo.setText(query.getData().getDestination().getLocalizedName());
@@ -74,39 +74,35 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
             case FAVORITE:
                 holder.vIcon.setImageDrawable(ContextCompat.getDrawable(context, be.hyperrail.android.R.drawable.ic_star));
                 break;
+            default:
+                throw new IllegalArgumentException("Only history and favorite routes can be shown here");
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onRecyclerItemClick(RouteSuggestionsCardAdapter.this, query);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRecyclerItemClick(RouteSuggestionsCardAdapter.this, query);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (longClickListener != null) {
-                    longClickListener.onRecyclerItemLongClick(RouteSuggestionsCardAdapter.this, query);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (longClickListener != null) {
+                longClickListener.onRecyclerItemLongClick(RouteSuggestionsCardAdapter.this, query);
             }
+            return false;
         });
     }
 
-    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<IrailRoutesRequest>> listener) {
+    public void setOnItemClickListener(OnRecyclerItemClickListener<Suggestion<RoutePlanningRequest>> listener) {
         this.listener = listener;
     }
 
-    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<IrailRoutesRequest>> listener) {
+    public void setOnLongItemClickListener(OnRecyclerItemLongClickListener<Suggestion<RoutePlanningRequest>> listener) {
         this.longClickListener = listener;
     }
 
     @Override
     public int getItemCount() {
-        if (queries == null){
+        if (queries == null) {
             return 0;
         }
         return queries.size();
@@ -114,11 +110,11 @@ public class RouteSuggestionsCardAdapter extends RecyclerView.Adapter<RouteSugge
 
     class RouteHistoryViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vFrom;
-        protected final TextView vTo;
-        protected final ImageView vIcon;
+        final TextView vFrom;
+        final TextView vTo;
+        final ImageView vIcon;
 
-        public RouteHistoryViewHolder(View v) {
+        RouteHistoryViewHolder(View v) {
             super(v);
 
             vFrom = v.findViewById(be.hyperrail.android.R.id.text_from);

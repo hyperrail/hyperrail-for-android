@@ -19,18 +19,23 @@ import java.util.Arrays;
  */
 public class ArrayUtils {
 
+    private ArrayUtils() {
+        // No public constructor
+    }
+
     /**
      * Concatenate 2 arrays
-     * @param firstArray The first array
+     *
+     * @param firstArray  The first array
      * @param secondArray The second array
-     * @param <T> The type of the array elements
+     * @param <T>         The type of the array elements
      * @return The concatenated array
      */
-    public static <T> T[] concatenate(T[] firstArray, T[] secondArray){
-        if (firstArray == null){
+    public static <T> T[] concatenate(T[] firstArray, T[] secondArray) {
+        if (firstArray == null) {
             return secondArray.clone();
         }
-        if (secondArray == null){
+        if (secondArray == null) {
             return firstArray.clone();
         }
 

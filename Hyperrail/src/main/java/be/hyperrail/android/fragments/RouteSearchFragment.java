@@ -55,22 +55,22 @@ import be.hyperrail.android.activities.searchresult.RouteActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteSuggestionsCardAdapter;
-import be.hyperrail.android.irail.contracts.IrailStationProvider;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.DateTimePicker;
 import be.hyperrail.android.util.ErrorDialogFactory;
 import be.hyperrail.android.util.OnDateTimeSetListener;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailRoutesRequest>>, OnDateTimeSetListener, OnRecyclerItemLongClickListener<Suggestion<IrailRoutesRequest>> {
+public class RouteSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<RoutePlanningRequest>>, OnDateTimeSetListener, OnRecyclerItemLongClickListener<Suggestion<RoutePlanningRequest>> {
 
     private AutoCompleteTextView vFromText;
     private AutoCompleteTextView vToText;
@@ -82,7 +82,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
     private PersistentQueryProvider persistentQueryProvider;
 
-    private Suggestion<IrailRoutesRequest> mLastSelectedQuery;
+    private Suggestion<RoutePlanningRequest> mLastSelectedQuery;
     private RecyclerView mSuggestionsRecyclerView;
     private RouteSuggestionsCardAdapter mSuggestionsAdapter;
     private LoadSuggestionsTask activeSuggestionsUpdateTask;
@@ -116,6 +116,114 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         mSuggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         registerForContextMenu(mSuggestionsRecyclerView);
 
+        createSuggestionsAdapter();
+
+        // Load autocomplete information
+        LoadAutoCompleteTask loadAutoCompleteTask = new LoadAutoCompleteTask(this);
+        loadAutoCompleteTask.execute(OpenTransportApi.getStopLocationProviderInstance());
+
+        createKeyListeners();
+        createClickListeners(view);
+
+        vArriveDepartContainer = view.findViewById(R.id.container_arrivedepart);
+
+        if (this.getArguments() != null && (this.getArguments().containsKey("from") || this.getArguments().containsKey("to"))) {
+            prefillFieldsFromArguments();
+        } else if (savedInstanceState != null) {
+            vFromText.setText(savedInstanceState.getString("from", ""), false);
+            vToText.setText(savedInstanceState.getString("to", ""), false);
+        }
+    }
+
+    private void prefillFieldsFromArguments() {
+        vFromText.setText(this.getArguments().getString("from", ""), false);
+        vToText.setText(this.getArguments().getString("to", ""), false);
+
+        if (!this.getArguments().containsKey("to")) {
+            vToText.requestFocus();
+        } else {
+            vFromText.requestFocus();
+        }
+    }
+
+    private void createClickListeners(@NonNull View view) {
+        // Initialize search button
+        final Button searchButton = view.findViewById(R.id.button_search);
+        searchButton.setOnClickListener(v -> doSearch());
+
+        // Initialize swap button
+        Button swapButton = view.findViewById(R.id.button_swap);
+        swapButton.setOnClickListener(v -> {
+            Editable from = vFromText.getText();
+            Editable to = vToText.getText();
+            vToText.setText(from);
+            vFromText.setText(to);
+            if (vToText.getText().length() == 0) {
+                vToText.requestFocus();
+            } else if (vFromText.getText().length() == 0) {
+                vFromText.requestFocus();
+            } else {
+                searchButton.requestFocus();
+            }
+        });
+
+        Button vPickDateTime = view.findViewById(R.id.button_pickdatetime);
+        View.OnClickListener l = v -> {
+            DateTimePicker picker = new DateTimePicker(getActivity());
+            picker.setListener(RouteSearchFragment.this);
+            picker.pick();
+        };
+        vDatetime.setOnClickListener(l);
+        vPickDateTime.setOnClickListener(l);
+    }
+
+    private void createKeyListeners() {
+        // Handle special keys in "from" text
+        vFromText.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (vFromText.isPopupShowing()) {
+                    vFromText.setText((String) vFromText.getAdapter().getItem(0));
+                }
+                moveFocusOrSearch(vFromText, vToText);
+
+                return true;
+            }
+            return false;
+        });
+
+        // Handle special keys in "to" text
+        vToText.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (vToText.isPopupShowing()) {
+                    vToText.setText((String) vToText.getAdapter().getItem(0));
+                }
+
+                //noinspection StatementWithEmptyBody
+                moveFocusOrSearch(vToText, vFromText);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * Move the focus to another text field when not everything has been filled in, or search when all data has been entered.
+     *
+     * @param currentField
+     * @param fieldToSwitchFocusTo
+     */
+    private void moveFocusOrSearch(AutoCompleteTextView currentField, AutoCompleteTextView fieldToSwitchFocusTo) {
+        //noinspection StatementWithEmptyBody
+        if (currentField.getText().length() == 0) {
+            // keep focus on From text
+        } else if (fieldToSwitchFocusTo.getText().length() == 0) {
+            fieldToSwitchFocusTo.requestFocus();
+        } else {
+            doSearch();
+        }
+    }
+
+    private void createSuggestionsAdapter() {
         mSuggestionsAdapter = new RouteSuggestionsCardAdapter(this.getActivity(), null);
         mSuggestionsAdapter.setOnItemClickListener(this);
         mSuggestionsAdapter.setOnLongItemClickListener(this);
@@ -132,116 +240,10 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             }
         });
         mSuggestionsRecyclerView.setAdapter(mSuggestionsAdapter);
-
-        LoadAutoCompleteTask loadAutoCompleteTask = new LoadAutoCompleteTask(this);
-        loadAutoCompleteTask.execute(IrailFactory.getStationsProviderInstance());
-
-        // Handle special keys in "from" text
-        vFromText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-
-                    if (vFromText.isPopupShowing()) {
-                        vFromText.setText((String) vFromText.getAdapter().getItem(0));
-                    }
-
-                    //noinspection StatementWithEmptyBody
-                    if (vFromText.getText().length() == 0) {
-                        // keep focus on From text
-                    } else if (vToText.getText().length() == 0) {
-                        vToText.requestFocus();
-                    } else {
-                        doSearch();
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        // Handle special keys in "to" text
-        vToText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (vToText.isPopupShowing()) {
-                        vToText.setText((String) vToText.getAdapter().getItem(0));
-                    }
-
-                    //noinspection StatementWithEmptyBody
-                    if (vToText.getText().length() == 0) {
-                        // keep focus on To text
-                    } else if (vFromText.getText().length() == 0) {
-                        vFromText.requestFocus();
-                    } else {
-                        doSearch();
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        // Initialize search button
-        final Button searchButton = view.findViewById(R.id.button_search);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doSearch();
-            }
-        });
-
-        // Initialize swap button
-        Button swapButton = view.findViewById(R.id.button_swap);
-        swapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Editable from = vFromText.getText();
-                Editable to = vToText.getText();
-                vToText.setText(from);
-                vFromText.setText(to);
-                if (vToText.getText().length() == 0) {
-                    vToText.requestFocus();
-                } else if (vFromText.getText().length() == 0) {
-                    vFromText.requestFocus();
-                } else {
-                    searchButton.requestFocus();
-                }
-            }
-        });
-
-        Button vPickDateTime = view.findViewById(R.id.button_pickdatetime);
-        View.OnClickListener l = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DateTimePicker picker = new DateTimePicker(getActivity());
-                picker.setListener(RouteSearchFragment.this);
-                picker.pick();
-            }
-        };
-        vDatetime.setOnClickListener(l);
-        vPickDateTime.setOnClickListener(l);
-
-        vArriveDepartContainer = view.findViewById(R.id.container_arrivedepart);
-
-        if (this.getArguments() != null && (this.getArguments().containsKey("from") || this.getArguments().containsKey("to"))) {
-            vFromText.setText(this.getArguments().getString("from", ""), false);
-            vToText.setText(this.getArguments().getString("to", ""), false);
-
-            if (!this.getArguments().containsKey("to")) {
-                vToText.requestFocus();
-            } else {
-                vFromText.requestFocus();
-            }
-        } else if (savedInstanceState != null) {
-            vFromText.setText(savedInstanceState.getString("from", ""), false);
-            vToText.setText(savedInstanceState.getString("to", ""), false);
-        }
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailRoutesRequest> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<RoutePlanningRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -305,6 +307,18 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     private void doSearch(String from, String to) {
+        if (!validateInputFields(from, to)) {
+            return;
+        }
+
+        TransportStopsDataSource stopLocationProvider = OpenTransportApi.getStopLocationProviderInstance();
+        StopLocation fromStopLocation = stopLocationProvider.getStoplocationByExactName(from);
+        StopLocation toStopLocation = stopLocationProvider.getStoplocationByExactName(to);
+
+        doSearch(fromStopLocation, toStopLocation);
+    }
+
+    private boolean validateInputFields(String from, String to) {
         View currentView = this.getView();
 
         if (from == null || from.trim().length() == 0) {
@@ -314,7 +328,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             } else {
                 ErrorDialogFactory.showInvalidDepartureStationError(this.getActivity(), false);
             }
-            return;
+            return false;
         } else if (to == null || to.trim().length() == 0) {
             if (currentView != null) {
                 Snackbar.make(currentView, R.string.error_route_to_missing, Snackbar.LENGTH_LONG)
@@ -322,18 +336,12 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             } else {
                 ErrorDialogFactory.showInvalidDestinationStationError(this.getActivity(), false);
             }
-            return;
+            return false;
         }
-
-        IrailStationProvider p = IrailFactory.getStationsProviderInstance();
-        Station station_from = p.getStationByExactName(from);
-
-        Station station_to = p.getStationByExactName(to);
-
-        doSearch(station_from, station_to);
+        return true;
     }
 
-    private void doSearch(Station from, Station to) {
+    private void doSearch(StopLocation from, StopLocation to) {
         if (from == null) {
             ErrorDialogFactory.showInvalidDepartureStationError(this.getActivity(), false);
             return;
@@ -350,11 +358,11 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
 
-        RouteTimeDefinition timedef;
+        QueryTimeDefinition timedef;
         if (vArriveDepart.getSelectedItemPosition() == 0) {
-            timedef = RouteTimeDefinition.DEPART_AT;
+            timedef = QueryTimeDefinition.EQUAL_OR_LATER;
         } else {
-            timedef = RouteTimeDefinition.ARRIVE_AT;
+            timedef = QueryTimeDefinition.EQUAL_OR_EARLIER;
         }
 
         DateTime d = null;
@@ -362,7 +370,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             d = searchDateTime;
         }
 
-        IrailRoutesRequest request = new IrailRoutesRequest(from, to, timedef, d);
+        RoutePlanningRequest request = new RoutePlanningRequest(from, to, timedef, d);
         persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
 
         Intent i = RouteActivity.createIntent(getActivity(), request);
@@ -370,7 +378,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailRoutesRequest> object) {
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<RoutePlanningRequest> object) {
         doSearch(object.getData().getOrigin(), object.getData().getDestination());
     }
 
@@ -398,7 +406,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vDatetime.setText(day + " " + at + " " + time);
     }
 
-    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailRoutesRequest>>> {
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<RoutePlanningRequest>>> {
 
         private WeakReference<RouteSearchFragment> fragmentReference;
 
@@ -408,23 +416,25 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         @Override
-        protected List<Suggestion<IrailRoutesRequest>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<RoutePlanningRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllRoutes();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<IrailRoutesRequest>> suggestions) {
+        protected void onPostExecute(List<Suggestion<RoutePlanningRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there
             RouteSearchFragment fragment = fragmentReference.get();
-            if (fragment == null) return;
+            if (fragment == null) {
+                return;
+            }
 
             fragment.mSuggestionsAdapter.setSuggestedRoutes(suggestions);
         }
     }
 
-    private static class LoadAutoCompleteTask extends AsyncTask<IrailStationProvider, Void, String[]> {
+    private static class LoadAutoCompleteTask extends AsyncTask<TransportStopsDataSource, Void, String[]> {
 
         private WeakReference<RouteSearchFragment> fragmentReference;
 
@@ -434,8 +444,8 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         @Override
-        protected String[] doInBackground(IrailStationProvider... provider) {
-            return provider[0].getStationNames(provider[0].getStationsOrderBySize());
+        protected String[] doInBackground(TransportStopsDataSource... provider) {
+            return provider[0].getStoplocationsNames(provider[0].getStoplocationsOrderedBySize());
 
         }
 
@@ -445,11 +455,13 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
             // get a reference to the activity if it is still there
             RouteSearchFragment fragment = fragmentReference.get();
-            if (fragment == null || fragment.getActivity() == null) return;
+            if (fragment == null || fragment.getActivity() == null) {
+                return;
+            }
 
             // Initialize autocomplete
             ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(fragment.getActivity(),
-                                                                          android.R.layout.simple_dropdown_item_1line, stations);
+                    android.R.layout.simple_dropdown_item_1line, stations);
 
             fragment.vFromText.setAdapter(autocompleteAdapter);
             fragment.vToText.setAdapter(autocompleteAdapter);

@@ -25,6 +25,10 @@ import org.joda.time.format.PeriodFormatterBuilder;
  */
 public class DurationFormatter {
 
+    private DurationFormatter() {
+        // No public constructor
+    }
+
     /**
      * Format a duration (in seconds) as hh:mm
      *

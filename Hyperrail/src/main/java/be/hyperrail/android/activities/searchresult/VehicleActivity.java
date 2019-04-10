@@ -13,19 +13,19 @@ import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.searchresult.VehicleFragment;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Vehicle;
-import be.hyperrail.android.irail.implementation.VehicleStub;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * Activity to show a train
@@ -35,10 +35,10 @@ public class VehicleActivity extends ResultActivity {
     @SuppressWarnings("FieldCanBeLocal")
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    private IrailVehicleRequest mRequest;
+    private VehicleRequest mRequest;
     private VehicleFragment fragment;
 
-    public static Intent createIntent(Context context, IrailVehicleRequest request) {
+    public static Intent createIntent(Context context, VehicleRequest request) {
         Intent i = new Intent(context, VehicleActivity.class);
         i.putExtra("request", request);
         return i;
@@ -56,10 +56,11 @@ public class VehicleActivity extends ResultActivity {
 
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
-            mRequest = new IrailVehicleRequest(getIntent().getStringExtra("id"), null);
+            mRequest = new VehicleRequest(getIntent().getStringExtra("id"), null);
         } else {
-            mRequest = (IrailVehicleRequest) getIntent().getSerializableExtra("request");
+            mRequest = (VehicleRequest) getIntent().getSerializableExtra("request");
         }
+        Crashlytics.setString("vehicleId", mRequest.getVehicleId());
 
         super.onCreate(savedInstanceState);
 
@@ -67,7 +68,7 @@ public class VehicleActivity extends ResultActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
 
         setTitle(R.string.title_vehicle);
-        setSubTitle(VehicleStub.getVehicleName(mRequest.getVehicleId()));
+        setSubTitle(IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()));
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -83,11 +84,11 @@ public class VehicleActivity extends ResultActivity {
         if (item.getItemId() == R.id.action_shortcut) {
             Intent shortcutIntent = this.createShortcutIntent();
             ShortcutHelper.createShortcut(this,
-                                          vLayoutRoot,
-                                          shortcutIntent,
-                                          Vehicle.getVehicleName(mRequest.getVehicleId()),
-                                          "Vehicle " + Vehicle.getVehicleName(mRequest.getVehicleId()),
-                                          R.mipmap.ic_shortcut_train);
+                    vLayoutRoot,
+                    shortcutIntent,
+                    IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()),
+                    "VehicleJourney " + IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()),
+                    R.mipmap.ic_shortcut_train);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -111,7 +112,7 @@ public class VehicleActivity extends ResultActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        IrailFactory.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortAllQueries();
     }
 
     @Override
@@ -153,7 +154,7 @@ public class VehicleActivity extends ResultActivity {
      *
      * @param request The new request
      */
-    public void setRequest(IrailVehicleRequest request) {
+    public void setRequest(VehicleRequest request) {
         mRequest = request;
     }
 }

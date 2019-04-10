@@ -283,42 +283,22 @@ public abstract class InfiniteScrollingAdapter<T> extends RecyclerView.Adapter<R
 
     public void setNextError(boolean hasError) {
         mLoadNextError = hasError;
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        mRecyclerView.post(this::notifyDataSetChanged);
     }
 
     public void setPrevError(boolean hasError) {
         mLoadPrevError = hasError;
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        mRecyclerView.post(this::notifyDataSetChanged);
     }
 
     public void disableInfinitePrevious() {
         mInfinitePrevScrolling = false;
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        mRecyclerView.post(this::notifyDataSetChanged);
     }
 
     public void disableInfiniteNext() {
         mInfiniteNextScrolling = false;
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        mRecyclerView.post(this::notifyDataSetChanged);
     }
 
     /**

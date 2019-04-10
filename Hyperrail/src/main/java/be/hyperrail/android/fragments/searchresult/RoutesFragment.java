@@ -31,25 +31,26 @@ import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.contracts.IrailDataProvider;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteResult;
-import be.hyperrail.android.irail.implementation.requests.ExtendRoutesRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailRoutesRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RoutesList;
+import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
+import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
 /**
  * A fragment for showing liveboard results
  */
-public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements InfiniteScrollingDataSource, ResultFragment<IrailRoutesRequest>, OnRecyclerItemClickListener<Route>, OnRecyclerItemLongClickListener<Route> {
+public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements InfiniteScrollingDataSource, ResultFragment<RoutePlanningRequest>, OnRecyclerItemClickListener<Route>, OnRecyclerItemLongClickListener<Route> {
 
-    private RouteResult mCurrentRouteResult;
+    public static final String INSTANCESTATE_KEY_REQUEST = "request";
+    public static final String INSTANCESTATE_KEY_RESULT = "result";
+    private RoutesList mCurrentRouteResult;
     private RouteCardAdapter mRouteCardAdapter;
-    private IrailRoutesRequest mRequest;
+    private RoutePlanningRequest mRequest;
 
-    public static RoutesFragment createInstance(IrailRoutesRequest request) {
+    public static RoutesFragment createInstance(RoutePlanningRequest request) {
         RoutesFragment frg = new RoutesFragment();
         frg.mRequest = request;
         return frg;
@@ -58,8 +59,8 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailRoutesRequest) savedInstanceState.getSerializable("request");
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCESTATE_KEY_REQUEST)) {
+            mRequest = (RoutePlanningRequest) savedInstanceState.getSerializable(INSTANCESTATE_KEY_REQUEST);
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list, container, false);
     }
@@ -70,13 +71,13 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     }
 
     @Override
-    public void setRequest(@NonNull IrailRoutesRequest request) {
+    public void setRequest(@NonNull RoutePlanningRequest request) {
         this.mRequest = request;
         getInitialData();
     }
 
     @Override
-    public IrailRoutesRequest getRequest() {
+    public RoutePlanningRequest getRequest() {
         return this.mRequest;
     }
 
@@ -89,14 +90,14 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("result", mCurrentRouteResult);
-        outState.putSerializable("request", mRequest);
+        outState.putSerializable(INSTANCESTATE_KEY_RESULT, mCurrentRouteResult);
+        outState.putSerializable(INSTANCESTATE_KEY_REQUEST, mRequest);
     }
 
     @Override
-    protected RouteResult getRestoredInstanceStateItems(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
-            this.mCurrentRouteResult = (RouteResult) savedInstanceState.get("result");
+    protected RoutesList getRestoredInstanceStateItems(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCESTATE_KEY_RESULT)) {
+            this.mCurrentRouteResult = (RoutesList) savedInstanceState.get(INSTANCESTATE_KEY_RESULT);
         }
         return mCurrentRouteResult;
     }
@@ -124,36 +125,30 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
         // Restore infinite scrolling
         mRouteCardAdapter.setInfiniteScrolling(true);
 
-        IrailDataProvider api = IrailFactory.getDataProviderInstance();
+        TransportDataSource api = OpenTransportApi.getDataProviderInstance();
         api.abortAllQueries();
 
-        IrailRoutesRequest request = new IrailRoutesRequest(mRequest.getOrigin(),
-                                                            mRequest.getDestination(),
-                                                            mRequest.getTimeDefinition(),
-                                                            mRequest.getSearchTime());
-        request.setCallback(new IRailSuccessResponseListener<RouteResult>() {
-                                @Override
-                                public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
-                                    vRefreshLayout.setRefreshing(false);
-                                    resetErrorState();
-                                    mCurrentRouteResult = data;
-                                    showData(mCurrentRouteResult);
+        RoutePlanningRequest request = new RoutePlanningRequest(mRequest.getOrigin(),
+                mRequest.getDestination(),
+                mRequest.getTimeDefinition(),
+                mRequest.getSearchTime());
+        request.setCallback((data, tag) -> {
+                    vRefreshLayout.setRefreshing(false);
+                    resetErrorState();
+                    mCurrentRouteResult = data;
+                    showData(mCurrentRouteResult);
 
-                                    // Scroll past the load earlier item
-                                    ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(
-                                            1, 0);
-                                }
-                            }, new IRailErrorResponseListener() {
-                                @Override
-                                public void onErrorResponse(@NonNull Exception e, Object tag) {
-                                    // only finish if we're loading new data
-                                    mRouteCardAdapter.setInfiniteScrolling(false);
-                                    showError(e);
-                                }
-                            },
-                            null);
+                    // Scroll past the load earlier item
+                    ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(
+                            1, 0);
+                }, (e, tag) -> {
+                    // only finish if we're loading new data
+                    mRouteCardAdapter.setInfiniteScrolling(false);
+                    showError(e);
+                },
+                null);
 
-        api.getRoutes(request);
+        api.getRoutePlanning(request);
     }
 
     public void loadNextRecyclerviewItems() {
@@ -162,38 +157,31 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
             return;
         }
 
-        ExtendRoutesRequest request = new ExtendRoutesRequest(mCurrentRouteResult, ExtendRoutesRequest.Action.APPEND);
+        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ResultExtensionType.APPEND);
         request.setCallback(
-                new IRailSuccessResponseListener<RouteResult>() {
-                    @Override
-                    public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
-                        // data consists of both old and new routes
-                        resetErrorState();
-                        if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                            mRouteCardAdapter.disableInfiniteNext(); // Nothing new anymore
-                            // ErrorDialogFactory.showErrorDialog(new FileNotFoundException("No results"), RouteActivity.this,  (mSearchDate == null));
-                        }
-
-                        mCurrentRouteResult = data;
-                        showData(mCurrentRouteResult);
-
-                        mRouteCardAdapter.setNextLoaded();
-
-                        // Scroll past the "load earlier"
-                        LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
-                        if (mgr.findFirstVisibleItemPosition() == 0) {
-                            mgr.scrollToPositionWithOffset(1, 0);
-                        }
-
+                (data, tag) -> {
+                    // data consists of both old and new routes
+                    resetErrorState();
+                    if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
+                        mRouteCardAdapter.disableInfiniteNext(); // Nothing new anymore
                     }
-                }, new IRailErrorResponseListener() {
-                    @Override
-                    public void onErrorResponse(@NonNull Exception e, Object tag) {
-                        mRouteCardAdapter.setNextError(true);
-                        mRouteCardAdapter.setNextLoaded();
+
+                    mCurrentRouteResult = data;
+                    showData(mCurrentRouteResult);
+
+                    mRouteCardAdapter.setNextLoaded();
+
+                    // Scroll past the "load earlier"
+                    LinearLayoutManager mgr = ((LinearLayoutManager) vRecyclerView.getLayoutManager());
+                    if (mgr.findFirstVisibleItemPosition() == 0) {
+                        mgr.scrollToPositionWithOffset(1, 0);
                     }
+
+                }, (e, tag) -> {
+                    mRouteCardAdapter.setNextError(true);
+                    mRouteCardAdapter.setNextLoaded();
                 }, null);
-        IrailFactory.getDataProviderInstance().extendRoutes(request);
+        OpenTransportApi.getDataProviderInstance().extendRoutePlanning(request);
     }
 
     public void loadPreviousRecyclerviewItems() {
@@ -202,42 +190,35 @@ public class RoutesFragment extends RecyclerViewFragment<RouteResult> implements
             return;
         }
 
-        ExtendRoutesRequest request = new ExtendRoutesRequest(mCurrentRouteResult, ExtendRoutesRequest.Action.PREPEND);
+        ExtendRoutePlanningRequest request = new ExtendRoutePlanningRequest(mCurrentRouteResult, ResultExtensionType.PREPEND);
         request.setCallback(
-                new IRailSuccessResponseListener<RouteResult>() {
-                    @Override
-                    public void onSuccessResponse(@NonNull RouteResult data, Object tag) {
-                        resetErrorState();
+                (data, tag) -> {
+                    resetErrorState();
 
-                        // data consists of both old and new routes
-                        if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
-                            // mLiveboardCardAdapter.setPrevError(true); //TODO: find a way to make clear to the user that no data is available
-                            mRouteCardAdapter.disableInfinitePrevious();
-                        }
-
-                        int oldLength = mRouteCardAdapter.getItemCount();
-
-                        mCurrentRouteResult = data;
-                        showData(mCurrentRouteResult);
-
-                        int newLength = mRouteCardAdapter.getItemCount();
-
-                        // Scroll past the load earlier item
-                        ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newLength - oldLength, 0);
-
-                        mRouteCardAdapter.setPrevLoaded();
+                    // data consists of both old and new routes
+                    if (data.getRoutes().length == mCurrentRouteResult.getRoutes().length) {
+                        mRouteCardAdapter.disableInfinitePrevious();
                     }
-                }, new IRailErrorResponseListener() {
-                    @Override
-                    public void onErrorResponse(@NonNull Exception e, Object tag) {
-                        mRouteCardAdapter.setPrevError(true);
-                        mRouteCardAdapter.setPrevLoaded();
-                    }
+
+                    int oldLength = mRouteCardAdapter.getItemCount();
+
+                    mCurrentRouteResult = data;
+                    showData(mCurrentRouteResult);
+
+                    int newLength = mRouteCardAdapter.getItemCount();
+
+                    // Scroll past the load earlier item
+                    ((LinearLayoutManager) vRecyclerView.getLayoutManager()).scrollToPositionWithOffset(newLength - oldLength, 0);
+
+                    mRouteCardAdapter.setPrevLoaded();
+                }, (e, tag) -> {
+                    mRouteCardAdapter.setPrevError(true);
+                    mRouteCardAdapter.setPrevLoaded();
                 }, null);
-        IrailFactory.getDataProviderInstance().extendRoutes(request);
+        OpenTransportApi.getDataProviderInstance().extendRoutePlanning(request);
     }
 
-    protected void showData(RouteResult routeList) {
+    protected void showData(RoutesList routeList) {
         mRouteCardAdapter.updateRoutes(routeList);
     }
 

@@ -52,21 +52,21 @@ import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.VehicleSuggestionsCardAdapter;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * Fragment to let users search stations, and pick one to show its liveboard
  */
-public class VehicleSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<IrailVehicleRequest>>, OnRecyclerItemLongClickListener<Suggestion<IrailVehicleRequest>> {
+public class VehicleSearchFragment extends Fragment implements OnRecyclerItemClickListener<Suggestion<VehicleRequest>>, OnRecyclerItemLongClickListener<Suggestion<VehicleRequest>> {
 
     private RecyclerView recentTrainsRecyclerView;
     private EditText vTrainSearchField;
 
     private PersistentQueryProvider persistentQueryProvider;
-    private Suggestion<IrailVehicleRequest> mLastSelectedQuery;
+    private Suggestion<VehicleRequest> mLastSelectedQuery;
     private VehicleSuggestionsCardAdapter mIrailTrainRequestAdapter;
 
     public static VehicleSearchFragment newInstance() {
@@ -74,7 +74,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
@@ -82,7 +82,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Create an instance of GoogleAPIClient.
         persistentQueryProvider = PersistentQueryProvider.getInstance(this.getActivity());
@@ -116,25 +116,17 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         vTrainSearchField = view.findViewById(R.id.input_train);
 
         // Handle special keys in "from" text
-        vTrainSearchField.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (vTrainSearchField.getText().length() != 0) {
-                        doSearch();
-                    }
-                    return true;
+        vTrainSearchField.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (vTrainSearchField.getText().length() != 0) {
+                    doSearch();
                 }
-                return false;
+                return true;
             }
+            return false;
         });
 
-        view.findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doSearch();
-            }
-        });
+        view.findViewById(R.id.button_search).setOnClickListener(v -> doSearch());
     }
 
     @Override
@@ -149,7 +141,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
      * @param id The train id which should be loaded
      */
     private void openTrain(String id) {
-        IrailVehicleRequest request = new IrailVehicleRequest(id, null);
+        VehicleRequest request = new VehicleRequest(id, null);
         persistentQueryProvider.store(new Suggestion<>(request, SuggestionType.HISTORY));
         Intent i = VehicleActivity.createIntent(getActivity(), request);
         startActivity(i);
@@ -173,12 +165,12 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
     }
 
     @Override
-    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<IrailVehicleRequest> object) {
+    public void onRecyclerItemClick(RecyclerView.Adapter sender, Suggestion<VehicleRequest> object) {
         openTrain(object.getData().getVehicleId());
     }
 
     @Override
-    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<IrailVehicleRequest> object) {
+    public void onRecyclerItemLongClick(RecyclerView.Adapter sender, Suggestion<VehicleRequest> object) {
         mLastSelectedQuery = object;
     }
 
@@ -207,7 +199,7 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         return super.onContextItemSelected(item);
     }
 
-    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<IrailVehicleRequest>>> {
+    private static class LoadSuggestionsTask extends AsyncTask<PersistentQueryProvider, Void, List<Suggestion<VehicleRequest>>> {
 
         private WeakReference<VehicleSearchFragment> fragmentReference;
 
@@ -217,12 +209,12 @@ public class VehicleSearchFragment extends Fragment implements OnRecyclerItemCli
         }
 
         @Override
-        protected List<Suggestion<IrailVehicleRequest>> doInBackground(PersistentQueryProvider... provider) {
+        protected List<Suggestion<VehicleRequest>> doInBackground(PersistentQueryProvider... provider) {
             return provider[0].getAllTrains();
         }
 
         @Override
-        protected void onPostExecute(List<Suggestion<IrailVehicleRequest>> suggestions) {
+        protected void onPostExecute(List<Suggestion<VehicleRequest>> suggestions) {
             super.onPostExecute(suggestions);
 
             // get a reference to the activity if it is still there

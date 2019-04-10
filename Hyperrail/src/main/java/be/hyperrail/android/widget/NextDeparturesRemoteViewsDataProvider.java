@@ -9,7 +9,6 @@ package be.hyperrail.android.widget;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -20,14 +19,14 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
+import be.hyperrail.opentransportdata.common.models.Liveboard;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
@@ -55,32 +54,29 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             return;
         }
 
-        IrailLiveboardRequest request = null;
+        LiveboardRequest request = null;
         try {
-            request = new IrailLiveboardRequest(
-                    IrailFactory.getStationsProviderInstance().getStationByIrailApiId(id),
-                    RouteTimeDefinition.DEPART_AT,
-                    Liveboard.LiveboardType.DEPARTURES,
+            request = new LiveboardRequest(
+                    OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(id),
+                    QueryTimeDefinition.EQUAL_OR_LATER,
+                    LiveboardType.DEPARTURES,
                     null
             );
-        } catch (StationNotResolvedException e) {
+        } catch (StopLocationNotResolvedException e) {
             this.mError = true;
             return;
         }
-        request.setCallback(new IRailSuccessResponseListener<Liveboard>() {
-            @Override
-            public void onSuccessResponse(@NonNull Liveboard data, Object tag) {
-                Log.w("widgets", "Received iRail data...");
-                NextDeparturesRemoteViewsDataProvider.this.mLiveboard = data;
-            }
+        request.setCallback((data, tag) -> {
+            Log.w("widgets", "Received iRail data...");
+            NextDeparturesRemoteViewsDataProvider.this.mLiveboard = data;
         }, null, null);
         Log.w("widgets", "Requesting iRail data...");
-        IrailFactory.getDataProviderInstance().getLiveboard(request);
+        OpenTransportApi.getDataProviderInstance().getLiveboard(request);
 
         try {
             Thread.sleep(2500);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // Nothing to do
         }
     }
 

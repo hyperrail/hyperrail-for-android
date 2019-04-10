@@ -15,8 +15,11 @@ package be.hyperrail.android;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 
-import be.hyperrail.android.irail.factories.IrailFactory;
+import be.hyperrail.android.logging.HyperRailCrashlyticsLogWriter;
+import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.android.util.ReviewDialogProvider;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.be.IrailDataProvider;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -25,14 +28,20 @@ import io.fabric.sdk.android.Fabric;
 public class Launcher extends android.app.Application {
 
     public void onCreate() {
+
+        // Crashlytics abstraction layer
+        HyperRailCrashlyticsLogWriter logger = new HyperRailCrashlyticsLogWriter();
+        HyperRailLog.initLogWriter(logger);
         // Setup the factory as soon as the app is created.
-        IrailFactory.setup(getApplicationContext());
+        OpenTransportApi.init(getApplicationContext(), new IrailDataProvider(), logger);
+        // Set up Crashlytics, disabled for debug builds
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
 
-        CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
-        Fabric.with(this, new Crashlytics.Builder().core(core).build());
-
+        // Initialize Fabric with the debug-disabled crashlytics.
+        Fabric.with(this, crashlyticsKit);
         ReviewDialogProvider.init(this);
-
         super.onCreate();
     }
 

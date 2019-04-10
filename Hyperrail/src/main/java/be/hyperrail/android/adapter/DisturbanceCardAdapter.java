@@ -14,6 +14,7 @@ package be.hyperrail.android.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Disturbance;
+import be.hyperrail.opentransportdata.common.models.Disturbance;
 
 /**
  * Recyclerview adapter to show a list with disturbances on the net
@@ -58,8 +59,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
 
         if (viewType == VIEW_TYPE_NO_RESULTS) {
@@ -77,7 +79,7 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewholder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewholder, int position) {
 
         if (viewholder instanceof DisturbanceViewHolder) {
             DisturbanceViewHolder holder = (DisturbanceViewHolder) viewholder;
@@ -90,12 +92,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd/MM/yy HH:mm");
             holder.vDate.setText(df.print(disturbance.getTime()));
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (listener != null) {
-                        listener.onRecyclerItemClick(DisturbanceCardAdapter.this, disturbance);
-                    }
+            holder.itemView.setOnClickListener(view -> {
+                if (listener != null) {
+                    listener.onRecyclerItemClick(DisturbanceCardAdapter.this, disturbance);
                 }
             });
         }
@@ -115,15 +114,11 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         this.listener = listener;
     }
 
-    public void clearOnItemClickListener() {
-        this.listener = null;
-    }
-
     class DisturbanceViewHolder extends RecyclerView.ViewHolder {
 
-        protected final TextView vTitle;
-        protected final TextView vDescription;
-        protected final TextView vDate;
+        final TextView vTitle;
+        final TextView vDescription;
+        final TextView vDate;
 
         DisturbanceViewHolder(View view) {
             super(view);

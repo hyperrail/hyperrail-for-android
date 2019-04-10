@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.VehicleStopType;
 import be.hyperrail.android.viewgroup.LiveboardStopLayout;
+import be.hyperrail.opentransportdata.common.models.Liveboard;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 
-import static be.hyperrail.android.irail.implementation.Liveboard.LiveboardType.DEPARTURES;
+import static be.hyperrail.opentransportdata.common.models.LiveboardType.DEPARTURES;
 import static org.joda.time.Days.daysBetween;
 
 /**
@@ -43,12 +43,12 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
 
     private Liveboard liveboard;
     private final Context context;
-    private final static int STYLE_LIST = 0;
-    private final static int STYLE_CARD = 1;
+    private static final int STYLE_LIST = 0;
+    private static final int STYLE_CARD = 1;
     private int style = STYLE_LIST;
     private Object[] displayList;
 
-    protected final static int VIEW_TYPE_DATE = 1;
+    private static final int VIEW_TYPE_DATE = 1;
 
     public LiveboardCardAdapter(Activity context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
@@ -71,6 +71,39 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
             return;
         }
 
+        detectNumberOfDayChanges(liveBoard, daySeparatorPositions);
+
+        this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
+
+        weaveDataWithDayHeaders(liveBoard, daySeparatorPositions);
+
+        mRecyclerView.post(this::notifyDataSetChanged);
+    }
+
+    private void weaveDataWithDayHeaders(Liveboard liveBoard, ArrayList<Integer> daySeparatorPositions) {
+        // Convert to array + take previous separators into account for position of next separator
+        int dayPosition = 0;
+        int stopPosition = 0;
+        int resultPosition = 0;
+        while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
+            // Keep in mind that position shifts with the number of already placed date separators
+            if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
+                if (liveboard.getLiveboardType() == DEPARTURES) {
+                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
+                } else {
+                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getArrivalTime();
+                }
+                dayPosition++;
+            } else {
+                this.displayList[resultPosition] = liveboard.getStops()[stopPosition];
+                stopPosition++;
+            }
+
+            resultPosition++;
+        }
+    }
+
+    private void detectNumberOfDayChanges(Liveboard liveBoard, ArrayList<Integer> daySeparatorPositions) {
         // Default day to compare to is today
         DateTime dateCompareObj = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
         DateTime stoptime = liveBoard.getStops()[0].getType() == VehicleStopType.DEPARTURE ?
@@ -93,36 +126,6 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
                 daySeparatorPositions.add(i);
             }
         }
-
-        // Log.d("DateSeparator", "Detected " + daySeparatorPositions.size() + " day changes");
-        this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
-
-        // Convert to array + take previous separators into account for position of next separator
-        int dayPosition = 0;
-        int stopPosition = 0;
-        int resultPosition = 0;
-        while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
-            // Keep in mind that position shifts with the number of already placed date separators
-            if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                if (liveboard.getLiveboardType() == DEPARTURES) {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
-                } else {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getArrivalTime();
-                }
-                dayPosition++;
-            } else {
-                this.displayList[resultPosition] = liveboard.getStops()[stopPosition];
-                stopPosition++;
-            }
-
-            resultPosition++;
-        }
-
-        mRecyclerView.post(new Runnable() {
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
     }
 
     @Override

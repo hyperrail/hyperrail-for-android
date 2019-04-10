@@ -17,12 +17,12 @@ import android.widget.RemoteViews;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.contracts.StationNotResolvedException;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
@@ -45,13 +45,12 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
         if (id == null) {
             Log.w("widgets", "No station ID found for " + "NextDepartures:" + appWidgetId);
             return;
-            //throw new IllegalStateException("No station ID found for " + "NextDepartures:" + appWidgetId);
         }
 
-        Station mStation = null;
+        StopLocation mStation = null;
         try {
-            mStation = IrailFactory.getStationsProviderInstance().getStationByIrailApiId(id);
-        } catch (StationNotResolvedException e) {
+            mStation = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(id);
+        } catch (StopLocationNotResolvedException e) {
             RemoteViews views = new RemoteViews(context.getPackageName(),
                                                 R.layout.widget_nextdepartures_error);
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, android.R.id.list);
@@ -65,9 +64,9 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
 
         // Create an Intent to launch ExampleActivity
         Intent onClickIntent = LiveboardActivity.createIntent(context,
-                                                              new IrailLiveboardRequest(mStation,
-                                                                                        RouteTimeDefinition.DEPART_AT,
-                                                                                        Liveboard.LiveboardType.DEPARTURES,
+                                                              new LiveboardRequest(mStation,
+                                                                                        QueryTimeDefinition.EQUAL_OR_LATER,
+                                                                                        LiveboardType.DEPARTURES,
                                                                                         null));
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, 0);
 

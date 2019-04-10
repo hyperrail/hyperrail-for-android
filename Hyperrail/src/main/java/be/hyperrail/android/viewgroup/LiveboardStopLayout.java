@@ -21,10 +21,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.VehicleStopType;
+import be.hyperrail.opentransportdata.common.models.Liveboard;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 
 public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Liveboard, VehicleStop> {
 

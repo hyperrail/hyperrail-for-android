@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteResult;
 import be.hyperrail.android.viewgroup.RouteListItemLayout;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RoutesList;
 
 /**
  * Recyclerview adapter to show results of route searches
@@ -42,73 +42,76 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
 
     private Object[] displayList;
 
-    protected final static int VIEW_TYPE_DATE = 1;
+    private static final int VIEW_TYPE_DATE = 1;
 
     public RouteCardAdapter(Activity context, RecyclerView recyclerView, InfiniteScrollingDataSource listener) {
         super(context, recyclerView, listener);
         this.context = context;
     }
 
-    public void updateRoutes(RouteResult routeResult) {
-        if (routeResult == null || routeResult.getRoutes() == null || routeResult.getRoutes().length < 1) {
+    /**
+     * Update the routes in this listview, and calculate where day separators should be placed
+     * @param newRoutes
+     */
+    public void updateRoutes(RoutesList newRoutes) {
+        if (newRoutes == null || newRoutes.getRoutes() == null || newRoutes.getRoutes().length < 1) {
             this.routes = null;
             this.displayList = null;
             return;
         }
 
-        this.routes = routeResult.getRoutes();
+        this.routes = newRoutes.getRoutes();
 
         ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
 
-        if (routes != null && routes.length > 0) {
-            // Default day to compare to is today
-            DateTime lastday = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
+        initializeDataAndDayHeaders(newRoutes, daySeparatorPositions);
 
-            if (routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay().isBefore(lastday)) {
-                // If the first stop is not today, add date separators everywhere
-                lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
-            } else if (!routeResult.getSearchTime().withTimeAtStartOfDay().withZone(DateTimeZone.UTC).equals(routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
-                // If the search results differ from the date searched, everything after the date searched should have separators
-                lastday = routeResult.getSearchTime().withTimeAtStartOfDay();
+        this.displayList = new Object[daySeparatorPositions.size() + routes.length];
+        weaveDataAndDayHeaders(daySeparatorPositions);
+
+        mRecyclerView.post(this::notifyDataSetChanged);
+    }
+
+    private void weaveDataAndDayHeaders(ArrayList<Integer> daySeparatorPositions) {
+        // Convert to array + take previous separators into account for position of next separator
+        int dayPosition = 0;
+        int routePosition = 0;
+        int resultPosition = 0;
+
+        while (resultPosition < daySeparatorPositions.size() + routes.length) {
+            // Keep in mind that position shifts with the number of already placed date separators
+            if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
+                this.displayList[resultPosition] = routes[routePosition].getDepartureTime();
+
+                dayPosition++;
+            } else {
+                this.displayList[resultPosition] = routes[routePosition];
+                routePosition++;
             }
-            for (int i = 0; i < routes.length; i++) {
-                Route route = routes[i];
 
-                if (route.getDepartureTime().withTimeAtStartOfDay().isAfter(lastday)) {
-                    lastday = route.getDepartureTime().withTimeAtStartOfDay();
-                    daySeparatorPositions.add(i);
-                }
-            }
-
-            this.displayList = new Object[daySeparatorPositions.size() + routes.length];
-
-            // Convert to array + take previous separators into account for position of next separator
-            int dayPosition = 0;
-            int routePosition = 0;
-            int resultPosition = 0;
-
-            while (resultPosition < daySeparatorPositions.size() + routes.length) {
-                // Keep in mind that position shifts with the number of already placed date separators
-                if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
-                    this.displayList[resultPosition] = routes[routePosition].getDepartureTime();
-
-                    dayPosition++;
-                } else {
-                    this.displayList[resultPosition] = routes[routePosition];
-                    routePosition++;
-                }
-
-                resultPosition++;
-            }
-        } else {
-            displayList = null;
+            resultPosition++;
         }
+    }
 
-        mRecyclerView.post(new Runnable() {
-            public void run() {
-                notifyDataSetChanged();
+    private void initializeDataAndDayHeaders(RoutesList newRoutes, ArrayList<Integer> daySeparatorPositions) {
+        // Default day to compare to is today
+        DateTime lastday = DateTime.now().withZone(DateTimeZone.UTC).withTimeAtStartOfDay();
+
+        if (routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay().isBefore(lastday)) {
+            // If the first stop is not today, add date separators everywhere
+            lastday = routes[0].getDepartureTime().withTimeAtStartOfDay().minusDays(1);
+        } else if (!newRoutes.getSearchTime().withTimeAtStartOfDay().withZone(DateTimeZone.UTC).equals(routes[0].getDepartureTime().withZone(DateTimeZone.UTC).withTimeAtStartOfDay())) {
+            // If the search results differ from the date searched, everything after the date searched should have separators
+            lastday = newRoutes.getSearchTime().withTimeAtStartOfDay();
+        }
+        for (int i = 0; i < routes.length; i++) {
+            Route route = routes[i];
+
+            if (route.getDepartureTime().withTimeAtStartOfDay().isAfter(lastday)) {
+                lastday = route.getDepartureTime().withTimeAtStartOfDay();
+                daySeparatorPositions.add(i);
             }
-        });
+        }
     }
 
     @Override
@@ -149,32 +152,26 @@ public class RouteCardAdapter extends InfiniteScrollingAdapter<Route> {
         RouteViewHolder holder = (RouteViewHolder) genericHolder;
         final Route route = (Route) displayList[position];
 
-        holder.routeListItemLayout.bind(context,route,null,position);
+        holder.routeListItemLayout.bind(context, route, null, position);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnClickListener != null) {
-                    mOnClickListener.onRecyclerItemClick(RouteCardAdapter.this, route);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (mOnClickListener != null) {
+                mOnClickListener.onRecyclerItemClick(RouteCardAdapter.this, route);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (mOnLongClickListener != null) {
-                    mOnLongClickListener.onRecyclerItemLongClick(RouteCardAdapter.this, route);
-                    return true;
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(v -> {
+            if (mOnLongClickListener != null) {
+                mOnLongClickListener.onRecyclerItemLongClick(RouteCardAdapter.this, route);
+                return true;
             }
+            return false;
         });
     }
 
     @Override
     public int getListItemCount() {
-        if (routes == null | displayList == null) {
+        if (routes == null || displayList == null) {
             return 0;
         }
         return displayList.length;

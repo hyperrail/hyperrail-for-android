@@ -29,6 +29,15 @@
     </android.support.v4.view.ViewPager>
 
     <TextView
+        android:visibility="gone"
+        android:id="@+id/text_system_status"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listitem_content_height_double"
+        android:animateLayoutChanges="true"
+        android:background="@color/colorPrimaryDark"
+        android:gravity="center"
+        android:textColor="@color/colorTextLight" />
+    <TextView
         android:id="@+id/text_status_offline"
         android:layout_width="match_parent"
         android:layout_height="@dimen/listitem_content_height_double"

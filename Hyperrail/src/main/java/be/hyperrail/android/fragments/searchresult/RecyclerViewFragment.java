@@ -71,16 +71,13 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
         // Initialize pull to refresh
         vRefreshLayout = view.findViewById(R.id.swiperefresh);
         vRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        // This method performs the actual data-refresh operation.
-                        // The method calls setRefreshing(false) when it's finished.
-                        vRefreshLayout.setRefreshing(true);
+                () -> {
+                    // This method performs the actual data-refresh operation.
+                    // The method calls setRefreshing(false) when it's finished.
+                    vRefreshLayout.setRefreshing(true);
 
-                        // Call getInitialData to reset the data again.
-                        getInitialData();
-                    }
+                    // Call getInitialData to reset the data again.
+                    getInitialData();
                 }
         );
 
@@ -119,7 +116,7 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
      *
      * @return recyclerview adapter
      */
-    abstract protected RecyclerView.Adapter getAdapter();
+    protected abstract RecyclerView.Adapter getAdapter();
 
     /**
      * Get items from the previous instance state
@@ -170,7 +167,7 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
             }
         } else if (exception instanceof NetworkError) {
             showError(R.string.error_network_connected_unavailable);
-        } else if (exception instanceof TimeoutError){
+        } else if (exception instanceof TimeoutError) {
             showError(R.string.error_network_connected_unavailable);
         } else {
             showError(R.string.error_general);

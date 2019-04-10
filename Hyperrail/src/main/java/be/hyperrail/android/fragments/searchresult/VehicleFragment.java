@@ -49,31 +49,30 @@ import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.VehicleStopCardAdapter;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
-import be.hyperrail.android.irail.contracts.IRailErrorResponseListener;
-import be.hyperrail.android.irail.contracts.IRailSuccessResponseListener;
-import be.hyperrail.android.irail.contracts.RouteTimeDefinition;
-import be.hyperrail.android.irail.db.Station;
-import be.hyperrail.android.irail.factories.IrailFactory;
-import be.hyperrail.android.irail.implementation.Liveboard;
-import be.hyperrail.android.irail.implementation.Vehicle;
-import be.hyperrail.android.irail.implementation.VehicleStop;
-import be.hyperrail.android.irail.implementation.requests.IrailLiveboardRequest;
-import be.hyperrail.android.irail.implementation.requests.IrailVehicleRequest;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
+import be.hyperrail.opentransportdata.OpenTransportApi;
+import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
+import be.hyperrail.opentransportdata.common.models.LiveboardType;
+import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
  * A fragment for showing liveboard results
  */
-public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements InfiniteScrollingDataSource, ResultFragment<IrailVehicleRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop>, OnMapReadyCallback {
+public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implements InfiniteScrollingDataSource,
+        ResultFragment<VehicleRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop>, OnMapReadyCallback {
 
-    private Vehicle mCurrentTrain;
-    private IrailVehicleRequest mRequest;
+    private VehicleJourney mCurrentTrain;
+    private VehicleRequest mRequest;
     private VehicleStopCardAdapter mRecyclerviewAdapter;
     private GoogleMap mMap;
 
-    public static VehicleFragment createInstance(IrailVehicleRequest request) {
+    public static VehicleFragment createInstance(VehicleRequest request) {
         VehicleFragment frg = new VehicleFragment();
         frg.mRequest = request;
         return frg;
@@ -83,7 +82,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
-            mRequest = (IrailVehicleRequest) savedInstanceState.getSerializable("request");
+            mRequest = (VehicleRequest) savedInstanceState.getSerializable("request");
         }
         return inflater.inflate(R.layout.fragment_recyclerview_list_map, container, false);
     }
@@ -110,21 +109,20 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
     }
 
     @Override
-    protected Vehicle getRestoredInstanceStateItems(Bundle savedInstanceState) {
+    protected VehicleJourney getRestoredInstanceStateItems(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("result")) {
-            this.mCurrentTrain = (Vehicle) savedInstanceState.get("result");
+            this.mCurrentTrain = (VehicleJourney) savedInstanceState.get("result");
         }
         return mCurrentTrain;
     }
 
     @Override
-    public void setRequest(@NonNull IrailVehicleRequest request) {
+    public void setRequest(@NonNull VehicleRequest request) {
         this.mRequest = request;
-        //getInitialData();
     }
 
     @Override
-    public IrailVehicleRequest getRequest() {
+    public VehicleRequest getRequest() {
         return this.mRequest;
     }
 
@@ -151,36 +149,30 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
     protected void getData() {
         vRefreshLayout.setRefreshing(true);
 
-        IrailFactory.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortAllQueries();
 
-        IrailVehicleRequest request = new IrailVehicleRequest(mRequest.getVehicleId(),
+        VehicleRequest request = new VehicleRequest(mRequest.getVehicleId(),
                                                               mRequest.getSearchTime());
-        request.setCallback(new IRailSuccessResponseListener<Vehicle>() {
-            @Override
-            public void onSuccessResponse(@NonNull Vehicle data, Object tag) {
-                resetErrorState();
-                vRefreshLayout.setRefreshing(false);
-                mCurrentTrain = data;
-                showData(mCurrentTrain);
-            }
-        }, new IRailErrorResponseListener() {
-            @Override
-            public void onErrorResponse(@NonNull Exception e, Object tag) {
-                vRefreshLayout.setRefreshing(false);
+        request.setCallback((data, tag) -> {
+            resetErrorState();
+            vRefreshLayout.setRefreshing(false);
+            mCurrentTrain = data;
+            showData(mCurrentTrain);
+        }, (e, tag) -> {
+            vRefreshLayout.setRefreshing(false);
 
-                // only finish if we're loading new data
-                showError(e);
-            }
+            // only finish if we're loading new data
+            showError(e);
         }, null);
-        IrailFactory.getDataProviderInstance().getVehicle(request);
+        OpenTransportApi.getDataProviderInstance().getVehicleJourney(request);
     }
 
-    protected void showData(Vehicle train) {
+    protected void showData(VehicleJourney train) {
         getActivity().setTitle(train.getName() + " " + train.getHeadsign());
 
         mRecyclerviewAdapter.updateTrain(train);
-        mRequest.setOrigin(train.getStops()[0].getStation());
-        mRequest.setDirection(train.getDirection());
+        mRequest.setOrigin(train.getStops()[0].getStopLocation());
+        mRequest.setDirection(train.getLastStopLocation());
 
         // Update the request in the activity, so additional information will be stored when marking it as favorite
         if (getActivity() instanceof VehicleActivity) {
@@ -191,7 +183,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
                 new Suggestion<>(mRequest, SuggestionType.HISTORY));
 
         if (!mRequest.isNow()) {
-            int i = train.getStopnumberForDepartureTime(mRequest.getSearchTime());
+            int i = train.getIndexForDepartureTime(mRequest.getSearchTime());
             if (i >= 0) {
                 vRecyclerView.scrollToPosition(i);
             }
@@ -213,15 +205,14 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
 
     @Override
     public void onRecyclerItemClick(RecyclerView.Adapter sender, VehicleStop object) {
-        // TODO: VehicleStop objects should have a way to distinguish the first and last stop
         DateTime queryTime = object.getArrivalTime();
         if (queryTime == null) {
             queryTime = object.getDepartureTime();
         }
         Intent i = LiveboardActivity.createIntent(getActivity(),
-                                                  new IrailLiveboardRequest(object.getStation(),
-                                                                            RouteTimeDefinition.DEPART_AT,
-                                                                            Liveboard.LiveboardType.DEPARTURES,
+                                                  new LiveboardRequest(object.getStopLocation(),
+                                                                            QueryTimeDefinition.EQUAL_OR_LATER,
+                                                                            LiveboardType.DEPARTURES,
                                                                             queryTime));
         startActivity(i);
     }
@@ -247,7 +238,7 @@ public class VehicleFragment extends RecyclerViewFragment<Vehicle> implements In
         BitmapDescriptor greyIcon = getMarkerIconFromDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.timeline_dot_muted));
 
         for (int i = 0; i < mCurrentTrain.getStops().length; i++) {
-            Station s = mCurrentTrain.getStops()[i].getStation();
+            StopLocation s = mCurrentTrain.getStops()[i].getStopLocation();
             locations[i] = new LatLng(s.getLatitude(), s.getLongitude());
             if (mCurrentTrain.getStops()[i].hasLeft()) {
                 passedLocations.add(locations[i]);

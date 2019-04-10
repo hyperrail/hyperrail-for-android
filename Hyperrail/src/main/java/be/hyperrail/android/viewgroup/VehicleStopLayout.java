@@ -21,12 +21,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.irail.implementation.OccupancyHelper;
-import be.hyperrail.android.irail.implementation.Vehicle;
-import be.hyperrail.android.irail.implementation.VehicleStop;
+import be.hyperrail.opentransportdata.common.models.VehicleJourney;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
 
 
-public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Vehicle, VehicleStop> {
+public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<VehicleJourney, VehicleStop> {
 
     protected TextView vDestination;
     protected TextView vDepartureTime;
@@ -82,9 +82,9 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
 
 
     @Override
-    public void bind(Context context, VehicleStop stop, Vehicle train, int position) {
+    public void bind(Context context, VehicleStop stop, VehicleJourney train, int position) {
 
-        vDestination.setText(stop.getStation().getLocalizedName());
+        vDestination.setText(stop.getStopLocation().getLocalizedName());
 
         bindTimeAndDelay(context, stop);
 
@@ -95,7 +95,7 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(stop.getOccupancyLevel())));
     }
 
-    private void bindTimelineDrawable(Context context, VehicleStop stop, Vehicle train, int position) {
+    private void bindTimelineDrawable(Context context, VehicleStop stop, VehicleJourney train, int position) {
         if (stop.hasLeft()) {
             if (position == 0) {
                 vIcon.setImageDrawable(

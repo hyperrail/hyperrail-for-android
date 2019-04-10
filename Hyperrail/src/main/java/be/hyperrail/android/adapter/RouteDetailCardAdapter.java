@@ -15,6 +15,7 @@ package be.hyperrail.android.adapter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +23,12 @@ import android.view.ViewGroup;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.VehiclePopupContextMenu;
-import be.hyperrail.android.irail.implementation.Route;
-import be.hyperrail.android.irail.implementation.RouteLeg;
-import be.hyperrail.android.irail.implementation.RouteLegType;
-import be.hyperrail.android.irail.implementation.Transfer;
 import be.hyperrail.android.viewgroup.RouteTrainItemLayout;
 import be.hyperrail.android.viewgroup.RouteTransferItemLayout;
+import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RouteLeg;
+import be.hyperrail.opentransportdata.common.models.RouteLegType;
+import be.hyperrail.opentransportdata.common.models.Transfer;
 
 /**
  * RecyclerViewAdapter which shows a detailed timeline view for routes/connections,
@@ -50,8 +51,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private final Activity context;
     private OnRecyclerItemClickListener<Object> listener;
 
-    private final int VIEW_TYPE_TRANSFER = 0;
-    private final int VIEW_TYPE_TRAIN = 1;
+    private static final int VIEW_TYPE_TRANSFER = 0;
+    private static final int VIEW_TYPE_TRAIN = 1;
 
     public RouteDetailCardAdapter(Activity context, Route route, boolean embedded) {
         this.context = context;
@@ -69,8 +70,9 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_TRANSFER) {
             View itemView;
 
@@ -107,7 +109,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * Note: since recyclerview recyclers, either set or unset fields, but don't leave them as-is!
      */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof RouteTransferViewHolder) {
             // Create a transfer ViewHolder
@@ -148,33 +150,26 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             ((RouteTrainViewHolder) holder).routeTrainItemLayout.bind(context, leg, route, (position - 1) / 2);
 
             if (leg.getType() != RouteLegType.WALK) {
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("train", leg.getVehicleInformation());
-                        // Get the departure date (day) of this train
-                        bundle.putSerializable("date", leg.getDeparture().getTime());
-                        // TODO: consider if these should be included
-                        bundle.putSerializable("from", leg.getDeparture().getStation());
-                        bundle.putSerializable("to", leg.getArrival().getStation());
+                holder.itemView.setOnClickListener(v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("train", leg.getVehicleInformation());
+                    // Get the departure date (day) of this train
+                    bundle.putSerializable("date", leg.getDeparture().getTime());
+                    // TODO: consider if these should be included
+                    bundle.putSerializable("from", leg.getDeparture().getStation());
+                    bundle.putSerializable("to", leg.getArrival().getStation());
 
-                        if (listener != null) {
-                            listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
-                        }
+                    if (listener != null) {
+                        listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
                     }
                 });
 
                 holder.itemView.setOnLongClickListener(
-                        new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View view) {
-                                (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
-                                                             leg)
-                                ).show();
-                                return false;
-                            }
-
+                        view -> {
+                            (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
+                                                         leg)
+                            ).show();
+                            return false;
                         }
                 );
             }
@@ -196,7 +191,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     /**
-     * Vehicle ViewHolder, showing train, status, duration, direction
+     * VehicleJourney ViewHolder, showing train, status, duration, direction
      */
     private class RouteTrainViewHolder extends RecyclerView.ViewHolder {
 
