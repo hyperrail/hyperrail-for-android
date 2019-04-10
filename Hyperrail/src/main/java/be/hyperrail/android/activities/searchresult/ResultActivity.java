@@ -19,6 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.ColorRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
@@ -30,21 +31,26 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.util.DateTimePicker;
 import be.hyperrail.android.util.NetworkStateChangeReceiver;
 import be.hyperrail.android.util.OnDateTimeSetListener;
+import be.hyperrail.android.util.health.HealthState;
+import be.hyperrail.android.util.health.HealthStateChecker;
+import be.hyperrail.android.util.health.HealthStateCheckerListener;
 
 import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 
 /**
  * An abstract class for activities which contain a recyclerview
  */
-public abstract class ResultActivity extends AppCompatActivity implements OnDateTimeSetListener, Serializable, NetworkStateChangeReceiver.ConnectionReceiverListener {
+public abstract class ResultActivity extends AppCompatActivity implements OnDateTimeSetListener, Serializable, NetworkStateChangeReceiver.ConnectionReceiverListener, HealthStateCheckerListener {
 
     /**
      * History & favorites provider
@@ -62,6 +68,7 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
     protected View vLayoutRoot;
     private ConnectivityManager mConnectivityManager;
     private NetworkStateChangeReceiver mReceiver;
+    private HealthStateChecker healthStateChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +91,10 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
                 this.getApplicationContext());
 
         mConnectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
         mReceiver = new NetworkStateChangeReceiver(this);
-
         onNetworkConnectionChanged(isInternetAvailable());
+
+        healthStateChecker = new HealthStateChecker(this, this);
     }
 
     @Override
@@ -208,7 +215,7 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
         if (drawable != null) {
             drawable.mutate();
             drawable.setColorFilter(ContextCompat.getColor(this.getApplicationContext(), color),
-                                    PorterDuff.Mode.SRC_ATOP);
+                    PorterDuff.Mode.SRC_ATOP);
         }
     }
 
@@ -264,6 +271,34 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
             findViewById(R.id.text_status_offline).setVisibility(View.GONE);
         } else {
             findViewById(R.id.text_status_offline).setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onSystemHealthChanged(HealthState currentState) {
+        TextView view = findViewById(R.id.text_system_status);
+        if (currentState.isHealthy()) {
+            view.setVisibility(View.GONE);
+        } else {
+            String locale = PreferenceManager.getDefaultSharedPreferences(this).getString(
+                    "pref_stations_language", "");
+            if (locale == null || locale.isEmpty()) {
+                // Only get locale when needed
+                locale = Locale.getDefault().getISO3Language();
+            }
+            switch (locale) {
+                case "nld":
+                    view.setText(currentState.getNl());
+                    break;
+                case "fra":
+                    view.setText(currentState.getFr());
+                    break;
+                case "eng":
+                default:
+                    view.setText(currentState.getEn());
+                    break;
+            }
+            view.setVisibility(View.VISIBLE);
         }
     }
 }
