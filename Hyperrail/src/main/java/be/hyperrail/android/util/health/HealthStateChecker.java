@@ -19,7 +19,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import be.opentransport.BuildConfig;
+import be.hyperrail.android.BuildConfig;
+
 
 /**
  * Created in be.hyperrail.android.util on 13/03/2018.

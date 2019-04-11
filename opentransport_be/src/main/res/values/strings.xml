@@ -2,8 +2,4 @@
     <string translatable="false" name="dataprovider_be_name">Belgian datasources</string>
     <string translatable="false" name="dataprovider_be_irail">be.hyperrail.opentransport.be.IrailDataProvider</string>
     <string translatable="false" name="dataprovider_be_irail_name">iRail.be</string>
-    <string translatable="false" name="dataprovider_be_lc2irail">be.hyperrail.opentransport.be.IrailDataProvider</string>
-    <string translatable="false" name="dataprovider_be_lc2irail_name">LC2Irail (experimental)</string>
-    <string translatable="false" name="dataprovider_be_linkedconnections">be.hyperrail.opentransport.be.IrailDataProvider</string>
-    <string translatable="false" name="dataprovider_be_linkedconnections_name">Linked Connections (experimental)</string>
 </resources>

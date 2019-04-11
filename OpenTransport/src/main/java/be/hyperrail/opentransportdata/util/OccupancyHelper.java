@@ -8,7 +8,7 @@ package be.hyperrail.opentransportdata.util;
 
 import android.support.annotation.DrawableRes;
 
-import be.opentransport.R;
+import be.hyperrail.opentransportdata.R;
 import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
 
 /**

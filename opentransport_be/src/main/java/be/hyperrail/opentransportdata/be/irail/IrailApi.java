@@ -61,7 +61,7 @@ import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
-import be.opentransport.BuildConfig;
+import be.hyperrail.opentransportdata.BuildConfig;
 
 /**
  * Synchronous API for api.irail.be
