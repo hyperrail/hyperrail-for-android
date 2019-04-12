@@ -445,6 +445,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         @Override
         protected String[] doInBackground(TransportStopsDataSource... provider) {
+            Thread.currentThread().setName("LoadAutoCompleteTask");
             return provider[0].getStoplocationsNames(provider[0].getStoplocationsOrderedBySize());
 
         }

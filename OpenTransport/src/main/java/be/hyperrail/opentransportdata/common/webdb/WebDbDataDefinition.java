@@ -63,7 +63,9 @@ public interface WebDbDataDefinition {
 
     boolean loadLocalData(SQLiteDatabase db);
 
-    boolean loadOnlineData(SQLiteDatabase db);
+    boolean importDownloadedData(SQLiteDatabase db, Object onlineUpdateData);
+
+    Object downloadOnlineData();
 
     void clearDatabase(SQLiteDatabase db);
 }

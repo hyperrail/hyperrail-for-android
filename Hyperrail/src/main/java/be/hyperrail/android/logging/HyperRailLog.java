@@ -13,6 +13,7 @@ public class HyperRailLog {
 
     public static void initLogWriter(HyperRailLogWriter logger) {
         loggerInstance = logger;
+        logger.info(logger.getClass().getName(), "Using Console logger");
     }
 
     private static HyperRailLogWriter getLogWriter() {

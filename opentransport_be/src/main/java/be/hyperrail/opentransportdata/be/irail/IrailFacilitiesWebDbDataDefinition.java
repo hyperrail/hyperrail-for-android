@@ -14,17 +14,21 @@ package be.hyperrail.opentransportdata.be.irail;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
 
 import org.joda.time.DateTime;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import be.hyperrail.opentransportdata.be.R;
@@ -42,10 +46,18 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesData
  */
 class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailFacilitiesWebDbDataDefinition.class);
-    private final Context mContext;
+    private static IrailFacilitiesWebDbDataDefinition instance;
+    private final Resources mResources;
 
-    IrailFacilitiesWebDbDataDefinition(Context context) {
-        mContext = context;
+    private IrailFacilitiesWebDbDataDefinition(Context context) {
+        mResources = context.getResources();
+    }
+
+    public static IrailFacilitiesWebDbDataDefinition getInstance(Context context) {
+        if (instance == null) {
+            instance = new IrailFacilitiesWebDbDataDefinition(context);
+        }
+        return instance;
     }
 
     @Override
@@ -122,19 +134,49 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     }
 
     @Override
-    public boolean loadOnlineData(SQLiteDatabase db) {
+    public boolean importDownloadedData(SQLiteDatabase db, Object onlineUpdateData) {
         db.beginTransaction();
-        try (Scanner lines = new Scanner(getOnlineData())) {
+        try (Scanner lines = new Scanner((String) onlineUpdateData)) {
             importFacilities(db, lines);
             db.setTransactionSuccessful();
             db.endTransaction();
+            log.info("Filled station facilities database with online data");
+            return true;
         } catch (Exception e) {
             log.severe("Failed to fill facilities db with online data!", e);
             db.endTransaction();
             return false;
         }
-        log.info("Filled station facilities DB");
-        return true;
+    }
+
+    @Override
+    public String downloadOnlineData() {
+        URL url;
+        try {
+            url = new URL(getOnlineDataURL());
+        } catch (MalformedURLException e) {
+            log.warning("Failed to get data URL for database " + getDatabaseName());
+            return null;
+        }
+        HttpURLConnection httpCon;
+        try {
+            httpCon = (HttpURLConnection) url.openConnection();
+            return dataStreamToString(httpCon.getInputStream());
+        } catch (IOException e) {
+            log.warning("Failed to get online for database " + getDatabaseName() + " from " + url.toString());
+            return null;
+        }
+    }
+
+    private String dataStreamToString(InputStream stream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder stringBuilder = new StringBuilder();
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line).append("\n");
+        }
+        return stringBuilder.toString();
     }
 
     @Override
@@ -142,24 +184,8 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         db.execSQL(SQL_DELETE_TABLE_FACILITIES);
     }
 
-    private String getOnlineData() {
-        URL url;
-        try {
-            url = new URL(getOnlineDataURL());
-        } catch (MalformedURLException e) {
-            return "";
-        }
-        HttpURLConnection httpCon;
-        try {
-            httpCon = (HttpURLConnection) url.openConnection();
-            return httpCon.getResponseMessage();
-        } catch (IOException e) {
-            return "";
-        }
-    }
-
     private InputStream getLocalData() {
-        return mContext.getResources().openRawResource(getEmbeddedDataResourceId());
+        return mResources.openRawResource(getEmbeddedDataResourceId());
     }
 
     @Override
@@ -220,15 +246,16 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
                 } else {
                     fields.next();
                 }
-                getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_TUESDAY);
-                getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY);
-                getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY);
-                getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY);
-                getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY);
+
                 try {
+                    getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_TUESDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_TUESDAY);
+                    getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_WEDNESDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_WEDNESDAY);
+                    getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_THURSDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_THURSDAY);
+                    getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_FRIDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_FRIDAY);
+                    getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_SATURDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_SATURDAY);
                     getOpeningHourValues(fields, values, StationFacilityColumns.COLUMN_SALES_OPEN_SUNDAY, StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (NoSuchElementException e) {
+                    // Ignored
                 }
 
                 // Insert row
@@ -242,9 +269,10 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         field = fields.next();
         if (field != null && !field.isEmpty()) {
             values.put(columnSalesOpen, field);
-            values.put(columnSalesClose, fields.next());
-        } else {
-            fields.next();
+        }
+        field = fields.next();
+        if (field != null && !field.isEmpty()) {
+            values.put(columnSalesClose, field);
         }
     }
 }

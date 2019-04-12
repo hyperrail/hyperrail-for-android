@@ -110,4 +110,6 @@ public interface TransportStopsDataSource {
      */
     @NonNull
     StopLocation[] getStoplocationsOrderedByLocationAndSize(Location location, int limit);
+
+    void preloadDatabase();
 }

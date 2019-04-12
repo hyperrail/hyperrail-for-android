@@ -8,14 +8,17 @@ package be.hyperrail.opentransportdata.be.irail;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
 
 import org.joda.time.DateTime;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,8 +40,20 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.
  * (c) Bert Marcelis 2018
  */
 class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
-    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailStopsWebDbDataDefinition.class);
-    private final Context mContext;
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailStopsWebDbDataDefinition.class);
+    private static IrailStopsWebDbDataDefinition instance;
+    private final Resources mResources;
+
+    private IrailStopsWebDbDataDefinition(Context context) {
+        mResources = context.getResources();
+    }
+
+    public static IrailStopsWebDbDataDefinition getInstance(Context context) {
+        if (instance == null) {
+            instance = new IrailStopsWebDbDataDefinition(context);
+        }
+        return instance;
+    }
 
     @Override
     public boolean updateOnlyOnWifi() {
@@ -95,17 +110,18 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
     }
 
     @Override
-    public boolean loadOnlineData(SQLiteDatabase db) {
+    public boolean importDownloadedData(SQLiteDatabase db, Object onlineUpdateData) {
         db.beginTransaction();
-        try (Scanner lines = new Scanner(getOnlineData())) {
+        try (Scanner lines = new Scanner((String) onlineUpdateData)) {
             importData(db, lines);
             db.setTransactionSuccessful();
+            log.info("Filled stations database with online data");
+            return true;
         } catch (Exception e) {
             db.endTransaction();
             log.severe("Failed to fill stations db with online data!", e);
             return false;
         }
-        return false;
     }
 
     @Override
@@ -121,30 +137,40 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         return now.minusDays(now.dayOfWeek().get() + 1 % 7);
     }
 
-    private String getOnlineData() {
+    @Override
+    public String downloadOnlineData() {
         URL url;
         try {
             url = new URL(getOnlineDataURL());
         } catch (MalformedURLException e) {
-            return "";
+            log.warning("Failed to get data URL for database " + getDatabaseName());
+            return null;
         }
         HttpURLConnection httpCon;
         try {
             httpCon = (HttpURLConnection) url.openConnection();
-            return httpCon.getResponseMessage();
+            return dataStreamToString(httpCon.getInputStream());
         } catch (IOException e) {
-            return "";
+            log.warning("Failed to get online for database " + getDatabaseName() + " from " + url.toString());
+            return null;
         }
     }
 
+    private String dataStreamToString(InputStream stream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder stringBuilder = new StringBuilder();
+
+        String line;
+        while ((line = reader.readLine()) != null)
+        {
+            stringBuilder.append(line).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
     private InputStream getLocalData() {
-        return mContext.getResources().openRawResource(getEmbeddedDataResourceId());
+        return mResources.openRawResource(getEmbeddedDataResourceId());
     }
-
-    IrailStopsWebDbDataDefinition(Context context) {
-        mContext = context;
-    }
-
 
     private void importData(SQLiteDatabase db, Scanner lines) {
         lines.useDelimiter("\n");
@@ -201,58 +227,33 @@ class IrailStopsWebDbDataDefinition implements WebDbDataDefinition {
         values.put(StationsDataColumns.COLUMN_NAME_COUNTRY_CODE, fields.next());
 
         String field = fields.next();
-        if (field != null && !field.isEmpty()) {
-
-            values.put(
-                    StationsDataColumns.COLUMN_NAME_LONGITUDE,
-                    Double.parseDouble(field)
-            );
-
-        } else {
-            values.put(StationsDataColumns.COLUMN_NAME_LONGITUDE, 0);
-        }
+        insertDoubleSafely(values, field, StationsDataColumns.COLUMN_NAME_LONGITUDE);
 
         field = fields.next();
-        if (field != null && !field.isEmpty()) {
-            values.put(
-                    StationsDataColumns.COLUMN_NAME_LATITUDE,
-                    Double.parseDouble(field)
-            );
-
-        } else {
-            values.put(StationsDataColumns.COLUMN_NAME_LATITUDE, 0);
-        }
+        insertDoubleSafely(values, field, StationsDataColumns.COLUMN_NAME_LATITUDE);
 
         field = fields.next();
-        if (field != null && !field.isEmpty()) {
-            try {
-                values.put(
-                        StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES,
-                        Double.parseDouble(field)
-                );
-            } catch (NumberFormatException e) {
-                values.put(StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES, 0);
-            }
-        } else {
-            values.put(StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES, 0);
-        }
+        insertDoubleSafely(values, field, StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES);
 
         field = fields.next();
-        if (field != null && !field.isEmpty()) {
-            try {
-                values.put(
-                        StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME,
-                        Double.parseDouble(field)
-                );
-            } catch (NumberFormatException e) {
-                values.put(StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME, 0);
-            }
-        } else {
-            values.put(StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME, 0);
-        }
+        insertDoubleSafely(values, field, StationsDataColumns.COLUMN_NAME_OFFICIAL_TRANSFER_TIME);
         // Insert row
         db.insert(StationsDataColumns.TABLE_NAME, null, values);
     }
 
+    private void insertDoubleSafely(ContentValues values, String field, String columnName) {
+        if (field != null && !field.isEmpty()) {
+            try {
+                values.put(
+                        columnName,
+                        Double.parseDouble(field)
+                );
 
+            } catch (NumberFormatException e) {
+                values.put(columnName, 0);
+            }
+        } else {
+            values.put(columnName, 0);
+        }
+    }
 }

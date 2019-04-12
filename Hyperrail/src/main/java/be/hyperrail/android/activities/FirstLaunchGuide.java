@@ -41,7 +41,6 @@ import be.hyperrail.android.BuildConfig;
 import be.hyperrail.android.R;
 import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.opentransportdata.OpenTransportApi;
-import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 
 public class FirstLaunchGuide extends AppCompatActivity {
 
@@ -141,13 +140,13 @@ public class FirstLaunchGuide extends AppCompatActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class FirstLaunchFragment extends android.support.v4.app.Fragment {
+        private static final String ARG_DESCRIPTION = "description";
+        private static final String ARG_IMG = "image";
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_TITLE = "title";
-        private static final String ARG_IMG = "image";
-        private static final String ARG_DESCRIPTION = "description";
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -196,6 +195,20 @@ public class FirstLaunchGuide extends AppCompatActivity {
         }
     }
 
+    private static class SetupStationsDbTask extends AsyncTask<Void, Void, Void> {
+
+        private static final HyperRailLog log = HyperRailLog.getLogger(SetupStationsDbTask.class);
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Thread.currentThread().setName("SetupStationsDbTask");
+            log.info("Preparing stoplocations database ahead of time");
+            OpenTransportApi.getStopLocationProviderInstance().preloadDatabase();
+            log.info("Prepared stations stoplocations ahead of time");
+            return null;
+        }
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -225,23 +238,6 @@ public class FirstLaunchGuide extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             // Empty page titles, we're using dots!
             return "";
-        }
-    }
-
-    private static class SetupStationsDbTask extends AsyncTask<Void, Void, Void> {
-
-        private static final HyperRailLog log = HyperRailLog.getLogger(SetupStationsDbTask.class);
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                log.info("Preparing stoplocations database ahead of time");
-                OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId("http://irail.be/stations/NMBS/008814001");
-                log.info("Prepared stations stoplocations ahead of time");
-            } catch (StopLocationNotResolvedException e) {
-               log.severe("Failed to initialize stoplocations database in background", e);
-            }
-            return null;
         }
     }
 }

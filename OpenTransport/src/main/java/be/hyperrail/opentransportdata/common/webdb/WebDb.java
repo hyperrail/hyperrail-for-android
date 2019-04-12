@@ -20,10 +20,12 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.ArrayMap;
 
 import org.joda.time.DateTime;
 
-import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.Map;
 
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
@@ -33,8 +35,11 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class WebDb {
 
+    private static final Object instanceGetterLock = new Object();
+    private static final Map<String, WebDb> instances = new ArrayMap<>();
     private static final OpenTransportLog log = OpenTransportLog.getLogger(WebDb.class);
-    private WebDbSqliteBackend db;
+    private final Object databaseModificationLock = new Object();
+    private volatile WebDbSqliteBackend db;
     private Context context;
     private WebDbDataDefinition dataDefinition;
     private WebDbConfig webDbConfig;
@@ -46,18 +51,49 @@ public class WebDb {
      * @param appContext     The Android application context
      * @param dataDefinition The data definition, containing both local and remote names as well as methods to create the database.
      */
-    public WebDb(Context appContext, WebDbDataDefinition dataDefinition) {
+    private WebDb(Context appContext, WebDbDataDefinition dataDefinition) {
         this.context = appContext;
         this.webDbConfig = new WebDbConfig(appContext);
         this.dataDefinition = dataDefinition;
+
+        log.info("Creating a new WebDb instance for " + dataDefinition.getDatabaseName());
+
 
         int currentVersion = webDbConfig.getCurrentDatabaseVersion(dataDefinition.getDatabaseName());
         int embeddedVersion = getVersionCodeForDateTime(dataDefinition.getLastModifiedLocalDate());
         if (currentVersion < embeddedVersion) {
             currentVersion = embeddedVersion;
         }
-        this.db = new WebDbSqliteBackend(appContext, currentVersion, dataDefinition, false);
 
+        synchronized (databaseModificationLock) {
+            this.db = new WebDbSqliteBackend(appContext, currentVersion, dataDefinition, null);
+        }
+
+        //updateDatabaseIfConnected();
+        log.debug("Created a new WebDb instance for " + dataDefinition.getDatabaseName());
+    }
+
+    /**
+     * Instantiate a new WebDb, according to the parameters defined in the WebDbDataDefinition.
+     * Don't run this code on the main thread as it contains blocking I/O
+     *
+     * @param appContext     The Android application context
+     * @param dataDefinition The data definition, containing both local and remote names as well as methods to create the database.
+     */
+    public static WebDb getInstance(Context appContext, WebDbDataDefinition dataDefinition) {
+        synchronized (instanceGetterLock) {
+            if (!instances.containsKey(dataDefinition.getDatabaseName())) {
+                instances.put(dataDefinition.getDatabaseName(), new WebDb(appContext, dataDefinition));
+            }
+            return instances.get(dataDefinition.getDatabaseName());
+        }
+    }
+
+    private static int getVersionCodeForDateTime(DateTime dateTime) {
+        return Integer.valueOf(dateTime.toString("YYMMDD") + "00");
+    }
+
+    private void updateDatabaseIfConnected() {
         // If the last check was more than 2 days ago, try to check
         if (webDbConfig.getTimeOfLastCheck(dataDefinition.getDatabaseName()).isBefore(DateTime.now().minusDays(2))) {
             // If not restricted to Wifi, or if connecected to wifi, check for updates
@@ -65,8 +101,8 @@ public class WebDb {
             log.info("WLAN: " + isConnectedToWifi);
             if (!dataDefinition.updateOnlyOnWifi() || isConnectedToWifi) {
                 log.info("Starting update check for " + dataDefinition.getDatabaseName());
-                GetLastModifiedTask getLastModifiedTask = new GetLastModifiedTask(this, dataDefinition);
-                getLastModifiedTask.execute(dataDefinition);
+                UpdateDatabaseIfNeeded updateTask = new UpdateDatabaseIfNeeded(this, dataDefinition);
+                updateTask.execute(dataDefinition);
             } else {
                 log.info("Not starting update check for " + dataDefinition.getDatabaseName());
             }
@@ -92,47 +128,65 @@ public class WebDb {
     }
 
     public SQLiteDatabase getReadableDatabase() {
-        return db.getReadableDatabase();
+        log.debug("GETTING READABLE DATABASE " + dataDefinition.getDatabaseName());
+        log.debug(Arrays.toString(Thread.currentThread().getStackTrace()));
+        synchronized (databaseModificationLock) {
+            // This will cause database creation
+            return db.getReadableDatabase();
+        }
     }
 
-    private static class GetLastModifiedTask extends AsyncTask<WebDbDataDefinition, Void, DateTime> {
-        private WeakReference<WebDb> webDbRef;
+    private static class UpdateDatabaseIfNeeded extends AsyncTask<WebDbDataDefinition, Void, Boolean> {
+        private WebDb webDbRef;
         private WebDbDataDefinition definition;
 
         // only retain a weak reference to the activity
-        GetLastModifiedTask(WebDb webDb, WebDbDataDefinition definition) {
-            webDbRef = new WeakReference<>(webDb);
+        UpdateDatabaseIfNeeded(WebDb webDb, WebDbDataDefinition definition) {
+            webDbRef = webDb;
             this.definition = definition;
         }
 
         @Override
-        protected DateTime doInBackground(WebDbDataDefinition... definitions) {
-            return definitions[0].getLastModifiedOnlineDate();
-        }
-
-        @Override
-        protected void onPostExecute(DateTime lastModifiedOnline) {
-            if (webDbRef.get() == null) {
-                return;
-            }
+        protected Boolean doInBackground(WebDbDataDefinition... definitions) {
+            DateTime lastModifiedOnline = definitions[0].getLastModifiedOnlineDate();
 
             log.info("Online last modified date check for " +
-                    webDbRef.get().dataDefinition.getDatabaseName() + " resulted in " + lastModifiedOnline.toString("YYYY-MM-HH HH:mm"));
+                    definition.getDatabaseName() + " resulted in " + lastModifiedOnline.toString("YYYY-MM-HH HH:mm"));
             String databaseName = definition.getDatabaseName();
 
-            if (lastModifiedOnline.isAfter(webDbRef.get().webDbConfig.getTimeOfLastOnlineUpdate(databaseName))) {
-                log.info("Re-creating database using online data: " + databaseName);
-                webDbRef.get().db = new WebDbSqliteBackend(webDbRef.get().context, getVersionCodeForDateTime(lastModifiedOnline), definition, true);
-                log.info("Re-created database using online data: " + databaseName);
-                webDbRef.get().webDbConfig.setTimeOfLastOnlineUpdateToNow(databaseName);
-            } else {
-                log.info("No newer data available: " + databaseName);
-            }
-            webDbRef.get().webDbConfig.setTimeOfLastCheckToNow(databaseName);
-        }
-    }
+            WebDb webDb = webDbRef;
 
-    private static int getVersionCodeForDateTime(DateTime dateTime) {
-        return Integer.valueOf(dateTime.toString("YYMMDD") + "00");
+            if (webDb == null) {
+                return false;
+            }
+
+            if (!lastModifiedOnline.isAfter(webDb.webDbConfig.getTimeOfLastOnlineUpdate(databaseName))) {
+                log.info("No newer data available: " + databaseName);
+                return false;
+            }
+
+            Object newData = definition.downloadOnlineData();
+            if (newData == null) {
+                log.warning("Failed to get updated data from internet for database " + definition.getDatabaseName() + ", aborting update");
+                return false;
+            }
+
+            log.info("Re-creating database using online data: " + databaseName);
+            synchronized (webDb.databaseModificationLock) {
+                try {
+                    // Allow other threads to finish their database queries which happen outside synchronized blocks
+                    wait(1000);
+                } catch (Exception e) {
+                    // Ignored
+                }
+                webDb.db.close();
+                webDb.db = new WebDbSqliteBackend(webDb.context, getVersionCodeForDateTime(lastModifiedOnline), definition, newData);
+                webDb.db.getReadableDatabase(); // Ensure we populate the database as well
+            }
+            log.info("Re-created database using online data: " + databaseName);
+            webDb.webDbConfig.setTimeOfLastOnlineUpdateToNow(databaseName);
+            webDb.webDbConfig.setTimeOfLastCheckToNow(databaseName);
+            return true;
+        }
     }
 }

@@ -63,7 +63,7 @@ import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
-import be.opentransport.BuildConfig;
+import be.hyperrail.opentransportdata.be.experimental.BuildConfig;
 
 /**
  * Created in be.hyperrail.android.irail.implementation on 13/04/2018.

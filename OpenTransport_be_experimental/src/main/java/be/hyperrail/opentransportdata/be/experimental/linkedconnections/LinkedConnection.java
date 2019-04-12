@@ -42,29 +42,16 @@ class LinkedConnection {
     @JsonField(name = "gtfs:dropOffType")
     private String dropoffType;
 
-
-    DateTime getDelayedDepartureTime() {
-        return getDepartureTime().plusSeconds(getDepartureDelay());
-    }
-
-    DateTime getDelayedArrivalTime() {
-        return getArrivalTime().plusSeconds(getArrivalDelay());
-    }
-
-    String getSemanticId() {
-        return semanticId;
-    }
-
-    String getDepartureStationUri() {
-        return departureStationUri;
+    int getArrivalDelay() {
+        return arrivalDelay;
     }
 
     String getArrivalStationUri() {
         return arrivalStationUri;
     }
 
-    public DateTime getDepartureTime() {
-        return departureTime;
+    public void setArrivalStationUri(String arrivalStationUri) {
+        this.arrivalStationUri = arrivalStationUri;
     }
 
     DateTime getArrivalTime() {
@@ -75,20 +62,52 @@ class LinkedConnection {
         this.arrivalTime = arrivalTime;
     }
 
+    DateTime getDelayedArrivalTime() {
+        return getArrivalTime().plusSeconds(getArrivalDelay());
+    }
+
+    DateTime getDelayedDepartureTime() {
+        return getDepartureTime().plusSeconds(getDepartureDelay());
+    }
+
     int getDepartureDelay() {
         return departureDelay;
     }
 
-    int getArrivalDelay() {
-        return arrivalDelay;
+    String getDepartureStationUri() {
+        return departureStationUri;
+    }
+
+    public void setDepartureStationUri(String departureStationUri) {
+        this.departureStationUri = departureStationUri;
+    }
+
+    public DateTime getDepartureTime() {
+        return departureTime;
     }
 
     String getDirection() {
         return direction;
     }
 
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
     String getRoute() {
         return route;
+    }
+
+    public void setRoute(String route) {
+        this.route = route;
+    }
+
+    String getSemanticId() {
+        return semanticId;
+    }
+
+    public void setSemanticId(String semanticId) {
+        this.semanticId = semanticId;
     }
 
     String getTrip() {
@@ -101,6 +120,14 @@ class LinkedConnection {
 
     boolean isNormal() {
         return pickupType != null && dropoffType != null && pickupType.equals("gtfs:Regular") && dropoffType.equals("gtfs:Regular");
+    }
+
+    public void setDropoffType(String dropoffType) {
+        this.dropoffType = dropoffType;
+    }
+
+    public void setPickupType(String pickupType) {
+        this.pickupType = pickupType;
     }
 }
 

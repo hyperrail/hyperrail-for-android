@@ -15,8 +15,10 @@ package be.hyperrail.android;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 
+import be.hyperrail.android.logging.HyperRailConsoleLogWriter;
 import be.hyperrail.android.logging.HyperRailCrashlyticsLogWriter;
 import be.hyperrail.android.logging.HyperRailLog;
+import be.hyperrail.android.logging.HyperRailLogWriter;
 import be.hyperrail.android.util.ReviewDialogProvider;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.be.IrailDataProvider;
@@ -30,7 +32,12 @@ public class Launcher extends android.app.Application {
     public void onCreate() {
 
         // Crashlytics abstraction layer
-        HyperRailCrashlyticsLogWriter logger = new HyperRailCrashlyticsLogWriter();
+        HyperRailLogWriter logger;
+        if (BuildConfig.DEBUG) {
+            logger = new HyperRailConsoleLogWriter();
+        } else {
+            logger = new HyperRailCrashlyticsLogWriter();
+        }
         HyperRailLog.initLogWriter(logger);
         // Setup the factory as soon as the app is created.
         OpenTransportApi.init(getApplicationContext(), new IrailDataProvider(), logger);

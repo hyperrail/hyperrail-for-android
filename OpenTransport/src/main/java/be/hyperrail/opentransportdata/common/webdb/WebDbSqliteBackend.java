@@ -21,13 +21,14 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
     private static final OpenTransportLog log = OpenTransportLog.getLogger(WebDbSqliteBackend.class);
 
     private final WebDbDataDefinition mDefinition;
-    private boolean shouldUseOnlineData;
+    private Object onlineUpdateData;
 
-    WebDbSqliteBackend(Context context, int version, WebDbDataDefinition definition, boolean shouldUseOnlineData) {
+    WebDbSqliteBackend(Context context, int version, WebDbDataDefinition definition, Object onlineUpdateData) {
         // Calculate the version based on a code version and the last modified date, followed by a revision
         super(context, definition.getDatabaseName(), null, version);
+        log.info("Creating a new WebDbSqliteBackend instance for " + definition.getDatabaseName());
         this.mDefinition = definition;
-        this.shouldUseOnlineData = shouldUseOnlineData;
+        this.onlineUpdateData = onlineUpdateData;
     }
 
     /**
@@ -35,17 +36,18 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
      *
      * @param db Handle in which the database should be created.
      */
-    public void onCreate(SQLiteDatabase db) {
-        log.info("Creating WebDb instance " + mDefinition.getDatabaseName());
-        createAndFillDb(db);
-        log.info("Created WebDb instance " + mDefinition.getDatabaseName());
-    }
-
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        log.info("Upgrading WebDb instance " + mDefinition.getDatabaseName());
+    public synchronized void onCreate(SQLiteDatabase db) {
+        log.info("onCreate WebDbBackend instance " + mDefinition.getDatabaseName());
         wipeDatabase(db);
         createAndFillDb(db);
-        log.info("Upgraded WebDb instance " + mDefinition.getDatabaseName());
+        log.info("onCreate WebDbBackend instance " + mDefinition.getDatabaseName());
+    }
+
+    public synchronized void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        log.info("onUpgrade WebDbBackend instance " + mDefinition.getDatabaseName());
+        wipeDatabase(db);
+        createAndFillDb(db);
+        log.info("onUpgrade WebDbBackend instance " + mDefinition.getDatabaseName());
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -54,9 +56,9 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
 
     private void createAndFillDb(SQLiteDatabase db) {
         mDefinition.createDatabaseStructure(db);
-        if (shouldUseOnlineData) {
+        if (onlineUpdateData != null) {
             // If online fetching failed
-            if (!mDefinition.loadOnlineData(db)) {
+            if (!mDefinition.importDownloadedData(db, onlineUpdateData)) {
                 log.warning("Failed to update WebDb instance using online data. " +
                         "Reverting to local data instead " + mDefinition.getDatabaseName());
                 mDefinition.loadLocalData(db);
@@ -67,6 +69,7 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
     }
 
     private void wipeDatabase(SQLiteDatabase db) {
+        log.info("Wiping WebDbBackend " + mDefinition.getDatabaseName());
         mDefinition.clearDatabase(db);
     }
 }

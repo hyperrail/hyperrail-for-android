@@ -2,7 +2,9 @@ package be.hyperrail.android.logging;
 
 import java.util.logging.Level;
 
-public interface HyperRailLogWriter {
+import be.hyperrail.opentransportdata.logging.OpenTransportLogWriter;
+
+public interface HyperRailLogWriter extends OpenTransportLogWriter {
 
     void logException(String tag, Throwable throwable);
 

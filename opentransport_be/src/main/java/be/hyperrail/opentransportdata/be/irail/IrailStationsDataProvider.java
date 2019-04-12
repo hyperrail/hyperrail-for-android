@@ -4,12 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package be.hyperrail.opentransportdata.be.irail;
 
 import android.content.Context;
@@ -42,28 +36,24 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.
  */
 public class IrailStationsDataProvider implements TransportStopsDataSource {
 
-    private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailStationsDataProvider.class);
-    private static final String ISO2_NL = "nl";
-    private static final String ISO2_FR = "fr";
     private static final String ISO2_DE = "de";
     private static final String ISO2_EN = "en";
-
+    private static final String ISO2_FR = "fr";
+    private static final String ISO2_NL = "nl";
     private static final String SQL_SELECT_NAME_LIKE = StationsDataColumns.COLUMN_NAME_NAME + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_FR + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_NL +
             " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_DE + " LIKE ? OR " + StationsDataColumns.COLUMN_NAME_ALTERNATIVE_EN + " LIKE ?";
-
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailStationsDataProvider.class);
     private final Context context;
-
+    private final Object getStoplocationsOrderedBySizeLock = new Object();
     // The underlying webDb instance, ensuring that the local SQLite database stays up-to-date with the online data
     private WebDb mWebDb;
-
     private HashMap<String, StopLocation> mStationIdCache = new HashMap<>();
     private HashMap<String, StopLocation> mStationNameCache = new HashMap<>();
-
     private StopLocation[] stationsOrderedBySizeCache;
 
     public IrailStationsDataProvider(Context appContext) {
         this.context = appContext;
-        this.mWebDb = new WebDb(appContext, new IrailStopsWebDbDataDefinition(context));
+        this.mWebDb = WebDb.getInstance(appContext, IrailStopsWebDbDataDefinition.getInstance(context));
     }
 
     private String[] getLocationQueryColumns(double longitude, double latitude) {
@@ -103,27 +93,30 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     @AddTrace(name = "StationsDb.getStoplocationsOrderedBySize")
     @NonNull
     public StopLocation[] getStoplocationsOrderedBySize() {
+        // Synchronized method to make better use of the cache
+        synchronized (getStoplocationsOrderedBySizeLock) {
+            log.debug("getStoplocationsOrderedBySize");
+            if (stationsOrderedBySizeCache != null) {
+                return stationsOrderedBySizeCache;
+            }
 
-        if (stationsOrderedBySizeCache != null) {
-            return stationsOrderedBySizeCache;
+            SQLiteDatabase db = mWebDb.getReadableDatabase();
+            Cursor c = db.query(
+                    StationsDataColumns.TABLE_NAME,
+                    getDefaultQueryColumns(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC"
+            );
+
+            StopLocation[] stations = loadStationCursor(c);
+            c.close();
+
+            stationsOrderedBySizeCache = stations;
+            return stations;
         }
-
-        SQLiteDatabase db = mWebDb.getReadableDatabase();
-        Cursor c = db.query(
-                StationsDataColumns.TABLE_NAME,
-                getDefaultQueryColumns(),
-                null,
-                null,
-                null,
-                null,
-                StationsDataColumns.COLUMN_NAME_AVG_STOP_TIMES + " DESC"
-        );
-
-        StopLocation[] stations = loadStationCursor(c);
-        c.close();
-
-        stationsOrderedBySizeCache = stations;
-        return stations;
     }
 
     /**
@@ -165,6 +158,12 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
         Arrays.sort(stations, (o1, o2) -> Float.compare(o2.getAvgStopTimes(), o1.getAvgStopTimes()));
 
         return stations;
+    }
+
+    @Override
+    public void preloadDatabase() {
+        // Getting a readable database ensures onCreate and onUpgrade are called as needed
+        mWebDb.getReadableDatabase();
     }
 
     /**
@@ -228,7 +227,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
             // Handle old iRail ids
             id = id.substring(8);
         }
-        if (id.contains("/")){
+        if (id.contains("/")) {
             // Handle URIs
             id = id.substring(id.lastIndexOf('/') + 1);
         }

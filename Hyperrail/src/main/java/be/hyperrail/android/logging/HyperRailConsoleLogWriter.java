@@ -4,7 +4,7 @@ import android.util.Log;
 
 import java.util.logging.Level;
 
-class HyperRailConsoleLogWriter implements HyperRailLogWriter {
+public class HyperRailConsoleLogWriter implements HyperRailLogWriter {
 
     @Override
     public void logException(String tag, Throwable throwable) {

@@ -34,7 +34,7 @@ public class IrailFacilitiesDataProvider implements TransportStopFacilitiesDataS
 
     public IrailFacilitiesDataProvider(Context appContext) {
         this.context = appContext;
-        this.mWebDb = new WebDb(context, new IrailFacilitiesWebDbDataDefinition(context));
+        this.mWebDb = WebDb.getInstance(context, IrailFacilitiesWebDbDataDefinition.getInstance(context));
     }
 
     @Override
