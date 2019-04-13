@@ -10,7 +10,7 @@ package be.hyperrail.android.activities.searchresult;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;

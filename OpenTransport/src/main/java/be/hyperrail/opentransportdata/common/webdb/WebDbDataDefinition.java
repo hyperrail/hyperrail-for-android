@@ -7,7 +7,7 @@
 package be.hyperrail.opentransportdata.common.webdb;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.RawRes;
+import androidx.annotation.RawRes;
 
 import org.joda.time.DateTime;
 

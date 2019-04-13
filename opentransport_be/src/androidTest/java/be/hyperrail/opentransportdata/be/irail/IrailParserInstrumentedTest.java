@@ -12,8 +12,8 @@
 
 package be.hyperrail.opentransportdata.be.irail;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

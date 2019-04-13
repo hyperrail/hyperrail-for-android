@@ -7,7 +7,7 @@
 package be.hyperrail.opentransportdata.common.contracts;
 
 import android.net.TrafficStats;
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 /**
  * A metered API allows to get details on network usage

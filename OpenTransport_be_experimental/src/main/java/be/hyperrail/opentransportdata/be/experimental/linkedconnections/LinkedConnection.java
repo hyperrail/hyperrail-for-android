@@ -18,43 +18,56 @@ import org.joda.time.DateTime;
 class LinkedConnection {
 
     @JsonField(name = "@id")
-    private String semanticId;
+    String semanticId;
     @JsonField(name = "departureStop")
-    private String departureStationUri;
+    String departureStationUri;
     @JsonField(name = "arrivalStop")
-    private String arrivalStationUri;
+    String arrivalStationUri;
     @JsonField(name = "departureTime", typeConverter = DateTimeConverter.class)
-    private DateTime departureTime;
+    DateTime departureTime;
     @JsonField(name = "arrivalTime", typeConverter = DateTimeConverter.class)
     private DateTime arrivalTime;
     @JsonField(name = "departureDelay")
-    private int departureDelay = 0;
+    int departureDelay = 0;
     @JsonField(name = "arrivalDelay")
-    private int arrivalDelay = 0;
+    int arrivalDelay = 0;
     @JsonField(name = "direction")
-    private String direction;
+    protected String direction;
     @JsonField(name = "gtfs:route")
-    private String route;
+    protected String route;
     @JsonField(name = "gtfs:trip")
     private String trip;
     @JsonField(name = "gtfs:pickupType")
-    private String pickupType;
+    String pickupType;
     @JsonField(name = "gtfs:dropOffType")
-    private String dropoffType;
+    String dropoffType;
 
-    int getArrivalDelay() {
-        return arrivalDelay;
+
+    DateTime getDelayedDepartureTime() {
+        return getDepartureTime().plusSeconds(getDepartureDelay());
+    }
+
+    DateTime getDelayedArrivalTime() {
+        return getArrivalTime().plusSeconds(getArrivalDelay());
+    }
+
+    public String getSemanticId() {
+        return semanticId;
+    }
+
+    String getDepartureStationUri() {
+        return departureStationUri;
     }
 
     String getArrivalStationUri() {
         return arrivalStationUri;
     }
 
-    public void setArrivalStationUri(String arrivalStationUri) {
-        this.arrivalStationUri = arrivalStationUri;
+    public DateTime getDepartureTime() {
+        return departureTime;
     }
 
-    DateTime getArrivalTime() {
+    public DateTime getArrivalTime() {
         return arrivalTime;
     }
 
@@ -62,52 +75,20 @@ class LinkedConnection {
         this.arrivalTime = arrivalTime;
     }
 
-    DateTime getDelayedArrivalTime() {
-        return getArrivalTime().plusSeconds(getArrivalDelay());
-    }
-
-    DateTime getDelayedDepartureTime() {
-        return getDepartureTime().plusSeconds(getDepartureDelay());
-    }
-
-    int getDepartureDelay() {
+    public int getDepartureDelay() {
         return departureDelay;
     }
 
-    String getDepartureStationUri() {
-        return departureStationUri;
+    public int getArrivalDelay() {
+        return arrivalDelay;
     }
 
-    public void setDepartureStationUri(String departureStationUri) {
-        this.departureStationUri = departureStationUri;
-    }
-
-    public DateTime getDepartureTime() {
-        return departureTime;
-    }
-
-    String getDirection() {
+    public String getDirection() {
         return direction;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
-    String getRoute() {
+    public String getRoute() {
         return route;
-    }
-
-    public void setRoute(String route) {
-        this.route = route;
-    }
-
-    String getSemanticId() {
-        return semanticId;
-    }
-
-    public void setSemanticId(String semanticId) {
-        this.semanticId = semanticId;
     }
 
     String getTrip() {
@@ -120,14 +101,6 @@ class LinkedConnection {
 
     boolean isNormal() {
         return pickupType != null && dropoffType != null && pickupType.equals("gtfs:Regular") && dropoffType.equals("gtfs:Regular");
-    }
-
-    public void setDropoffType(String dropoffType) {
-        this.dropoffType = dropoffType;
-    }
-
-    public void setPickupType(String pickupType) {
-        this.pickupType = pickupType;
     }
 }
 

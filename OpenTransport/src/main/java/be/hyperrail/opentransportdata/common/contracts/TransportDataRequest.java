@@ -6,7 +6,7 @@
 
 package be.hyperrail.opentransportdata.common.contracts;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;

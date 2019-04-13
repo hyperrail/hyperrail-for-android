@@ -12,7 +12,7 @@
 
 package be.hyperrail.android.fragments.searchresult;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import be.hyperrail.android.util.OnDateTimeSetListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;

@@ -9,7 +9,7 @@ package be.hyperrail.android.util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.util.Log;
 
 import be.hyperrail.android.R;

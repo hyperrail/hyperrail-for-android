@@ -9,7 +9,6 @@ package be.hyperrail.opentransportdata.be.experimental.lc2Irail;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NoConnectionError;
@@ -37,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import be.hyperrail.opentransportdata.be.experimental.BuildConfig;
 import be.hyperrail.opentransportdata.be.irail.IrailApi;
 import be.hyperrail.opentransportdata.be.irail.IrailLiveboardExtendHelper;
 import be.hyperrail.opentransportdata.be.irail.IrailRouteExtendHelper;
@@ -63,7 +64,6 @@ import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
-import be.hyperrail.opentransportdata.be.experimental.BuildConfig;
 
 /**
  * Created in be.hyperrail.android.irail.implementation on 13/04/2018.
@@ -71,7 +71,8 @@ import be.hyperrail.opentransportdata.be.experimental.BuildConfig;
 public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSource {
 
     private static final OpenTransportLog log = OpenTransportLog.getLogger(Lc2IrailDataSource.class);
-    private static final String UA = "OpenTransport for Android - " + BuildConfig.VERSION_NAME;
+
+    private static final String UA = "OpenTransport-be-experimental for Android - " + BuildConfig.VERSION_NAME;
 
     private final Context mContext;
     private final Lc2IrailParser parser;
