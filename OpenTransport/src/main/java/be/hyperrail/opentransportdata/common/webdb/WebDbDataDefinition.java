@@ -7,21 +7,16 @@
 package be.hyperrail.opentransportdata.common.webdb;
 
 import android.database.sqlite.SQLiteDatabase;
-import androidx.annotation.RawRes;
 
 import org.joda.time.DateTime;
+
+import androidx.annotation.RawRes;
 
 /**
  * This interface describes how the data structure for WebDb should be applied to the database.
  */
 public interface WebDbDataDefinition {
 
-    /**
-     * Whether or not updating the data should be limited to moments when the user is connected to Wi-Fi.
-     *
-     * @return True if updates should only happen when connected to Wi-Fi.
-     */
-    boolean updateOnlyOnWifi();
 
     /**
      * Get the default data embedded with the application.
@@ -52,13 +47,6 @@ public interface WebDbDataDefinition {
      */
     DateTime getLastModifiedLocalDate();
 
-    /**
-     * Get the last modified timestamp for the online data.
-     *
-     * @return The datetime at which the online data was last modified.
-     */
-    DateTime getLastModifiedOnlineDate();
-
     void createDatabaseStructure(SQLiteDatabase db);
 
     boolean loadLocalData(SQLiteDatabase db);
@@ -67,5 +55,5 @@ public interface WebDbDataDefinition {
 
     Object downloadOnlineData();
 
-    void clearDatabase(SQLiteDatabase db);
+    void deleteDatabase(SQLiteDatabase db);
 }

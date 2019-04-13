@@ -16,8 +16,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
-import androidx.annotation.NonNull;
-import androidx.annotation.RawRes;
 
 import org.joda.time.DateTime;
 
@@ -31,6 +29,8 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RawRes;
 import be.hyperrail.opentransportdata.be.R;
 import be.hyperrail.opentransportdata.common.webdb.WebDbDataDefinition;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
@@ -61,11 +61,6 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     }
 
     @Override
-    public boolean updateOnlyOnWifi() {
-        return true;
-    }
-
-    @Override
     @RawRes
     public int getEmbeddedDataResourceId() {
         return R.raw.stationfacilities;
@@ -93,29 +88,6 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         // On a saturday (6) this will be now (+0), on sunday it will be saturday (+1), on monday it will be +2, ...
         // This way we update every saturday
         return now.minusDays(now.dayOfWeek().get() + 1 % 7);
-    }
-
-    @Override
-    public DateTime getLastModifiedOnlineDate() {
-        // Github doesn't send a proper last modified header. Instead we use the last saturday (can be today)
-        return getSaturdayBeforeToday();
-
-        /*
-        URL url;
-        try {
-            url = new URL(getOnlineDataURL());
-        } catch (MalformedURLException e) {
-            return new DateTime(0);
-        }
-        HttpURLConnection httpCon;
-        try {
-            httpCon = (HttpURLConnection) url.openConnection();
-        } catch (IOException e) {
-            return new DateTime(0);
-        }
-
-        return new DateTime(httpCon.getLastModified());
-         */
     }
 
     @Override
@@ -180,7 +152,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     }
 
     @Override
-    public void clearDatabase(SQLiteDatabase db) {
+    public void deleteDatabase(SQLiteDatabase db) {
         db.execSQL(SQL_DELETE_TABLE_FACILITIES);
     }
 

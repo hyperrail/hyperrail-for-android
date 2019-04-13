@@ -21,11 +21,15 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
     private static final OpenTransportLog log = OpenTransportLog.getLogger(WebDbSqliteBackend.class);
 
     private final WebDbDataDefinition mDefinition;
+    private final int version;
+    private final WebDbConfig webDbConfig;
     private Object onlineUpdateData;
 
-    WebDbSqliteBackend(Context context, int version, WebDbDataDefinition definition, Object onlineUpdateData) {
+    WebDbSqliteBackend(Context context, int version, WebDbConfig webDbConfig, WebDbDataDefinition definition, Object onlineUpdateData) {
         // Calculate the version based on a code version and the last modified date, followed by a revision
         super(context, definition.getDatabaseName(), null, version);
+        this.version = version;
+        this.webDbConfig = webDbConfig;
         log.info("Creating a new WebDbSqliteBackend instance for " + definition.getDatabaseName());
         this.mDefinition = definition;
         this.onlineUpdateData = onlineUpdateData;
@@ -36,20 +40,27 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
      *
      * @param db Handle in which the database should be created.
      */
+    @Override
     public synchronized void onCreate(SQLiteDatabase db) {
-        log.info("onCreate WebDbBackend instance " + mDefinition.getDatabaseName());
-        wipeDatabase(db);
-        createAndFillDb(db);
-        log.info("onCreate WebDbBackend instance " + mDefinition.getDatabaseName());
+        recreateDb(db, "onCreate WebDbBackend instance ");
     }
 
+    @Override
     public synchronized void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        log.info("onUpgrade WebDbBackend instance " + mDefinition.getDatabaseName());
-        wipeDatabase(db);
-        createAndFillDb(db);
-        log.info("onUpgrade WebDbBackend instance " + mDefinition.getDatabaseName());
+        recreateDb(db, "onUpgrade WebDbBackend instance");
     }
 
+    private void recreateDb(SQLiteDatabase db, String actionNameForLogging) {
+        log.info(actionNameForLogging + mDefinition.getDatabaseName());
+        if (onlineUpdateData != null) {
+            log.info("Online update data is provided.");
+        }
+        wipeDatabase(db);
+        createAndFillDb(db);
+        log.info(actionNameForLogging + mDefinition.getDatabaseName());
+    }
+
+    @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Do nothing
     }
@@ -62,6 +73,9 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
                 log.warning("Failed to update WebDb instance using online data. " +
                         "Reverting to local data instead " + mDefinition.getDatabaseName());
                 mDefinition.loadLocalData(db);
+            } else {
+                webDbConfig.setTimeOfLastOnlineUpdateToNow(mDefinition.getDatabaseName());
+                webDbConfig.setCurrentDatabaseVersion(mDefinition.getDatabaseName(), version);
             }
         } else {
             mDefinition.loadLocalData(db);
@@ -70,6 +84,6 @@ class WebDbSqliteBackend extends SQLiteOpenHelper {
 
     private void wipeDatabase(SQLiteDatabase db) {
         log.info("Wiping WebDbBackend " + mDefinition.getDatabaseName());
-        mDefinition.clearDatabase(db);
+        mDefinition.deleteDatabase(db);
     }
 }
