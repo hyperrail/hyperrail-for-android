@@ -9,6 +9,7 @@ package be.hyperrail.opentransportdata.be.irail;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
@@ -19,7 +20,6 @@ import be.hyperrail.opentransportdata.common.contracts.TransportStopFacilitiesDa
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.StopLocationFacilities;
 import be.hyperrail.opentransportdata.common.models.implementation.StopLocationFacilitiesImpl;
-import be.hyperrail.opentransportdata.common.webdb.WebDb;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 /**
@@ -30,15 +30,15 @@ public class IrailFacilitiesDataProvider implements TransportStopFacilitiesDataS
     private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailFacilitiesDataProvider.class);
 
     private final Context context;
-    private WebDb mWebDb;
+    private SQLiteOpenHelper mWebDb;
 
     public IrailFacilitiesDataProvider(Context appContext) {
         this.context = appContext;
-        this.mWebDb = WebDb.getInstance(context, IrailFacilitiesWebDbDataDefinition.getInstance(context));
+        this.mWebDb = new IrailFacilitiesDatabase(appContext);
     }
 
     @Override
-    public StopLocationFacilities getStationFacilitiesByUri(String id) {
+    public StopLocationFacilities getStationFacilitiesByUri(String uri) {
         SQLiteDatabase db = mWebDb.getReadableDatabase();
         Cursor c = db.query(
                 StationFacilityColumns.TABLE_NAME,
@@ -80,7 +80,7 @@ public class IrailFacilitiesDataProvider implements TransportStopFacilitiesDataS
                         StationFacilityColumns.COLUMN_SALES_CLOSE_SUNDAY,
                 },
                 StationFacilityColumns._ID + "=?",
-                new String[]{id},
+                new String[]{uri},
                 null,
                 null,
                 null,

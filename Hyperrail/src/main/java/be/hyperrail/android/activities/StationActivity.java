@@ -16,13 +16,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.View;
-import android.widget.TextView;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -67,13 +68,8 @@ public class StationActivity extends AppCompatActivity implements OnMapReadyCall
         mStation = (StopLocation) getIntent().getSerializableExtra("station");
 
         findViewById(R.id.floating_action_button).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(LiveboardActivity.createIntent(StationActivity.this,
-                                new LiveboardRequest(mStation, QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null)));
-                    }
-                }
+                v -> startActivity(LiveboardActivity.createIntent(StationActivity.this,
+                        new LiveboardRequest(mStation, QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null)))
         );
 
         setTitle(mStation.getLocalizedName());

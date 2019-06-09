@@ -1,13 +1,7 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ *  If a copy of the MPL was not distributed with this file,
+ *  You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 package be.hyperrail.opentransportdata.be.irail;
@@ -16,23 +10,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
-import org.joda.time.DateTime;
+import androidx.annotation.RawRes;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RawRes;
 import be.hyperrail.opentransportdata.be.R;
-import be.hyperrail.opentransportdata.common.webdb.WebDbDataDefinition;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.SQL_CREATE_INDEX_FACILITIES_ID;
@@ -40,36 +26,28 @@ import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesData
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.SQL_DELETE_TABLE_FACILITIES;
 import static be.hyperrail.opentransportdata.be.irail.IrailStationFacilitiesDataContract.StationFacilityColumns;
 
-/**
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
- * (c) Bert Marcelis 2018
- */
-class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
-    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailFacilitiesWebDbDataDefinition.class);
-    private static IrailFacilitiesWebDbDataDefinition instance;
+class IrailFacilitiesDatabase extends SQLiteOpenHelper {
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailFacilitiesDatabase.class);
+    private static IrailFacilitiesDatabase instance;
     private final Resources mResources;
 
-    private IrailFacilitiesWebDbDataDefinition(Context context) {
-        mResources = context.getResources();
+    IrailFacilitiesDatabase(Context context) {
+        super(context, "irail-facilities.db", null, 2019060900);
+        this.mResources = context.getResources();
     }
 
-    public static IrailFacilitiesWebDbDataDefinition getInstance(Context context) {
+    public static IrailFacilitiesDatabase getInstance(Context context) {
         if (instance == null) {
-            instance = new IrailFacilitiesWebDbDataDefinition(context);
+            instance = new IrailFacilitiesDatabase(context);
         }
         return instance;
     }
 
-    @Override
     @RawRes
-    public int getEmbeddedDataResourceId() {
+    private int getEmbeddedDataResourceId() {
         return R.raw.stationfacilities;
     }
 
-    @Override
-    public String getOnlineDataURL() {
-        return "https://raw.githubusercontent.com/iRail/stations/master/facilities.csv";
-    }
 
     @Override
     public String getDatabaseName() {
@@ -77,21 +55,19 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
     }
 
     @Override
-    public DateTime getLastModifiedLocalDate() {
-        return new DateTime(2019, 4, 1, 0, 0);
-
-    }
-
-    @NonNull
-    private DateTime getSaturdayBeforeToday() {
-        DateTime now = DateTime.now();
-        // On a saturday (6) this will be now (+0), on sunday it will be saturday (+1), on monday it will be +2, ...
-        // This way we update every saturday
-        return now.minusDays(now.dayOfWeek().get() + 1 % 7);
+    public void onCreate(SQLiteDatabase db) {
+        createDatabaseStructure(db);
+        loadLocalData(db);
     }
 
     @Override
-    public boolean loadLocalData(SQLiteDatabase db) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        deleteDatabase(db);
+        createDatabaseStructure(db);
+        loadLocalData(db);
+    }
+
+    private void loadLocalData(SQLiteDatabase db) {
         db.beginTransaction();
         try (Scanner lines = new Scanner(getLocalData())) {
             importFacilities(db, lines);
@@ -100,59 +76,10 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         } catch (Exception e) {
             log.severe("Failed to fill facilities db with offline data!", e);
             db.endTransaction();
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean importDownloadedData(SQLiteDatabase db, Object onlineUpdateData) {
-        db.beginTransaction();
-        try (Scanner lines = new Scanner((String) onlineUpdateData)) {
-            importFacilities(db, lines);
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            log.info("Filled station facilities database with online data");
-            return true;
-        } catch (Exception e) {
-            log.severe("Failed to fill facilities db with online data!", e);
-            db.endTransaction();
-            return false;
         }
     }
 
-    @Override
-    public String downloadOnlineData() {
-        URL url;
-        try {
-            url = new URL(getOnlineDataURL());
-        } catch (MalformedURLException e) {
-            log.warning("Failed to get data URL for database " + getDatabaseName());
-            return null;
-        }
-        HttpURLConnection httpCon;
-        try {
-            httpCon = (HttpURLConnection) url.openConnection();
-            return dataStreamToString(httpCon.getInputStream());
-        } catch (IOException e) {
-            log.warning("Failed to get online for database " + getDatabaseName() + " from " + url.toString());
-            return null;
-        }
-    }
-
-    private String dataStreamToString(InputStream stream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder stringBuilder = new StringBuilder();
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            stringBuilder.append(line).append("\n");
-        }
-        return stringBuilder.toString();
-    }
-
-    @Override
-    public void deleteDatabase(SQLiteDatabase db) {
+    private void deleteDatabase(SQLiteDatabase db) {
         db.execSQL(SQL_DELETE_TABLE_FACILITIES);
     }
 
@@ -160,8 +87,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         return mResources.openRawResource(getEmbeddedDataResourceId());
     }
 
-    @Override
-    public void createDatabaseStructure(SQLiteDatabase db) {
+    private void createDatabaseStructure(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_TABLE_FACILITIES);
         db.execSQL(SQL_CREATE_INDEX_FACILITIES_ID);
     }
@@ -179,15 +105,9 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
 
                 String id = fields.next();
 
-                // By default, the CSV contains ids in iRail URI format,
-                // reformat them to 9 digit HAFAS ids
-                if (id.startsWith("http")) {
-                    id = id.replace("http://irail.be/stations/NMBS/", "");
-                }
-
-                // Store ID as 9 digit IDs
+                // Store ID as URIs
                 values.put(StationFacilityColumns._ID, id);
-                // Skip name
+                // Skip name, already in stations.csv
                 fields.next();
                 values.put(StationFacilityColumns.COLUMN_STREET, fields.next());
                 values.put(StationFacilityColumns.COLUMN_ZIP, fields.next());
@@ -244,7 +164,7 @@ class IrailFacilitiesWebDbDataDefinition implements WebDbDataDefinition {
         }
         field = fields.next();
         if (field != null && !field.isEmpty()) {
-            values.put(columnSalesClose, field);
+            values.put(columnSalesClose, field.trim());
         }
     }
 }

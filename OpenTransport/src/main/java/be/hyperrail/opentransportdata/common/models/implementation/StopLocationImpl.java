@@ -17,18 +17,17 @@ public class StopLocationImpl implements StopLocation {
     protected double longitude;
     protected float avgStopTimes;
     protected Map<String, String> translations;
+    private String semanticId;
     private StopLocationFacilities stationFacilities;
 
-    protected StopLocationImpl() {
-
-    }
-
-    public StopLocationImpl(String hafasId, String name, Map<String, String> translations, String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
+    public StopLocationImpl(String hafasId, String semanticIdentifier, String name, Map<String, String> translations,
+                            String localizedName, String country, double latitude, double longitude, float avgStopTimes) {
         if (hafasId.startsWith("BE.NMBS.")) {
             throw new IllegalArgumentException("Station IDs should not start with BE.NMBS!");
         }
 
         this.hafasId = hafasId;
+        this.semanticId = semanticIdentifier;
         this.name = name;
         this.translations = translations;
         this.localizedName = localizedName;
@@ -43,16 +42,17 @@ public class StopLocationImpl implements StopLocation {
         copy(stopLocation);
     }
 
-    public void copy(StopLocation copy) {
-        this.hafasId = copy.getHafasId();
-        this.name = copy.getName();
-        this.translations = copy.getTranslations();
-        this.localizedName = copy.getLocalizedName();
-        this.country_code = copy.getCountryCode();
-        this.country_uri = copy.getCountryUri();
-        this.latitude = copy.getLatitude();
-        this.longitude = copy.getLongitude();
-        this.avgStopTimes = copy.getAvgStopTimes();
+    private void copy(StopLocation original) {
+        this.hafasId = original.getHafasId();
+        this.semanticId = original.getSemanticId();
+        this.name = original.getName();
+        this.translations = original.getTranslations();
+        this.localizedName = original.getLocalizedName();
+        this.country_code = original.getCountryCode();
+        this.country_uri = original.getCountryUri();
+        this.latitude = original.getLatitude();
+        this.longitude = original.getLongitude();
+        this.avgStopTimes = original.getAvgStopTimes();
     }
 
     public String getName() {
@@ -86,7 +86,7 @@ public class StopLocationImpl implements StopLocation {
     }
 
     public String getSemanticId() {
-        return "http://irail.be/stations/NMBS/" + hafasId;
+        return semanticId;
     }
 
     /**

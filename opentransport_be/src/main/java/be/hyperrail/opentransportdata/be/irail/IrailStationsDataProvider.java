@@ -9,8 +9,10 @@ package be.hyperrail.opentransportdata.be.irail;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -25,7 +27,6 @@ import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.implementation.StopLocationImpl;
-import be.hyperrail.opentransportdata.common.webdb.WebDb;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 import be.hyperrail.opentransportdata.util.StringUtils;
 
@@ -46,14 +47,14 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     private final Context context;
     private final Object getStoplocationsOrderedBySizeLock = new Object();
     // The underlying webDb instance, ensuring that the local SQLite database stays up-to-date with the online data
-    private WebDb mWebDb;
+    private SQLiteOpenHelper mDbInstance;
     private HashMap<String, StopLocation> mStationIdCache = new HashMap<>();
     private HashMap<String, StopLocation> mStationNameCache = new HashMap<>();
     private StopLocation[] stationsOrderedBySizeCache;
 
     public IrailStationsDataProvider(Context appContext) {
         this.context = appContext;
-        this.mWebDb = WebDb.getInstance(appContext, IrailStopsWebDbDataDefinition.getInstance(context));
+        this.mDbInstance = new IrailStopsDatabase(appContext);
     }
 
     private String[] getLocationQueryColumns(double longitude, double latitude) {
@@ -100,7 +101,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
                 return stationsOrderedBySizeCache;
             }
 
-            SQLiteDatabase db = mWebDb.getReadableDatabase();
+            SQLiteDatabase db = mDbInstance.getReadableDatabase();
             Cursor c = db.query(
                     StationsDataColumns.TABLE_NAME,
                     getDefaultQueryColumns(),
@@ -137,7 +138,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     @AddTrace(name = "StationsDb.getStoplocationsOrderedByLocationAndSize")
     @NonNull
     public StopLocation[] getStoplocationsOrderedByLocationAndSize(Location location, int limit) {
-        SQLiteDatabase db = mWebDb.getReadableDatabase();
+        SQLiteDatabase db = mDbInstance.getReadableDatabase();
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
         double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
 
@@ -163,7 +164,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     @Override
     public void preloadDatabase() {
         // Getting a readable database ensures onCreate and onUpgrade are called as needed
-        mWebDb.getReadableDatabase();
+        mDbInstance.getReadableDatabase();
     }
 
     /**
@@ -193,15 +194,24 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
         }
 
         if (id.startsWith("BE.NMBS.")) {
+            // TODO: remove in the future when it is 100% sure this is no longer used
             id = id.substring(8);
+            log.info("Incorrect call to getStopLocationByHafasId");
+            log.info(Arrays.toString(Thread.currentThread().getStackTrace()));
         }
 
-        SQLiteDatabase db = mWebDb.getReadableDatabase();
+        return getStoplocationBySemanticId("http://irail.be/stations/NMBS/" + id);
+    }
+
+    @Nullable
+    @Override
+    public StopLocation getStoplocationBySemanticId(String uri) throws StopLocationNotResolvedException {
+        SQLiteDatabase db = mDbInstance.getReadableDatabase();
         Cursor c = db.query(
                 StationsDataColumns.TABLE_NAME,
                 getDefaultQueryColumns(),
                 StationsDataColumns._ID + "=?",
-                new String[]{id},
+                new String[]{uri},
                 null,
                 null,
                 null,
@@ -213,25 +223,11 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
         c.close();
 
         if (results.length == 0) {
-            log.logException(new IllegalStateException("ID Not found in station database! " + id));
-            throw new StopLocationNotResolvedException(id);
+            log.logException(new IllegalStateException("URI not found in station database! " + uri));
+            throw new StopLocationNotResolvedException(uri);
         }
-        mStationIdCache.put(id, results[0]);
+        mStationIdCache.put(uri, results[0]);
         return results[0];
-    }
-
-    @Nullable
-    @Override
-    public StopLocation getStoplocationBySemanticId(String id) throws StopLocationNotResolvedException {
-        if (id.startsWith("BE.NMBS.")) {
-            // Handle old iRail ids
-            id = id.substring(8);
-        }
-        if (id.contains("/")) {
-            // Handle URIs
-            id = id.substring(id.lastIndexOf('/') + 1);
-        }
-        return getStoplocationByHafasId(id);
     }
 
     /**
@@ -266,7 +262,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
     @NonNull
     private StopLocation[] getStationsByNameOrderBySize(@NonNull String name, boolean exact) {
-        SQLiteDatabase db = mWebDb.getReadableDatabase();
+        SQLiteDatabase db = mDbInstance.getReadableDatabase();
         name = StringUtils.cleanAccents(name);
         name = name.replaceAll("\\(\\w\\)", "");
 
@@ -319,7 +315,7 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     @Override
     @AddTrace(name = "StationsDb.getStoplocationsByNameOrderByLocation")
     public StopLocation[] getStoplocationsByNameOrderByLocation(String name, Location location) {
-        SQLiteDatabase db = mWebDb.getReadableDatabase();
+        SQLiteDatabase db = mDbInstance.getReadableDatabase();
 
         double longitude = Math.round(location.getLongitude() * 1000000.0) / 1000000.0;
         double latitude = Math.round(location.getLatitude() * 1000000.0) / 1000000.0;
@@ -409,8 +405,15 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
                 localizedName = name;
             }
 
+            String uri = c.getString(c.getColumnIndex(StationsDataColumns._ID));
+
+            // Handle URIs
+            String id = uri.substring(uri.lastIndexOf('/') + 1);
+
+
             StopLocation s = new StopLocationImpl(
-                    c.getString(c.getColumnIndex(StationsDataColumns._ID)),
+                    id,
+                    uri,
                     name,
                     localizedNames,
                     localizedName,
