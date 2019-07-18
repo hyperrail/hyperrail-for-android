@@ -9,12 +9,13 @@ package be.hyperrail.android.activities.searchresult;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.joda.time.DateTime;
@@ -122,11 +123,12 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
             case R.id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();
                 ShortcutHelper.createShortcut(this,
-                                              vLayoutRoot,
-                                              shortcutIntent,
-                                              mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName(),
-                                              "Route from " + mRequest.getOrigin().getLocalizedName() + " to " + mRequest.getDestination().getLocalizedName(),
-                                              R.mipmap.ic_launcher);
+                        vLayoutRoot,
+                        shortcutIntent,
+                        mRequest.getOrigin().getSemanticId() + "::" + mRequest.getDestination().getSemanticId(),
+                        mRequest.getOrigin().getLocalizedName() + " - " + mRequest.getDestination().getLocalizedName(),
+                        "Route from " + mRequest.getOrigin().getLocalizedName() + " to " + mRequest.getDestination().getLocalizedName(),
+                        R.mipmap.ic_launcher);
                 return true;
 
             default:

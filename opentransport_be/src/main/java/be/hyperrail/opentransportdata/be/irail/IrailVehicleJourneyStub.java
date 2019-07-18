@@ -124,25 +124,35 @@ public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable
      */
 
     private static String getVehicleClass(String id) {
-        // S trains are special
-        if (id.startsWith("S")) {
-            if (id.length() > 5) {
-                return id.substring(0, id.length() - 4);
-            } else {
-                // Logging an exception will make it more visible, allowing possible new formats to be detected more easily.
-                log.logException(new IllegalArgumentException("Failed to get vehicle class for id " + id));
-            }
+        if (id == null){
+            log.logException(new NullPointerException("Tried to get a VehicleClass from an empty id"));
+            return "";
         }
 
-        String pattern = "(\\w+?)(\\d+)";
+        try {
+            // S trains are special
+            if (id.startsWith("S")) {
+                if (id.length() > 5) {
+                    return id.substring(0, id.length() - 4);
+                } else {
+                    // Logging an exception will make it more visible, allowing possible new formats to be detected more easily.
+                    log.logException(new IllegalArgumentException("Failed to get vehicle class for id " + id));
+                }
+            }
 
-        // Create a Pattern object
-        Pattern r = Pattern.compile(pattern);
+            String pattern = "(\\w+?)(\\d+)";
 
-        // Now create matcher object.
-        Matcher m = r.matcher(id);
-        if (m.find()) {
-            return m.group(1);
+            // Create a Pattern object
+            Pattern r = Pattern.compile(pattern);
+
+            // Now create matcher object.
+            Matcher m = r.matcher(id);
+            if (m.find()) {
+                return m.group(1);
+            }
+        } catch (Exception exception) {
+            log.severe("Failed to get vehicle number for vehicle " + id);
+            log.logException(exception);
         }
         return "";
     }
@@ -165,20 +175,30 @@ public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable
      */
 
     private static String getVehicleNumber(String vehicleId) {
-        // S trains are special
-        if (vehicleId.startsWith("S")) {
-            return vehicleId.substring(vehicleId.length() - 4);
+        if (vehicleId == null){
+            log.logException(new NullPointerException("Tried to get a VehicleNumber from an empty id"));
+            return "";
         }
 
-        String pattern = "(\\w+?)(\\d+)";
+        try {
+            // S trains are special
+            if (vehicleId.startsWith("S")) {
+                return vehicleId.substring(vehicleId.length() - 4);
+            }
 
-        // Create a Pattern object
-        Pattern r = Pattern.compile(pattern);
+            String pattern = "(\\w+?)(\\d+)";
 
-        // Now create matcher object.
-        Matcher m = r.matcher(vehicleId);
-        if (m.find()) {
-            return m.group(2);
+            // Create a Pattern object
+            Pattern r = Pattern.compile(pattern);
+
+            // Now create matcher object.
+            Matcher m = r.matcher(vehicleId);
+            if (m.find()) {
+                return m.group(2);
+            }
+        } catch (Exception exception){
+            log.severe("Failed to get vehicle number for vehicle " + vehicleId);
+            log.logException(exception);
         }
         return "";
     }

@@ -9,11 +9,11 @@ package be.hyperrail.android.activities.searchresult;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.joda.time.DateTime;
@@ -86,6 +86,7 @@ public class VehicleActivity extends ResultActivity {
             ShortcutHelper.createShortcut(this,
                     vLayoutRoot,
                     shortcutIntent,
+                    mRequest.getVehicleId(),
                     IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()),
                     "VehicleJourney " + IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()),
                     R.mipmap.ic_shortcut_train);

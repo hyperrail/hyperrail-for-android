@@ -8,19 +8,20 @@ package be.hyperrail.android.util;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import androidx.annotation.DrawableRes;
-import com.google.android.material.snackbar.Snackbar;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+
+import androidx.annotation.DrawableRes;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import be.hyperrail.android.R;
 
@@ -33,7 +34,7 @@ public class ShortcutHelper {
         // No public constructor
     }
 
-    public static void createShortcut(final Context context, final View layoutRoot, final Intent intent, String defaultTitle, final String longLabel, @DrawableRes final int icon) {
+    public static void createShortcut(final Context context, final View layoutRoot, final Intent intent, String id, String defaultTitle, final String longLabel, @DrawableRes final int icon) {
 
         // Ask users if they want to set a custom title
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -54,27 +55,17 @@ public class ShortcutHelper {
         builder.setView(container);
 
         // Set up the buttons
-        builder.setPositiveButton(R.string.button_add, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                addShortcut(context, layoutRoot, intent, input.getText().toString(), longLabel, icon);
-            }
-        });
-        builder.setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setPositiveButton(R.string.button_add, (dialog, which) -> addShortcut(context, layoutRoot, intent, id, input.getText().toString(), longLabel, icon));
+        builder.setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.cancel());
 
         builder.show();
 
     }
 
-    private static void addShortcut(Context context, View layoutRoot, Intent intent, String shortLabel, String longLabel, @DrawableRes int icon) {
+    private static void addShortcut(Context context, View layoutRoot, Intent intent, String id, String shortLabel, String longLabel, @DrawableRes int icon) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(context, shortLabel);
+            ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(context, id);
             mShortcutInfoBuilder.setShortLabel(shortLabel);
             mShortcutInfoBuilder.setLongLabel(longLabel);
             mShortcutInfoBuilder.setIcon(Icon.createWithResource(context, icon));

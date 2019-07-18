@@ -17,6 +17,7 @@ import android.widget.RemoteViews;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
+import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
@@ -28,6 +29,7 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
 public class NextDeparturesWidgetProvider extends AppWidgetProvider {
     SharedPreferences prefs;
+    HyperRailLog log = HyperRailLog.getLogger(NextDeparturesWidgetProvider.class);
 
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         prefs = context.getSharedPreferences("widgets", 0);
@@ -43,18 +45,31 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
                                  int appWidgetId) {
         String id = this.prefs.getString("NextDepartures:" + appWidgetId, null);
         if (id == null) {
-            Log.w("widgets", "No station ID found for " + "NextDepartures:" + appWidgetId);
+            Log.w("widgets", "No station ID found for NextDepartures widget id: " + appWidgetId);
             return;
         }
 
-        StopLocation mStation = null;
+        StopLocation mStation;
         try {
             mStation = OpenTransportApi.getStopLocationProviderInstance().getStoplocationBySemanticId(id);
-        } catch (StopLocationNotResolvedException e) {
+        } catch (StopLocationNotResolvedException searchException) {
+            log.warning("Failed to lookup station URI for widget: " + id);
+            log.logException(searchException);
+            try {
+                mStation = OpenTransportApi.getStopLocationProviderInstance().getStoplocationByHafasId(id);
+            } catch (StopLocationNotResolvedException fallbackSearchException) {
+                log.warning("Failed to lookup station ID for widget: " + id);
+                log.logException(fallbackSearchException);
+                mStation = null;
+            }
+        }
+
+        if (mStation == null) {
             RemoteViews views = new RemoteViews(context.getPackageName(),
-                                                R.layout.widget_nextdepartures_error);
+                    R.layout.widget_nextdepartures_error);
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, android.R.id.list);
             appWidgetManager.updateAppWidget(appWidgetId, views);
+            return;
         }
 
         // Set up the intent that starts the NextDeparturesWidgetService, which will
@@ -64,16 +79,16 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
 
         // Create an Intent to launch ExampleActivity
         Intent onClickIntent = LiveboardActivity.createIntent(context,
-                                                              new LiveboardRequest(mStation,
-                                                                                        QueryTimeDefinition.EQUAL_OR_LATER,
-                                                                                        LiveboardType.DEPARTURES,
-                                                                                        null));
+                new LiveboardRequest(mStation,
+                        QueryTimeDefinition.EQUAL_OR_LATER,
+                        LiveboardType.DEPARTURES,
+                        null));
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, 0);
 
         // Get the layout for the App Widget and attach an on-click listener
         // to the button
         RemoteViews views = new RemoteViews(context.getPackageName(),
-                                            R.layout.widget_nextdepartures);
+                R.layout.widget_nextdepartures);
         views.setTextViewText(R.id.text_station, mStation.getLocalizedName());
         // Set up the RemoteViews object to use a RemoteViews adapter.
         // This adapter connects

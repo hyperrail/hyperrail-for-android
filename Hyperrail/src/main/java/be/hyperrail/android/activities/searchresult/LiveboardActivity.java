@@ -16,6 +16,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.analytics.FirebaseAnalytics.Event;
@@ -23,10 +28,6 @@ import com.google.firebase.analytics.FirebaseAnalytics.Param;
 
 import org.joda.time.DateTime;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import be.hyperrail.android.R;
 import be.hyperrail.android.R.id;
 import be.hyperrail.android.R.layout;
@@ -68,7 +69,7 @@ public class LiveboardActivity extends ResultActivity {
         Intent i = new Intent(this, LiveboardActivity.class);
         i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
         i.putExtra("station",
-                   mRequest.getStation().getHafasId()); // shortcut intents should not contain application specific classes - only pass the station ID
+                mRequest.getStation().getHafasId()); // shortcut intents should not contain application specific classes - only pass the station ID
         return i;
     }
 
@@ -154,27 +155,28 @@ public class LiveboardActivity extends ResultActivity {
         switch (item.getItemId()) {
             case id.action_from:
                 startActivity(MainActivity.createRouteFromIntent(getApplicationContext(),
-                                                                 mRequest.getStation().getName()));
+                        mRequest.getStation().getName()));
                 return true;
 
             case id.action_to:
                 startActivity(MainActivity.createRouteToIntent(getApplicationContext(),
-                                                               mRequest.getStation().getName()));
+                        mRequest.getStation().getName()));
                 return true;
 
             case id.action_details:
                 startActivity(StationActivity.createIntent(getApplicationContext(),
-                                                           mRequest.getStation()));
+                        mRequest.getStation()));
                 return true;
 
             case id.action_shortcut:
                 Intent shortcutIntent = createShortcutIntent();
                 ShortcutHelper.createShortcut(this,
-                                              vLayoutRoot,
-                                              shortcutIntent,
-                                              mRequest.getStation().getLocalizedName(),
-                                              "Departures from " + mRequest.getStation().getLocalizedName(),
-                                              R.mipmap.ic_shortcut_liveboard);
+                        vLayoutRoot,
+                        shortcutIntent,
+                        mRequest.getStation().getSemanticId(),
+                        mRequest.getStation().getLocalizedName(),
+                        "Departures from " + mRequest.getStation().getLocalizedName(),
+                        R.mipmap.ic_shortcut_liveboard);
                 return true;
 
             default:
