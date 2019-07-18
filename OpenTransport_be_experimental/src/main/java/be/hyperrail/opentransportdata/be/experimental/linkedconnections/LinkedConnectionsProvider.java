@@ -9,7 +9,6 @@ package be.hyperrail.opentransportdata.be.experimental.linkedconnections;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -37,10 +36,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import be.hyperrail.opentransportdata.be.experimental.BuildConfig;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
-import be.opentransport.BuildConfig;
 
 /**
  * Created in be.hyperrail.android.irail.implementation.linkedconnections on 15/03/2018.
@@ -60,7 +60,7 @@ public class LinkedConnectionsProvider {
 
     private boolean mCacheEnabled = true;
 
-    private static final String UA = "OpenTransport for Android - " + BuildConfig.VERSION_NAME;
+    private static final String UA = "OpenTransport-be-experimental for Android - " + BuildConfig.VERSION_NAME;
 
     private boolean isInternetAvailable() {
         NetworkInfo activeNetwork = mConnectivityManager.getActiveNetworkInfo();

@@ -18,7 +18,7 @@
 
 package be.hyperrail.opentransportdata.be.irail;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.joda.time.DateTime;
 

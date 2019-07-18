@@ -18,7 +18,7 @@
 
 package be.hyperrail.opentransportdata.common.models.implementation;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;

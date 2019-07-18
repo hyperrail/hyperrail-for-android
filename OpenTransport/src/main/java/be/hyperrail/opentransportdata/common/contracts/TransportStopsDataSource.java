@@ -13,8 +13,8 @@
 package be.hyperrail.opentransportdata.common.contracts;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
 import be.hyperrail.opentransportdata.common.models.StopLocation;

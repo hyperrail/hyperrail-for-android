@@ -30,7 +30,7 @@
 
 package be.hyperrail.opentransportdata.be.experimental.lc2Irail;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;

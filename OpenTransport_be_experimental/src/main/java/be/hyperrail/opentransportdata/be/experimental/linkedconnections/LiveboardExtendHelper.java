@@ -6,7 +6,7 @@
 
 package be.hyperrail.opentransportdata.be.experimental.linkedconnections;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.NextDataPointer;

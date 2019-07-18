@@ -9,7 +9,7 @@
 
     <include layout="@layout/toolbar_default_noshadow"/>
 
-    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                             xmlns:tools="http://schemas.android.com/tools"
                                             android:id="@+id/drawer"
                                             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"/>
 
 
-        <android.support.design.widget.NavigationView
+        <com.google.android.material.navigation.NavigationView
             android:id="@+id/drawer_navigation"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -31,5 +31,5 @@
             app:itemTextAppearance="@style/NavigationStyle"
             app:menu="@menu/drawer_main"/>
 
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>

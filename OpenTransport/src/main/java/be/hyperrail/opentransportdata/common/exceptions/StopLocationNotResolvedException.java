@@ -6,7 +6,7 @@
 
 package be.hyperrail.opentransportdata.common.exceptions;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Thrown when a stop location identifier could not be resolved to a stop location

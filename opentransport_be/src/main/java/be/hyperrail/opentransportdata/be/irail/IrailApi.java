@@ -430,9 +430,11 @@ public class IrailApi implements TransportDataSource {
      * @param errorListener   The listener for unsuccessful responses
      */
     private void tryOnlineOrServerCache(JsonObjectRequest jsObjRequest, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
+        log.debug("Making request to iRail API at " + jsObjRequest.getUrl());
         if (isInternetAvailable()) {
             requestQueue.add(jsObjRequest);
         } else {
+            log.debug("Offline, using cache for " + jsObjRequest.getUrl());
             if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
                 try {
                     JSONObject cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
@@ -443,6 +445,7 @@ public class IrailApi implements TransportDataSource {
                 }
 
             } else {
+                log.debug("No cache for " + jsObjRequest.getUrl());
                 errorListener.onErrorResponse(new NoConnectionError());
             }
         }

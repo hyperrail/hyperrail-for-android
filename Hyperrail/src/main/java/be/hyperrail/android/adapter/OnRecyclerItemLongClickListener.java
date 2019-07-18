@@ -18,7 +18,7 @@
 
 package be.hyperrail.android.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Interface for item click callbacks

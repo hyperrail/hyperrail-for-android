@@ -33,9 +33,9 @@ class StopLocationTest {
 
     @Test
     void testStopLocations() {
-        StopLocation station1 = new StopLocationImpl("1", "Brussels", getTranslationMap("Brussel", "fr", "de", "en"), "Brussel", "BE", 1, 2, 3);
-        StopLocation station2 = new StopLocationImpl("1", "Brussels-south", getTranslationMap("Brussel-zuid", "fr", "de", "en"), "Brussel-zuid", "BE", 1, 2, 3);
-        StopLocationImpl station3 = new StopLocationImpl("2", "Ghent", getTranslationMap("Gent", "Gand", "Gent", "Ghent"), "Gent", "BE", 1, 2, 3);
+        StopLocation station1 = new StopLocationImpl("1","http://irail.be/stations/NMBS/1", "Brussels", getTranslationMap("Brussel", "fr", "de", "en"), "Brussel", "BE", 1, 2, 3);
+        StopLocation station2 = new StopLocationImpl("1","http://irail.be/stations/NMBS/1", "Brussels-south", getTranslationMap("Brussel-zuid", "fr", "de", "en"), "Brussel-zuid", "BE", 1, 2, 3);
+        StopLocationImpl station3 = new StopLocationImpl("2","http://irail.be/stations/NMBS/2", "Ghent", getTranslationMap("Gent", "Gand", "Gent", "Ghent"), "Gent", "BE", 1, 2, 3);
         assertEquals(station1, station2);
         assertNotEquals(station1, station3);
         assertNotEquals(station2, station3);
@@ -51,7 +51,7 @@ class StopLocationTest {
 
         assertEquals("http://irail.be/stations/NMBS/1", station1.getSemanticId());
 
-        station3.copy(station1);
+        station3 = new StopLocationImpl(station1);
         assertEquals(station1.getHafasId(), station3.getHafasId());
         assertEquals(station1.getName(), station3.getName());
         assertEquals(station1.getTranslations().get("nl_BE"), station3.getTranslations().get("nl_BE"));
@@ -79,7 +79,7 @@ class StopLocationTest {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> {
-                    new StopLocationImpl("BE.NMBS.000000001", "Brussels", getTranslationMap("Brussel", "fr", "de", "en"), "Brussel", "BE", 1, 2, 3);
+                    new StopLocationImpl("BE.NMBS.000000001", "http://irail.be/stations/NMBS/000000001","Brussels", getTranslationMap("Brussel", "fr", "de", "en"), "Brussel", "BE", 1, 2, 3);
                 }
         );
 
