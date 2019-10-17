@@ -14,7 +14,6 @@ import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.joda.time.DateTime;
 
@@ -31,9 +30,6 @@ import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
  * Activity to show a train
  */
 public class VehicleActivity extends ResultActivity {
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     private VehicleRequest mRequest;
     private VehicleFragment fragment;
@@ -69,14 +65,6 @@ public class VehicleActivity extends ResultActivity {
 
         setTitle(R.string.title_vehicle);
         setSubTitle(IrailVehicleJourneyStub.getVehicleName(mRequest.getVehicleId()));
-
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getVehicleId());
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, mRequest.getVehicleId());
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "vehicle");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     @Override

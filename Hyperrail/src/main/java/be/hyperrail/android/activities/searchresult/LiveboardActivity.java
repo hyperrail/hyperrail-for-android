@@ -22,9 +22,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.analytics.FirebaseAnalytics.Event;
-import com.google.firebase.analytics.FirebaseAnalytics.Param;
 
 import org.joda.time.DateTime;
 
@@ -55,8 +52,6 @@ public class LiveboardActivity extends ResultActivity {
 
     private LiveboardRequest mRequest;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private FirebaseAnalytics mFirebaseAnalytics;
     private DeparturesArrivalsAdapter departuresArrivalsAdapter;
 
     public static Intent createIntent(Context context, LiveboardRequest request) {
@@ -68,8 +63,7 @@ public class LiveboardActivity extends ResultActivity {
     private Intent createShortcutIntent() {
         Intent i = new Intent(this, LiveboardActivity.class);
         i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
-        i.putExtra("station",
-                mRequest.getStation().getHafasId()); // shortcut intents should not contain application specific classes - only pass the station ID
+        i.putExtra("station", mRequest.getStation().getSemanticId()); // shortcut intents should not contain application specific classes - only pass the station ID
         return i;
     }
 
@@ -89,14 +83,14 @@ public class LiveboardActivity extends ResultActivity {
                 finish();
                 return;
             }
-        } else {
-            // Validate a normal intent
-            if (!getIntent().hasExtra("request")) {
-                throw new IllegalStateException(
-                        "A liveboard activity should be created by passing a valid request");
-            }
-
+        } else if (getIntent().hasExtra("request")) {
             this.mRequest = (LiveboardRequest) getIntent().getSerializableExtra("request");
+        }
+
+        if (mRequest == null) {
+            Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
 
         super.onCreate(savedInstanceState);
@@ -117,14 +111,6 @@ public class LiveboardActivity extends ResultActivity {
         if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP && getSupportActionBar() != null) {
             getSupportActionBar().setElevation(0);
         }
-
-
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        Bundle bundle = new Bundle();
-        bundle.putString(Param.ITEM_ID, mRequest.getStation().getHafasId());
-        bundle.putString(Param.ITEM_NAME, mRequest.getStation().getName());
-        bundle.putString(Param.CONTENT_TYPE, "liveboard");
-        mFirebaseAnalytics.logEvent(Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     @Override

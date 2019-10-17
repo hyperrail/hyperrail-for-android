@@ -10,13 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.joda.time.DateTime;
 
@@ -35,9 +33,6 @@ import static be.hyperrail.android.persistence.SuggestionType.FAVORITE;
 
 public class RouteActivity extends ResultActivity implements OnDateTimeSetListener {
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private FirebaseAnalytics mFirebaseAnalytics;
-
     private RoutePlanningRequest mRequest;
     private RoutesFragment mFragment;
 
@@ -52,8 +47,8 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         // They shouldn't contain a search time either, since shortcuts should always show actual information
         Intent i = new Intent(this, RouteActivity.class);
         i.putExtra("shortcut", true);
-        i.putExtra("from", mRequest.getOrigin().getHafasId());
-        i.putExtra("to", mRequest.getDestination().getHafasId());
+        i.putExtra("from", mRequest.getOrigin().getSemanticId());
+        i.putExtra("to", mRequest.getDestination().getSemanticId());
         return i;
     }
 
@@ -66,6 +61,7 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
             StopLocation origin;
             StopLocation destination;
             try {
+                // These methods can also handle URIs, which are used instead of IDs since v1.1.1, 2019/07/19
                 origin = OpenTransportApi.getStopLocationProviderInstance().getStoplocationByHafasId(getIntent().getStringExtra("from"));
                 destination = OpenTransportApi.getStopLocationProviderInstance().getStoplocationByHafasId(getIntent().getStringExtra("to"));
             } catch (StopLocationNotResolvedException e) {
@@ -78,20 +74,16 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
             this.mRequest = (RoutePlanningRequest) getIntent().getSerializableExtra("request");
         }
 
+        if (this.mRequest == null) {
+            Toast.makeText(this, R.string.station_not_found, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         this.setHeader();
 
         mFragment = RoutesFragment.createInstance(mRequest);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mFragment).commit();
-
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, mRequest.getOrigin().getHafasId() + mRequest.getDestination().getHafasId());
-        bundle.putString(FirebaseAnalytics.Param.ORIGIN, mRequest.getOrigin().getName());
-        bundle.putString(FirebaseAnalytics.Param.DESTINATION, mRequest.getDestination().getName());
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "route");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS, bundle);
     }
 
     private void setHeader() {
@@ -148,22 +140,12 @@ public class RouteActivity extends ResultActivity implements OnDateTimeSetListen
         if (favorite) {
             mPersistentQueryProvider.store(new Suggestion<>(mRequest, FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_route_favorite, Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.undo, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            RouteActivity.this.markFavorite(false);
-                        }
-                    })
+                    .setAction(R.string.undo, v -> RouteActivity.this.markFavorite(false))
                     .show();
         } else {
             mPersistentQueryProvider.delete(new Suggestion<>(mRequest, FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_route_favorite, Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.undo, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            RouteActivity.this.markFavorite(true);
-                        }
-                    })
+                    .setAction(R.string.undo, v -> RouteActivity.this.markFavorite(true))
                     .show();
         }
         setFavoriteDisplayState(favorite);

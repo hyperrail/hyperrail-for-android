@@ -198,9 +198,15 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
             id = id.substring(8);
             log.info("Incorrect call to getStopLocationByHafasId");
             log.info(Arrays.toString(Thread.currentThread().getStackTrace()));
+            log.logException(new IllegalStateException("getStopLocationByHAfasId should not be used with a BE.NMBS.* id"));
         }
 
-        return getStoplocationBySemanticId("http://irail.be/stations/NMBS/" + id);
+        try {
+            return getStoplocationBySemanticId("http://irail.be/stations/NMBS/" + id);
+        } catch (StopLocationNotResolvedException exception) {
+            // This retry makes it easier to migrate away from Hafas IDs
+            return getStoplocationBySemanticId(id);
+        }
     }
 
     @Nullable

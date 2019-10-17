@@ -43,11 +43,11 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 
-    implementation 'com.google.firebase:firebase-perf:18.0.1'
-    implementation 'com.google.firebase:firebase-core:17.0.1'
+    implementation 'com.google.firebase:firebase-perf:19.0.1'
+    implementation 'com.google.firebase:firebase-core:17.2.0'
 
     // Advanced DateTime library
-    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'joda-time:joda-time:2.10.3'
 
     // Networking
     implementation 'com.android.volley:volley:1.1.0@aar'
