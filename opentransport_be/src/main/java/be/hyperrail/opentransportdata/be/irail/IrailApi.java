@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import be.hyperrail.opentransportdata.BuildConfig;
 import be.hyperrail.opentransportdata.be.irail.util.AsyncJsonPostRequest;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
@@ -50,6 +51,7 @@ import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleCompositionImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
 import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
@@ -58,10 +60,10 @@ import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
-import be.hyperrail.opentransportdata.BuildConfig;
 
 /**
  * Synchronous API for api.irail.be
@@ -189,17 +191,7 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, successListener, errorListener) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", USER_AGENT);
-                return headers;
-            }
-        };
-        jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -281,18 +273,7 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, successListener, errorListener) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", USER_AGENT);
-                return headers;
-            }
-        };
-
-        jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -328,18 +309,7 @@ public class IrailApi implements TransportDataSource {
             log.warning("Failed to get vehicle:" + e.getMessage());
             request.notifyErrorListeners(e);
         };
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, successListener, errorListener) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", USER_AGENT);
-                return headers;
-            }
-        };
-
-        jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -407,6 +377,47 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
 
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
+        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+    }
+
+
+    @Override
+    public void getVehicleComposition(VehicleCompositionRequest... requests) {
+        for (VehicleCompositionRequest request :
+                requests) {
+            getVehicleComposition(request);
+        }
+    }
+
+    public void getVehicleComposition(VehicleCompositionRequest request) {
+        String url = "https://staging.api.irail.be/composition/?format=json"
+                + "&id=" + request.getVehicleId();
+
+        Response.Listener<JSONObject> successListener = response -> {
+            VehicleCompositionImpl result;
+            try {
+                result = parser.parseVehicleComposition(context, response, request.getVehicleId());
+            } catch (JSONException e) {
+                log.warning("Failed to parse vehicle composition: " + e.getMessage(), e);
+                request.notifyErrorListeners(e);
+                return;
+            }
+
+            request.notifySuccessListeners(result);
+        };
+
+        Response.ErrorListener errorListener = e -> {
+            log.warning("Tried loading vehicle composition from " + url + " failed with error " + e, e);
+            request.notifyErrorListeners(e);
+        };
+
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
+
+        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+    }
+
+    private JsonObjectRequest getRequestObject(String url, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, successListener, errorListener) {
             @Override
@@ -419,7 +430,7 @@ public class IrailApi implements TransportDataSource {
 
         jsObjRequest.setRetryPolicy(requestPolicy);
         jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
-        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+        return jsObjRequest;
     }
 
     /**

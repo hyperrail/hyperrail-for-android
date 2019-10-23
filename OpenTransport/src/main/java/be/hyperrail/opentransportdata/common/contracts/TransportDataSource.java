@@ -19,6 +19,7 @@ import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 
@@ -81,6 +82,13 @@ public interface TransportDataSource {
      * @param requests
      */
     void getVehicleJourney(VehicleRequest... requests);
+
+    /**
+     * Get information on a vehicle composition.
+     *
+     * @param requests
+     */
+    void getVehicleComposition(VehicleCompositionRequest... requests);
 
     /**
      * Report the occupancy on a certain vehicle.

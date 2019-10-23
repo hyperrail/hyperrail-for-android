@@ -30,6 +30,9 @@
 
 package be.hyperrail.opentransportdata.be.irail;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -42,6 +45,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
@@ -55,6 +59,7 @@ import be.hyperrail.opentransportdata.common.models.RouteLeg;
 import be.hyperrail.opentransportdata.common.models.RouteLegEnd;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
+import be.hyperrail.opentransportdata.common.models.VehicleCompositionUnit;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 import be.hyperrail.opentransportdata.common.models.implementation.DisturbanceImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
@@ -63,6 +68,8 @@ import be.hyperrail.opentransportdata.common.models.implementation.RouteImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RouteLegEndImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RouteLegImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.RoutesListImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleCompositionImpl;
+import be.hyperrail.opentransportdata.common.models.implementation.VehicleCompositionUnitImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopImpl;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
@@ -73,11 +80,19 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 class IrailApiParser {
 
-    private final TransportStopsDataSource stationProvider;
     private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApiParser.class);
+    private final TransportStopsDataSource stationProvider;
 
     IrailApiParser(TransportStopsDataSource stationProvider) {
         this.stationProvider = stationProvider;
+    }
+
+    private static DateTime timestamp2date(String time) {
+        return timestamp2date(Long.parseLong(time)).withZone(DateTimeZone.forID("Europe/Brussels"));
+    }
+
+    private static DateTime timestamp2date(long time) {
+        return new DateTime(time * 1000).withZone(DateTimeZone.forID("Europe/Brussels"));
     }
 
     RoutesListImpl parseRouteResult(JSONObject json, StopLocation origin, StopLocation destination, DateTime searchTime, QueryTimeDefinition timeDefinition) throws JSONException {
@@ -277,6 +292,8 @@ class IrailApiParser {
         return null;
     }
 
+    // allow providing station, so liveboards don't need to parse a station over and over
+
     Disturbance[] parseDisturbances(JSONObject jsonData) throws JSONException {
 
         if (jsonData == null) {
@@ -341,8 +358,6 @@ class IrailApiParser {
                 timeDefinition);
     }
 
-    // allow providing station, so liveboards don't need to parse a station over and over
-
     private VehicleStopImpl parseLiveboardStop(StopLocation stop, JSONObject vehicleStopJson, VehicleStopType type) throws JSONException {
 
         String headsign = parseHeadsign(vehicleStopJson);
@@ -363,7 +378,6 @@ class IrailApiParser {
         }
         return occupancyLevel;
     }
-
 
     private String parseHeadsign(JSONObject item) throws JSONException {
         String headsign;
@@ -394,6 +408,8 @@ class IrailApiParser {
                 occupancyLevel);
     }
 
+    // allow providing station, so don't need to parse a station over and over
+
     @NonNull
     private VehicleStopImpl buildLiveboardDepartureStop(StopLocation stop, JSONObject item, String headsign, TransportOccupancyLevel occupancyLevel) throws JSONException {
         return VehicleStopImpl.buildDepartureVehicleStop(
@@ -414,8 +430,6 @@ class IrailApiParser {
     private Duration delayToDuration(JSONObject item, String delay) throws JSONException {
         return new Duration(item.getInt(delay) * 1000);
     }
-
-    // allow providing station, so don't need to parse a station over and over
 
     private VehicleStopImpl parseTrainStop(IrailVehicleJourneyStub train, JSONObject item, VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
         StopLocation stop = stationProvider.getStoplocationBySemanticId(getStationUri(item));
@@ -469,13 +483,35 @@ class IrailApiParser {
         return new IrailVehicleJourney(id, uri, longitude, latitude, stops);
     }
 
-
-    private static DateTime timestamp2date(String time) {
-        return timestamp2date(Long.parseLong(time)).withZone(DateTimeZone.forID("Europe/Brussels"));
+    public VehicleCompositionImpl parseVehicleComposition(Context appContext, JSONObject response, String vehicleId) throws JSONException {
+        JSONObject segment = response.getJSONObject("composition").getJSONObject("segments").getJSONArray("segment").getJSONObject(0);
+        JSONArray units = segment.getJSONObject("composition").getJSONObject("units").getJSONArray("unit");
+        VehicleCompositionUnit[] vehicleCompositionUnits = new VehicleCompositionUnit[units.length()];
+        for (int i = 0; i < units.length(); i++)
+            vehicleCompositionUnits[i] = parseVehicleCompositionUnit(appContext, units.getJSONObject(i));
+        return new VehicleCompositionImpl(vehicleCompositionUnits);
     }
 
+    private VehicleCompositionUnit parseVehicleCompositionUnit(Context appContext, JSONObject jsonObject) throws JSONException {
+        String parentType = jsonObject.getJSONObject("materialType").getString("parent_type");
+        String subType = jsonObject.getJSONObject("materialType").getString("sub_type");
+        String orientation = jsonObject.getJSONObject("materialType").getString("orientation").substring(0, 1).toUpperCase();
 
-    private static DateTime timestamp2date(long time) {
-        return new DateTime(time * 1000).withZone(DateTimeZone.forID("Europe/Brussels"));
+        String resourceName = "sncb_" + parentType + "_" + subType + "_" + orientation;
+        Resources resources = appContext.getResources();
+        int resourceId = resources.getIdentifier(resourceName, "drawable", appContext.getPackageName());
+        if (resourceId == 0) {
+            resourceId = resources.getIdentifier(resourceName, "sncb_150_l", appContext.getPackageName());
+        }
+        boolean canPassToNextUnit = Objects.equals(jsonObject.getString("canPassToNextUnit"), "1");
+        String publicFacingNumberString = jsonObject.getString("materialNumber");
+        Integer publicFacingNumber;
+        if (!publicFacingNumberString.isEmpty() && !publicFacingNumberString.equals("0")) {
+            publicFacingNumber = Integer.parseInt(publicFacingNumberString);
+        } else {
+            publicFacingNumber = null;
+        }
+        boolean hasToilet = Objects.equals(jsonObject.getString("hasToilets"), "1");
+        return new VehicleCompositionUnitImpl(resourceId, publicFacingNumber, parentType, hasToilet, canPassToNextUnit);
     }
 }

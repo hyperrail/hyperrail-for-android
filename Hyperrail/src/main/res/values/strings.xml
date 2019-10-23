@@ -148,4 +148,7 @@
     <string name="rate_dialog_button_rate">Rate now</string>
     <string name="rate_dialog_button_later">Later</string>
     <string name="rate_dialog_button_no_thanks">No, thanks</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

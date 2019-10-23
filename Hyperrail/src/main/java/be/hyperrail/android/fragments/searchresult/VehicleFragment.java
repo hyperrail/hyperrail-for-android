@@ -14,15 +14,16 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,6 +49,7 @@ import be.hyperrail.android.activities.searchresult.VehicleActivity;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.VehicleStopCardAdapter;
+import be.hyperrail.android.fragments.embed.TrainCompositionFragment;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
 import be.hyperrail.android.persistence.PersistentQueryProvider;
 import be.hyperrail.android.persistence.Suggestion;
@@ -84,14 +86,14 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
             mRequest = (VehicleRequest) savedInstanceState.getSerializable("request");
         }
-        return inflater.inflate(R.layout.fragment_recyclerview_list_map, container, false);
+        return inflater.inflate(R.layout.fragment_recyclerview_vehiclejourney, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("trains_map", true)) {
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_map);
             mapFragment.getMapAsync(this);
         } else {
             View mapView = getChildFragmentManager().findFragmentById(R.id.map).getView();
@@ -99,6 +101,9 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
                 mapView.setVisibility(View.GONE);
             }
         }
+
+        TrainCompositionFragment trainCompositionFragment = TrainCompositionFragment.createInstance(mRequest.getVehicleId());
+        getChildFragmentManager().beginTransaction().replace(R.id.fragment_vehicle_composition, trainCompositionFragment).commit();
     }
 
     @Override
@@ -117,13 +122,13 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
     }
 
     @Override
-    public void setRequest(@NonNull VehicleRequest request) {
-        this.mRequest = request;
+    public VehicleRequest getRequest() {
+        return this.mRequest;
     }
 
     @Override
-    public VehicleRequest getRequest() {
-        return this.mRequest;
+    public void setRequest(@NonNull VehicleRequest request) {
+        this.mRequest = request;
     }
 
     @Override
@@ -152,7 +157,7 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
         OpenTransportApi.getDataProviderInstance().abortAllQueries();
 
         VehicleRequest request = new VehicleRequest(mRequest.getVehicleId(),
-                                                              mRequest.getSearchTime());
+                mRequest.getSearchTime());
         request.setCallback((data, tag) -> {
             resetErrorState();
             vRefreshLayout.setRefreshing(false);
@@ -210,10 +215,10 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
             queryTime = object.getDepartureTime();
         }
         Intent i = LiveboardActivity.createIntent(getActivity(),
-                                                  new LiveboardRequest(object.getStopLocation(),
-                                                                            QueryTimeDefinition.EQUAL_OR_LATER,
-                                                                            LiveboardType.DEPARTURES,
-                                                                            queryTime));
+                new LiveboardRequest(object.getStopLocation(),
+                        QueryTimeDefinition.EQUAL_OR_LATER,
+                        LiveboardType.DEPARTURES,
+                        queryTime));
         startActivity(i);
     }
 
@@ -252,28 +257,28 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
 
         LatLngBounds bounds = builder.build();
         map.addPolyline(new PolylineOptions()
-                                .add(passedLocations.toArray(new LatLng[0]))
-                                .color(getActivity().getResources().getColor(R.color.colorPrimary))
-                                .geodesic(false)
-                                .clickable(false)
-                                .jointType(JointType.DEFAULT)
+                .add(passedLocations.toArray(new LatLng[0]))
+                .color(getActivity().getResources().getColor(R.color.colorPrimary))
+                .geodesic(false)
+                .clickable(false)
+                .jointType(JointType.DEFAULT)
         );
         map.addPolyline(new PolylineOptions()
-                                .add(futureLocations.toArray(new LatLng[futureLocations.size()]))
-                                .color(getActivity().getResources().getColor(R.color.colorMuted))
-                                .geodesic(false)
-                                .clickable(false)
-                                .jointType(JointType.DEFAULT)
+                .add(futureLocations.toArray(new LatLng[futureLocations.size()]))
+                .color(getActivity().getResources().getColor(R.color.colorMuted))
+                .geodesic(false)
+                .clickable(false)
+                .jointType(JointType.DEFAULT)
         );
 
         if (passedLocations.size() > 0 && futureLocations.size() > 0) {
             map.addPolyline(new PolylineOptions()
-                                    .add(passedLocations.get(passedLocations.size() - 1))
-                                    .add(futureLocations.get(0))
-                                    .color(getActivity().getResources().getColor(R.color.colorPrimary))
-                                    .geodesic(false)
-                                    .clickable(false)
-                                    .jointType(JointType.DEFAULT));
+                    .add(passedLocations.get(passedLocations.size() - 1))
+                    .add(futureLocations.get(0))
+                    .color(getActivity().getResources().getColor(R.color.colorPrimary))
+                    .geodesic(false)
+                    .clickable(false)
+                    .jointType(JointType.DEFAULT));
         }
         try {
             map.setBuildingsEnabled(true);
