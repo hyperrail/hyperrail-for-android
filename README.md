@@ -27,3 +27,6 @@ Please report bugs on the github issue tracker.
 In order to contribute, make a fork of the most recent code.
 Make your code adjustments in your fork, after which you can create a PR.
 In your PR, please describe what changed, and preferably, why it changed.
+
+## Licenses
+Train drawings are created by [MLGTraffic](http://www.mlgtraffic.net) under a [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0) license](https://creativecommons.org/licenses/by-nc-sa/3.0/).
