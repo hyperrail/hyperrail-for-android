@@ -493,16 +493,28 @@ class IrailApiParser {
     }
 
     private VehicleCompositionUnit parseVehicleCompositionUnit(Context appContext, JSONObject jsonObject) throws JSONException {
-        String parentType = jsonObject.getJSONObject("materialType").getString("parent_type");
-        String subType = jsonObject.getJSONObject("materialType").getString("sub_type");
+        String parentType = jsonObject.getJSONObject("materialType").getString("parent_type").toUpperCase();
+        String subType = jsonObject.getJSONObject("materialType").getString("sub_type").toUpperCase();
         String orientation = jsonObject.getJSONObject("materialType").getString("orientation").substring(0, 1).toUpperCase();
 
-        String resourceName = "sncb_" + parentType + "_" + subType + "_" + orientation;
+        NmbsTrainType trainType = NmbsToMlgDessinsAdapter.convert(parentType, subType, orientation);
+
+        String resourceName = ("sncb_" + trainType.parentType + "_" + trainType.subType + "_" + trainType.orientation).toLowerCase();
+        log.info("Getting vehicle image for " + resourceName);
         Resources resources = appContext.getResources();
         int resourceId = resources.getIdentifier(resourceName, "drawable", appContext.getPackageName());
+
         if (resourceId == 0) {
-            resourceId = resources.getIdentifier(resourceName, "sncb_150_l", appContext.getPackageName());
+            // Locomotives don't have a subtype
+            resourceName = ("sncb_" + trainType.parentType + "_" + trainType.orientation).toLowerCase();
+            resources = appContext.getResources();
+            resourceId = resources.getIdentifier(resourceName, "drawable", appContext.getPackageName());
         }
+
+        if (resourceId == 0) {
+            log.warning("Could not find image for vehicle " + resourceName);
+        }
+
         boolean canPassToNextUnit = Objects.equals(jsonObject.getString("canPassToNextUnit"), "1");
         String publicFacingNumberString = jsonObject.getString("materialNumber");
         Integer publicFacingNumber;
@@ -513,5 +525,106 @@ class IrailApiParser {
         }
         boolean hasToilet = Objects.equals(jsonObject.getString("hasToilets"), "1");
         return new VehicleCompositionUnitImpl(resourceId, publicFacingNumber, parentType, hasToilet, canPassToNextUnit);
+    }
+
+
+    private static class NmbsToMlgDessinsAdapter {
+
+        private NmbsToMlgDessinsAdapter() {
+
+        }
+
+        static NmbsTrainType convert(String parentType, String subType, String orientation) {
+            String newParentType = parentType;
+            String newSubType = subType;
+
+            String newOrientation = orientation;
+            switch (parentType) {
+                case "AM08M":
+                    newParentType = "AM08";
+                    newSubType = "0_" + subType;
+                    break;
+                case "AM08P":
+                    newParentType = "AM08";
+                    newSubType = "5_" + subType;
+                    break;
+                case "AR41":
+                    newParentType = "MW41";
+                    if (subType.equals("A")) {
+                        newSubType = "AB";
+                    }
+                    break;
+                case "HLE18":
+                    // NMBS doesn't distinguish between the old and new gen. All the old gen vehicles are out of service.
+                    newParentType += "II";
+                    newSubType = "";
+                    break;
+                case "HLE11":
+                case "HLE12":
+                case "HLE13":
+                case "HLE15":
+                case "HLE16":
+                case "HLE19":
+                case "HLE20":
+                case "HLE21":
+                    if (subType.isEmpty()) {
+                        newSubType = "B";
+                    }
+                    break;
+                case "AM75":
+                    switch (subType) {
+                        case "A":
+                            newSubType = "RXA";
+                            break;
+                        case "B":
+                            newSubType = "M1_B";
+                            break;
+                        case "C":
+                            newSubType = "M2_B";
+                            break;
+                        case "D":
+                            newSubType = "RXB";
+                            break;
+                    }
+                    break;
+                case "AM62-66":
+                    newParentType = "AM66";
+                    if (subType.equals("A")) {
+                        newSubType = "M2_B";
+                    } else {
+                        newSubType = "M1_B";
+
+                    }
+                    break;
+            }
+
+            if (subType.equals("BUH")) {
+                newSubType = "B";
+            }
+
+            if (subType.equals("AUH")) {
+                newSubType = "B";
+            }
+
+            if (subType.equals("BDUH")) {
+                newSubType = "BD";
+            }
+
+            if (subType.equals("BDXH")) {
+                newSubType = "BDX";
+            }
+
+            return new NmbsTrainType(newParentType, newSubType, newOrientation);
+        }
+    }
+
+    private static class NmbsTrainType {
+        private String parentType, subType, orientation;
+
+        private NmbsTrainType(String parentType, String subType, String orientation) {
+            this.parentType = parentType;
+            this.subType = subType;
+            this.orientation = orientation;
+        }
     }
 }

@@ -43,4 +43,9 @@ public class ExtendRoutePlanningRequest extends OpenTransportBaseRequest<RoutesL
     public ResultExtensionType getAction() {
         return mAction;
     }
+
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.ROUTEPLANNING.getRequestTypeTag();
+    }
 }

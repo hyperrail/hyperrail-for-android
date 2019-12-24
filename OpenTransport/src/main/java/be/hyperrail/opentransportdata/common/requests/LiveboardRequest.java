@@ -180,4 +180,9 @@ public class LiveboardRequest extends OpenTransportBaseRequest<Liveboard> implem
         return getStation().compareTo(other.getStation());
     }
 
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.LIVEBOARD.getRequestTypeTag();
+    }
+
 }

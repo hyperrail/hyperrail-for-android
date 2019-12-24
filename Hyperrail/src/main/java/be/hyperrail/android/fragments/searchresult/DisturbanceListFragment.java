@@ -16,11 +16,12 @@ package be.hyperrail.android.fragments.searchresult;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.joda.time.DateTime;
 
@@ -30,6 +31,7 @@ import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.models.Disturbance;
 import be.hyperrail.opentransportdata.common.requests.ActualDisturbancesRequest;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 
 /**
  * A list with disturbances
@@ -76,7 +78,7 @@ public class DisturbanceListFragment extends RecyclerViewFragment<Disturbance[]>
     protected void getData() {
         vRefreshLayout.setRefreshing(true);
 
-        OpenTransportApi.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortQueries(RequestType.DISTURBANCES);
 
         ActualDisturbancesRequest request = new ActualDisturbancesRequest();
         request.setCallback((data, tag) -> {

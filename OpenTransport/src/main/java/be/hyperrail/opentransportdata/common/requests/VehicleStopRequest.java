@@ -54,4 +54,10 @@ public class VehicleStopRequest extends OpenTransportBaseRequest<VehicleStop> im
     public VehicleStop getStop() {
         return mStop;
     }
+
+    @Override
+    public int getRequestTypeTag() {
+        // TODO: implement when needed
+        throw new UnsupportedOperationException("Not supported for this type");
+    }
 }

@@ -27,6 +27,7 @@ import be.hyperrail.android.adapter.VehicleCompositionCardAdapter;
 import be.hyperrail.android.fragments.searchresult.ResultFragment;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.models.VehicleComposition;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
 
 /**
@@ -91,7 +92,7 @@ public class TrainCompositionFragment extends Fragment implements ResultFragment
 
         // Set-up recyclerview
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false);
         mLayoutManager.setSmoothScrollbarEnabled(true);
         vRecyclerView.setLayoutManager(mLayoutManager);
         vRecyclerView.setAdapter(recyclerViewAdapter);
@@ -117,7 +118,7 @@ public class TrainCompositionFragment extends Fragment implements ResultFragment
     }
 
     private void getData() {
-        OpenTransportApi.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortQueries(RequestType.VEHICLECOMPOSITION);
 
         VehicleCompositionRequest request = new VehicleCompositionRequest(mVehicleId);
         request.setCallback((data, tag) -> {

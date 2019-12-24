@@ -58,6 +58,7 @@ import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
@@ -72,9 +73,8 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class IrailApi implements TransportDataSource {
 
-    private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApi.class);
     private static final String USER_AGENT = "OpenTransportData for Android - " + BuildConfig.VERSION_NAME;
-
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApi.class);
     private final RequestQueue requestQueue;
     private final RetryPolicy requestPolicy;
 
@@ -170,7 +170,7 @@ public class IrailApi implements TransportDataSource {
         } else {
             url += "&timeSel=arrive";
         }
-
+        log.debug("Fetching vehicle composition from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             RoutesListImpl routeResult;
             try {
@@ -191,7 +191,7 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
 
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -254,7 +254,7 @@ public class IrailApi implements TransportDataSource {
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
                 + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
-
+        log.debug("Fetching connections composition from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             LiveboardImpl result;
             try {
@@ -273,7 +273,7 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
 
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -292,7 +292,7 @@ public class IrailApi implements TransportDataSource {
         String url = "https://api.irail.be/vehicle/?format=json"
                 + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
                 request.getSearchTime());
-
+        log.info("Fetching vehicle route from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             IrailVehicleJourney result;
             try {
@@ -309,7 +309,7 @@ public class IrailApi implements TransportDataSource {
             log.warning("Failed to get vehicle:" + e.getMessage());
             request.notifyErrorListeners(e);
         };
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
@@ -359,7 +359,7 @@ public class IrailApi implements TransportDataSource {
 
         String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(
                 0, 2);
-
+        log.info("Fetching disturbances from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             Disturbance[] result;
             try {
@@ -377,7 +377,7 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
 
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
 
@@ -393,7 +393,7 @@ public class IrailApi implements TransportDataSource {
     public void getVehicleComposition(VehicleCompositionRequest request) {
         String url = "https://staging.api.irail.be/composition/?format=json"
                 + "&id=" + request.getVehicleId();
-
+        log.info("Fetching vehicle composition from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             VehicleCompositionImpl result;
             try {
@@ -412,12 +412,12 @@ public class IrailApi implements TransportDataSource {
             request.notifyErrorListeners(e);
         };
 
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener);
+        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
 
         tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
     }
 
-    private JsonObjectRequest getRequestObject(String url, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
+    private JsonObjectRequest getRequestObject(String url, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener, int tag) {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, successListener, errorListener) {
             @Override
@@ -429,7 +429,7 @@ public class IrailApi implements TransportDataSource {
         };
 
         jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(REQUEST_TAG_GET_REQUEST);
+        jsObjRequest.setTag(tag);
         return jsObjRequest;
     }
 
@@ -470,6 +470,7 @@ public class IrailApi implements TransportDataSource {
         }
     }
 
+
     private void postOccupancy(OccupancyPostRequest request) {
 
         String url = "https://api.irail.be/feedback/occupancy.php";
@@ -493,8 +494,9 @@ public class IrailApi implements TransportDataSource {
     }
 
     @Override
-    public void abortAllQueries() {
-        this.requestQueue.cancelAll(REQUEST_TAG_GET_REQUEST);
+    public void abortQueries(RequestType type) {
+        log.info("Aborting all queries for type " + type);
+        this.requestQueue.cancelAll(type.getRequestTypeTag());
     }
 
 }

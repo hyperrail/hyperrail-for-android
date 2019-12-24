@@ -146,4 +146,9 @@ public class RoutePlanningRequest extends OpenTransportBaseRequest<RoutesList> i
         RoutePlanningRequest o = (RoutePlanningRequest) other;
         return getOrigin().equals(o.getOrigin()) && getDestination().equals(o.getDestination());
     }
+
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.ROUTEPLANNING.getRequestTypeTag();
+    }
 }

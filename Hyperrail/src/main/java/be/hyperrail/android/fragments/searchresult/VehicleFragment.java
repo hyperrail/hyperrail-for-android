@@ -61,6 +61,7 @@ import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleJourney;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
@@ -154,7 +155,7 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
     protected void getData() {
         vRefreshLayout.setRefreshing(true);
 
-        OpenTransportApi.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortQueries(RequestType.VEHICLEJOURNEY);
 
         VehicleRequest request = new VehicleRequest(mRequest.getVehicleId(),
                 mRequest.getSearchTime());

@@ -174,4 +174,9 @@ public class VehicleRequest extends OpenTransportBaseRequest<VehicleJourney> imp
     public boolean equalsIgnoringTime(TransportDataRequest other) {
         return other instanceof VehicleRequest && getVehicleId().equals(((VehicleRequest) other).getVehicleId());
     }
+
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.VEHICLEJOURNEY.getRequestTypeTag();
+    }
 }

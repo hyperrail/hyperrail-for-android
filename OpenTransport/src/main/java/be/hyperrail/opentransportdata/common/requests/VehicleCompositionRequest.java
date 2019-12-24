@@ -42,4 +42,9 @@ public class VehicleCompositionRequest extends OpenTransportBaseRequest<VehicleC
         }
         return mVehicleId.compareTo(((VehicleCompositionRequest) o).mVehicleId);
     }
+
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.VEHICLECOMPOSITION.getRequestTypeTag();
+    }
 }

@@ -45,4 +45,8 @@ public class ExtendLiveboardRequest extends OpenTransportBaseRequest<Liveboard> 
         return mAction;
     }
 
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.LIVEBOARD.getRequestTypeTag();
+    }
 }

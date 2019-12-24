@@ -18,7 +18,7 @@ import be.hyperrail.opentransportdata.common.models.Disturbance;
  */
 public class ActualDisturbancesRequest extends OpenTransportBaseRequest<Disturbance[]> implements TransportDataRequest<Disturbance[]> {
 
-    public ActualDisturbancesRequest(){
+    public ActualDisturbancesRequest() {
     }
 
     public ActualDisturbancesRequest(JSONObject json) throws JSONException {
@@ -31,8 +31,8 @@ public class ActualDisturbancesRequest extends OpenTransportBaseRequest<Disturba
     }
 
     @Override
-    public int compareTo( TransportDataRequest o) {
-        if (! (o instanceof ActualDisturbancesRequest)){
+    public int compareTo(TransportDataRequest o) {
+        if (!(o instanceof ActualDisturbancesRequest)) {
             return -1;
         }
 
@@ -42,5 +42,10 @@ public class ActualDisturbancesRequest extends OpenTransportBaseRequest<Disturba
     @Override
     public boolean equalsIgnoringTime(TransportDataRequest other) {
         return other instanceof ActualDisturbancesRequest;
+    }
+
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.DISTURBANCES.getRequestTypeTag();
     }
 }

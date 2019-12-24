@@ -15,13 +15,14 @@ package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import org.joda.time.DateTime;
 
@@ -36,6 +37,7 @@ import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 
@@ -126,7 +128,7 @@ public class RoutesFragment extends RecyclerViewFragment<RoutesList> implements 
         mRouteCardAdapter.setInfiniteScrolling(true);
 
         TransportDataSource api = OpenTransportApi.getDataProviderInstance();
-        api.abortAllQueries();
+        api.abortQueries(RequestType.ROUTEPLANNING);
 
         RoutePlanningRequest request = new RoutePlanningRequest(mRequest.getOrigin(),
                 mRequest.getDestination(),

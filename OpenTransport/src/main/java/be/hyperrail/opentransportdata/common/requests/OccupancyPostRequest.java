@@ -110,4 +110,9 @@ public class OccupancyPostRequest extends OpenTransportBaseRequest<Boolean> impl
         }
         return getDate().compareTo(((OccupancyPostRequest) o).getDate());
     }
+
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.POSTFEEDBACK.getRequestTypeTag();
+    }
 }

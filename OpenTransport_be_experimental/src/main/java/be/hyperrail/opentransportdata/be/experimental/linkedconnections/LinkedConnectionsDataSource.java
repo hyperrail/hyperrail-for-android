@@ -4,8 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -29,8 +30,10 @@ import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 
@@ -58,6 +61,9 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         new PreloadPagesTask(this).execute();
     }
 
+    public static String basename(String url) {
+        return url.substring(url.lastIndexOf('/') + 1);
+    }
 
     @Override
     public void getActualDisturbances(@NonNull ActualDisturbancesRequest... request) {
@@ -173,6 +179,11 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
         }
     }
 
+    @Override
+    public void getVehicleComposition(VehicleCompositionRequest... requests) {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
     private void getVehicle(@NonNull final VehicleRequest request) {
         StartVehicleRequestTask StartVehicleRequestTask = new StartVehicleRequestTask(this);
         StartVehicleRequestTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, request);
@@ -186,12 +197,8 @@ public class LinkedConnectionsDataSource implements TransportDataSource, Metered
     }
 
     @Override
-    public void abortAllQueries() {
-
-    }
-
-    public static String basename(String url) {
-        return url.substring(url.lastIndexOf('/') + 1);
+    public void abortQueries(RequestType type) {
+        // Nothing to do
     }
 
     @Override

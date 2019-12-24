@@ -24,6 +24,7 @@ import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 
 /**
@@ -101,7 +102,8 @@ public class VehicleActivity extends ResultActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        OpenTransportApi.getDataProviderInstance().abortAllQueries();
+        OpenTransportApi.getDataProviderInstance().abortQueries(RequestType.VEHICLECOMPOSITION);
+        OpenTransportApi.getDataProviderInstance().abortQueries(RequestType.VEHICLEJOURNEY);
     }
 
     @Override

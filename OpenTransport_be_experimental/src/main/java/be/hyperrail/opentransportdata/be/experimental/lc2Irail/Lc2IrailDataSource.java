@@ -59,6 +59,7 @@ import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
@@ -368,7 +369,7 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     }
 
     @Override
-    public void abortAllQueries() {
+    public void abortQueries(RequestType type) {
 
     }
 

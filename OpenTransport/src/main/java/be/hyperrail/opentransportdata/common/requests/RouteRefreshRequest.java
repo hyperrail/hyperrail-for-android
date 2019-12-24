@@ -159,4 +159,9 @@ public class RouteRefreshRequest extends OpenTransportBaseRequest<Route> impleme
         RouteRefreshRequest o = (RouteRefreshRequest) other;
         return getDepartureSemanticId().equals(o.getDepartureSemanticId()) && getOrigin().equals(o.getOrigin()) && getDestination().equals(o.getDestination());
     }
+
+    @Override
+    public int getRequestTypeTag() {
+        return RequestType.ROUTEDETAIL.getRequestTypeTag();
+    }
 }

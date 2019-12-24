@@ -78,4 +78,6 @@ public interface TransportDataRequest<T> extends Serializable, Comparable<Transp
      * @return True when fields are equal
      */
     boolean equalsIgnoringTime(TransportDataRequest other);
+
+    int getRequestTypeTag();
 }

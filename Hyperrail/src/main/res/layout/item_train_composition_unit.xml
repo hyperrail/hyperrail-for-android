@@ -9,10 +9,12 @@
 
     <ImageView
         android:id="@+id/image_unit"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:minHeight="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="bottom"
         android:textColor="@color/colorTextDark"
+        android:src="@android:drawable/btn_dialog"
         android:textSize="@dimen/listitem_content_primary_textsize" />
 
     <TextView
@@ -20,6 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="HLE 27"
+        android:visibility="gone"
         android:textAlignment="center"
         android:textColor="@color/colorTextDark" />
 
@@ -28,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="2713"
+        android:visibility="gone"
         android:textAlignment="center"
         android:textColor="@color/colorTextDark" />
 </be.hyperrail.android.viewgroup.VehicleCompositionUnitLayout>

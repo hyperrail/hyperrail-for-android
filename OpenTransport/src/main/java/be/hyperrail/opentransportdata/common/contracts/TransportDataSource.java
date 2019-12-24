@@ -17,6 +17,7 @@ import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.ExtendRoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
+import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
@@ -99,7 +100,8 @@ public interface TransportDataSource {
 
     /**
      * Abort all running background jobs.
+     * @param type
      */
-    void abortAllQueries();
+    void abortQueries(RequestType type);
 
 }
