@@ -498,7 +498,6 @@ class IrailApiParser {
         String orientation = jsonObject.getJSONObject("materialType").getString("orientation").substring(0, 1).toUpperCase();
 
 
-
         boolean canPassToNextUnit = Objects.equals(jsonObject.getString("canPassToNextUnit"), "1");
         Integer publicFacingNumber = getPublicFacingNumber(jsonObject);
         boolean hasToilet = Objects.equals(jsonObject.getString("hasToilets"), "1");
@@ -548,10 +547,79 @@ class IrailApiParser {
         }
 
         static NmbsTrainType convert(String parentType, String subType, String orientation, int firstClassSeats) {
+            if (parentType.startsWith("HLE")) {
+                return convertHle(parentType, subType, orientation);
+            } else if (parentType.startsWith("AM") || parentType.startsWith("MR") || parentType.startsWith("AR")) {
+                return convertAm(parentType, subType, orientation, firstClassSeats);
+            } else if (parentType.startsWith("I") || parentType.startsWith("M")) {
+                return convertCarriage(parentType, subType, orientation, firstClassSeats);
+            } else {
+                return new NmbsTrainType(parentType, subType, orientation);
+            }
+        }
+
+        private static NmbsTrainType convertCarriage(String parentType, String subType, String orientation, int firstClassSeats) {
             String newParentType = parentType;
             String newSubType = subType;
 
-            String newOrientation = orientation;
+            switch (parentType) {
+                case "M6":
+                    switch (subType) {
+                        case "BXAA":
+                            // 134/117 2nd class, LIKELY steering cabin
+                            newSubType = "BDX";
+                            break;
+                        case "BYU":
+                            // BU + Y
+                            break;
+                        case "BUH":
+                            // BU + H
+                        case "BDUH":
+                            // BUH + D
+                        case "BAU":
+                            // Mixed 1st/2nd class
+                        case "BU":
+                            // 140/133 2nd class
+                            newSubType = "B";
+                            break;
+                        case "AU":
+                            // 124/133 1st class
+                            newSubType = "A";
+                            break;
+                        case "BDU":
+                            // 102/145 2nd class w/ luggage and bike storage
+                            newSubType = "BD";
+                            break;
+                        case "BDAU":
+                            // 1st/2nd class w/ luggage and bike storage
+                            newSubType = "ABD";
+                            break;
+                    }
+                    break;
+                case "I10":
+                    if (firstClassSeats > 0) {
+                        newSubType = "B_A";
+                    } else {
+                        newSubType = "B_B";
+                    }
+                    break;
+                case "I11":
+                    if (subType.contains("X")) {
+                        newSubType = "BDX";
+                    } else if (firstClassSeats > 0) {
+                        newSubType = "A";
+                    } else {
+                        newSubType = "B";
+                    }
+                    break;
+            }
+            return new NmbsTrainType(newParentType, newSubType, orientation);
+        }
+
+        private static NmbsTrainType convertAm(String parentType, String subType, String orientation, int firstClassSeats) {
+            String newParentType = parentType;
+            String newSubType = subType;
+
             switch (parentType) {
                 case "AM08M":
                     switch (subType) {
@@ -578,35 +646,17 @@ class IrailApiParser {
                     }
                     break;
                 case "AM86":
-                    switch (subType) {
-                        case "A":
-                            newSubType = "M_B";
-                            break;
-                        case "B":
-                            newSubType = "R_B";
-                            break;
+                    if (firstClassSeats > 0) {
+                        newSubType = "R_B";
+                    } else {
+                        newSubType = "M_B";
                     }
                     break;
                 case "AR41":
                     newParentType = "MW41";
-                    if (subType.equals("A")) {
+                    if (firstClassSeats > 0) {
                         newSubType = "AB";
-                    }
-                    break;
-                case "HLE18":
-                    // NMBS doesn't distinguish between the old and new gen. All the old gen vehicles are out of service.
-                    newParentType += "II";
-                    newSubType = "";
-                    break;
-                case "HLE11":
-                case "HLE12":
-                case "HLE13":
-                case "HLE15":
-                case "HLE16":
-                case "HLE19":
-                case "HLE20":
-                case "HLE21":
-                    if (subType.isEmpty()) {
+                    } else {
                         newSubType = "B";
                     }
                     break;
@@ -655,24 +705,34 @@ class IrailApiParser {
                     }
                     break;
             }
+            return new NmbsTrainType(newParentType, newSubType, orientation);
+        }
 
-            if (subType.equals("BU") || subType.equals("BUH")) {
-                newSubType = "B";
+        private static NmbsTrainType convertHle(String parentType, String subType, String orientation) {
+            String newParentType = parentType;
+            String newSubType = subType;
+
+            switch (parentType) {
+                case "HLE18":
+                    // NMBS doesn't distinguish between the old and new gen. All the old gen vehicles are out of service.
+                    newParentType += "II";
+                    newSubType = "";
+                    break;
+                case "HLE11":
+                case "HLE12":
+                case "HLE13":
+                case "HLE15":
+                case "HLE16":
+                case "HLE19":
+                case "HLE20":
+                case "HLE21":
+                    if (subType.isEmpty()) {
+                        newSubType = "B";
+                    }
+                    break;
             }
 
-            if (subType.equals("AUH")) {
-                newSubType = "B";
-            }
-
-            if (subType.equals("BDU") || subType.equals("BDUH")) {
-                newSubType = "BD";
-            }
-
-            if (subType.equals("BDXH") || subType.equals("BXCT")) {
-                newSubType = "BDX";
-            }
-
-            return new NmbsTrainType(newParentType, newSubType, newOrientation);
+            return new NmbsTrainType(newParentType, newSubType, orientation);
         }
     }
 
