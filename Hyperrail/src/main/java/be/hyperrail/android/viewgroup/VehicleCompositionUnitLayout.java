@@ -6,6 +6,7 @@
 
 package be.hyperrail.android.viewgroup;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -24,6 +25,8 @@ public class VehicleCompositionUnitLayout extends LinearLayout implements Recycl
     protected ImageView vImage;
     protected TextView vUnitType;
     protected TextView vUnitNumber;
+    protected TextView vSecondClassLabel;
+    protected TextView vFirstClassLabel;
 
     public VehicleCompositionUnitLayout(Context context) {
         super(context);
@@ -41,11 +44,14 @@ public class VehicleCompositionUnitLayout extends LinearLayout implements Recycl
     protected void onFinishInflate() {
         super.onFinishInflate();
         vImage = findViewById(R.id.image_unit);
-        vUnitType = findViewById(R.id.text_unit_type);
-        vUnitNumber = findViewById(R.id.text_unit_number);
+        vUnitType = findViewById(R.id.label_traincomp_type);
+        vUnitNumber = findViewById(R.id.label_traincomp_number);
+        vFirstClassLabel = findViewById(R.id.label_traincomp_firstclass);
+        vSecondClassLabel = findViewById(R.id.label_traincomp_secondclass);
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void bind(Context context, VehicleCompositionUnit itemData, VehicleComposition listData, int position) {
         vImage.setImageResource(itemData.getDrawableResourceId());
@@ -53,5 +59,8 @@ public class VehicleCompositionUnitLayout extends LinearLayout implements Recycl
             vUnitNumber.setText(itemData.getPublicFacingNumber().toString());
         }
         vUnitType.setText(itemData.getPublicTypeName());
+
+        vFirstClassLabel.setVisibility(itemData.getNumberOfFirstClassSeats() > 0 ? VISIBLE : GONE);
+        vSecondClassLabel.setVisibility(itemData.getNumberOfSecondClassSeats() > 0 ? VISIBLE : GONE);
     }
 }

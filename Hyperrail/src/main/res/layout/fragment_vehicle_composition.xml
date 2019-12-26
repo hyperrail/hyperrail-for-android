@@ -13,6 +13,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_primary"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="wrap_content">

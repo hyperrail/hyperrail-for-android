@@ -16,13 +16,17 @@ public class VehicleCompositionUnitImpl implements VehicleCompositionUnit {
     private String publicTypeName;
     private boolean hasToilet;
     private boolean canPassToNextUnit;
+    private int numberOfFirstClassSeats;
+    private int numberOfSecondClassSeats;
 
-    public VehicleCompositionUnitImpl(int drawableResource, Integer publicFacingNumber, String publicTypeName, boolean hasToilet, boolean canPassToNextUnit) {
+    public VehicleCompositionUnitImpl(int drawableResource, Integer publicFacingNumber, String publicTypeName, boolean hasToilet, boolean canPassToNextUnit, int numberOfFirstClassSeats, int numberOfSecondClassSeats) {
         this.drawableResource = drawableResource;
         this.publicFacingNumber = publicFacingNumber;
         this.publicTypeName = publicTypeName;
         this.hasToilet = hasToilet;
         this.canPassToNextUnit = canPassToNextUnit;
+        this.numberOfFirstClassSeats = numberOfFirstClassSeats;
+        this.numberOfSecondClassSeats = numberOfSecondClassSeats;
     }
 
     @Override
@@ -48,5 +52,15 @@ public class VehicleCompositionUnitImpl implements VehicleCompositionUnit {
     @Override
     public boolean canPassToNextUnit() {
         return canPassToNextUnit;
+    }
+
+    @Override
+    public int getNumberOfFirstClassSeats() {
+        return numberOfFirstClassSeats;
+    }
+
+    @Override
+    public int getNumberOfSecondClassSeats() {
+        return numberOfSecondClassSeats;
     }
 }

@@ -4,12 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package be.hyperrail.opentransportdata.be.irail;
 
 import android.content.Context;
@@ -81,8 +75,6 @@ public class IrailApi implements TransportDataSource {
     private final Context context;
     private final IrailApiParser parser;
     private final ConnectivityManager connectivityManager;
-
-    private final int REQUEST_TAG_GET_REQUEST = 0;
 
     public IrailApi(Context context, TransportStopsDataSource stationProviderInstance) {
         this.context = context;

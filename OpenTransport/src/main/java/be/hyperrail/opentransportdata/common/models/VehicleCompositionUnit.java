@@ -19,4 +19,8 @@ public interface VehicleCompositionUnit {
     public boolean hasToilet();
 
     public boolean canPassToNextUnit();
+
+    public int getNumberOfFirstClassSeats();
+
+    public int getNumberOfSecondClassSeats();
 }

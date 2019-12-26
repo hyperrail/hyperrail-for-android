@@ -497,8 +497,31 @@ class IrailApiParser {
         String subType = jsonObject.getJSONObject("materialType").getString("sub_type").toUpperCase();
         String orientation = jsonObject.getJSONObject("materialType").getString("orientation").substring(0, 1).toUpperCase();
 
-        NmbsTrainType trainType = NmbsToMlgDessinsAdapter.convert(parentType, subType, orientation);
 
+
+        boolean canPassToNextUnit = Objects.equals(jsonObject.getString("canPassToNextUnit"), "1");
+        Integer publicFacingNumber = getPublicFacingNumber(jsonObject);
+        boolean hasToilet = Objects.equals(jsonObject.getString("hasToilets"), "1");
+        int numberOfFirstClassSeats = jsonObject.getInt("seatsFirstClass");
+        int numberOfSecondClassSeats = jsonObject.getInt("seatsSecondClass");
+
+        NmbsTrainType trainType = NmbsToMlgDessinsAdapter.convert(parentType, subType, orientation, numberOfFirstClassSeats);
+        int resourceId = getResourceIdForTrain(appContext, trainType);
+        return new VehicleCompositionUnitImpl(resourceId, publicFacingNumber, trainType.parentType, hasToilet, canPassToNextUnit, numberOfFirstClassSeats, numberOfSecondClassSeats);
+    }
+
+    private Integer getPublicFacingNumber(JSONObject jsonObject) throws JSONException {
+        String publicFacingNumberString = jsonObject.getString("materialNumber");
+        Integer publicFacingNumber;
+        if (!publicFacingNumberString.isEmpty() && !publicFacingNumberString.equals("0")) {
+            publicFacingNumber = Integer.parseInt(publicFacingNumberString);
+        } else {
+            publicFacingNumber = null;
+        }
+        return publicFacingNumber;
+    }
+
+    private int getResourceIdForTrain(Context appContext, NmbsTrainType trainType) {
         String resourceName = ("sncb_" + trainType.parentType + "_" + trainType.subType + "_" + trainType.orientation).toLowerCase();
         log.info("Getting vehicle image for " + resourceName);
         Resources resources = appContext.getResources();
@@ -514,17 +537,7 @@ class IrailApiParser {
         if (resourceId == 0) {
             log.warning("Could not find image for vehicle " + resourceName);
         }
-
-        boolean canPassToNextUnit = Objects.equals(jsonObject.getString("canPassToNextUnit"), "1");
-        String publicFacingNumberString = jsonObject.getString("materialNumber");
-        Integer publicFacingNumber;
-        if (!publicFacingNumberString.isEmpty() && !publicFacingNumberString.equals("0")) {
-            publicFacingNumber = Integer.parseInt(publicFacingNumberString);
-        } else {
-            publicFacingNumber = null;
-        }
-        boolean hasToilet = Objects.equals(jsonObject.getString("hasToilets"), "1");
-        return new VehicleCompositionUnitImpl(resourceId, publicFacingNumber, parentType, hasToilet, canPassToNextUnit);
+        return resourceId;
     }
 
 
@@ -534,19 +547,45 @@ class IrailApiParser {
 
         }
 
-        static NmbsTrainType convert(String parentType, String subType, String orientation) {
+        static NmbsTrainType convert(String parentType, String subType, String orientation, int firstClassSeats) {
             String newParentType = parentType;
             String newSubType = subType;
 
             String newOrientation = orientation;
             switch (parentType) {
                 case "AM08M":
+                    switch (subType) {
+                        case "A":
+                        case "C":
+                            newSubType = "0_C";
+                            break;
+                        case "B":
+                            newSubType = "0_B";
+                            break;
+                    }
                     newParentType = "AM08";
-                    newSubType = "0_" + subType;
                     break;
                 case "AM08P":
                     newParentType = "AM08";
-                    newSubType = "5_" + subType;
+                    switch (subType) {
+                        case "A":
+                        case "C":
+                            newSubType = "5_C";
+                            break;
+                        case "B":
+                            newSubType = "5_B";
+                            break;
+                    }
+                    break;
+                case "AM86":
+                    switch (subType) {
+                        case "A":
+                            newSubType = "M_B";
+                            break;
+                        case "B":
+                            newSubType = "R_B";
+                            break;
+                    }
                     break;
                 case "AR41":
                     newParentType = "MW41";
@@ -574,7 +613,12 @@ class IrailApiParser {
                 case "AM75":
                     switch (subType) {
                         case "A":
-                            newSubType = "RXA";
+                        case "D":
+                            if (firstClassSeats > 0) {
+                                newSubType = "RXA_B";
+                            } else {
+                                newSubType = "RXB_B";
+                            }
                             break;
                         case "B":
                             newSubType = "M1_B";
@@ -582,23 +626,37 @@ class IrailApiParser {
                         case "C":
                             newSubType = "M2_B";
                             break;
-                        case "D":
-                            newSubType = "RXB";
+                    }
+                    break;
+                case "AM80":
+                case "AM80M":
+                    newParentType = "AM80";
+                    switch (subType) {
+                        // B, BX, ABDX,
+                        case "A":
+                        case "C":
+                            if (firstClassSeats > 0) {
+                                newSubType = "ABDX_B";
+                            } else {
+                                newSubType = "BX_B";
+                            }
+                            break;
+                        case "B":
+                            newSubType = "B_B";
                             break;
                     }
                     break;
                 case "AM62-66":
                     newParentType = "AM66";
-                    if (subType.equals("A")) {
+                    if (firstClassSeats > 0) {
                         newSubType = "M2_B";
                     } else {
                         newSubType = "M1_B";
-
                     }
                     break;
             }
 
-            if (subType.equals("BUH")) {
+            if (subType.equals("BU") || subType.equals("BUH")) {
                 newSubType = "B";
             }
 
@@ -606,11 +664,11 @@ class IrailApiParser {
                 newSubType = "B";
             }
 
-            if (subType.equals("BDUH")) {
+            if (subType.equals("BDU") || subType.equals("BDUH")) {
                 newSubType = "BD";
             }
 
-            if (subType.equals("BDXH")) {
+            if (subType.equals("BDXH") || subType.equals("BXCT")) {
                 newSubType = "BDX";
             }
 
