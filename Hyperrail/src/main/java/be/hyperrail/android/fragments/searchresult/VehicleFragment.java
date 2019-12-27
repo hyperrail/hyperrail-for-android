@@ -97,7 +97,7 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_map);
             mapFragment.getMapAsync(this);
         } else {
-            View mapView = getChildFragmentManager().findFragmentById(R.id.map).getView();
+            View mapView = getChildFragmentManager().findFragmentById(R.id.fragment_map).getView();
             if (mapView != null) {
                 mapView.setVisibility(View.GONE);
             }

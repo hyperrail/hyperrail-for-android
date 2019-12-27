@@ -19,7 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
 -dontwarn org.joda.convert.**
 -dontwarn org.joda.time.**
 -keep class org.joda.time.** { *; }
