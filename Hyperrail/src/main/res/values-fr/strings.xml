@@ -133,4 +133,6 @@
     <string name="rate_dialog_button_rate">Maintenant</string>
     <string name="rate_dialog_button_later">Plus tard</string>
     <string name="rate_dialog_button_no_thanks">Non, merci</string>
+    <string name="warning_composition_unavailable">Cette composition de train n\'est pas disponible pour le moment</string>
+    <string name="warning_composition_unconfirmed">Cette composition n\'est pas confirmée et est susceptible de changer</string>
 </resources>

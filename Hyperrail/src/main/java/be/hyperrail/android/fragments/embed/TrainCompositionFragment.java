@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,9 +45,12 @@ public class TrainCompositionFragment extends Fragment implements ResultFragment
     private String mVehicleId;
     private VehicleCompositionRequest mRequest;
 
-    private FrameLayout rootElement;
+    private LinearLayout rootElement;
     private RecyclerView vRecyclerView;
     private VehicleCompositionCardAdapter recyclerViewAdapter;
+    private TextView vWarningUnconfirmed;
+    private TextView vErrorUnavailable;
+    private ProgressBar vLoadingProgBar;
 
     public TrainCompositionFragment() {
         // Required empty public constructor
@@ -87,12 +92,20 @@ public class TrainCompositionFragment extends Fragment implements ResultFragment
         // Restore a previous instance state
         VehicleComposition storedInstanceState = getStoredInstanceStateData(savedInstanceState);
         rootElement = view.findViewById(R.id.root);
+        vLoadingProgBar = view.findViewById(R.id.progressBar);
         vRecyclerView = view.findViewById(R.id.recyclerview_primary);
+        vErrorUnavailable = view.findViewById(R.id.text_status_unavailable);
+        vWarningUnconfirmed = view.findViewById(R.id.text_status_unconfirmed);
         recyclerViewAdapter = new VehicleCompositionCardAdapter(view.getContext(), null);
+
+        // Only a progressbar to start
+        vRecyclerView.setVisibility(View.GONE);
+        vErrorUnavailable.setVisibility(View.GONE);
+        vWarningUnconfirmed.setVisibility(View.GONE);
 
         // Set-up recyclerview
         vRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
         mLayoutManager.setSmoothScrollbarEnabled(true);
         vRecyclerView.setLayoutManager(mLayoutManager);
         vRecyclerView.setAdapter(recyclerViewAdapter);
@@ -113,7 +126,15 @@ public class TrainCompositionFragment extends Fragment implements ResultFragment
     }
 
     private void showData(VehicleComposition data) {
-        getView().setVisibility(View.VISIBLE);
+        vLoadingProgBar.setVisibility(View.GONE);
+        vRecyclerView.setVisibility(View.VISIBLE);
+        if (data.isConfirmed()) {
+            vWarningUnconfirmed.setVisibility(View.GONE);
+        } else {
+            vWarningUnconfirmed.setVisibility(View.VISIBLE);
+        }
+
+        vErrorUnavailable.setVisibility(View.GONE);
         recyclerViewAdapter.updateComposition(data);
     }
 
@@ -123,12 +144,15 @@ public class TrainCompositionFragment extends Fragment implements ResultFragment
         VehicleCompositionRequest request = new VehicleCompositionRequest(mVehicleId);
         request.setCallback((data, tag) -> {
             showData(data);
-        }, (e, tag) -> hide(), null);
+        }, (e, tag) -> showError(), null);
         OpenTransportApi.getDataProviderInstance().getVehicleComposition(request);
     }
 
-    private void hide() {
-        getView().setVisibility(View.GONE);
+    private void showError() {
+        vLoadingProgBar.setVisibility(View.GONE);
+        vRecyclerView.setVisibility(View.GONE);
+        vWarningUnconfirmed.setVisibility(View.GONE);
+        vErrorUnavailable.setVisibility(View.VISIBLE);
     }
 
     @Override

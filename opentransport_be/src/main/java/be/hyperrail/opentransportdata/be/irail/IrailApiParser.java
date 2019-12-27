@@ -486,17 +486,18 @@ class IrailApiParser {
     public VehicleCompositionImpl parseVehicleComposition(Context appContext, JSONObject response, String vehicleId) throws JSONException {
         JSONObject segment = response.getJSONObject("composition").getJSONObject("segments").getJSONArray("segment").getJSONObject(0);
         JSONArray units = segment.getJSONObject("composition").getJSONObject("units").getJSONArray("unit");
+        boolean confirmed = ! segment.getJSONObject("composition").getString("source").equalsIgnoreCase("planning");
         VehicleCompositionUnit[] vehicleCompositionUnits = new VehicleCompositionUnit[units.length()];
-        for (int i = 0; i < units.length(); i++)
+        for (int i = 0; i < units.length(); i++) {
             vehicleCompositionUnits[i] = parseVehicleCompositionUnit(appContext, units.getJSONObject(i));
-        return new VehicleCompositionImpl(vehicleCompositionUnits);
+        }
+        return new VehicleCompositionImpl(vehicleCompositionUnits, confirmed);
     }
 
     private VehicleCompositionUnit parseVehicleCompositionUnit(Context appContext, JSONObject jsonObject) throws JSONException {
         String parentType = jsonObject.getJSONObject("materialType").getString("parent_type").toUpperCase();
         String subType = jsonObject.getJSONObject("materialType").getString("sub_type").toUpperCase();
         String orientation = jsonObject.getJSONObject("materialType").getString("orientation").substring(0, 1).toUpperCase();
-
 
         boolean canPassToNextUnit = Objects.equals(jsonObject.getString("canPassToNextUnit"), "1");
         Integer publicFacingNumber = getPublicFacingNumber(jsonObject);
@@ -563,9 +564,34 @@ class IrailApiParser {
             String newSubType = subType;
 
             switch (parentType) {
+                case "M4":
+                    switch (subType) {
+                        case "A":
+                        case "AU":
+                            newSubType = "B_A";
+                            break;
+                        case "AD":
+                        case "AUD":
+                            newSubType = "B_AD";
+                            break;
+                        case "ADX":
+                            newSubType = "B_ADX";
+                            break;
+                        case "B":
+                        case "BU":
+                        case "BYU":
+                            newSubType = "B_B";
+                            break;
+                        case "BD":
+                        case "BDU":
+                            newSubType = "B_BD";
+                            break;
+                    }
+                    break;
                 case "M6":
                     switch (subType) {
                         case "BXAA":
+                        case "BXCT":
                             // 134/117 2nd class, LIKELY steering cabin
                             newSubType = "BDX";
                             break;
@@ -621,6 +647,7 @@ class IrailApiParser {
             String newSubType = subType;
 
             switch (parentType) {
+                case "AM08":
                 case "AM08M":
                     switch (subType) {
                         case "A":
@@ -702,6 +729,24 @@ class IrailApiParser {
                         newSubType = "M2_B";
                     } else {
                         newSubType = "M1_B";
+                    }
+                    break;
+                case "AM96":
+                case "AM96M":
+                    newParentType = "AM96";
+                    switch (subType) {
+                        // B, BX, ABDX,
+                        case "A":
+                        case "C":
+                            if (firstClassSeats > 0) {
+                                newSubType = "AX";
+                            } else {
+                                newSubType = "BX";
+                            }
+                            break;
+                        case "B":
+                            newSubType = "BBIC";
+                            break;
                     }
                     break;
             }

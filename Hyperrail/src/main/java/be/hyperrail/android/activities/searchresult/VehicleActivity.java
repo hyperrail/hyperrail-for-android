@@ -50,7 +50,6 @@ public class VehicleActivity extends ResultActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
             mRequest = new VehicleRequest(getIntent().getStringExtra("id"), null);

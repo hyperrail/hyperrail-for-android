@@ -150,4 +150,6 @@
     <string name="rate_dialog_button_rate">Beoordelen</string>
     <string name="rate_dialog_button_later">Later</string>
     <string name="rate_dialog_button_no_thanks">Nee, bedankt</string>
+    <string name="warning_composition_unavailable">De samenstelling van deze trein is niet beschikbaar</string>
+    <string name="warning_composition_unconfirmed">De samenstelling is niet bevestigd en kan nog veranderen</string>
 </resources>

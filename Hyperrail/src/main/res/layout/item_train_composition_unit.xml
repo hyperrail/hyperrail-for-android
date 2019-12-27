@@ -3,6 +3,8 @@
     android:id="@+id/binder"
     android:layout_width="wrap_content"
     android:layout_height="60dp"
+    android:layout_marginTop="@dimen/activity_tiny_margin"
+    android:layout_marginBottom="@dimen/activity_tiny_margin"
     android:gravity="center_horizontal|bottom"
     android:orientation="vertical">
 
@@ -19,27 +21,27 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="@dimen/activity_tiny_margin"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/label_traincomp_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_4dp"
+            android:padding="4dp"
             android:text="HLE 27"
             android:textAlignment="center"
             android:textColor="@color/colorTextLight"
-            android:background="@drawable/rounded_corner_4dp"
-            android:padding="4dp"
             android:visibility="visible" />
-
 
         <TextView
             android:id="@+id/label_traincomp_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2705"
             android:padding="4dp"
+            android:text="2705"
             android:textAlignment="center"
             android:textColor="@color/colorTextDark"
             android:visibility="visible" />
@@ -49,11 +51,16 @@
             android:id="@+id/label_traincomp_firstclass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:background="@drawable/rounded_corner_4dp_seatingclass"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="4dp"
             android:text="1"
-            android:padding="4dp"
             android:textAlignment="center"
             android:textColor="@color/colorTextLight"
-            android:background="@drawable/rounded_corner_4dp_seatingclass"
             android:visibility="visible" />
 
 
@@ -61,11 +68,16 @@
             android:id="@+id/label_traincomp_secondclass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:background="@drawable/rounded_corner_4dp_seatingclass"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="4dp"
             android:text="2"
-            android:padding="4dp"
             android:textAlignment="center"
             android:textColor="@color/colorTextLight"
-            android:background="@drawable/rounded_corner_4dp_seatingclass"
             android:visibility="visible" />
     </LinearLayout>
 </be.hyperrail.android.viewgroup.VehicleCompositionUnitLayout>

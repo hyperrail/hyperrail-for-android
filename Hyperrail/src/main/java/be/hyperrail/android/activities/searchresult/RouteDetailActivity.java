@@ -53,7 +53,7 @@ public class RouteDetailActivity extends ResultActivity {
     @Override
     protected int getMenuLayout() {
         // TODO: include notification options
-        return R.menu.actionbar_main;
+        return R.menu.actionbar_empty;
     }
 
     @Override

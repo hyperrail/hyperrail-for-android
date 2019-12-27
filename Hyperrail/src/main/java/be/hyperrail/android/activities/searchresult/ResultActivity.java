@@ -20,18 +20,19 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.ColorRes;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.MenuRes;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.MenuRes;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import java.io.Serializable;
 import java.util.Locale;
@@ -152,12 +153,12 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
     }
 
     /**
-     * Get the menu layout
+     * Get the menu layout. Override to set the menu.
      */
     protected
     @MenuRes
     int getMenuLayout() {
-        return R.menu.actionbar_main;
+        return R.menu.actionbar_empty;
     }
 
     @Override

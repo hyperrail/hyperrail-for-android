@@ -150,5 +150,6 @@
     <string name="rate_dialog_button_no_thanks">No, thanks</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="warning_composition_unavailable">This train composition is not available at this time</string>
+    <string name="warning_composition_unconfirmed">This train composition is unconfirmed and is subject to change</string>
 </resources>

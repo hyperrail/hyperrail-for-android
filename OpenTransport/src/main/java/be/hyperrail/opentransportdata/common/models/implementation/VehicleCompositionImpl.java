@@ -11,13 +11,20 @@ import be.hyperrail.opentransportdata.common.models.VehicleCompositionUnit;
 
 public class VehicleCompositionImpl implements VehicleComposition {
     private VehicleCompositionUnit[] vehicleCompositionUnits;
+    private boolean isConfirmed;
 
-    public VehicleCompositionImpl(VehicleCompositionUnit[] vehicleCompositionUnits) {
+    public VehicleCompositionImpl(VehicleCompositionUnit[] vehicleCompositionUnits, boolean isConfirmed) {
         this.vehicleCompositionUnits = vehicleCompositionUnits;
+        this.isConfirmed = isConfirmed;
     }
 
     @Override
     public VehicleCompositionUnit[] getVehicleCompositionUnits() {
         return vehicleCompositionUnits;
+    }
+
+    @Override
+    public boolean isConfirmed() {
+        return isConfirmed;
     }
 }

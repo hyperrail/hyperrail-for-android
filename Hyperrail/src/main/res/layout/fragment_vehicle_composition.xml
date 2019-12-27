@@ -4,12 +4,20 @@
   ~  You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:context=".fragments.embed.TrainCompositionFragment">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_primary"
@@ -19,7 +27,25 @@
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="wrap_content">
-
     </androidx.recyclerview.widget.RecyclerView>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/text_status_unconfirmed"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:animateLayoutChanges="true"
+        android:background="#006ab3"
+        android:gravity="center"
+        android:text="@string/warning_composition_unconfirmed"
+        android:textColor="@color/colorTextLight" />
+
+    <TextView
+        android:id="@+id/text_status_unavailable"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listitem_content_height_double"
+        android:animateLayoutChanges="true"
+        android:background="@color/backgroundMaterialDark"
+        android:gravity="center"
+        android:text="@string/warning_composition_unavailable"
+        android:textColor="@color/colorTextLight" />
+</LinearLayout>

@@ -103,6 +103,7 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
             }
         }
 
+        // Train composition is handled in an embedded fragment
         TrainCompositionFragment trainCompositionFragment = TrainCompositionFragment.createInstance(mRequest.getVehicleId());
         getChildFragmentManager().beginTransaction().replace(R.id.fragment_vehicle_composition, trainCompositionFragment).commit();
     }

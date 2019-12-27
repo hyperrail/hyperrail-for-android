@@ -13,4 +13,5 @@ public interface VehicleComposition {
 
     VehicleCompositionUnit[] getVehicleCompositionUnits();
 
+    boolean isConfirmed();
 }
