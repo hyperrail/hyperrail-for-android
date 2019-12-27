@@ -54,7 +54,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.navigation.NavigationView;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.fragments.FeedbackFragment;
 import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.fragments.RouteSearchFragment;
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private Intent createShortcutIntent(int viewType) {
-        Intent i = new Intent(this, LiveboardActivity.class);
+        Intent i = new Intent(this, MainActivity.class);
         i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
         i.putExtra("view", viewType); // shortcut intents should not contain application specific classes - only pass the station ID
         return i;

@@ -733,6 +733,7 @@ class IrailApiParser {
                     break;
                 case "AM96":
                 case "AM96M":
+                case "AM96P":
                     newParentType = "AM96";
                     switch (subType) {
                         // B, BX, ABDX,
