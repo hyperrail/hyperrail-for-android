@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ This Source Code Form is subject to the terms of the Mozilla Public
-  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
-  ~ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  ~  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  ~  If a copy of the MPL was not distributed with this file,
+  ~  You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,30 +11,19 @@
     android:gravity="top"
     android:orientation="vertical">
 
-    <fragment
-        android:id="@+id/fragment_map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/swiperefresh"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".MapsActivity" />
-
     <FrameLayout
         android:id="@+id/fragment_vehicle_composition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#a0fafafa"
-        app:layout_constraintBottom_toBottomOf="@id/fragment_map" />
-
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.62"
-        app:layout_constraintTop_toBottomOf="@id/fragment_map">
+        app:layout_constraintTop_toBottomOf="@id/fragment_vehicle_composition">
 
         <!-- This layout could use some improvements, but replacing the recyclerview with an error message requires something else than a SwipeRefreshLayout as parent -->
         <LinearLayout
