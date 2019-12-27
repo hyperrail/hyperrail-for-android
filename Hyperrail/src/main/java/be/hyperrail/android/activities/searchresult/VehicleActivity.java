@@ -12,13 +12,13 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.joda.time.DateTime;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.fragments.searchresult.VehicleFragment;
+import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.android.persistence.Suggestion;
 import be.hyperrail.android.persistence.SuggestionType;
 import be.hyperrail.android.util.ShortcutHelper;
@@ -32,6 +32,7 @@ import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
  */
 public class VehicleActivity extends ResultActivity {
 
+    HyperRailLog log = HyperRailLog.getLogger(VehicleActivity.class);
     private VehicleRequest mRequest;
     private VehicleFragment fragment;
 
@@ -56,7 +57,7 @@ public class VehicleActivity extends ResultActivity {
         } else {
             mRequest = (VehicleRequest) getIntent().getSerializableExtra("request");
         }
-        Crashlytics.setString("vehicleId", mRequest.getVehicleId());
+        log.setDebugVariable("vehicleId", mRequest.getVehicleId());
 
         super.onCreate(savedInstanceState);
 

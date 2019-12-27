@@ -149,7 +149,12 @@
     <string name="rate_dialog_button_later">Later</string>
     <string name="rate_dialog_button_no_thanks">No, thanks</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="warning_composition_unavailable">This train composition is not available at this time</string>
     <string name="warning_composition_unconfirmed">This train composition is unconfirmed and is subject to change</string>
+    <string name="pref_display_vehicle_composition">Show train compositions</string>
+    <string name="pref_display_vehicle_composition_summary">Show the composition of trains when viewing train trip details. For example a diagram of the train, the location of first and second class carriages, the availability of airconditioning, …</string>
+    <string name="pref_vehicle_composition_display_type_summary">Show the type of each carriage in a train composition</string>
+    <string name="pref_vehicle_composition_display_type">Show carriage types</string>
+    <string name="pref_vehicle_composition_display_number_summary">Show the number of each train or carriage. This number matches the number shown inside the train (if it is shown, depends on the train type).</string>
+    <string name="pref_vehicle_composition_display_number">Display the trains vehicle number</string>
 </resources>

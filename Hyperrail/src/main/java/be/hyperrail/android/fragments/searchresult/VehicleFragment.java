@@ -102,13 +102,21 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
             mapFragment.getMapAsync(this);
         }
 
-        // Train composition is handled in an embedded fragment
-        TrainCompositionFragment trainCompositionFragment = TrainCompositionFragment.createInstance(mRequest.getVehicleId());
-        getChildFragmentManager().beginTransaction().replace(R.id.fragment_vehicle_composition, trainCompositionFragment).commit();
+        if (showVehicleComposition()) {
+            // Train composition is handled in an embedded fragment
+            TrainCompositionFragment trainCompositionFragment = TrainCompositionFragment.createInstance(mRequest.getVehicleId());
+            getChildFragmentManager().beginTransaction().replace(R.id.fragment_vehicle_composition, trainCompositionFragment).commit();
+        } else {
+            getView().findViewById(R.id.fragment_vehicle_composition).setVisibility(View.GONE);
+        }
     }
 
     private boolean isMapEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("trains_map", true);
+    }
+
+    private boolean showVehicleComposition() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("vehicle_composition", true);
     }
 
     @Override
@@ -240,6 +248,15 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
             return;
         }
 
+        drawTrainJourneyOnMap(map);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+        }
+    }
+
+    private void drawTrainJourneyOnMap(GoogleMap map) {
         final LatLng locations[] = new LatLng[mCurrentTrain.getStops().length];
         final List<LatLng> passedLocations = new ArrayList<>();
         final List<LatLng> futureLocations = new ArrayList<>();
@@ -305,11 +322,6 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
                 }
             }
         }
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
-        }
-
     }
 
 

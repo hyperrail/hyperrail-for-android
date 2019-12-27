@@ -1,6 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:key="pref_general"
+        android:key="pref_cat_general"
         android:title="@string/pref_header_general">
 
         <ListPreference
@@ -30,7 +30,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="pref_stations"
+        android:key="pref_cat_stations"
         android:title="@string/pref_header_stations">
 
         <ListPreference
@@ -72,7 +72,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="pref_routes"
+        android:key="pref_cat_routes"
         android:title="@string/pref_header_routes">
 
         <ListPreference
@@ -104,7 +104,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="pref_trains"
+        android:key="pref_cat_vehicles"
         android:title="@string/pref_header_trains">
 
         <ListPreference
@@ -132,6 +132,24 @@
             android:key="trains_map"
             android:summary="@string/pref_display_vehicle_on_map_summary"
             android:title="@string/pref_display_vehicle_on_map"/>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="vehicle_composition"
+            android:summary="@string/pref_display_vehicle_composition_summary"
+            android:title="@string/pref_display_vehicle_composition"/>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="vehicle_composition_show_type"
+            android:summary="@string/pref_vehicle_composition_display_type_summary"
+            android:title="@string/pref_vehicle_composition_display_type"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="vehicle_composition_show_number"
+            android:summary="@string/pref_vehicle_composition_display_number_summary"
+            android:title="@string/pref_vehicle_composition_display_number"/>
 
     </PreferenceCategory>
 

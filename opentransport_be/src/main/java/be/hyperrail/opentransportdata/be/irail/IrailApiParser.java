@@ -502,12 +502,13 @@ class IrailApiParser {
         boolean canPassToNextUnit = Objects.equals(jsonObject.getString("canPassToNextUnit"), "1");
         Integer publicFacingNumber = getPublicFacingNumber(jsonObject);
         boolean hasToilet = Objects.equals(jsonObject.getString("hasToilets"), "1");
+        boolean hasAirco = Objects.equals(jsonObject.getString("hasAirco"), "1");
         int numberOfFirstClassSeats = jsonObject.getInt("seatsFirstClass");
         int numberOfSecondClassSeats = jsonObject.getInt("seatsSecondClass");
 
         NmbsTrainType trainType = NmbsToMlgDessinsAdapter.convert(parentType, subType, orientation, numberOfFirstClassSeats);
         int resourceId = getResourceIdForTrain(appContext, trainType);
-        return new VehicleCompositionUnitImpl(resourceId, publicFacingNumber, trainType.parentType, hasToilet, canPassToNextUnit, numberOfFirstClassSeats, numberOfSecondClassSeats);
+        return new VehicleCompositionUnitImpl(resourceId, publicFacingNumber, trainType.parentType, hasToilet, hasAirco, canPassToNextUnit, numberOfFirstClassSeats, numberOfSecondClassSeats);
     }
 
     private Integer getPublicFacingNumber(JSONObject jsonObject) throws JSONException {

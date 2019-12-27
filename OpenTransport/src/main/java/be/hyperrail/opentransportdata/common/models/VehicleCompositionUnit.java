@@ -10,17 +10,19 @@ package be.hyperrail.opentransportdata.common.models;
  * This class represents a vehicle composition..
  */
 public interface VehicleCompositionUnit {
-    public int getDrawableResourceId();
+    int getDrawableResourceId();
 
-    public String getPublicTypeName();
+    String getPublicTypeName();
 
-    public Integer getPublicFacingNumber();
+    Integer getPublicFacingNumber();
 
-    public boolean hasToilet();
+    boolean hasToilet();
 
-    public boolean canPassToNextUnit();
+    boolean canPassToNextUnit();
 
-    public int getNumberOfFirstClassSeats();
+    int getNumberOfFirstClassSeats();
 
-    public int getNumberOfSecondClassSeats();
+    int getNumberOfSecondClassSeats();
+
+    boolean hasAirconditioning();
 }
