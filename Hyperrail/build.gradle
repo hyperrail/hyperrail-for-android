@@ -82,6 +82,7 @@ dependencies {
 
     implementation project(path: ':OpenTransport')
     implementation project(path: ':OpenTransport_be')
+    compile project(path: ':OpenTransport_be')
 }
 
 apply plugin: 'com.google.gms.google-services'

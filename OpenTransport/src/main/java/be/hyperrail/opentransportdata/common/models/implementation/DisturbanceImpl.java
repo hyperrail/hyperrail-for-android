@@ -25,14 +25,18 @@ public class DisturbanceImpl implements Disturbance {
     private final String title;
     private final String description;
     private final int id;
+    private final String attachment;
+    private final Type type;
 
 
-    public DisturbanceImpl(int id, DateTime timestamp, String title, String description, String link) {
+    public DisturbanceImpl(int id, DateTime timestamp, String title, String description, Type type, String link, String attachment) {
         this.id = id;
         this.timestamp = timestamp;
         this.title = title;
         this.description = description;
+        this.type = type;
         this.link = link;
+        this.attachment = attachment;
     }
 
     public int getId() {
@@ -54,4 +58,9 @@ public class DisturbanceImpl implements Disturbance {
     public DateTime getTime() {
         return timestamp;
     }
+
+    public Type getType() {
+        return type;
+    }
+
 }

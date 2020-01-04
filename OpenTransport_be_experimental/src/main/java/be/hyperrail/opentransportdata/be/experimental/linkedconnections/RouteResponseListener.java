@@ -412,7 +412,7 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
                 RouteLegEnd arrival = new RouteLegEndImpl(mStationProvider.getStoplocationBySemanticId(it.arrivalConnection.getArrivalStationUri()),
                         it.arrivalConnection.getArrivalTime(), "?", true, Duration.standardSeconds(it.arrivalConnection.getArrivalDelay()), false, it.arrivalConnection.getDelayedArrivalTime().isBeforeNow(),
                         it.arrivalConnection.getArrivalStationUri(), TransportOccupancyLevel.UNSUPPORTED);
-                RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleJourneyStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival);
+                RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleJourneyStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival, intermediateStopsForFirstLeg);
                 legs.add(r);
 
                 it = getFirstReachableConnection(it);
@@ -424,7 +424,7 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
             RouteLegEnd arrival = new RouteLegEndImpl(mStationProvider.getStoplocationBySemanticId(it.arrivalConnection.getArrivalStationUri()),
                     it.arrivalConnection.getArrivalTime(), "?", true, Duration.standardSeconds(it.arrivalConnection.getArrivalDelay()), false, it.arrivalConnection.getDelayedArrivalTime().isBeforeNow(),
                     it.arrivalConnection.getArrivalStationUri(), TransportOccupancyLevel.UNSUPPORTED);
-            RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleJourneyStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival);
+            RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleJourneyStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival, intermediateStopsForFirstLeg);
             legs.add(r);
 
             RouteLeg[] legsArray = new RouteLeg[legs.size()];

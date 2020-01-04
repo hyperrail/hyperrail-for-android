@@ -67,6 +67,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class IrailApi implements TransportDataSource {
 
+    public static final String BASE_URL = "https://staging.api.irail.be";
     private static final String USER_AGENT = "OpenTransportData for Android - " + BuildConfig.VERSION_NAME;
     private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApi.class);
     private final RequestQueue requestQueue;
@@ -150,7 +151,7 @@ public class IrailApi implements TransportDataSource {
             locale = Locale.getDefault().getISO3Language();
         }
 
-        String url = "https://api.irail.be/connections/?format=json"
+        String url = BASE_URL + "/connections/?format=json"
                 + "&to=" + request.getDestination().getHafasId()
                 + "&from=" + request.getOrigin().getHafasId()
                 + "&date=" + dateformat.print(request.getSearchTime())
@@ -241,7 +242,7 @@ public class IrailApi implements TransportDataSource {
         DateTimeFormatter dateformat = DateTimeFormat.forPattern("ddMMyy");
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
-        String url = "https://api.irail.be/liveboard/?format=json"
+        String url = BASE_URL + "/liveboard/?format=json"
                 + "&id=" + request.getStation().getHafasId()
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
@@ -281,7 +282,7 @@ public class IrailApi implements TransportDataSource {
     public void getVehicle(VehicleRequest request) {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
-        String url = "https://api.irail.be/vehicle/?format=json"
+        String url = BASE_URL + "/vehicle/?format=json"
                 + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
                 request.getSearchTime());
         log.info("Fetching vehicle route from " + url);
@@ -349,7 +350,7 @@ public class IrailApi implements TransportDataSource {
             locale = Locale.getDefault().getISO3Language();
         }
 
-        String url = "https://api.irail.be/disturbances/?format=json&lang=" + locale.substring(
+        String url = BASE_URL + "/disturbances/?format=json&linebreaks=<br>&lang=" + locale.substring(
                 0, 2);
         log.info("Fetching disturbances from " + url);
         Response.Listener<JSONObject> successListener = response -> {
@@ -383,7 +384,7 @@ public class IrailApi implements TransportDataSource {
     }
 
     public void getVehicleComposition(VehicleCompositionRequest request) {
-        String url = "https://staging.api.irail.be/composition/?format=json"
+        String url = BASE_URL + "/composition/?format=json"
                 + "&id=" + request.getVehicleId();
         log.info("Fetching vehicle composition from " + url);
         Response.Listener<JSONObject> successListener = response -> {
@@ -465,7 +466,7 @@ public class IrailApi implements TransportDataSource {
 
     private void postOccupancy(OccupancyPostRequest request) {
 
-        String url = "https://api.irail.be/feedback/occupancy.php";
+        String url = BASE_URL + "/feedback/occupancy.php";
 
         try {
             JSONObject payload = new JSONObject();

@@ -455,7 +455,7 @@ class Lc2IrailParser {
                                                        jsonLeg.getString("arrivalUri"),
                                                        TransportOccupancyLevel.UNSUPPORTED);
 
-            legs[i] = new RouteLegImpl(RouteLegType.TRAIN, vehicle, departure, arrival);
+            legs[i] = new RouteLegImpl(RouteLegType.TRAIN, vehicle, departure, arrival, intermediateStopsForFirstLeg);
         }
         return new RouteImpl(legs);
     }

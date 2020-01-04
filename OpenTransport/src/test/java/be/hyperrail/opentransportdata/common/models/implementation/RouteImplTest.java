@@ -43,8 +43,8 @@ class RouteImplTest {
         RouteLegEnd secondArrival = new RouteLegEndImpl(thirdStation, new DateTime(900 * 1000), "2A", true,
                 Duration.ZERO, false, false, null, TransportOccupancyLevel.UNKNOWN);
 
-        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival);
-        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival);
+        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival, intermediateStopsForFirstLeg);
+        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival, intermediateStopsForFirstLeg);
 
         RouteLeg[] legs = new RouteLeg[]{firstLeg, secondLeg};
 
@@ -96,8 +96,8 @@ class RouteImplTest {
         RouteLegEnd secondArrival = new RouteLegEndImpl(thirdStation, new DateTime(900 * 1000), "2A", true,
                 new Duration(600 * 1000), false, false, null, TransportOccupancyLevel.UNKNOWN);
 
-        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival);
-        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival);
+        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival, intermediateStopsForFirstLeg);
+        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival, intermediateStopsForFirstLeg);
 
         RouteLeg[] legs = new RouteLeg[]{firstLeg, secondLeg};
 
@@ -150,8 +150,8 @@ class RouteImplTest {
         RouteLegEnd secondArrival = new RouteLegEndImpl(thirdStation, new DateTime(900 * 1000), "2A", true,
                 Duration.ZERO, false, false, null, TransportOccupancyLevel.UNKNOWN);
 
-        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival);
-        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival);
+        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival, intermediateStopsForFirstLeg);
+        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival, intermediateStopsForFirstLeg);
 
         RouteLeg[] legs = new RouteLeg[]{firstLeg, secondLeg};
 

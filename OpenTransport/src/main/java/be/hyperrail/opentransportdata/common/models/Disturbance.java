@@ -49,4 +49,11 @@ public interface Disturbance extends Serializable {
      * @return The time at which this disturbance was reported.
      */
     DateTime getTime();
+
+    Type getType();
+
+    public enum Type {
+        PLANNED,
+        DISTURBANCE
+    }
 }

@@ -60,6 +60,7 @@ import be.hyperrail.opentransportdata.common.models.RouteLegEnd;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleCompositionUnit;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
 import be.hyperrail.opentransportdata.common.models.implementation.DisturbanceImpl;
 import be.hyperrail.opentransportdata.common.models.implementation.LiveboardImpl;
@@ -136,22 +137,31 @@ class IrailApiParser {
                 timestamp2date(arrival.getString("time")), arrival.getString("platform"), isPlatformNormal(arrival),
                 delayToDuration(arrival, "delay"), isCanceled(arrival), hasLastTrainArrived, null, null);
 
+        int viaCount = 0;
+        if (routeObject.has("vias")) {
+            viaCount = routeObject.getJSONObject("vias").getInt("number");
+        }
+
+
+        // A two-dimensional array of all intermediate stops for all legs. First index is the leg, second index the intermediate stop.
+        VehicleStop[] intermediateStopsForFirstLeg;
+        if (departure.has("stops")) {
+            JSONArray intermediateStopsForDepartureLeg = departure.getJSONArray("stops");
+            intermediateStopsForFirstLeg = parseIntermediateStops(intermediateStopsForDepartureLeg, firstTrain);
+        } else {
+            intermediateStopsForFirstLeg = new VehicleStop[0];
+        }
+
 
         RouteLeg[] legs;
 
-        if (routeObject.has("vias")) {
-
-            JSONObject vias = routeObject.getJSONObject("vias");
-            int viaCount = vias.getInt("number");
-
-
+        if (viaCount > 0) {
             RouteLegEnd[] departures = new RouteLegEnd[viaCount + 1];
             RouteLegEnd[] arrivals = new RouteLegEnd[viaCount + 1];
             departures[0] = departureEnd;
             arrivals[arrivals.length - 1] = arrivalEnd;
 
             for (int i = 0; i < viaCount; i++) {
-
                 JSONObject via = (JSONObject) routeObject.getJSONObject("vias").getJSONArray("via").get(i);
 
                 JSONObject viaDeparture = via.getJSONObject("departure");
@@ -181,30 +191,40 @@ class IrailApiParser {
                         new IrailVehicleJourneyStub(
                                 irailIdToVehicleId(departure),
                                 departure.getJSONObject("direction").getString("name"), null),
-                        departures[0], arrivals[0]);
+                        departures[0], arrivals[0], intermediateStopsForFirstLeg);
             } else {
-                legs[0] = new RouteLegImpl(RouteLegType.WALK, null, departures[0], arrivals[0]);
+                legs[0] = new RouteLegImpl(RouteLegType.WALK, null, departures[0], arrivals[0], intermediateStopsForFirstLeg);
             }
 
             for (int i = 0; i < viaCount; i++) {
                 JSONObject via = (JSONObject) routeObject.getJSONObject("vias").getJSONArray("via").get(i);
                 JSONObject viaDeparture = via.getJSONObject("departure");
+                IrailVehicleJourneyStub viaVehicleJourney = new IrailVehicleJourneyStub(
+                        irailIdToVehicleId(viaDeparture),
+                        viaDeparture.getJSONObject("direction").getString("name"), null);
+
+                VehicleStop[] intermediateStops;
+                if (viaDeparture.has("stops")) {
+                    JSONArray intermediateStopsForViaDeparture = viaDeparture.getJSONArray("stops");
+                    intermediateStops = parseIntermediateStops(intermediateStopsForViaDeparture, viaVehicleJourney);
+                } else {
+                    intermediateStops = new VehicleStop[0];
+                }
+
                 // first train is already set
                 // Walking should only be between 2 journeys, so only in a via
                 if (viaDeparture.getInt("walking") == 0) {
                     legs[i + 1] = new RouteLegImpl(RouteLegType.TRAIN,
-                            new IrailVehicleJourneyStub(
-                                    irailIdToVehicleId(viaDeparture),
-                                    viaDeparture.getJSONObject("direction").getString("name"), null),
-                            departures[i + 1], arrivals[i + 1]);
+                            viaVehicleJourney,
+                            departures[i + 1], arrivals[i + 1], intermediateStops);
                 } else {
-                    legs[i + 1] = new RouteLegImpl(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1]);
+                    legs[i + 1] = new RouteLegImpl(RouteLegType.WALK, null, departures[i + 1], arrivals[i + 1], intermediateStops);
                 }
-            }
 
+            }
         } else {
             legs = new RouteLeg[1];
-            legs[0] = new RouteLegImpl(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd);
+            legs[0] = new RouteLegImpl(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd, intermediateStopsForFirstLeg);
         }
 
         Message[][] trainalerts = parseRouteAlertsPerLeg(routeObject, departure, legs);
@@ -215,6 +235,14 @@ class IrailApiParser {
         r.setAlerts(alerts);
         r.setVehicleAlerts(trainalerts);
         return r;
+    }
+
+    private VehicleStop[] parseIntermediateStops(JSONArray rawIntermediateStops, IrailVehicleJourneyStub vehicleJourneyStub) throws JSONException, StopLocationNotResolvedException {
+        VehicleStop[] intermediateStops = new VehicleStop[rawIntermediateStops.length()];
+        for (int i = 0; i < rawIntermediateStops.length(); i++) {
+            intermediateStops[i] = parseTrainStop(vehicleJourneyStub, rawIntermediateStops.getJSONObject(i), VehicleStopType.STOP);
+        }
+        return intermediateStops;
     }
 
     private boolean isNumericBooleanTrue(JSONObject arrival, String arrived) throws JSONException {
@@ -309,11 +337,14 @@ class IrailApiParser {
         Disturbance[] result = new Disturbance[items.length()];
 
         for (int i = 0; i < items.length(); i++) {
+            JSONObject rawDisturbance = items.getJSONObject(i);
             result[i] = new DisturbanceImpl(i,
-                    timestamp2date(items.getJSONObject(i).getString("timestamp")),
-                    items.getJSONObject(i).getString("title"),
-                    items.getJSONObject(i).getString("description"),
-                    items.getJSONObject(i).getString("link"));
+                    timestamp2date(rawDisturbance.getString("timestamp")),
+                    rawDisturbance.getString("title"),
+                    rawDisturbance.getString("description").replace("\\\\n","\\n"),
+                    Disturbance.Type.valueOf(rawDisturbance.getString("type").toUpperCase()),
+                    rawDisturbance.getString("link"),
+                    rawDisturbance.has("attachment") ? rawDisturbance.getString("attachment") : null);
         }
 
         return result;
@@ -486,7 +517,7 @@ class IrailApiParser {
     public VehicleCompositionImpl parseVehicleComposition(Context appContext, JSONObject response, String vehicleId) throws JSONException {
         JSONObject segment = response.getJSONObject("composition").getJSONObject("segments").getJSONArray("segment").getJSONObject(0);
         JSONArray units = segment.getJSONObject("composition").getJSONObject("units").getJSONArray("unit");
-        boolean confirmed = ! segment.getJSONObject("composition").getString("source").equalsIgnoreCase("planning");
+        boolean confirmed = !segment.getJSONObject("composition").getString("source").equalsIgnoreCase("planning");
         VehicleCompositionUnit[] vehicleCompositionUnits = new VehicleCompositionUnit[units.length()];
         for (int i = 0; i < units.length(); i++) {
             vehicleCompositionUnits[i] = parseVehicleCompositionUnit(appContext, units.getJSONObject(i));
@@ -542,254 +573,4 @@ class IrailApiParser {
     }
 
 
-    private static class NmbsToMlgDessinsAdapter {
-
-        private NmbsToMlgDessinsAdapter() {
-
-        }
-
-        static NmbsTrainType convert(String parentType, String subType, String orientation, int firstClassSeats) {
-            if (parentType.startsWith("HLE")) {
-                return convertHle(parentType, subType, orientation);
-            } else if (parentType.startsWith("AM") || parentType.startsWith("MR") || parentType.startsWith("AR")) {
-                return convertAm(parentType, subType, orientation, firstClassSeats);
-            } else if (parentType.startsWith("I") || parentType.startsWith("M")) {
-                return convertCarriage(parentType, subType, orientation, firstClassSeats);
-            } else {
-                return new NmbsTrainType(parentType, subType, orientation);
-            }
-        }
-
-        private static NmbsTrainType convertCarriage(String parentType, String subType, String orientation, int firstClassSeats) {
-            String newParentType = parentType;
-            String newSubType = subType;
-
-            switch (parentType) {
-                case "M4":
-                    switch (subType) {
-                        case "A":
-                        case "AU":
-                            newSubType = "B_A";
-                            break;
-                        case "AD":
-                        case "AUD":
-                            newSubType = "B_AD";
-                            break;
-                        case "ADX":
-                            newSubType = "B_ADX";
-                            break;
-                        case "B":
-                        case "BU":
-                        case "BYU":
-                            newSubType = "B_B";
-                            break;
-                        case "BD":
-                        case "BDU":
-                            newSubType = "B_BD";
-                            break;
-                    }
-                    break;
-                case "M6":
-                    switch (subType) {
-                        case "BXAA":
-                        case "BXCT":
-                            // 134/117 2nd class, LIKELY steering cabin
-                            newSubType = "BDX";
-                            break;
-                        case "BYU":
-                            // BU + Y
-                            break;
-                        case "BUH":
-                            // BU + H
-                        case "BDUH":
-                            // BUH + D
-                        case "BAU":
-                            // Mixed 1st/2nd class
-                        case "BU":
-                            // 140/133 2nd class
-                            newSubType = "B";
-                            break;
-                        case "AU":
-                            // 124/133 1st class
-                            newSubType = "A";
-                            break;
-                        case "BDU":
-                            // 102/145 2nd class w/ luggage and bike storage
-                            newSubType = "BD";
-                            break;
-                        case "BDAU":
-                            // 1st/2nd class w/ luggage and bike storage
-                            newSubType = "ABD";
-                            break;
-                    }
-                    break;
-                case "I10":
-                    if (firstClassSeats > 0) {
-                        newSubType = "B_A";
-                    } else {
-                        newSubType = "B_B";
-                    }
-                    break;
-                case "I11":
-                    if (subType.contains("X")) {
-                        newSubType = "BDX";
-                    } else if (firstClassSeats > 0) {
-                        newSubType = "A";
-                    } else {
-                        newSubType = "B";
-                    }
-                    break;
-            }
-            return new NmbsTrainType(newParentType, newSubType, orientation);
-        }
-
-        private static NmbsTrainType convertAm(String parentType, String subType, String orientation, int firstClassSeats) {
-            String newParentType = parentType;
-            String newSubType = subType;
-
-            switch (parentType) {
-                case "AM08":
-                case "AM08M":
-                    switch (subType) {
-                        case "A":
-                        case "C":
-                            newSubType = "0_C";
-                            break;
-                        case "B":
-                            newSubType = "0_B";
-                            break;
-                    }
-                    newParentType = "AM08";
-                    break;
-                case "AM08P":
-                    newParentType = "AM08";
-                    switch (subType) {
-                        case "A":
-                        case "C":
-                            newSubType = "5_C";
-                            break;
-                        case "B":
-                            newSubType = "5_B";
-                            break;
-                    }
-                    break;
-                case "AM86":
-                    if (firstClassSeats > 0) {
-                        newSubType = "R_B";
-                    } else {
-                        newSubType = "M_B";
-                    }
-                    break;
-                case "AR41":
-                    newParentType = "MW41";
-                    if (firstClassSeats > 0) {
-                        newSubType = "AB";
-                    } else {
-                        newSubType = "B";
-                    }
-                    break;
-                case "AM75":
-                    switch (subType) {
-                        case "A":
-                        case "D":
-                            if (firstClassSeats > 0) {
-                                newSubType = "RXA_B";
-                            } else {
-                                newSubType = "RXB_B";
-                            }
-                            break;
-                        case "B":
-                            newSubType = "M1_B";
-                            break;
-                        case "C":
-                            newSubType = "M2_B";
-                            break;
-                    }
-                    break;
-                case "AM80":
-                case "AM80M":
-                    newParentType = "AM80";
-                    switch (subType) {
-                        // B, BX, ABDX,
-                        case "A":
-                        case "C":
-                            if (firstClassSeats > 0) {
-                                newSubType = "ABDX_B";
-                            } else {
-                                newSubType = "BX_B";
-                            }
-                            break;
-                        case "B":
-                            newSubType = "B_B";
-                            break;
-                    }
-                    break;
-                case "AM62-66":
-                    newParentType = "AM66";
-                    if (firstClassSeats > 0) {
-                        newSubType = "M2_B";
-                    } else {
-                        newSubType = "M1_B";
-                    }
-                    break;
-                case "AM96":
-                case "AM96M":
-                case "AM96P":
-                    newParentType = "AM96";
-                    switch (subType) {
-                        // B, BX, ABDX,
-                        case "A":
-                        case "C":
-                            if (firstClassSeats > 0) {
-                                newSubType = "AX";
-                            } else {
-                                newSubType = "BX";
-                            }
-                            break;
-                        case "B":
-                            newSubType = "BBIC";
-                            break;
-                    }
-                    break;
-            }
-            return new NmbsTrainType(newParentType, newSubType, orientation);
-        }
-
-        private static NmbsTrainType convertHle(String parentType, String subType, String orientation) {
-            String newParentType = parentType;
-            String newSubType = subType;
-
-            switch (parentType) {
-                case "HLE18":
-                    // NMBS doesn't distinguish between the old and new gen. All the old gen vehicles are out of service.
-                    newParentType += "II";
-                    newSubType = "";
-                    break;
-                case "HLE11":
-                case "HLE12":
-                case "HLE13":
-                case "HLE15":
-                case "HLE16":
-                case "HLE19":
-                case "HLE20":
-                case "HLE21":
-                    if (subType.isEmpty()) {
-                        newSubType = "B";
-                    }
-                    break;
-            }
-
-            return new NmbsTrainType(newParentType, newSubType, orientation);
-        }
-    }
-
-    private static class NmbsTrainType {
-        private String parentType, subType, orientation;
-
-        private NmbsTrainType(String parentType, String subType, String orientation) {
-            this.parentType = parentType;
-            this.subType = subType;
-            this.orientation = orientation;
-        }
-    }
 }
