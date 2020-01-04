@@ -152,4 +152,10 @@
     <string name="rate_dialog_button_no_thanks">Nee, bedankt</string>
     <string name="warning_composition_unavailable">De samenstelling van deze trein is niet beschikbaar</string>
     <string name="warning_composition_unconfirmed">De samenstelling is niet bevestigd en kan nog veranderen</string>
+    <string name="pref_display_vehicle_composition">Toon trein samenstelling</string>
+    <string name="pref_display_vehicle_composition_summary">Toon de samenstelling van treinen bij het bekijken van een treinroute. De samenstelling is een afbeelding die de exacte trein weergeeft, plus extra informatie over de locatie van eerste en tweede klasse, alsook airconditioning</string>
+    <string name="pref_vehicle_composition_display_number">Toon het voertuignummer van elke trein</string>
+    <string name="pref_vehicle_composition_display_number_summary">Toont het voertuignummer van elke trein bij het bekijken van een treinsamenstelling. Deze nummers stemmen overeen met de nummers die soms boven de deuren in de trein worden weergegeven.</string>
+    <string name="pref_vehicle_composition_display_type">Toon het type van elke trein, wagon en locomotief.</string>
+    <string name="pref_vehicle_composition_display_type_summary">Toont het type van elke trein, wagon en locomotief, zoals M6, AM08, HLE27 en I10</string>
 </resources>

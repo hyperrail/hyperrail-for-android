@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,7 +20,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
@@ -492,8 +489,7 @@ public class PersistentQueryProvider implements Serializable {
                 results.add(s);
 
             } catch (Exception exception) {
-                Crashlytics.log(Level.WARNING.intValue(), "PersistentQuery",
-                        "Failed to load stored request for type " + type + ": " + exception.getMessage());
+                log.warning("Failed to load stored request for type " + type + ": " + exception.getMessage());
                 // ignored
             }
         }

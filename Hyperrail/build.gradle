@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
-def VERSION_CODE = 47
-def VERSION_NAME = '1.1.0'
+def VERSION_CODE = 49
+def VERSION_NAME = '1.2.0-beta02'
 
 android {
     compileSdkVersion 28

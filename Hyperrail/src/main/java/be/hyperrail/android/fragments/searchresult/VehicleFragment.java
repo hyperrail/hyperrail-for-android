@@ -87,25 +87,36 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
         if (savedInstanceState != null && savedInstanceState.containsKey("request")) {
             mRequest = (VehicleRequest) savedInstanceState.getSerializable("request");
         }
-        return inflater.inflate(R.layout.fragment_recyclerview_vehiclejourney, container, false);
+        if (isMapEnabled()) {
+            return inflater.inflate(R.layout.fragment_recyclerview_vehiclejourney_map, container, false);
+        } else {
+            return inflater.inflate(R.layout.fragment_recyclerview_vehiclejourney_nomap, container, false);
+        }
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("trains_map", true)) {
+        if (isMapEnabled()) {
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_map);
             mapFragment.getMapAsync(this);
-        } else {
-            View mapView = getChildFragmentManager().findFragmentById(R.id.map).getView();
-            if (mapView != null) {
-                mapView.setVisibility(View.GONE);
-            }
         }
 
-        // Train composition is handled in an embedded fragment
-        TrainCompositionFragment trainCompositionFragment = TrainCompositionFragment.createInstance(mRequest.getVehicleId());
-        getChildFragmentManager().beginTransaction().replace(R.id.fragment_vehicle_composition, trainCompositionFragment).commit();
+        if (showVehicleComposition()) {
+            // Train composition is handled in an embedded fragment
+            TrainCompositionFragment trainCompositionFragment = TrainCompositionFragment.createInstance(mRequest.getVehicleId());
+            getChildFragmentManager().beginTransaction().replace(R.id.fragment_vehicle_composition, trainCompositionFragment).commit();
+        } else {
+            getView().findViewById(R.id.fragment_vehicle_composition).setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isMapEnabled() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("trains_map", true);
+    }
+
+    private boolean showVehicleComposition() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("vehicle_composition", true);
     }
 
     @Override
@@ -237,6 +248,15 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
             return;
         }
 
+        drawTrainJourneyOnMap(map);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+        }
+    }
+
+    private void drawTrainJourneyOnMap(GoogleMap map) {
         final LatLng locations[] = new LatLng[mCurrentTrain.getStops().length];
         final List<LatLng> passedLocations = new ArrayList<>();
         final List<LatLng> futureLocations = new ArrayList<>();
@@ -302,11 +322,6 @@ public class VehicleFragment extends RecyclerViewFragment<VehicleJourney> implem
                 }
             }
         }
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
-        }
-
     }
 
 
