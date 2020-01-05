@@ -75,6 +75,7 @@ public class IrailApi implements TransportDataSource {
 
     private final Context context;
     private final IrailApiParser parser;
+    private final VehicleCompositionParser vehicleCompositionParser = new VehicleCompositionParser();
     private final ConnectivityManager connectivityManager;
 
     public IrailApi(Context context, TransportStopsDataSource stationProviderInstance) {
@@ -390,7 +391,7 @@ public class IrailApi implements TransportDataSource {
         Response.Listener<JSONObject> successListener = response -> {
             VehicleCompositionImpl result;
             try {
-                result = parser.parseVehicleComposition(context, response, request.getVehicleId());
+                result = vehicleCompositionParser.parseVehicleComposition(context, response, request.getVehicleId());
             } catch (JSONException e) {
                 log.warning("Failed to parse vehicle composition: " + e.getMessage(), e);
                 request.notifyErrorListeners(e);
