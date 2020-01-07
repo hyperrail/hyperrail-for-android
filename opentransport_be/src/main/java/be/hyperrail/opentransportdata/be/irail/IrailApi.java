@@ -351,8 +351,7 @@ public class IrailApi implements TransportDataSource {
             locale = Locale.getDefault().getISO3Language();
         }
 
-        String url = BASE_URL + "/disturbances/?format=json&linebreaks=<br>&lang=" + locale.substring(
-                0, 2);
+        String url = BASE_URL + "/disturbances/?format=json&lineBreakCharacter=<br>&lang=" + locale.substring(0, 2);
         log.info("Fetching disturbances from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             Disturbance[] result;

@@ -1,107 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/list_item"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"
-              android:orientation="vertical">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <!-- 76dp margin to the right side, to make up for missing linearlayout compared with transfers (no times are displayed) -->
+    <ImageView
+        android:id="@+id/image_timeline_train"
+        android:layout_width="30dp"
+        android:layout_height="64dp"
+        android:contentDescription="@string/contentdescription_timeline_icon"
+        android:src="@drawable/timeline_train_hollow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_direction"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/listitem_content_height_single"
+
+        android:layout_marginLeft="76dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:text="Brussel-Zuid"
+        android:textColor="@color/colorTextDark"
+        android:textSize="@dimen/listitem_content_primary_textsize"
+        app:layout_constraintBottom_toTopOf="@id/incl_vehicleNumber"
+        app:layout_constraintLeft_toRightOf="@id/image_timeline_train"
+        app:layout_constraintTop_toTopOf="@id/image_timeline_train"
+        tools:ignore="HardcodedText" />
+
+
+    <include
+        android:id="@+id/incl_vehicleNumber"
+        layout="@layout/include_text_vehicle_type_number"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/image_timeline_train"
+        app:layout_constraintLeft_toLeftOf="@id/text_direction"
+        app:layout_constraintTop_toBottomOf="@id/text_direction" />
+
+    <ImageView
+        android:id="@+id/img_icon_duration"
+        android:layout_width="@dimen/listitem_content_height_single"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:padding="2dp"
+        android:src="@drawable/ic_query_builder"
+        android:tint="@color/colorMuted"
+        app:layout_constraintBottom_toBottomOf="@id/incl_vehicleNumber"
+        app:layout_constraintLeft_toRightOf="@id/incl_vehicleNumber"
+        app:layout_constraintTop_toTopOf="@id/incl_vehicleNumber" />
+
+    <TextView
+        android:id="@+id/text_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:gravity="center_vertical"
+        android:text="0:10"
+        android:textColor="@color/colorMuted"
+        app:layout_constraintBottom_toBottomOf="@id/incl_vehicleNumber"
+        app:layout_constraintLeft_toRightOf="@id/img_icon_duration"
+        app:layout_constraintTop_toTopOf="@id/incl_vehicleNumber"
+        tools:ignore="HardcodedText" />
+
+    <include
+        android:id="@+id/incl_occupancy"
+        layout="@layout/include_occupancy"
+        android:layout_width="@dimen/listitem_content_height_single"
+        android:layout_height="@dimen/listitem_content_height_single"
+        app:layout_constraintBottom_toBottomOf="@id/incl_vehicleNumber"
+        app:layout_constraintLeft_toRightOf="@id/text_duration"
+        app:layout_constraintTop_toTopOf="@id/incl_vehicleNumber" />
+
+    <include
+        android:id="@+id/incl_status"
+        layout="@layout/include_text_vehicle_status"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/listitem_content_height_single"
+        app:layout_constraintBottom_toBottomOf="@id/incl_vehicleNumber"
+        app:layout_constraintLeft_toRightOf="@id/incl_occupancy"
+        app:layout_constraintTop_toTopOf="@id/incl_vehicleNumber" />
+
+
+    <be.hyperrail.android.viewgroup.RouteIntermediateStopsLayout
+        android:id="@+id/incl_intermediary_stops"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/image_timeline"
-            android:layout_width="30dp"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/contentdescription_timeline_icon"
-            android:src="@drawable/timeline_train_hollow"/>
-
-        <!-- 76dp margin to the left side, to make up for missing linearlayout compared with transfers (no times are displayed) -->
-        <!-- Margin top and bottom, lets timeline fill the height while keeping whitespace around the text -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="@dimen/listitem_content_height_double"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="76dp"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_direction"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/listitem_content_height_single"
-                android:gravity="center_vertical"
-                android:text="Brussel-Zuid"
-                android:textColor="@color/colorTextDark"
-                android:textSize="@dimen/listitem_content_primary_textsize"
-                tools:ignore="HardcodedText"/>
-
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/listitem_content_height_single"
-                android:orientation="horizontal">
-
-                <include layout="@layout/include_text_vehicle_type_number"/>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/listitem_content_height_single"
-                    android:layout_marginRight="@dimen/listitem_horizontal_margin"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="@dimen/listitem_content_height_single"
-                        android:layout_height="@dimen/listitem_content_height_single"
-                        android:padding="2dp"
-                        android:src="@drawable/ic_query_builder"
-                        android:tint="@color/colorMuted"/>
-
-                    <TextView
-                        android:id="@+id/text_duration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="0:10"
-                        android:textColor="@color/colorMuted"
-                        tools:ignore="HardcodedText"/>
-                </LinearLayout>
-
-                <include layout="@layout/include_occupancy"/>
-
-                <include layout="@layout/include_text_vehicle_status"/>
-
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_timeline_train" />
 
     <LinearLayout
         android:id="@+id/alert_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/incl_intermediary_stops">
 
         <ImageView
-            android:id="@+id/image_timeline_2"
+            android:id="@+id/image_timeline_alerts"
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/contentdescription_timeline_icon"
-            android:src="@drawable/timeline_continuous_filled"/>
+            android:src="@drawable/timeline_continuous_filled" />
 
         <!-- 76dp margin to the left side, to make up for missing linearlayout compared with transfers (no times are displayed) -->
         <!-- Margin top and bottom, lets timeline fill the height while keeping whitespace around the text -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_tiny_margin"
-            android:layout_marginLeft="76dp"
             android:layout_marginTop="@dimen/activity_tiny_margin"
+            android:layout_marginBottom="@dimen/activity_tiny_margin"
             android:gravity="left"
             android:orientation="vertical">
 
@@ -111,11 +127,11 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="none"
                 android:maxLines="3"
-                android:minHeight="@dimen/listitem_content_height_double"
                 android:scrollHorizontally="false"
                 android:text="Tijdens de weekends van 4-5,18-19,25-26 november werken wij aan het spoor in de regio van Gent."
-                android:textColor="@color/colorPrimary"/>
+                android:textColor="@color/colorPrimary" />
 
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

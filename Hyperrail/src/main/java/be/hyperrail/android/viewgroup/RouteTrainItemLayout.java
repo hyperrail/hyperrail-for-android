@@ -19,22 +19,23 @@
 package be.hyperrail.android.viewgroup;
 
 import android.content.Context;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import be.hyperrail.android.R;
 import be.hyperrail.android.util.DurationFormatter;
 import be.hyperrail.opentransportdata.common.models.Message;
-import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import be.hyperrail.opentransportdata.common.models.Route;
 import be.hyperrail.opentransportdata.common.models.RouteLeg;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.Transfer;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 
 public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, RouteLeg> {
 
@@ -48,9 +49,11 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
 
     protected ImageView vOccupancy;
     protected ImageView vTimeline;
-    protected ImageView vTimeline2;
+    protected ImageView vTimelineAlerts;
     protected LinearLayout vAlertContainer;
     protected TextView vAlertText;
+
+    protected RouteIntermediateStopsLayout vIntermediaryStops;
 
     public RouteTrainItemLayout(Context context) {
         super(context);
@@ -63,11 +66,6 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
     public RouteTrainItemLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
-    // TODO: use when API > 21
-    /*public RouteListItemLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }*/
 
     @Override
     protected void onFinishInflate() {
@@ -87,7 +85,8 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vAlertText = findViewById(R.id.alert_message);
 
         vTimeline = findViewById(R.id.image_timeline);
-        vTimeline2 = findViewById(R.id.image_timeline_2);
+        vIntermediaryStops = findViewById(R.id.incl_intermediary_stops);
+        vTimelineAlerts = findViewById(R.id.image_timeline_alerts);
     }
 
     @Override
@@ -125,8 +124,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vTrainType.setVisibility(View.VISIBLE);
         vDirection.setText(routeLeg.getVehicleInformation().getHeadsign());
 
-        bindTimelineDrawable(context, transferBefore, transferAfter);
-
+        bindTimelineDrawable(context, transferBefore, transferAfter, routeLeg);
         bindDuration(transferBefore, transferAfter);
 
         if (transferBefore.isDepartureCanceled()) {
@@ -137,10 +135,22 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
             vOccupancy.setVisibility(View.VISIBLE);
             vStatusContainer.setVisibility(View.GONE);
         }
+
+        bindIntermediaryStops(context, routeLeg);
         bindAlerts(route, position);
 
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
     }
+
+    private void bindIntermediaryStops(Context context, RouteLeg routeLeg) {
+        if (routeLeg.getIntermediaryStops().length == 0) {
+            vIntermediaryStops.setVisibility(GONE);
+        } else {
+            vIntermediaryStops.setVisibility(VISIBLE);
+            vIntermediaryStops.bind(context, routeLeg);
+        }
+    }
+
 
     private void bindAlerts(Route route, int position) {
         if (route.getVehicleAlerts() != null && route.getVehicleAlerts().length > position) {
@@ -165,18 +175,23 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         }
     }
 
-    private void bindTimelineDrawable(Context context, Transfer transferBefore, Transfer transferAfter) {
+    private void bindTimelineDrawable(Context context, Transfer transferBefore, Transfer transferAfter, RouteLeg leg) {
         if (transferBefore.hasLeft()) {
             if (transferAfter.hasArrived()) {
                 vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
-                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
+                vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
             } else {
-                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
-                vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+                vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+                if (leg.getIntermediaryStops().length > 0 &&leg.getIntermediaryStops()[0].hasArrived()){
+                    // The intermediary stops timeline comes after the train icon timeline
+                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
+                } else {
+                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
+                }
             }
         } else {
             vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));
-            vTimeline2.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
+            vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
         }
     }
 

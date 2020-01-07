@@ -69,8 +69,6 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 /**
  * A simple parser for api.irail.be.
- *
- * @inheritDoc
  */
 class IrailApiParser {
 
@@ -139,7 +137,7 @@ class IrailApiParser {
         // A two-dimensional array of all intermediate stops for all legs. First index is the leg, second index the intermediate stop.
         VehicleStop[] intermediateStopsForFirstLeg;
         if (departure.has("stops")) {
-            JSONArray intermediateStopsForDepartureLeg = departure.getJSONArray("stops");
+            JSONArray intermediateStopsForDepartureLeg = departure.getJSONObject("stops").getJSONArray("stop");
             intermediateStopsForFirstLeg = parseIntermediateStops(intermediateStopsForDepartureLeg, firstTrain);
         } else {
             intermediateStopsForFirstLeg = new VehicleStop[0];
@@ -454,6 +452,29 @@ class IrailApiParser {
     private Duration delayToDuration(JSONObject item, String delay) throws JSONException {
         return new Duration(item.getInt(delay) * 1000);
     }
+
+    private VehicleStopImpl parseIntermediateTrainStop(IrailVehicleJourneyStub train, JSONObject item, VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
+        StopLocation stop = stationProvider.getStoplocationBySemanticId(getStationUri(item));
+
+        TransportOccupancyLevel occupancyLevel = parseOccupancyLevel(item);
+
+        return new VehicleStopImpl(
+                stop,
+                train,
+                "",
+                true,
+                timestamp2date(item.getString("scheduledDepartureTime")),
+                timestamp2date(item.getString("scheduledArrivalTime")),
+                delayToDuration(item, "departureDelay"),
+                delayToDuration(item, "arrivalDelay"),
+                isNumericBooleanTrue(item, "departureCanceled"),
+                isNumericBooleanTrue(item, "arrivalCanceled"),
+                isNumericBooleanTrue(item, "left"),
+                item.getString("departureConnection"),
+                occupancyLevel,
+                type);
+    }
+
 
     private VehicleStopImpl parseTrainStop(IrailVehicleJourneyStub train, JSONObject item, VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
         StopLocation stop = stationProvider.getStoplocationBySemanticId(getStationUri(item));

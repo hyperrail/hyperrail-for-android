@@ -15,11 +15,12 @@ package be.hyperrail.android.adapter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.VehiclePopupContextMenu;
@@ -36,6 +37,10 @@ import be.hyperrail.opentransportdata.common.models.Transfer;
  */
 public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private static final int VIEW_TYPE_TRANSFER = 0;
+    private static final int VIEW_TYPE_TRAIN = 1;
+    private static final int VIEW_TYPE_INTERMEDIATE_STOPS = 2;
+
     /**
      * Whether or not this view will be embedded (required to pick the correct layout)
      */
@@ -45,14 +50,10 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * The route to show
      */
     private final Route route;
-
     // We need to keep the context as an activity in order to be able to open the contextmenu here
     // TODO: check if this "deep nesting" can be prevented
     private final Activity context;
     private OnRecyclerItemClickListener<Object> listener;
-
-    private static final int VIEW_TYPE_TRANSFER = 0;
-    private static final int VIEW_TYPE_TRAIN = 1;
 
     public RouteDetailCardAdapter(Activity context, Route route, boolean embedded) {
         this.context = context;
@@ -98,9 +99,8 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
 
             return new RouteTrainViewHolder(itemView);
-
         } else {
-            return null;
+            throw new IllegalStateException("Invalid view type: " + viewType);
         }
     }
 
@@ -119,28 +119,20 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             final Transfer transfer = route.getTransfers()[position / 2];
             routeTransferViewHolder.routeTransferItemLayout.bind(context, transfer, route, position / 2);
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onRecyclerItemClick(RouteDetailCardAdapter.this, transfer);
-                    }
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onRecyclerItemClick(RouteDetailCardAdapter.this, transfer);
                 }
             });
 
             holder.itemView.setOnLongClickListener(
-                    new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
-                                                         transfer)
-                            ).show();
-                            return false;
-                        }
-
+                    view -> {
+                        (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
+                                transfer)
+                        ).show();
+                        return false;
                     }
             );
-
 
         } else if (holder instanceof RouteTrainViewHolder) {
             // odd (1,3,...) : route between stations
@@ -149,16 +141,10 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             ((RouteTrainViewHolder) holder).routeTrainItemLayout.bind(context, leg, route, (position - 1) / 2);
 
+            // Let users click through on trains to see the train journey. This isn't possible if it's a walk.
             if (leg.getType() != RouteLegType.WALK) {
                 holder.itemView.setOnClickListener(v -> {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("train", leg.getVehicleInformation());
-                    // Get the departure date (day) of this train
-                    bundle.putSerializable("date", leg.getDeparture().getTime());
-                    // TODO: consider if these should be included
-                    bundle.putSerializable("from", leg.getDeparture().getStation());
-                    bundle.putSerializable("to", leg.getArrival().getStation());
-
+                    Bundle bundle = getVehicleJourneyParameterBundle(leg);
                     if (listener != null) {
                         listener.onRecyclerItemClick(RouteDetailCardAdapter.this, bundle);
                     }
@@ -167,7 +153,7 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 holder.itemView.setOnLongClickListener(
                         view -> {
                             (new VehiclePopupContextMenu(RouteDetailCardAdapter.this.context,
-                                                         leg)
+                                    leg)
                             ).show();
                             return false;
                         }
@@ -175,6 +161,17 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
         }
 
+    }
+
+    private Bundle getVehicleJourneyParameterBundle(RouteLeg leg) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("train", leg.getVehicleInformation());
+        // Get the departure date (day) of this train
+        bundle.putSerializable("date", leg.getDeparture().getTime());
+        // TODO: consider if these should be included
+        bundle.putSerializable("from", leg.getDeparture().getStation());
+        bundle.putSerializable("to", leg.getArrival().getStation());
+        return bundle;
     }
 
     @Override
@@ -202,7 +199,6 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             routeTrainItemLayout = view.findViewById(R.id.binder);
 
         }
-
     }
 
     /**
@@ -216,7 +212,6 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             super(view);
             routeTransferItemLayout = view.findViewById(R.id.binder);
         }
-
     }
 }
 
