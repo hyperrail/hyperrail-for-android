@@ -9,7 +9,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
 def VERSION_CODE = 49
-def VERSION_NAME = '1.2.0-beta02'
+def VERSION_NAME = '1.2.0-beta03'
 
 android {
     compileSdkVersion 28
