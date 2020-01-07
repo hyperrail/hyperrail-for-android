@@ -160,7 +160,13 @@
         <Preference android:title="@string/pref_github">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.github.com/hyperrail/hyperrail-for-android/"/>
+                android:data="https://www.github.com/hyperrail/hyperrail-for-android/"/>
+        </Preference>
+
+        <Preference android:title="@string/pref_mlgtraffic">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://www.mlgtraffic.net/"/>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
