@@ -21,7 +21,7 @@ import org.joda.time.format.DateTimeFormatter;
 import be.hyperrail.android.R;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 
-public class RouteIntermediateStopLayout extends ConstraintLayout implements RecyclerViewItemViewGroup<VehicleStop[], VehicleStop> {
+public class RouteintermediateStopLayout extends ConstraintLayout implements RecyclerViewItemViewGroup<VehicleStop[], VehicleStop> {
 
     protected ImageView vTimeline;
     protected TextView vDepartureTime;
@@ -30,15 +30,15 @@ public class RouteIntermediateStopLayout extends ConstraintLayout implements Rec
 
     DateTimeFormatter mHhmmFormatter = DateTimeFormat.forPattern("HH:mm");
 
-    public RouteIntermediateStopLayout(Context context) {
+    public RouteintermediateStopLayout(Context context) {
         super(context);
     }
 
-    public RouteIntermediateStopLayout(Context context, @Nullable AttributeSet attrs) {
+    public RouteintermediateStopLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public RouteIntermediateStopLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RouteintermediateStopLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -53,7 +53,7 @@ public class RouteIntermediateStopLayout extends ConstraintLayout implements Rec
     }
 
     @Override
-    public void bind(Context context, VehicleStop intermediateStop, VehicleStop[] allIntermediateStops, int position) {
+    public void bind(Context context, VehicleStop intermediateStop, VehicleStop[] allintermediateStops, int position) {
         vStation.setText(intermediateStop.getStopLocation().getLocalizedName());
         bindTimeAndDelay(context, intermediateStop);
         bindTimelineDrawable(context, intermediateStop);

@@ -49,8 +49,8 @@ dependencies {
     implementation 'joda-time:joda-time:2.10.3'
 
     // Performance logging
-    implementation 'com.google.firebase:firebase-perf:19.0.1'
-    implementation 'com.google.firebase:firebase-core:17.2.0'
+    implementation 'com.google.firebase:firebase-perf:19.0.4'
+    implementation 'com.google.firebase:firebase-core:17.2.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.0.0'
     testImplementation 'org.json:json:20160810'

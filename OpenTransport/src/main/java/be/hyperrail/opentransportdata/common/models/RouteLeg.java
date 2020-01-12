@@ -44,5 +44,5 @@ public interface RouteLeg extends Serializable {
      * Empty array: no stops
      * Array: stops
      */
-    VehicleStop[] getIntermediaryStops();
+    VehicleStop[] getintermediateStops();
 }

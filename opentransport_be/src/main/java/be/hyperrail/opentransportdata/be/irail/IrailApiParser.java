@@ -138,7 +138,7 @@ class IrailApiParser {
         VehicleStop[] intermediateStopsForFirstLeg;
         if (departure.has("stops")) {
             JSONArray intermediateStopsForDepartureLeg = departure.getJSONObject("stops").getJSONArray("stop");
-            intermediateStopsForFirstLeg = parseIntermediateStops(intermediateStopsForDepartureLeg, firstTrain);
+            intermediateStopsForFirstLeg = parseintermediateStops(intermediateStopsForDepartureLeg, firstTrain);
         } else {
             intermediateStopsForFirstLeg = new VehicleStop[0];
         }
@@ -196,8 +196,8 @@ class IrailApiParser {
 
                 VehicleStop[] intermediateStops;
                 if (viaDeparture.has("stops")) {
-                    JSONArray intermediateStopsForViaDeparture = viaDeparture.getJSONArray("stops");
-                    intermediateStops = parseIntermediateStops(intermediateStopsForViaDeparture, viaVehicleJourney);
+                    JSONArray intermediateStopsForViaDeparture = viaDeparture.getJSONObject("stops").getJSONArray("stop");
+                    intermediateStops = parseintermediateStops(intermediateStopsForViaDeparture, viaVehicleJourney);
                 } else {
                     intermediateStops = new VehicleStop[0];
                 }
@@ -228,10 +228,10 @@ class IrailApiParser {
         return r;
     }
 
-    private VehicleStop[] parseIntermediateStops(JSONArray rawIntermediateStops, IrailVehicleJourneyStub vehicleJourneyStub) throws JSONException, StopLocationNotResolvedException {
-        VehicleStop[] intermediateStops = new VehicleStop[rawIntermediateStops.length()];
-        for (int i = 0; i < rawIntermediateStops.length(); i++) {
-            intermediateStops[i] = parseTrainStop(vehicleJourneyStub, rawIntermediateStops.getJSONObject(i), VehicleStopType.STOP);
+    private VehicleStop[] parseintermediateStops(JSONArray rawintermediateStops, IrailVehicleJourneyStub vehicleJourneyStub) throws JSONException, StopLocationNotResolvedException {
+        VehicleStop[] intermediateStops = new VehicleStop[rawintermediateStops.length()];
+        for (int i = 0; i < rawintermediateStops.length(); i++) {
+            intermediateStops[i] = parseTrainStop(vehicleJourneyStub, rawintermediateStops.getJSONObject(i), VehicleStopType.STOP);
         }
         return intermediateStops;
     }
@@ -250,7 +250,7 @@ class IrailApiParser {
     }
 
     private boolean isPlatformNormal(JSONObject jsonObject) throws JSONException {
-        return jsonObject.getJSONObject("platforminfo").getInt("normal") == 1;
+        return !jsonObject.has("platforminfo") || jsonObject.getJSONObject("platforminfo").getInt("normal") == 1;
     }
 
     private String getStationUri(JSONObject object) throws JSONException {
@@ -453,7 +453,7 @@ class IrailApiParser {
         return new Duration(item.getInt(delay) * 1000);
     }
 
-    private VehicleStopImpl parseIntermediateTrainStop(IrailVehicleJourneyStub train, JSONObject item, VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
+    private VehicleStopImpl parseintermediateTrainStop(IrailVehicleJourneyStub train, JSONObject item, VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
         StopLocation stop = stationProvider.getStoplocationBySemanticId(getStationUri(item));
 
         TransportOccupancyLevel occupancyLevel = parseOccupancyLevel(item);
@@ -484,7 +484,7 @@ class IrailApiParser {
         return new VehicleStopImpl(
                 stop,
                 train,
-                item.getString("platform"),
+                item.has("platform") ? item.getString("platform") : "",
                 isPlatformNormal(item),
                 timestamp2date(item.getString("scheduledDepartureTime")),
                 timestamp2date(item.getString("scheduledArrivalTime")),

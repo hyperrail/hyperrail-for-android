@@ -4,7 +4,7 @@
   ~  You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 
-<RouteIntermediateStopsLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<be.hyperrail.android.viewgroup.RouteIntermediaryStopsLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/binder"
@@ -12,7 +12,7 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="horizontal"
-    tools:context=".viewgroup.RouteIntermediateStopsLayout">
+    tools:context=".viewgroup.RouteIntermediaryStopsLayout">
 
     <ImageView
         android:id="@+id/image_timeline"
@@ -50,9 +50,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview"
+        android:id="@+id/recyclerview_primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_timeline" />
-</RouteIntermediateStopsLayout>
+</be.hyperrail.android.viewgroup.RouteIntermediaryStopsLayout>

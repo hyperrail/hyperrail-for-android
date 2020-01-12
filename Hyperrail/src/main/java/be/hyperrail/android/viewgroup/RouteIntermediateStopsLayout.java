@@ -22,11 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
-import be.hyperrail.android.adapter.RouteIntermediaryStopCardAdapter;
+import be.hyperrail.android.adapter.RouteintermediateStopCardAdapter;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.RouteLeg;
-import be.hyperrail.opentransportdata.common.models.Transfer;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 public class RouteIntermediateStopsLayout extends ConstraintLayout {
@@ -35,7 +35,7 @@ public class RouteIntermediateStopsLayout extends ConstraintLayout {
     protected ImageView vTimeline;
     protected ImageView vExpandCollapse;
     protected RecyclerView vRecyclerView;
-    protected RecyclerView vLayoutRoot;
+    protected RouteIntermediateStopsLayout vLayoutRoot;
 
     public RouteIntermediateStopsLayout(Context context) {
         super(context);
@@ -53,28 +53,28 @@ public class RouteIntermediateStopsLayout extends ConstraintLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        vLayoutRoot = (RouteIntermediateStopsLayout) getRootView();
         vDescription = findViewById(R.id.text_description);
-        vRecyclerView = findViewById(R.id.recyclerview);
+        vRecyclerView = findViewById(R.id.recyclerview_primary);
         vTimeline = findViewById(R.id.image_timeline);
         vExpandCollapse = findViewById(R.id.img_toggle_collapse);
-        vLayoutRoot = findViewById(R.id.binder);
 
         // start collapsed
-        hideIntermediateStopList();
+        hideintermediateStopList();
     }
 
     public void bind(Context context, RouteLeg routeLeg) {
-        vDescription.setText(context.getString(R.string.route_intermediate_stops, routeLeg.getIntermediaryStops().length));
-        vLayoutRoot.setOnClickListener(v -> toggleIntermediateStopsList());
+        vDescription.setText(context.getResources().getQuantityString(R.plurals.route_intermediate_stops, routeLeg.getintermediateStops().length));
+        vLayoutRoot.setOnClickListener(v -> toggleintermediateStopsList());
         bindTimelineDrawable(context, routeLeg);
 
         // The initial call from an activity to the adapter responsible for this layout should pass the context in an activity!
-        RouteIntermediaryStopCardAdapter adapter = new RouteIntermediaryStopCardAdapter((Activity) context, routeLeg);
+        RouteintermediateStopCardAdapter adapter = new RouteintermediateStopCardAdapter((Activity) context, routeLeg);
 
         // Launch intents to view details / click through
         adapter.setOnItemClickListener((sender, intermediateStop) -> {
             Intent i = LiveboardActivity.createIntent(context, new LiveboardRequest(
-                    ((Transfer) intermediateStop).getStopLocation(), QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, null));
+                    ((VehicleStop) intermediateStop).getStopLocation(), QueryTimeDefinition.EQUAL_OR_LATER, LiveboardType.DEPARTURES, ((VehicleStop) intermediateStop).getArrivalTime()));
             context.startActivity(i);
         });
 
@@ -84,20 +84,20 @@ public class RouteIntermediateStopsLayout extends ConstraintLayout {
         vRecyclerView.setNestedScrollingEnabled(false);
     }
 
-    private void toggleIntermediateStopsList() {
+    private void toggleintermediateStopsList() {
         if (vRecyclerView.getVisibility() == GONE) {
-            showIntermediateStopList();
+            showintermediateStopList();
         } else {
-            hideIntermediateStopList();
+            hideintermediateStopList();
         }
     }
 
-    private void hideIntermediateStopList() {
+    private void hideintermediateStopList() {
         vRecyclerView.setVisibility(GONE);
         vExpandCollapse.setImageResource(R.drawable.ic_unfold_more);
     }
 
-    private void showIntermediateStopList() {
+    private void showintermediateStopList() {
         vRecyclerView.setVisibility(VISIBLE);
         vExpandCollapse.setImageResource(R.drawable.ic_unfold_less);
     }

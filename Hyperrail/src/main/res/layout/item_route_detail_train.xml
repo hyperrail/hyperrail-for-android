@@ -87,8 +87,9 @@
         app:layout_constraintTop_toTopOf="@id/incl_vehicleNumber" />
 
 
-    <be.hyperrail.android.viewgroup.RouteIntermediateStopsLayout
+    <include
         android:id="@+id/incl_intermediary_stops"
+        layout="@layout/item_route_detail_intermediate_stops_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"

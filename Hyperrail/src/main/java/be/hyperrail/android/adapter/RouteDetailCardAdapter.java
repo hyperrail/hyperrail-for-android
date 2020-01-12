@@ -39,7 +39,6 @@ public class RouteDetailCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     private static final int VIEW_TYPE_TRANSFER = 0;
     private static final int VIEW_TYPE_TRAIN = 1;
-    private static final int VIEW_TYPE_INTERMEDIATE_STOPS = 2;
 
     /**
      * Whether or not this view will be embedded (required to pick the correct layout)

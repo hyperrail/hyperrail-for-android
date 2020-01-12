@@ -53,7 +53,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
     protected LinearLayout vAlertContainer;
     protected TextView vAlertText;
 
-    protected RouteIntermediateStopsLayout vIntermediaryStops;
+    protected RouteIntermediateStopsLayout vintermediateStops;
 
     public RouteTrainItemLayout(Context context) {
         super(context);
@@ -76,16 +76,16 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vTrainNumber = findViewById(R.id.text_train_number);
         vTrainType = findViewById(R.id.text_train_type);
 
-        vStatusContainer = findViewById(R.id.layout_train_status_container);
+        vStatusContainer = findViewById(R.id.incl_status);
         vStatusText = findViewById(R.id.text_train_status);
 
-        vOccupancy = findViewById(R.id.image_occupancy);
+        vOccupancy = findViewById(R.id.incl_occupancy);
 
         vAlertContainer = findViewById(R.id.alert_container);
         vAlertText = findViewById(R.id.alert_message);
 
         vTimeline = findViewById(R.id.image_timeline);
-        vIntermediaryStops = findViewById(R.id.incl_intermediary_stops);
+        vintermediateStops = findViewById(R.id.incl_intermediate_stops);
         vTimelineAlerts = findViewById(R.id.image_timeline_alerts);
     }
 
@@ -136,18 +136,18 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
             vStatusContainer.setVisibility(View.GONE);
         }
 
-        bindIntermediaryStops(context, routeLeg);
+        bindintermediateStops(context, routeLeg);
         bindAlerts(route, position);
 
         vOccupancy.setImageDrawable(ContextCompat.getDrawable(context, OccupancyHelper.getOccupancyDrawable(transferBefore.getDepartureOccupancy())));
     }
 
-    private void bindIntermediaryStops(Context context, RouteLeg routeLeg) {
-        if (routeLeg.getIntermediaryStops().length == 0) {
-            vIntermediaryStops.setVisibility(GONE);
+    private void bindintermediateStops(Context context, RouteLeg routeLeg) {
+        if (routeLeg.getintermediateStops().length == 0) {
+            vintermediateStops.setVisibility(GONE);
         } else {
-            vIntermediaryStops.setVisibility(VISIBLE);
-            vIntermediaryStops.bind(context, routeLeg);
+            vintermediateStops.setVisibility(VISIBLE);
+            vintermediateStops.bind(context, routeLeg);
         }
     }
 
@@ -182,8 +182,8 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
                 vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
             } else {
                 vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-                if (leg.getIntermediaryStops().length > 0 &&leg.getIntermediaryStops()[0].hasArrived()){
-                    // The intermediary stops timeline comes after the train icon timeline
+                if (leg.getintermediateStops().length > 0 &&leg.getintermediateStops()[0].hasArrived()){
+                    // The intermediate stops timeline comes after the train icon timeline
                     vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
                 } else {
                     vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));

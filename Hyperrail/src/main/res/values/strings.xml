@@ -158,6 +158,10 @@
     <string name="pref_vehicle_composition_display_number_summary">Show the number of each train or carriage. This number matches the number shown inside the train (if it is shown, depends on the train type).</string>
     <string name="pref_vehicle_composition_display_number">Display the trains vehicle number</string>
 
-    <string name="route_intermediate_stops">Ride along for %d stops</string>
+    <plurals name="route_intermediate_stops">
+        <item quantity="one">Ride along for %d stop</item>
+        <item quantity="other">Ride along for %d stops</item>
+    </plurals>
+
     <string name="pref_mlgtraffic">Train images by MLGTraffic</string>
 </resources>

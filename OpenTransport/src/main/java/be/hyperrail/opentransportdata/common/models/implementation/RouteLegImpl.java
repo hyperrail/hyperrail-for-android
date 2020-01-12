@@ -39,7 +39,7 @@ public class RouteLegImpl implements RouteLeg, Serializable {
      * Empty array: no stops
      * Array: stops
      */
-    private VehicleStop[] mIntermediaryStops = null;
+    private VehicleStop[] mintermediateStops;
 
     /**
      * Create a leg (a part) of a route. A route consists of one or more legs,
@@ -56,6 +56,7 @@ public class RouteLegImpl implements RouteLeg, Serializable {
         this.vehicleInformation = vehicleInformation;
         this.departure = departure;
         this.arrival = arrival;
+        this.mintermediateStops = intermediateStops;
     }
 
     /**
@@ -96,8 +97,8 @@ public class RouteLegImpl implements RouteLeg, Serializable {
      * Empty array: no stops
      * Array: stops
      */
-    public VehicleStop[] getIntermediaryStops() {
-        return mIntermediaryStops;
+    public VehicleStop[] getintermediateStops() {
+        return mintermediateStops;
     }
 
 }
