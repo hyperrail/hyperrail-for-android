@@ -160,7 +160,7 @@
     <string name="pref_vehicle_composition_display_type_summary">Toont het type van elke trein, wagon en locomotief, zoals M6, AM08, HLE27 en I10</string>
 
     <plurals name="route_intermediate_stops">
-        <item quantity="one">Passeer %d halte</item>
-        <item quantity="other">Passeer %d haltes</item>
+        <item quantity="one">%d tussenstop</item>
+        <item quantity="other">%d tussenstops</item>
     </plurals>
 </resources>

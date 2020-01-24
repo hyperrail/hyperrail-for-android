@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import be.hyperrail.android.R;
-import be.hyperrail.android.viewgroup.RouteintermediateStopLayout;
+import be.hyperrail.android.viewgroup.RouteIntermediateStopLayout;
 import be.hyperrail.opentransportdata.common.models.RouteLeg;
 
 /**
@@ -79,11 +79,11 @@ public class RouteintermediateStopCardAdapter extends RecyclerView.Adapter<Recyc
      */
     private class RouteintermediateStopViewHolder extends RecyclerView.ViewHolder {
 
-        RouteintermediateStopLayout routeintermediateStopLayout;
+        RouteIntermediateStopLayout routeintermediateStopLayout;
 
         RouteintermediateStopViewHolder(View view) {
             super(view);
-            routeintermediateStopLayout = (RouteintermediateStopLayout) view.getRootView();
+            routeintermediateStopLayout = (RouteIntermediateStopLayout) view.getRootView();
         }
     }
 }

@@ -85,7 +85,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vAlertText = findViewById(R.id.alert_message);
 
         vTimeline = findViewById(R.id.image_timeline);
-        vintermediateStops = findViewById(R.id.incl_intermediate_stops);
+        vintermediateStops = findViewById(R.id.incl_intermediary_stops);
         vTimelineAlerts = findViewById(R.id.image_timeline_alerts);
     }
 

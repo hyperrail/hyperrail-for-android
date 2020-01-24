@@ -64,7 +64,7 @@ public class RouteIntermediateStopsLayout extends ConstraintLayout {
     }
 
     public void bind(Context context, RouteLeg routeLeg) {
-        vDescription.setText(context.getResources().getQuantityString(R.plurals.route_intermediate_stops, routeLeg.getintermediateStops().length));
+        vDescription.setText(context.getResources().getQuantityString(R.plurals.route_intermediate_stops, routeLeg.getintermediateStops().length, routeLeg.getintermediateStops().length));
         vLayoutRoot.setOnClickListener(v -> toggleintermediateStopsList());
         bindTimelineDrawable(context, routeLeg);
 
