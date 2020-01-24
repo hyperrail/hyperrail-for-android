@@ -84,7 +84,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vAlertContainer = findViewById(R.id.alert_container);
         vAlertText = findViewById(R.id.alert_message);
 
-        vTimeline = findViewById(R.id.image_timeline);
+        vTimeline = findViewById(R.id.image_timeline_train);
         vintermediateStops = findViewById(R.id.incl_intermediary_stops);
         vTimelineAlerts = findViewById(R.id.image_timeline_alerts);
     }
@@ -182,7 +182,7 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
                 vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
             } else {
                 vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-                if (leg.getintermediateStops().length > 0 &&leg.getintermediateStops()[0].hasArrived()){
+                if (leg.getintermediateStops().length > 0 && leg.getintermediateStops()[0].hasArrived()) {
                     // The intermediate stops timeline comes after the train icon timeline
                     vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
                 } else {
