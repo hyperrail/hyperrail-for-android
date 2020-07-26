@@ -14,6 +14,8 @@
 package be.hyperrail.opentransportdata.common.models.implementation;
 
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 import be.hyperrail.opentransportdata.common.models.RouteLeg;
@@ -101,4 +103,11 @@ public class RouteLegImpl implements RouteLeg, Serializable {
         return mintermediateStops;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return this.getType().name()
+                + " from " + this.departure.getStation().getName()
+                + " to " + this.getArrival().getStation().getName();
+    }
 }

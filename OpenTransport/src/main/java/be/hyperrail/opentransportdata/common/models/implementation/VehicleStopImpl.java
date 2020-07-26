@@ -113,7 +113,7 @@ public class VehicleStopImpl implements VehicleStop, Serializable {
 
     @Override
     public boolean hasArrived() {
-        return false;
+        return hasLeft;
     }
 
     public boolean isPlatformNormal() {

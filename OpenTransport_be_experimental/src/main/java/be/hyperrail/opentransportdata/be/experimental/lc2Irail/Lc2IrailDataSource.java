@@ -10,6 +10,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import androidx.annotation.NonNull;
+
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
@@ -36,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import be.hyperrail.opentransportdata.be.experimental.BuildConfig;
 import be.hyperrail.opentransportdata.be.irail.IrailApi;
 import be.hyperrail.opentransportdata.be.irail.IrailLiveboardExtendHelper;
@@ -62,6 +63,7 @@ import be.hyperrail.opentransportdata.common.requests.OccupancyPostRequest;
 import be.hyperrail.opentransportdata.common.requests.RequestType;
 import be.hyperrail.opentransportdata.common.requests.RoutePlanningRequest;
 import be.hyperrail.opentransportdata.common.requests.RouteRefreshRequest;
+import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
@@ -71,10 +73,9 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSource {
 
-    private static final OpenTransportLog log = OpenTransportLog.getLogger(Lc2IrailDataSource.class);
-
+    private final static String TAG_IRAIL_API_GET = "LC2IRAIL_GET";
     private static final String UA = "OpenTransport-be-experimental for Android - " + BuildConfig.VERSION_NAME;
-
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(Lc2IrailDataSource.class);
     private final Context mContext;
     private final Lc2IrailParser parser;
     private final TransportStopsDataSource stationsProvider;
@@ -82,7 +83,6 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     private final DefaultRetryPolicy requestPolicy;
     private final ConnectivityManager mConnectivityManager;
     private final List<MeteredRequest> mMeteredRequests = new ArrayList<>();
-    private final static String TAG_IRAIL_API_GET = "LC2IRAIL_GET";
 
     public Lc2IrailDataSource(Context context, TransportStopsDataSource stopsProvider) {
         this.mContext = context;
@@ -314,6 +314,15 @@ public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSourc
     public void getVehicleJourney(@NonNull VehicleRequest... requests) {
         for (VehicleRequest request : requests) {
             getVehicle(request);
+        }
+    }
+
+    @Override
+    public void getVehicleComposition(VehicleCompositionRequest... requests) {
+        for (VehicleCompositionRequest request : requests) {
+            if (request.getOnErrorListener() != null) {
+                request.getOnErrorListener().onErrorResponse(new NoSuchMethodException(), request.getTag());
+            }
         }
     }
 

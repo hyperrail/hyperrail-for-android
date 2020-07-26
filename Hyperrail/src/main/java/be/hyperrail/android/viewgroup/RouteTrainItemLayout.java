@@ -177,17 +177,12 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
 
     private void bindTimelineDrawable(Context context, Transfer transferBefore, Transfer transferAfter, RouteLeg leg) {
         if (transferBefore.hasLeft()) {
-            if (transferAfter.hasArrived()) {
+            if (transferAfter.hasArrived() || (leg.getintermediateStops().length > 0 && (leg.getintermediateStops()[0].hasArrived()))) {
                 vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
                 vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_filled));
             } else {
                 vTimelineAlerts.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_continuous_hollow));
-                if (leg.getintermediateStops().length > 0 && leg.getintermediateStops()[0].hasArrived()) {
-                    // The intermediate stops timeline comes after the train icon timeline
-                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_filled));
-                } else {
-                    vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
-                }
+                vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_inprogress));
             }
         } else {
             vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_train_hollow));

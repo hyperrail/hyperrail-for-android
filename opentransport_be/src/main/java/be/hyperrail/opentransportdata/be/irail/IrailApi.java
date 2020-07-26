@@ -164,7 +164,7 @@ public class IrailApi implements TransportDataSource {
         } else {
             url += "&timeSel=arrive";
         }
-        log.debug("Fetching vehicle composition from " + url);
+        log.debug("Fetching connections from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             RoutesListImpl routeResult;
             try {

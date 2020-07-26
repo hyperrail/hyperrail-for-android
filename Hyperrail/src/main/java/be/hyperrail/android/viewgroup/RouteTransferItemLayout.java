@@ -21,13 +21,14 @@ package be.hyperrail.android.viewgroup;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -215,9 +216,12 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
     }
 
     private void bindStopDrawable(Context context, Transfer transfer) {
-        if (transfer.hasArrived()) {
-            int drawable = transfer.hasLeft() ? R.drawable.timeline_transfer_filled : R.drawable.timeline_transfer_inprogress;
-            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, drawable));
+        if (transfer.hasArrived() && transfer.hasLeft()) {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled ));
+        } else if (transfer.hasArrived()) {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context,  R.drawable.timeline_transfer_inprogress));
+        } else if (transfer.hasLeft()) {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_departed_before_arrival));
         } else {
             vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
         }
