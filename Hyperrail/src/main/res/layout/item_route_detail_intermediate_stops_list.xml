@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  ~  If a copy of the MPL was not distributed with this file,
+  ~  You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<be.hyperrail.android.viewgroup.RouteIntermediateStopsLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/binder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    tools:context=".viewgroup.RouteIntermediateStopsLayout">
+
+    <ImageView
+        android:id="@+id/image_timeline"
+        android:layout_width="30dp"
+        android:layout_height="@dimen/listitem_content_height_onehalf"
+
+        android:contentDescription="@string/contentdescription_timeline_icon"
+        android:src="@drawable/timeline_continuous_hollow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_description"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:layout_marginLeft="74dp"
+
+        android:gravity="center_vertical"
+        android:text="Ride along for 5 stops (10 min)"
+        android:textColor="@color/colorTextDark"
+        android:textSize="@dimen/listitem_content_primary_textsize"
+        app:layout_constraintBottom_toBottomOf="@id/image_timeline"
+        app:layout_constraintLeft_toRightOf="@id/image_timeline"
+        app:layout_constraintTop_toTopOf="@id/image_timeline"
+        tools:ignore="HardcodedText" />
+
+
+    <ImageView
+        android:id="@+id/img_toggle_collapse"
+        android:layout_width="30dp"
+        android:layout_height="@dimen/listitem_content_height_onehalf"
+
+        android:contentDescription="@string/contentdescription_timeline_icon"
+        android:src="@drawable/ic_unfold_more"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_timeline" />
+</be.hyperrail.android.viewgroup.RouteIntermediateStopsLayout>

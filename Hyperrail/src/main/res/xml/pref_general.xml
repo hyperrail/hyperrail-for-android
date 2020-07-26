@@ -166,7 +166,7 @@
         <Preference android:title="@string/pref_mlgtraffic">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.mlgtraffic.net/"/>
+                android:data="https://www.mlgtraffic.net/"/>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

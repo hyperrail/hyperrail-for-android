@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  ~  If a copy of the MPL was not distributed with this file,
+  ~  You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                                    android:id="@+id/cardview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                                    android:layout_marginTop="@dimen/cardlist_vertical_spacing"
+                                    android:background="?android:attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center"
+                                    android:orientation="horizontal"
+                                    card_view:cardCornerRadius="4dp">
+
+    <be.hyperrail.android.viewgroup.RouteTransferItemLayout
+        android:id="@+id/binder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/item_route_detail_intermediate_stops_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </be.hyperrail.android.viewgroup.RouteTransferItemLayout>
+</androidx.cardview.widget.CardView>

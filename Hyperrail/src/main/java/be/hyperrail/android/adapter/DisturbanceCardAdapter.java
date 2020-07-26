@@ -14,12 +14,15 @@ package be.hyperrail.android.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,13 +35,11 @@ import be.hyperrail.opentransportdata.common.models.Disturbance;
  */
 public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Disturbance[] disturbances;
-    private final Context context;
-
-    private OnRecyclerItemClickListener<Disturbance> listener;
-
-    private static final int VIEW_TYPE_NO_RESULTS = 1;
     private static final int VIEW_TYPE_DISTURBANCE = 0;
+    private static final int VIEW_TYPE_NO_RESULTS = 1;
+    private final Context context;
+    private Disturbance[] disturbances;
+    private OnRecyclerItemClickListener<Disturbance> listener;
 
     public DisturbanceCardAdapter(Context context, Disturbance[] disturbances) {
         this.context = context;
@@ -86,11 +87,35 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             final Disturbance disturbance = disturbances[position];
 
             holder.vTitle.setText(disturbance.getTitle());
-
-            holder.vDescription.setText(disturbance.getDescription());
+            holder.vDescription.setText(Html.fromHtml(disturbance.getDescription()));
 
             DateTimeFormatter df = DateTimeFormat.forPattern("EEE dd/MM/yy HH:mm");
             holder.vDate.setText(df.print(disturbance.getTime()));
+
+            holder.vDetailsContainer.setVisibility(View.GONE);
+            holder.vCollapseToggle.setOnClickListener(v -> {
+                if (holder.vDetailsContainer.getVisibility() == View.GONE) {
+                    holder.vDetailsContainer.setVisibility(View.VISIBLE);
+                    holder.vCollapseToggle.setImageResource(R.drawable.ic_unfold_less);
+                } else {
+                    holder.vDetailsContainer.setVisibility(View.GONE);
+                    holder.vCollapseToggle.setImageResource(R.drawable.ic_unfold_more);
+                }
+            });
+
+            if (disturbance.getType() == Disturbance.Type.DISTURBANCE) {
+                // Important information is shown directly
+                holder.vDetailsContainer.setVisibility(View.VISIBLE);
+                holder.vCollapseToggle.setImageResource(R.drawable.ic_unfold_less);
+            }
+
+            if (disturbance.getType() == Disturbance.Type.PLANNED) {
+                holder.vTypeIcon.setImageResource(R.drawable.ic_query_builder);
+                holder.vTypeIcon.setColorFilter(R.color.colorMuted);
+            } else {
+                holder.vTypeIcon.setImageResource(R.drawable.ic_action_warning);
+                holder.vTypeIcon.setColorFilter(R.color.colorDelay);
+            }
 
             holder.itemView.setOnClickListener(view -> {
                 if (listener != null) {
@@ -116,6 +141,9 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     class DisturbanceViewHolder extends RecyclerView.ViewHolder {
 
+        final ImageView vTypeIcon;
+        final ImageView vCollapseToggle;
+        final View vDetailsContainer;
         final TextView vTitle;
         final TextView vDescription;
         final TextView vDate;
@@ -125,11 +153,13 @@ public class DisturbanceCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             vTitle = view.findViewById(R.id.text_title);
             vDescription = view.findViewById(R.id.text_description);
             vDate = view.findViewById(R.id.text_date);
+            vTypeIcon = view.findViewById(R.id.img_disturbance_type);
+            vCollapseToggle = view.findViewById(R.id.img_toggle_collapse);
+            vDetailsContainer = view.findViewById(R.id.container_details);
         }
     }
 
     class NoResultsViewHolder extends RecyclerView.ViewHolder {
-
         NoResultsViewHolder(View view) {
             super(view);
         }

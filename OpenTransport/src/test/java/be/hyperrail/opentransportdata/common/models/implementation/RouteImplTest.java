@@ -13,6 +13,7 @@ import be.hyperrail.opentransportdata.common.models.RouteLegEnd;
 import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
 import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
+import be.hyperrail.opentransportdata.common.models.VehicleStop;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,8 +44,8 @@ class RouteImplTest {
         RouteLegEnd secondArrival = new RouteLegEndImpl(thirdStation, new DateTime(900 * 1000), "2A", true,
                 Duration.ZERO, false, false, null, TransportOccupancyLevel.UNKNOWN);
 
-        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival);
-        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival);
+        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival, null);
+        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival, new VehicleStop[3]);
 
         RouteLeg[] legs = new RouteLeg[]{firstLeg, secondLeg};
 
@@ -96,8 +97,8 @@ class RouteImplTest {
         RouteLegEnd secondArrival = new RouteLegEndImpl(thirdStation, new DateTime(900 * 1000), "2A", true,
                 new Duration(600 * 1000), false, false, null, TransportOccupancyLevel.UNKNOWN);
 
-        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival);
-        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival);
+        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival,  new VehicleStop[0]);
+        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival,  new VehicleStop[0]);
 
         RouteLeg[] legs = new RouteLeg[]{firstLeg, secondLeg};
 
@@ -150,8 +151,8 @@ class RouteImplTest {
         RouteLegEnd secondArrival = new RouteLegEndImpl(thirdStation, new DateTime(900 * 1000), "2A", true,
                 Duration.ZERO, false, false, null, TransportOccupancyLevel.UNKNOWN);
 
-        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival);
-        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival);
+        RouteLeg firstLeg = new RouteLegImpl(RouteLegType.TRAIN, firstLegVehicle, firstDeparture, firstArrival,  new VehicleStop[0]);
+        RouteLeg secondLeg = new RouteLegImpl(RouteLegType.TRAIN, secondLegVehicle, secondDeparture, secondArrival,  new VehicleStop[0]);
 
         RouteLeg[] legs = new RouteLeg[]{firstLeg, secondLeg};
 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  ~  If a copy of the MPL was not distributed with this file,
+  ~  You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<be.hyperrail.android.viewgroup.RouteIntermediateStopLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/listitem_content_height_onehalf"
+    android:gravity="center"
+    android:orientation="horizontal"
+    tools:context=".viewgroup.RouteIntermediateStopLayout">
+
+    <ImageView
+        android:id="@+id/image_timeline"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/contentdescription_timeline_icon"
+        android:src="@drawable/timeline_intermediatestop_hollow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/text_departure_time"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:gravity="center_vertical"
+        android:text="00:00"
+        android:textColor="@color/colorTextDark"
+        android:textSize="@dimen/listitem_content_primary_textsize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/image_timeline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/text_departure_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:layout_marginLeft="@dimen/activity_tiny_margin"
+        android:gravity="center_vertical|right"
+        android:minWidth="@dimen/listitem_delay_width"
+        android:text="6'"
+        android:textColor="@color/colorDelay"
+        android:textSize="@dimen/listitem_content_secondary_textsize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/text_departure_time"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/text_station"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/listitem_content_height_single"
+        android:layout_marginLeft="@dimen/activity_tiny_margin"
+        android:gravity="center_vertical"
+        android:text="Brussel-Zuid"
+        android:textColor="@color/colorTextDark"
+        android:textSize="@dimen/listitem_content_primary_textsize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/text_departure_delay"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+</be.hyperrail.android.viewgroup.RouteIntermediateStopLayout>

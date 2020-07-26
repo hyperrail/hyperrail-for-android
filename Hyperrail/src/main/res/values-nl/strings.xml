@@ -158,4 +158,9 @@
     <string name="pref_vehicle_composition_display_number_summary">Toont het voertuignummer van elke trein bij het bekijken van een treinsamenstelling. Deze nummers stemmen overeen met de nummers die soms boven de deuren in de trein worden weergegeven.</string>
     <string name="pref_vehicle_composition_display_type">Toon het type van elke trein, wagon en locomotief.</string>
     <string name="pref_vehicle_composition_display_type_summary">Toont het type van elke trein, wagon en locomotief, zoals M6, AM08, HLE27 en I10</string>
+
+    <plurals name="route_intermediate_stops">
+        <item quantity="one">%d tussenstop</item>
+        <item quantity="other">%d tussenstops</item>
+    </plurals>
 </resources>

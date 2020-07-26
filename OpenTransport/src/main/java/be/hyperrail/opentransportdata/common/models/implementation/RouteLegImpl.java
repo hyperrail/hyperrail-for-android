@@ -39,7 +39,7 @@ public class RouteLegImpl implements RouteLeg, Serializable {
      * Empty array: no stops
      * Array: stops
      */
-    private VehicleStop[] mIntermediaryStops = null;
+    private VehicleStop[] mintermediateStops;
 
     /**
      * Create a leg (a part) of a route. A route consists of one or more legs,
@@ -49,12 +49,14 @@ public class RouteLegImpl implements RouteLeg, Serializable {
      * @param vehicleInformation Information on the vehicle used in this leg
      * @param departure          The departure location and time of this leg
      * @param arrival            The arrival location and time of this leg
+     * @param intermediateStops  The intermediate stops on this leg
      */
-    public RouteLegImpl(RouteLegType type, VehicleJourneyStub vehicleInformation, RouteLegEnd departure, RouteLegEnd arrival) {
+    public RouteLegImpl(RouteLegType type, VehicleJourneyStub vehicleInformation, RouteLegEnd departure, RouteLegEnd arrival, VehicleStop[] intermediateStops) {
         this.type = type;
         this.vehicleInformation = vehicleInformation;
         this.departure = departure;
         this.arrival = arrival;
+        this.mintermediateStops = intermediateStops;
     }
 
     /**
@@ -95,18 +97,8 @@ public class RouteLegImpl implements RouteLeg, Serializable {
      * Empty array: no stops
      * Array: stops
      */
-    public VehicleStop[] getIntermediaryStops() {
-        return mIntermediaryStops;
+    public VehicleStop[] getintermediateStops() {
+        return mintermediateStops;
     }
 
-    /*/**
-     * Set the stops whether this vehicle will halt, but the traveller stays on the train.
-     * <p>
-     * Null: unknown/unavailable
-     * Empty array: no stops
-     * Array: stops
-     /
-    public void setIntermediaryStops(VehicleStop[] intermediaryStops) {
-        mIntermediaryStops = intermediaryStops;
-    }/**/
 }

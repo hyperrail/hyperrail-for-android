@@ -4,11 +4,11 @@ def VERSION_CODE = 3
 def VERSION_NAME = '1.1.0'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.0'
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode VERSION_CODE
         versionName VERSION_NAME
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -43,8 +43,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 
-    implementation 'com.google.firebase:firebase-perf:19.0.4'
-    implementation 'com.google.firebase:firebase-core:17.2.1'
+    implementation 'com.google.firebase:firebase-perf:19.0.8'
+    implementation 'com.google.firebase:firebase-core:17.4.4'
 
     // Advanced DateTime library
     implementation 'joda-time:joda-time:2.10.3'
@@ -55,7 +55,7 @@ dependencies {
     implementation project(path: ':OpenTransport')
 
     testImplementation "org.mockito:mockito-core:2.18.3"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation "org.mockito:mockito-core:2.18.3"
