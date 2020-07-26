@@ -162,6 +162,5 @@
         <item quantity="one">Ride along for %1d stop</item>
         <item quantity="other">Ride along for %1d stops</item>
     </plurals>
-
     <string name="pref_mlgtraffic">Train images by MLGTraffic</string>
 </resources>

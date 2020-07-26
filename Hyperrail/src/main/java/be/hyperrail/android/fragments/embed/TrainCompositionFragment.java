@@ -153,6 +153,8 @@ public class TrainCompositionFragment extends Fragment implements ResultFragment
         vRecyclerView.setVisibility(View.GONE);
         vWarningUnconfirmed.setVisibility(View.GONE);
         vErrorUnavailable.setVisibility(View.VISIBLE);
+
+        rootElement.setVisibility(View.GONE);
     }
 
     @Override
