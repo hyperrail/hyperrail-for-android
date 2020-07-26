@@ -7,8 +7,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 
-def VERSION_CODE = 50
-def VERSION_NAME = '1.2.0-beta03'
+def VERSION_CODE = 51
+def VERSION_NAME = '1.2.0'
 
 android {
     compileSdkVersion 30

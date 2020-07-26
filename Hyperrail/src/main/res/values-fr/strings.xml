@@ -135,4 +135,16 @@
     <string name="rate_dialog_button_no_thanks">Non, merci</string>
     <string name="warning_composition_unavailable">Cette composition de train n\'est pas disponible pour le moment</string>
     <string name="warning_composition_unconfirmed">Cette composition n\'est pas confirmée et est susceptible de changer</string>
+    <string name="pref_display_vehicle_composition">Afficher les compositions de train</string>
+    <string name="pref_display_vehicle_composition_summary">"Afficher la composition des trains lors de l'affichage des détails du voyage. Par exemple un schéma du train, l'emplacement des wagons de première et deuxième classe, la disponibilité de la climatisation,… "</string>
+    <string name="pref_vehicle_composition_display_type_summary">Afficher le type de chaque chariot dans une composition de train</string>
+    <string name="pref_vehicle_composition_display_type">Afficher les types de chariot</string>
+    <string name="pref_vehicle_composition_display_number_summary">Montrez le numéro de chaque train ou wagon. Ce numéro correspond au numéro indiqué à l\'intérieur du train (s\'il est affiché, cela dépend du type de train).</string>
+    <string name="pref_vehicle_composition_display_number">Afficher le numéro de véhicule du train</string>
+    <string name="pref_mlgtraffic">Images de train par MLGTraffic</string>
+
+    <plurals name="route_intermediate_stops">
+        <item quantity="one">%d arrêt</item>
+        <item quantity="other">%d arrêts</item>
+    </plurals>
 </resources>
