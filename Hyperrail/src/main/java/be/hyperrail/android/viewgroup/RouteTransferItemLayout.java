@@ -30,12 +30,14 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.util.DurationFormatter;
 import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.Transfer;
 
 public class RouteTransferItemLayout extends LinearLayout implements RecyclerViewItemViewGroup<Route, Transfer> {
@@ -116,6 +118,16 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
                 vArrivalPlatformContainer,
                 vArrivalPlatform);
 
+
+        if (hasWalkingDeparture(transfer)) {
+            vDeparturePlatformContainer.setVisibility(GONE);
+            vWaitingTimeContainer.setVisibility(View.GONE);
+        }
+
+        if (hasWalkingArrival(transfer)) {
+            vArrivalPlatformContainer.setVisibility(GONE);
+        }
+
         bindTimelineDrawable(context, transfer, route, position);
     }
 
@@ -127,7 +139,6 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
                             transfer.getArrivalTime(), transfer.getArrivalDelay(),
                             transfer.getDepartureTime(), transfer.getDepartureDelay()
                     ));
-
         } else {
             vWaitingTime.setText("");
             vWaitingTimeContainer.setVisibility(View.GONE);
@@ -164,6 +175,14 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
         } else {
             vArrivalDelay.setText("");
         }
+    }
+
+    private boolean hasWalkingDeparture(Transfer transfer) {
+        return transfer.getDepartingLeg() != null && transfer.getDepartingLeg().getType() == RouteLegType.WALK;
+    }
+
+    private boolean hasWalkingArrival(Transfer transfer) {
+        return transfer.getArrivingLeg() != null && transfer.getArrivingLeg().getType() == RouteLegType.WALK;
     }
 
     private void bindPlatform(Context context, String platform, boolean normal, boolean cancelled, View container, TextView textView) {
@@ -216,10 +235,11 @@ public class RouteTransferItemLayout extends LinearLayout implements RecyclerVie
     }
 
     private void bindStopDrawable(Context context, Transfer transfer) {
-        if (transfer.hasArrived() && transfer.hasLeft()) {
-            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled ));
-        } else if (transfer.hasArrived()) {
-            vTimeline.setImageDrawable(ContextCompat.getDrawable(context,  R.drawable.timeline_transfer_inprogress));
+        if ((transfer.hasArrived() || (hasWalkingArrival(transfer) && DateTime.now().isAfter(transfer.getArrivalTime())))
+                && (transfer.hasLeft() || hasWalkingDeparture(transfer))) {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+        } else if (transfer.hasArrived() || (hasWalkingArrival(transfer) && DateTime.now().isAfter(transfer.getArrivalTime()))) {
+            vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_inprogress));
         } else if (transfer.hasLeft()) {
             vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_departed_before_arrival));
         } else {

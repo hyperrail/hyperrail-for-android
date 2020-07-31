@@ -107,6 +107,8 @@ public class RouteTrainItemLayout extends LinearLayout implements RecyclerViewIt
         vTrainType.setVisibility(View.GONE);
         vTrainNumber.setText(R.string.walk_description);
         vOccupancy.setVisibility(View.GONE);
+        vAlertContainer.setVisibility(GONE);
+        vStatusContainer.setVisibility(View.GONE);
 
         if (transferBefore.hasArrived()) {
             vTimeline.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_walk_filled));

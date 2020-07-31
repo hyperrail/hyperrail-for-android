@@ -190,9 +190,17 @@ class IrailApiParser {
             for (int i = 0; i < viaCount; i++) {
                 JSONObject via = (JSONObject) routeObject.getJSONObject("vias").getJSONArray("via").get(i);
                 JSONObject viaDeparture = via.getJSONObject("departure");
-                IrailVehicleJourneyStub viaVehicleJourney = new IrailVehicleJourneyStub(
-                        irailIdToVehicleId(viaDeparture),
-                        viaDeparture.getJSONObject("direction").getString("name"), null);
+
+                IrailVehicleJourneyStub viaVehicleJourney;
+                if (viaDeparture.getInt("walking") == 0) {
+                    viaVehicleJourney = new IrailVehicleJourneyStub(
+                            irailIdToVehicleId(viaDeparture),
+                            viaDeparture.getJSONObject("direction").getString("name"), null);
+                } else {
+                    viaVehicleJourney = new IrailVehicleJourneyStub(
+                            "WALK",
+                            viaDeparture.getJSONObject("direction").getString("name"), null);
+                }
 
                 VehicleStop[] intermediateStops;
                 if (viaDeparture.has("stops")) {
@@ -241,8 +249,12 @@ class IrailApiParser {
     }
 
     @NonNull
-    private String irailIdToVehicleId(JSONObject viaDeparture) throws JSONException {
-        return viaDeparture.getString("vehicle").substring(8);
+    private String irailIdToVehicleId(JSONObject departure) throws JSONException {
+        String vehicleId = departure.getString("vehicle");
+        if (vehicleId.equals("WALK")) {
+            return vehicleId;
+        }
+        return vehicleId.substring(8);
     }
 
     private boolean isCanceled(JSONObject viaDeparture) throws JSONException {

@@ -7,12 +7,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 
-def VERSION_CODE = 51
-def VERSION_NAME = '1.2.0'
+def VERSION_CODE = 52
+def VERSION_NAME = '1.2.1'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '30.0.0'
+    buildToolsVersion '30.0.1'
     defaultConfig {
         applicationId "be.hyperrail.android"
         minSdkVersion 21
