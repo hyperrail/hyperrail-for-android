@@ -147,4 +147,5 @@
         <item quantity="one">%d arrêt</item>
         <item quantity="other">%d arrêts</item>
     </plurals>
+    <string name="status_departure_cancelled">Départ annulé</string>
 </resources>

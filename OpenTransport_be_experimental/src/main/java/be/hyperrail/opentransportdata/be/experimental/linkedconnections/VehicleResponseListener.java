@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleInfo;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSuccessResponseListener;
@@ -71,14 +71,14 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
             String headsign = parseHeadsign(connection);
             if (stops.isEmpty()) {
                 // First stop
-                stops.add(VehicleStopImpl.buildDepartureVehicleStop(departure, new IrailVehicleJourneyStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
+                stops.add(VehicleStopImpl.buildDepartureVehicleStop(departure, new IrailVehicleInfo(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
                         connection.getDepartureTime(),
                         Duration.standardSeconds(connection.getDepartureDelay()),
                         false, connection.getDelayedDepartureTime().isBeforeNow(),
                         connection.getSemanticId(), TransportOccupancyLevel.UNSUPPORTED));
             } else {
                 // Some stop during the journey
-                stops.add(new VehicleStopImpl(departure, new IrailVehicleJourneyStub(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
+                stops.add(new VehicleStopImpl(departure, new IrailVehicleInfo(basename(connection.getRoute()), headsign, connection.getRoute()), "?", true,
                         connection.getDepartureTime(), lastConnection.getArrivalTime(),
                         Duration.standardSeconds(connection.getDepartureDelay()),
                         Duration.standardSeconds(lastConnection.getArrivalDelay()),
@@ -100,7 +100,7 @@ public class VehicleResponseListener implements TransportDataSuccessResponseList
 
             String headsign = parseHeadsign(lastConnection);
             // Arrival stop
-            stops.add(VehicleStopImpl.buildArrivalVehicleStop(arrival, new IrailVehicleJourneyStub(basename(lastConnection.getRoute()), headsign, lastConnection.getRoute()),
+            stops.add(VehicleStopImpl.buildArrivalVehicleStop(arrival, new IrailVehicleInfo(basename(lastConnection.getRoute()), headsign, lastConnection.getRoute()),
                     "?", true,
                     lastConnection.getArrivalTime(),
                     Duration.standardSeconds(lastConnection.getArrivalDelay()),

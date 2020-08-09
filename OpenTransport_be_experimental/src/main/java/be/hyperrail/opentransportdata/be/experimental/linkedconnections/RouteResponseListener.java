@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleInfo;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.NextDataPointer;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataErrorResponseListener;
@@ -413,7 +413,7 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
                 RouteLegEnd arrival = new RouteLegEndImpl(mStationProvider.getStoplocationBySemanticId(it.arrivalConnection.getArrivalStationUri()),
                         it.arrivalConnection.getArrivalTime(), "?", true, Duration.standardSeconds(it.arrivalConnection.getArrivalDelay()), false, it.arrivalConnection.getDelayedArrivalTime().isBeforeNow(),
                         it.arrivalConnection.getArrivalStationUri(), TransportOccupancyLevel.UNSUPPORTED);
-                RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleJourneyStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival, null);
+                RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleInfo(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival, null);
                 legs.add(r);
 
                 it = getFirstReachableConnection(it);
@@ -425,7 +425,7 @@ public class RouteResponseListener implements TransportDataSuccessResponseListen
             RouteLegEnd arrival = new RouteLegEndImpl(mStationProvider.getStoplocationBySemanticId(it.arrivalConnection.getArrivalStationUri()),
                     it.arrivalConnection.getArrivalTime(), "?", true, Duration.standardSeconds(it.arrivalConnection.getArrivalDelay()), false, it.arrivalConnection.getDelayedArrivalTime().isBeforeNow(),
                     it.arrivalConnection.getArrivalStationUri(), TransportOccupancyLevel.UNSUPPORTED);
-            RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleJourneyStub(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival, null);
+            RouteLeg r = new RouteLegImpl(RouteLegType.TRAIN, new IrailVehicleInfo(basename(it.departureConnection.getRoute()), it.departureConnection.getDirection(), it.departureConnection.getTrip()), departure, arrival, null);
             legs.add(r);
 
             RouteLeg[] legsArray = new RouteLeg[legs.size()];

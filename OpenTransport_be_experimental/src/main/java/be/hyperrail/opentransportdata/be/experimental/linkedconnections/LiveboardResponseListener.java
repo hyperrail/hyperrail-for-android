@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import be.hyperrail.opentransportdata.OpenTransportApi;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleInfo;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource;
 import be.hyperrail.opentransportdata.common.contracts.MeteredDataSource.MeteredRequest;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
@@ -173,7 +173,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                         headsign = direction.getLocalizedName();
                     }
                     stops.add(new VehicleStopImpl(request.getStation(),
-                            new IrailVehicleJourneyStub(
+                            new IrailVehicleInfo(
                                     basename(departure.getRoute()),
                                     headsign,
                                     departure.getRoute()),
@@ -208,7 +208,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                 } else {
                     headsign = direction.getLocalizedName();
                 }
-                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleJourneyStub(
+                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleInfo(
                         basename(departure.getRoute()),
                         headsign,
                         departure.getRoute()),
@@ -236,7 +236,7 @@ public class LiveboardResponseListener implements TransportDataSuccessResponseLi
                 LinkedConnection arrival = arrivals.get(i);
                 StopLocation direction = request.getStation();
 
-                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleJourneyStub(
+                stops.add(new VehicleStopImpl(request.getStation(), new IrailVehicleInfo(
                         basename(arrival.getRoute()),
                         direction.getLocalizedName(),
                         arrival.getRoute()),

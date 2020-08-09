@@ -20,6 +20,9 @@ package be.hyperrail.opentransportdata.be.irail;
 
 import androidx.annotation.Nullable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,15 +34,17 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  * VehicleJourney information, except its stops.
  * This data is typically present in the API without requiring a second API call.
  */
-public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable {
+public class IrailVehicleInfo implements VehicleJourneyStub, Serializable {
 
-    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailVehicleJourneyStub.class);
+    private final static OpenTransportLog log = OpenTransportLog.getLogger(IrailVehicleInfo.class);
 
     /**
      * The URI which uniquely identifies this train across time and transport providers.
      */
     @Nullable
     private final String uri;
+    private final String type;
+    private final String number;
 
     /**
      * The ID of the train, relative to the public transport provider. For example IC538.
@@ -52,69 +57,42 @@ public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable
      */
     private String headsign;
 
-    // Direction is required, since we need to display something
-    public IrailVehicleJourneyStub(String id, String headSign, @Nullable String uri) {
+    /**
+     * headSign is required as an extra parameter, since we need to display something
+     **/
+    @Deprecated
+    public IrailVehicleInfo(String id, String headSign, @Nullable String uri) {
         this.id = id.toUpperCase();
         this.headsign = headSign;
         this.uri = uri;
+        this.type = getVehicleClass(this.id);
+        this.number = getVehicleNumber(this.id);
     }
 
     /**
-     * The ID, for example IC4516
-     *
-     * @return ID, for example IC4516
-     */
-
-    public String getId() {
-        return id;
+     * headSign is required as an extra parameter, since we need to display something
+     **/
+    public IrailVehicleInfo(JSONObject vehicleInfoObject, String headSign) throws JSONException {
+        // TODO: Cleanup after iRail release #416
+        if (vehicleInfoObject.has("shortname")) {
+            this.id = vehicleInfoObject.getString("shortname");
+        } else {
+            this.id = vehicleInfoObject.getString("name").substring(8);
+        }
+        this.uri = vehicleInfoObject.getString("@id");
+        if (vehicleInfoObject.has("type")) {
+            this.type = vehicleInfoObject.getString("type");
+            this.number = vehicleInfoObject.getString("number");
+        } else {
+            this.type = getVehicleClass(this.id);
+            this.number = getVehicleNumber(this.id);
+        }
+        this.headsign = headSign;
     }
 
-    /**
-     * The direction (final stop) of this train
-     *
-     * @return direction (final stop) of this train
-     */
-    public String getHeadsign() {
-        return headsign;
-    }
-
-    /**
-     * Human-readable name, for example IC 4516
-     *
-     * @return Human-readable name
-     */
-
-    public String getName() {
-        return getVehicleName(id);
-    }
-
-
+    @Deprecated
     public static String getVehicleName(String id) {
         return getVehicleClass(id) + " " + getVehicleNumber(id);
-    }
-
-    /**
-     * Semantic ID, for example http://irail.be/vehicle/IC4516
-     *
-     * @return Semantic ID
-     */
-
-    public String getSemanticId() {
-        if (uri != null) {
-            return uri;
-        }
-        // Calculate if unknown
-        return "http://irail.be/vehicle/" + getId();
-    }
-
-    /**
-     * VehicleJourney type, for example S, IC, L, P
-     *
-     * @return The type of this train
-     */
-
-    public String getType() {
-        return getVehicleClass(getId());
     }
 
     /**
@@ -122,9 +100,9 @@ public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable
      *
      * @return The route/trip type for this vehicle
      */
-
+    @Deprecated
     private static String getVehicleClass(String id) {
-        if (id == null){
+        if (id == null) {
             log.logException(new NullPointerException("Tried to get a VehicleClass from an empty id"));
             return "";
         }
@@ -158,24 +136,15 @@ public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable
     }
 
     /**
-     * VehicleJourney number, for example 4516
-     *
-     * @return The number of this train
-     */
-
-    public String getNumber() {
-        return getVehicleNumber(getId());
-    }
-
-    /**
      * Deduct the number of a vehicle from its ID
      *
      * @param vehicleId The ID of a vehicle, e.g. IC538
      * @return The number of a vehicle, e.g. 538
      */
 
+    @Deprecated
     private static String getVehicleNumber(String vehicleId) {
-        if (vehicleId == null){
+        if (vehicleId == null) {
             log.logException(new NullPointerException("Tried to get a VehicleNumber from an empty id"));
             return "";
         }
@@ -196,10 +165,73 @@ public class IrailVehicleJourneyStub implements VehicleJourneyStub, Serializable
             if (m.find()) {
                 return m.group(2);
             }
-        } catch (Exception exception){
+        } catch (Exception exception) {
             log.severe("Failed to get vehicle number for vehicle " + vehicleId);
             log.logException(exception);
         }
         return "";
+    }
+
+    /**
+     * The ID, for example IC4516
+     *
+     * @return ID, for example IC4516
+     */
+
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * The direction (final stop) of this train
+     *
+     * @return direction (final stop) of this train
+     */
+    public String getHeadsign() {
+        return headsign;
+    }
+
+    /**
+     * Human-readable name, for example IC 4516
+     *
+     * @return Human-readable name
+     */
+
+    public String getName() {
+        return type + " " + number;
+    }
+
+    /**
+     * Semantic ID, for example http://irail.be/vehicle/IC4516
+     *
+     * @return Semantic ID
+     */
+
+    public String getSemanticId() {
+        if (uri != null) {
+            return uri;
+        }
+        // Calculate if unknown
+        return "http://irail.be/vehicle/" + getId();
+    }
+
+    /**
+     * VehicleJourney type, for example S, IC, L, P
+     *
+     * @return The type of this train
+     */
+
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * VehicleJourney number, for example 4516
+     *
+     * @return The number of this train
+     */
+
+    public String getNumber() {
+        return number;
     }
 }

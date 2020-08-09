@@ -33,7 +33,7 @@ import be.hyperrail.opentransportdata.common.models.implementation.VehicleStopIm
  * This class represents a train entity.
  * This class extends a VehicleJourneyStub with its stops.
  */
-public class IrailVehicleJourney extends IrailVehicleJourneyStub implements VehicleJourney, Serializable {
+public class IrailVehicleJourney extends IrailVehicleInfo implements VehicleJourney, Serializable {
 
     private final double longitude;
     private final double latitude;

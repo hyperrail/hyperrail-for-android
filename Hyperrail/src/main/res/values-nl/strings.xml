@@ -164,4 +164,5 @@
         <item quantity="other">%d tussenstops</item>
     </plurals>
     <string name="pref_mlgtraffic">Tekeningen treincomposities door MLGTraffic</string>
+    <string name="status_departure_cancelled">Vertrek afgeschaft</string>
 </resources>

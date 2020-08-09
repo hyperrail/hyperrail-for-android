@@ -45,7 +45,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourney;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleInfo;
 import be.hyperrail.opentransportdata.common.contracts.TransportOccupancyLevel;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
@@ -143,7 +143,7 @@ class Lc2IrailParser {
         DateTime arrivalTime = null;
         String platform;
         String uri;
-        IrailVehicleJourneyStub vehicle;
+        IrailVehicleInfo vehicle;
         boolean hasDeparted;
         boolean hasArrived = false;
 
@@ -165,7 +165,7 @@ class Lc2IrailParser {
 
         String headsign = parseHeadsign(json.getJSONObject("vehicle"));
 
-        vehicle = new IrailVehicleJourneyStub(
+        vehicle = new IrailVehicleInfo(
                 json.getJSONObject("vehicle").getString("id"),
                 headsign,
                 json.getJSONObject("vehicle").getString("semanticId")
@@ -229,7 +229,7 @@ class Lc2IrailParser {
         String id = response.getString("id");
         String uri = response.getString("semanticId");
 
-        IrailVehicleJourneyStub vehicleStub = new IrailVehicleJourneyStub(id, response.getString("direction"), uri);
+        IrailVehicleInfo vehicleStub = new IrailVehicleInfo(id, response.getString("direction"), uri);
         JSONArray jsonStops = response.getJSONArray("stops");
         VehicleStopImpl stops[] = new VehicleStopImpl[jsonStops.length()];
 
@@ -255,7 +255,7 @@ class Lc2IrailParser {
     }
 
     @NonNull
-    private VehicleStopImpl parseVehicleStop(@NonNull VehicleRequest request, @NonNull JSONObject json, @NonNull IrailVehicleJourneyStub vehicle, @NonNull VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
+    private VehicleStopImpl parseVehicleStop(@NonNull VehicleRequest request, @NonNull JSONObject json, @NonNull IrailVehicleInfo vehicle, @NonNull VehicleStopType type) throws JSONException, StopLocationNotResolvedException {
         /*
         {
               "arrivalDelay": 0,
@@ -413,7 +413,7 @@ class Lc2IrailParser {
 
             String headsign = parseHeadsign(jsonLeg);
 
-            IrailVehicleJourneyStub vehicle = new IrailVehicleJourneyStub(
+            IrailVehicleInfo vehicle = new IrailVehicleInfo(
                     jsonLeg.getString("route"),
                     headsign,
                     jsonLeg.getString("trip")

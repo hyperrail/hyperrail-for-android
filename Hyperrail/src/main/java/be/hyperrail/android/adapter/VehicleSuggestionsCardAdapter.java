@@ -8,14 +8,15 @@ package be.hyperrail.android.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -24,8 +25,8 @@ import java.util.List;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.persistence.Suggestion;
+import be.hyperrail.opentransportdata.be.irail.IrailVehicleInfo;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
-import be.hyperrail.opentransportdata.be.irail.IrailVehicleJourneyStub;
 
 /**
  * Recyclerview to show stations (for searches, recents ,...)
@@ -60,7 +61,7 @@ public class VehicleSuggestionsCardAdapter extends RecyclerView.Adapter<VehicleS
     public void onBindViewHolder(TrainViewHolder holder, int position) {
 
         final Suggestion<VehicleRequest> t = suggestedTrains.get(position);
-        String title = IrailVehicleJourneyStub.getVehicleName(t.getData().getVehicleId());
+        String title = IrailVehicleInfo.getVehicleName(t.getData().getVehicleId());
         if (t.getData().getDepartureTime() != null) {
             DateTimeFormatter df = DateTimeFormat.forPattern("HH:mm");
             title += " - " + df.print(t.getData().getDepartureTime());

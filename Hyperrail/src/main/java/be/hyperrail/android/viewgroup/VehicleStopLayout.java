@@ -9,21 +9,22 @@ package be.hyperrail.android.viewgroup;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.opentransportdata.common.models.VehicleJourney;
-import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 
 
 public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<VehicleJourney, VehicleStop> {
@@ -88,7 +89,7 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
 
         bindTimeAndDelay(context, stop);
 
-        bindPlatform(context, stop);
+        bindPlatform(context, stop, train, position);
 
         bindTimelineDrawable(context, stop, train, position);
 
@@ -121,10 +122,11 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
         }
     }
 
-    private void bindPlatform(Context context, VehicleStop stop) {
+    private void bindPlatform(Context context, VehicleStop stop, VehicleJourney train, int position) {
         vPlatform.setText(stop.getPlatform());
 
-        if (stop.isDepartureCanceled()) {
+        // Cancelled departures for arriving trains are handled later on
+        if ((stop.isDepartureCanceled() && position == 0) || (stop.isDepartureCanceled() && stop.isArrivalCanceled()) || (stop.isArrivalCanceled() && position == train.getStops().length - 1)) {
             vPlatform.setText("");
             vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train_canceled));
             vStatusText.setText(R.string.status_cancelled);
@@ -143,6 +145,15 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
                 drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorDelay), PorterDuff.Mode.SRC_ATOP);
             }
         }
+
+        // Be clear when the departure is canceled, but the train is still arriving from the previous station.
+        if (stop.isDepartureCanceled() && !stop.isArrivalCanceled() && position != 0) {
+            vStatusText.setText(R.string.status_departure_cancelled);
+            vStatusContainer.setVisibility(View.VISIBLE);
+            setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
+            vOccupancy.setVisibility(View.GONE);
+        }
+
     }
 
     private void bindTimeAndDelay(Context context, VehicleStop stop) {
