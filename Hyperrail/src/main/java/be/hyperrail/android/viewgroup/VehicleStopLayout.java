@@ -55,10 +55,9 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
         super(context, attrs, defStyleAttr);
     }
 
-    // TODO: use when API > 21
-    /*public LiveboardstopViewGroup(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public VehicleStopLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-    }*/
+    }
 
     @Override
     protected void onFinishInflate() {
@@ -97,27 +96,32 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
     }
 
     private void bindTimelineDrawable(Context context, VehicleStop stop, VehicleJourney train, int position) {
+        boolean isFirstStop = (position == 0);
+        boolean isLastStop = (position == train.getStops().length - 1);
+
+        vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
+
+        if (stop.hasArrived()) {
+            vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_inprogress));
+        }
+
         if (stop.hasLeft()) {
-            if (position == 0) {
-                vIcon.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
-            } else if (position == train.getStops().length - 1) {
-                vIcon.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
+            vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+        }
+
+        if (isFirstStop) {
+            if (stop.hasArrived()) {
+                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
             } else {
-                vIcon.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_transfer_filled));
+                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
             }
-        } else {
-            if (position == 0) {
-                vIcon.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
-            } else if (position == train.getStops().length - 1) {
-                vIcon.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
+        }
+
+        if (isLastStop) {
+            if (stop.hasArrived()) {
+                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_filled));
             } else {
-                vIcon.setImageDrawable(
-                        ContextCompat.getDrawable(context, R.drawable.timeline_transfer_hollow));
+                vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_arrival_hollow));
             }
         }
     }

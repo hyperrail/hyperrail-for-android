@@ -496,6 +496,7 @@ class IrailApiParser {
                 delayToDuration(item, "arrivalDelay"),
                 isNumericBooleanTrue(item, "departureCanceled"),
                 isNumericBooleanTrue(item, "arrivalCanceled"),
+                isNumericBooleanTrue(item, "arrived"),
                 isNumericBooleanTrue(item, "left"),
                 item.has("departureConnection") ? item.getString("departureConnection") : "",
                 occupancyLevel,

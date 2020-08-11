@@ -67,7 +67,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class IrailApi implements TransportDataSource {
 
-    private static final String BASE_URL = "https://api.irail.be";
+    private static final String BASE_URL = "https://staging.api.irail.be";
     private static final String USER_AGENT = "OpenTransportData for Android - " + BuildConfig.VERSION_NAME;
     private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApi.class);
     private final RequestQueue requestQueue;
@@ -248,7 +248,7 @@ public class IrailApi implements TransportDataSource {
                 + "&date=" + dateformat.print(request.getSearchTime())
                 + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
                 + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
-        log.debug("Fetching connections composition from " + url);
+        log.info("Fetching liveboard from " + url);
         Response.Listener<JSONObject> successListener = response -> {
             LiveboardImpl result;
             try {

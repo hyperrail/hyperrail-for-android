@@ -32,7 +32,7 @@ class IrailFacilitiesDatabase extends SQLiteOpenHelper {
     private final Resources mResources;
 
     IrailFacilitiesDatabase(Context context) {
-        super(context, "irail-facilities.db", null, 2019060900);
+        super(context, "irail-facilities.db", null, 2020081100);
         this.mResources = context.getResources();
     }
 
