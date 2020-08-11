@@ -110,7 +110,7 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
         }
 
         if (isFirstStop) {
-            if (stop.hasArrived()) {
+            if (stop.hasLeft()) {
                 vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_filled));
             } else {
                 vIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.timeline_departure_hollow));
