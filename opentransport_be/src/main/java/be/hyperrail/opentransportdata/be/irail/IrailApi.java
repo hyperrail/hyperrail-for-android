@@ -67,7 +67,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
  */
 public class IrailApi implements TransportDataSource {
 
-    private static final String BASE_URL = "https://staging.api.irail.be";
+    private static final String BASE_URL = "https://api.irail.be";
     private static final String USER_AGENT = "OpenTransportData for Android - " + BuildConfig.VERSION_NAME;
     private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApi.class);
     private final RequestQueue requestQueue;
@@ -89,8 +89,6 @@ public class IrailApi implements TransportDataSource {
         );
         connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-
     }
 
     private boolean isInternetAvailable() {

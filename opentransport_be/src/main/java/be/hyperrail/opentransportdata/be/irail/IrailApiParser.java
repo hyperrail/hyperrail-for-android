@@ -261,8 +261,8 @@ class IrailApiParser {
         return intermediateStops;
     }
 
-    private boolean isNumericBooleanTrue(JSONObject arrival, String arrived) throws JSONException {
-        return arrival.has(arrived) && arrival.getInt(arrived) == 1;
+    private boolean isNumericBooleanTrue(JSONObject parent, String key) throws JSONException {
+        return parent.has(key) && parent.getInt(key) == 1;
     }
 
     @NonNull
