@@ -6,12 +6,12 @@
 
 apply plugin: 'com.android.library'
 
-def VERSION_CODE = 2
-def VERSION_NAME = '1.1.0'
+def VERSION_CODE = 3
+def VERSION_NAME = '1.1.1'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '30.0.0'
+    buildToolsVersion '30.0.1'
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
@@ -38,9 +38,6 @@ android {
         abortOnError false
     }
 }
-
-sourceCompatibility = "8"
-targetCompatibility = "8"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
