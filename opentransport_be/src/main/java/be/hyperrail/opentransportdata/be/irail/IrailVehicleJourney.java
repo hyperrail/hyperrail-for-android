@@ -18,8 +18,6 @@
 
 package be.hyperrail.opentransportdata.be.irail;
 
-import androidx.annotation.Nullable;
-
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -41,8 +39,8 @@ public class IrailVehicleJourney extends IrailVehicleInfo implements VehicleJour
     private final VehicleStopImpl[] stops;
     private VehicleStopImpl lastHaltedStop;
 
-    public IrailVehicleJourney(String id, @Nullable String uri, double longitude, double latitude, VehicleStopImpl[] stops) {
-        super(id, stops[stops.length - 1].getStopLocation().getLocalizedName(), uri);
+    public IrailVehicleJourney(IrailVehicleInfo vehicleInfo, double longitude, double latitude, VehicleStopImpl[] stops) {
+        super(vehicleInfo);
         this.longitude = longitude;
         this.latitude = latitude;
         this.stops = stops;

@@ -73,21 +73,24 @@ public class IrailVehicleInfo implements VehicleJourneyStub, Serializable {
      * headSign is required as an extra parameter, since we need to display something
      **/
     public IrailVehicleInfo(JSONObject vehicleInfoObject, String headSign) throws JSONException {
-        // TODO: Cleanup after iRail release #416
-        if (vehicleInfoObject.has("shortname")) {
-            this.id = vehicleInfoObject.getString("shortname");
-        } else {
-            this.id = vehicleInfoObject.getString("name").substring(8);
-        }
+        this.id = vehicleInfoObject.getString("shortname");
         this.uri = vehicleInfoObject.getString("@id");
-        if (vehicleInfoObject.has("type")) {
-            this.type = vehicleInfoObject.getString("type");
-            this.number = vehicleInfoObject.getString("number");
-        } else {
-            this.type = getVehicleClass(this.id);
-            this.number = getVehicleNumber(this.id);
-        }
+        this.type = vehicleInfoObject.getString("type");
+        this.number = vehicleInfoObject.getString("number");
         this.headsign = headSign;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param vehicleInfo object to copy.
+     */
+    public IrailVehicleInfo(IrailVehicleInfo vehicleInfo) {
+        this.id = vehicleInfo.id;
+        this.uri = vehicleInfo.uri;
+        this.type = vehicleInfo.type;
+        this.number = vehicleInfo.number;
+        this.headsign = vehicleInfo.headsign;
     }
 
     @Deprecated
@@ -148,7 +151,6 @@ public class IrailVehicleInfo implements VehicleJourneyStub, Serializable {
             log.logException(new NullPointerException("Tried to get a VehicleNumber from an empty id"));
             return "";
         }
-
         try {
             // S trains are special
             if (vehicleId.startsWith("S")) {
