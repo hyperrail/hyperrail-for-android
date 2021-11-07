@@ -21,11 +21,6 @@ package be.hyperrail.android.fragments;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -40,7 +35,12 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.firebase.perf.metrics.AddTrace;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
@@ -89,7 +89,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
 
     @Override
-    @AddTrace(name = "RouteSearchFragment.onCreateView")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -98,7 +97,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     }
 
     @Override
-    @AddTrace(name = "RouteSearchFragment.onViewCreated")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 

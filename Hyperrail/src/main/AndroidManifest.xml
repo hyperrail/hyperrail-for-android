@@ -28,6 +28,7 @@
             android:required="false" />
 
         <activity
+            android:exported="true"
             android:name=".activities.MainActivity"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="stateUnchanged">
@@ -74,7 +75,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <receiver android:name=".widget.NextDeparturesWidgetProvider">
+        <receiver android:name=".widget.NextDeparturesWidgetProvider" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -84,7 +85,7 @@
                 android:resource="@xml/appwidget_provider" />
         </receiver>
 
-        <activity android:name=".activities.NextDeparturesWidgetConfiguration">
+        <activity android:name=".activities.NextDeparturesWidgetConfiguration" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>

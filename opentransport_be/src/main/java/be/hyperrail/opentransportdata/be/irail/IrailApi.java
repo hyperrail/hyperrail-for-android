@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import be.hyperrail.opentransportdata.BuildConfig;
 import be.hyperrail.opentransportdata.be.irail.util.AsyncJsonPostRequest;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
@@ -68,7 +67,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 public class IrailApi implements TransportDataSource {
 
     private static final String BASE_URL = "https://api.irail.be";
-    private static final String USER_AGENT = "OpenTransportData for Android - " + BuildConfig.VERSION_NAME;
+    private static final String USER_AGENT = "OpenTransportData for Android";
     private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApi.class);
     private final RequestQueue requestQueue;
     private final RetryPolicy requestPolicy;

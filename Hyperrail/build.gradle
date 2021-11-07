@@ -5,18 +5,19 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
-def VERSION_CODE = 53
-def VERSION_NAME = '1.2.2'
+def VERSION_CODE = 54
+def VERSION_NAME = '1.2.3'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion '30.0.1'
+    compileSdkVersion 31
+    buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "be.hyperrail.android"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode VERSION_CODE
         versionName VERSION_NAME
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -43,28 +44,23 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
-        transitive = true
-    }
 
-    implementation 'com.android.volley:volley:1.1.0@aar'
+    implementation 'com.android.volley:volley:1.2.1@aar'
     implementation 'joda-time:joda-time:2.10.3'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.exifinterface:exifinterface:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'com.google.android.material:material:1.2.0'
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
-    implementation 'com.google.firebase:firebase-perf:19.0.8'
-    implementation 'com.google.firebase:firebase-core:17.5.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.4'
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.json:json:20200518'
     testImplementation "org.mockito:mockito-core:2.18.3"
     // org.json is included with Android, but Android.jar can not be used from unit tests
@@ -83,4 +79,3 @@ dependencies {
     implementation project(path: ':OpenTransport_be')
 }
 
-apply plugin: 'com.google.gms.google-services'

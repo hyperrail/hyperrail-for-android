@@ -13,8 +13,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
@@ -37,7 +35,6 @@ public class ReviewDialogProvider {
         // No public constructor
     }
 
-    @AddTrace(name = "reviewDialogProvider.initLogWriter")
     public static void init(Context context) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         launches = sharedPreferences.getInt(PREFERENCES_KEY_LAUNCH_COUNT, 0);

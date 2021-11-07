@@ -1,6 +1,6 @@
 package be.hyperrail.android.logging;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import java.util.logging.Level;
 
@@ -8,21 +8,21 @@ public class HyperRailCrashlyticsLogWriter extends HyperRailConsoleLogWriter imp
 
     @Override
     public void logException(String tag, Throwable throwable) {
-        Crashlytics.logException(throwable);
+        FirebaseCrashlytics.getInstance().recordException(throwable);
     }
 
     @Override
     public void log(Level priority, String tag, String msg) {
-        Crashlytics.log(priority.intValue(), tag, msg);
+        FirebaseCrashlytics.getInstance().log("[" + priority.getName() + "] [" + tag + "] " + msg);
     }
 
     @Override
     public void setDebugVariable(String tag, String key, String value) {
-        Crashlytics.setString(key, value);
+        FirebaseCrashlytics.getInstance().setCustomKey(key, value);
     }
 
     @Override
     public void setDebugVariable(String tag, String key, int value) {
-        Crashlytics.setInt(key, value);
+        FirebaseCrashlytics.getInstance().setCustomKey(key, value);
     }
 }

@@ -27,7 +27,6 @@ public class NmbsToMlgDessinsAdapter {
     private static NmbsTrainType convertCarriage(String parentType, String subType, String orientation, int firstClassSeats) {
         String newParentType = parentType;
         String newSubType = subType;
-
         switch (parentType) {
             case "M4":
                 switch (subType) {
@@ -77,12 +76,24 @@ public class NmbsToMlgDessinsAdapter {
                         // 124/133 1st class
                         newSubType = "A";
                         break;
+                    case "BDYU":
                     case "BDU":
                         // 102/145 2nd class w/ luggage and bike storage
                         newSubType = "BD";
                         break;
                     case "BDAU":
                         // 1st/2nd class w/ luggage and bike storage
+                        newSubType = "ABD";
+                        break;
+                }
+                break;
+            case "M7":
+                // Fallback on M6 icons
+                switch (subType) {
+                    case "BUH":
+                        newSubType = "BD";
+                        break;
+                    case "ABUH":
                         newSubType = "ABD";
                         break;
                 }
