@@ -162,7 +162,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextLight"
+                android:textColor="@color/colorTextAlwaysLight"
                 android:textSize="@dimen/listitem_content_primary_textsize"
                 tools:ignore="HardcodedText" />
         </FrameLayout>

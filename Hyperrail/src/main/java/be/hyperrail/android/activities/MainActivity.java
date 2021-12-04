@@ -38,6 +38,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
@@ -47,7 +49,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
@@ -123,6 +129,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
+        Window window = getWindow();
+        WindowCompat.setDecorFitsSystemWindows(window, false);
+        ViewCompat.setOnApplyWindowInsetsListener(vLayoutRoot, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Apply the insets as a margin to the view. Here the system is setting
+            // only the bottom, left, and right dimensions, but apply whichever insets are
+            // appropriate to your layout. You can also update the view padding
+            // if that's more appropriate.
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            mlp.leftMargin = insets.left;
+            mlp.bottomMargin = insets.bottom;
+            mlp.rightMargin = insets.right;
+            mlp.topMargin = insets.top;
+            v.setLayoutParams(mlp);
+
+            // Return CONSUMED if we don't want the window insets to keep being passed
+            // down to descendant views.
+            return WindowInsetsCompat.CONSUMED;
+        });
+
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(R.string.app_name);
@@ -153,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         for (int i = 0; i < menu.size(); i++) {
             if (menu.getItem(i).getIcon() != null) {
-                tintDrawable(menu.getItem(i).getIcon(), R.color.colorWhite);
+                tintDrawable(menu.getItem(i).getIcon(), R.color.colorOnPrimary);
             }
         }
 

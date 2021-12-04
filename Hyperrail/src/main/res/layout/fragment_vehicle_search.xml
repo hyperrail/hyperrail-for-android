@@ -30,7 +30,7 @@
             android:inputType="textFilter"
             android:maxLines="1"
             android:paddingTop="@dimen/activity_vertical_margin"
-            android:textColor="@color/colorTextLight"
+            android:textColor="@color/colorOnPrimary"
             android:theme="@style/HyperrailAccentSearchText"
             />
         <Button

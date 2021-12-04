@@ -5,6 +5,7 @@
               android:layout_height="match_parent"
               android:layout_marginLeft="@dimen/listitem_content_padding"
               android:layout_marginRight="@dimen/listitem_content_padding"
+              android:background="?android:attr/selectableItemBackground"
               android:gravity="center"
               android:orientation="horizontal"
     >
@@ -123,7 +124,7 @@
             android:layout_height="wrap_content"
             android:text="5"
             android:textAlignment="center"
-            android:textColor="@color/colorTextLight"
+            android:textColor="@color/colorTextAlwaysLight"
             android:textSize="@dimen/listitem_content_primary_textsize"
             tools:ignore="HardcodedText"/>
 

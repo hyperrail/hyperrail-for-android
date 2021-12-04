@@ -6,6 +6,12 @@
 
 package be.hyperrail.opentransportdata.be.irail;
 
+import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_CREATE_INDEX_ID;
+import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_CREATE_INDEX_NAME;
+import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_CREATE_TABLE_STATIONS;
+import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_DELETE_TABLE_STATIONS;
+import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.StationsDataColumns;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
@@ -21,12 +27,6 @@ import be.hyperrail.opentransportdata.be.R;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 import be.hyperrail.opentransportdata.util.StringUtils;
 
-import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_CREATE_INDEX_ID;
-import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_CREATE_INDEX_NAME;
-import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_CREATE_TABLE_STATIONS;
-import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.SQL_DELETE_TABLE_STATIONS;
-import static be.hyperrail.opentransportdata.be.irail.IrailStationsDataContract.StationsDataColumns;
-
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  * (c) Bert Marcelis 2018
@@ -37,7 +37,7 @@ class IrailStopsDatabase extends SQLiteOpenHelper {
     private final Resources mResources;
 
     IrailStopsDatabase(Context context) {
-        super(context, "irail-stations.db", null, 2020081100);
+        super(context, "irail-stations.db", null, 2021110700);
         this.mResources = context.getResources();
     }
 

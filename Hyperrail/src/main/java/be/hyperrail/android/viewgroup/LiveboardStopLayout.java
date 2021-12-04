@@ -9,22 +9,23 @@ package be.hyperrail.android.viewgroup;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
-import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import be.hyperrail.opentransportdata.common.models.VehicleStop;
 import be.hyperrail.opentransportdata.common.models.VehicleStopType;
+import be.hyperrail.opentransportdata.util.OccupancyHelper;
 
 public class LiveboardStopLayout extends LinearLayout implements RecyclerViewItemViewGroup<Liveboard, VehicleStop> {
 
@@ -126,7 +127,7 @@ public class LiveboardStopLayout extends LinearLayout implements RecyclerViewIte
             vOccupancy.setVisibility(View.GONE);
             setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
         } else {
-            setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
+            setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundMaterialLight));
             vOccupancy.setVisibility(View.VISIBLE);
             vStatusContainer.setVisibility(View.GONE);
             vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));

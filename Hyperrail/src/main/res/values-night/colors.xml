@@ -5,13 +5,13 @@
     <color name="ic_launcher_background">#c62828</color><!-- Material red 800 -->
     <color name="colorPrimaryDark">#8e0000</color>
     <color name="colorPrimaryLight">#f05545</color>
-    <color name="colorAccent">#FFF</color>
+    <color name="colorAccent">#000</color>
 
-    <color name="colorWhite">#FFF</color>
-    <color name="backgroundMaterialDark">#ff212121</color>
-    <color name="backgroundMaterialLight">#fffafafa</color>
-    <color name="colorTextDark">#333</color>
-    <color name="colorTextLight">#fffafafa</color>
+    <color name="colorWhite">#000</color>
+    <color name="backgroundMaterialDark">#fffafafa</color>
+    <color name="backgroundMaterialLight">#ff212121</color>
+    <color name="colorTextDark">#fffafafa</color>
+    <color name="colorTextLight">#333</color>
     <color name="colorTextAlwaysLight">#fffafafa</color>
     <color name="colorWarningNotRealtime">#1860d8</color>
 
@@ -21,8 +21,8 @@
 
     <color name="colorDelay">#b71c1c</color> <!-- Material red 900 -->
     <color name="colorCanceledBackground">#22b71c1c</color> <!-- Material red 900 -->
-    <color name="colorMuted">#999999</color>
-    <color name="colorFaster">#1b5e20</color>
+    <color name="colorMuted">#aaaaaa</color>
+    <color name="colorFaster">#2E7D32</color>
 
 
 </resources>

@@ -23,7 +23,7 @@
             android:layout_gravity="top"
             android:background="@color/colorPrimary"
             android:elevation="4dp"
-            app:tabSelectedTextColor="@color/colorTextLight"
+            app:tabSelectedTextColor="@color/colorOnPrimary"
             app:tabTextColor="@color/colorPrimaryDark" />
 
     </androidx.viewpager.widget.ViewPager>

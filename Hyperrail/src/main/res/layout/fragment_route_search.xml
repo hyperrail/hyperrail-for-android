@@ -32,7 +32,7 @@
                 android:hint="@string/from"
                 android:inputType="text|textAutoComplete"
                 android:maxLines="1"
-                android:textColor="@color/colorTextLight"
+                android:textColor="@color/colorOnPrimary"
                 android:theme="@style/HyperrailAccentSearchAutocomplete"
                 />
 
@@ -58,7 +58,7 @@
                 android:hint="@string/to"
                 android:inputType="text|textAutoComplete"
                 android:maxLines="1"
-                android:textColor="@color/colorTextLight"
+                android:textColor="@color/colorOnPrimary"
                 android:theme="@style/HyperrailAccentSearchAutocomplete"/>
 
             <Button
@@ -96,7 +96,7 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@string/time_now"
-                android:textColor="@color/colorTextLight"/>
+                android:textColor="@color/colorOnPrimary"/>
 
             <Button
                 android:id="@+id/button_pickdatetime"

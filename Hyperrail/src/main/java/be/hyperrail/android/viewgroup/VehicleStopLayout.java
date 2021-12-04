@@ -138,7 +138,7 @@ public class VehicleStopLayout extends LinearLayout implements RecyclerViewItemV
             vOccupancy.setVisibility(View.GONE);
             setBackgroundColor(ContextCompat.getColor(context, R.color.colorCanceledBackground));
         } else {
-            setBackgroundColor(ContextCompat.getColor(context, android.R.color.background_light));
+            setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundMaterialLight));
             vStatusContainer.setVisibility(View.GONE);
             vOccupancy.setVisibility(View.VISIBLE);
             vPlatformContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.platform_train));

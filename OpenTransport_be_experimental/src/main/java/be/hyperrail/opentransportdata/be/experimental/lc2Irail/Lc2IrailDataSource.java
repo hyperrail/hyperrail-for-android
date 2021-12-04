@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import be.hyperrail.opentransportdata.be.experimental.BuildConfig;
 import be.hyperrail.opentransportdata.be.irail.IrailApi;
 import be.hyperrail.opentransportdata.be.irail.IrailLiveboardExtendHelper;
 import be.hyperrail.opentransportdata.be.irail.IrailRouteExtendHelper;
@@ -74,7 +73,7 @@ import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 public class Lc2IrailDataSource implements TransportDataSource, MeteredDataSource {
 
     private final static String TAG_IRAIL_API_GET = "LC2IRAIL_GET";
-    private static final String UA = "OpenTransport-be-experimental for Android - " + BuildConfig.VERSION_NAME;
+    private static final String UA = "OpenTransport-be-experimental for Android";
     private static final OpenTransportLog log = OpenTransportLog.getLogger(Lc2IrailDataSource.class);
     private final Context mContext;
     private final Lc2IrailParser parser;

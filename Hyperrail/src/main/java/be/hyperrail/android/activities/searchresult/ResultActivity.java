@@ -12,6 +12,8 @@
 
 package be.hyperrail.android.activities.searchresult;
 
+import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
+
 import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.PorterDuff;
@@ -45,8 +47,6 @@ import be.hyperrail.android.util.OnDateTimeSetListener;
 import be.hyperrail.android.util.health.HealthState;
 import be.hyperrail.android.util.health.HealthStateChecker;
 import be.hyperrail.android.util.health.HealthStateCheckerListener;
-
-import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 
 /**
  * An abstract class for activities which contain a recyclerview
@@ -168,7 +168,7 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
 
         for (int i = 0; i < menu.size(); i++) {
             if (menu.getItem(i).getIcon() != null) {
-                tintDrawable(menu.getItem(i).getIcon(), R.color.colorWhite);
+                tintDrawable(menu.getItem(i).getIcon(), R.color.colorOnPrimary);
             }
         }
 
@@ -189,11 +189,11 @@ public abstract class ResultActivity extends AppCompatActivity implements OnDate
         if (favorite) {
             vFavoriteMenuItem.setIcon(R.drawable.ic_star);
             vFavoriteMenuItem.setTitle(R.string.action_unmark_as_favorite);
-            tintDrawable(vFavoriteMenuItem.getIcon(), R.color.colorTextLight);
+            tintDrawable(vFavoriteMenuItem.getIcon(), R.color.colorOnPrimary);
         } else {
             vFavoriteMenuItem.setIcon(R.drawable.ic_star_border);
             vFavoriteMenuItem.setTitle(R.string.action_mark_as_favorite);
-            tintDrawable(vFavoriteMenuItem.getIcon(), R.color.colorTextLight);
+            tintDrawable(vFavoriteMenuItem.getIcon(), R.color.colorOnPrimary);
         }
     }
 

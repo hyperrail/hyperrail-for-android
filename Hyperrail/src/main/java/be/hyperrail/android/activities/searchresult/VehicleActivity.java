@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -109,26 +108,14 @@ public class VehicleActivity extends ResultActivity {
     @Override
     public void markFavorite(boolean favorite) {
         if (favorite) {
-            //noinspection ConstantConditions
             mPersistentQueryProvider.store(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.marked_train_favorite, Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.undo, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            VehicleActivity.this.markFavorite(false);
-                        }
-                    })
+                    .setAction(R.string.undo, v -> VehicleActivity.this.markFavorite(false))
                     .show();
         } else {
-            //noinspection ConstantConditions
             mPersistentQueryProvider.delete(new Suggestion<>(mRequest, SuggestionType.FAVORITE));
             Snackbar.make(vLayoutRoot, R.string.unmarked_train_favorite, Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.undo, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            VehicleActivity.this.markFavorite(true);
-                        }
-                    })
+                    .setAction(R.string.undo, v -> VehicleActivity.this.markFavorite(true))
                     .show();
         }
         setFavoriteDisplayState(favorite);
@@ -136,7 +123,6 @@ public class VehicleActivity extends ResultActivity {
 
     @Override
     public boolean isFavorite() {
-        //noinspection ConstantConditions
         return mPersistentQueryProvider.isFavorite(mRequest);
     }
 

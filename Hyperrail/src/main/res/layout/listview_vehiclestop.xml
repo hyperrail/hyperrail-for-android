@@ -3,7 +3,7 @@
                                                 android:id="@+id/binder"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="@dimen/listitem_height"
-                                                android:background="?android:attr/selectableItemBackground"
+                                                android:background="@color/backgroundMaterialLight"
                                                 android:clickable="true"
                                                 android:focusable="true"
                                                 android:gravity="center">

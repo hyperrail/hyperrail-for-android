@@ -61,7 +61,7 @@
             android:background="@drawable/rounded_corner_4dp_seatingclass"
             android:gravity="center"
             android:text="1"
-            android:textColor="@color/colorTextLight"
+            android:textColor="@color/colorTextAlwaysLight"
             android:visibility="visible" />
 
 
@@ -74,7 +74,7 @@
             android:background="@drawable/rounded_corner_4dp_seatingclass"
             android:gravity="center"
             android:text="2"
-            android:textColor="@color/colorTextLight"
+            android:textColor="@color/colorTextAlwaysLight"
             android:visibility="visible" />
 
         <ImageView
@@ -87,7 +87,7 @@
             android:gravity="center"
             android:padding="4dp"
             android:src="@drawable/ic_ac_unit"
-            android:textColor="@color/colorTextLight"
+            android:textColor="@color/colorTextAlwaysLight"
             android:visibility="visible" />
     </LinearLayout>
 </be.hyperrail.android.viewgroup.VehicleCompositionUnitLayout>
