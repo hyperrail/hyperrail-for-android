@@ -7,6 +7,7 @@
 package be.hyperrail.opentransportdata.common.contracts;
 
 import android.net.TrafficStats;
+
 import androidx.annotation.IntDef;
 
 /**

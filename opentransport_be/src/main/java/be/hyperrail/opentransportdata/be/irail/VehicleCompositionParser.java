@@ -28,14 +28,34 @@ class VehicleCompositionParser {
     }
 
     VehicleCompositionImpl parseVehicleComposition(Context appContext, JSONObject response, String vehicleId) throws JSONException {
-        JSONObject segment = response.getJSONObject("composition").getJSONObject("segments").getJSONArray("segment").getJSONObject(0);
-        JSONArray units = segment.getJSONObject("composition").getJSONObject("units").getJSONArray("unit");
-        boolean confirmed = !segment.getJSONObject("composition").getString("source").equalsIgnoreCase("planning");
+
+        JSONArray segmentsArray = response.getJSONObject("composition").getJSONObject("segments").getJSONArray("segment");
+        // Get the longest composition to skip trains that are too short (locomotive only, incorrect compositions)
+        JSONObject longestSegment = getLongestComposition(segmentsArray);
+
+        JSONArray units = longestSegment.getJSONObject("composition").getJSONObject("units").getJSONArray("unit");
+        boolean confirmed = !longestSegment.getJSONObject("composition").getString("source").equalsIgnoreCase("planning");
         VehicleCompositionUnit[] vehicleCompositionUnits = new VehicleCompositionUnit[units.length()];
         for (int i = 0; i < units.length(); i++) {
             vehicleCompositionUnits[i] = parseVehicleCompositionUnit(appContext, units.getJSONObject(i));
         }
         return new VehicleCompositionImpl(vehicleCompositionUnits, confirmed);
+    }
+
+    private JSONObject getLongestComposition(JSONArray segmentsArray) throws JSONException {
+        JSONObject longestSegment = segmentsArray.getJSONObject(0);
+        if (segmentsArray.length() < 2){
+            return longestSegment;
+        }
+        int longestSegmentLength = longestSegment.getJSONObject("composition").getJSONObject("units").getInt("number");
+        for (int i = 1; i < segmentsArray.length(); i++){
+            JSONObject segment = segmentsArray.getJSONObject(i);
+            int length = segment.getJSONObject("composition").getJSONObject("units").getInt("number");
+            if (length > longestSegmentLength){
+                longestSegment = segment;
+            }
+        }
+        return longestSegment;
     }
 
     private VehicleCompositionUnit parseVehicleCompositionUnit(Context appContext, JSONObject jsonObject) throws JSONException {

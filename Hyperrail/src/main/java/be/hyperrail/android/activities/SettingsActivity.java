@@ -21,11 +21,9 @@ package be.hyperrail.android.activities;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.WindowCompat;
 
 import be.hyperrail.android.R;
 
@@ -47,10 +45,6 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_preferences);
-
-        Window window = getWindow();
-        WindowCompat.setDecorFitsSystemWindows(window, false);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);

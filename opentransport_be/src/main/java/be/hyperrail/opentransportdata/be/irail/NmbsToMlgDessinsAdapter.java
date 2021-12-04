@@ -52,6 +52,10 @@ public class NmbsToMlgDessinsAdapter {
                         break;
                 }
                 break;
+            case "M7":
+                // Fallback on M6 icons
+                newParentType = "M6";
+                // Continue into M6 subtype handling
             case "M6":
                 switch (subType) {
                     case "BXAA":
@@ -82,18 +86,8 @@ public class NmbsToMlgDessinsAdapter {
                         newSubType = "BD";
                         break;
                     case "BDAU":
-                        // 1st/2nd class w/ luggage and bike storage
-                        newSubType = "ABD";
-                        break;
-                }
-                break;
-            case "M7":
-                // Fallback on M6 icons
-                switch (subType) {
-                    case "BUH":
-                        newSubType = "BD";
-                        break;
                     case "ABUH":
+                        // 1st/2nd class w/ luggage and bike storage
                         newSubType = "ABD";
                         break;
                 }
@@ -236,18 +230,19 @@ public class NmbsToMlgDessinsAdapter {
 
         switch (parentType) {
             case "HLE18":
+            case "HLE19":
                 // NMBS doesn't distinguish between the old and new gen. All the old gen vehicles are out of service.
-                newParentType += "II";
+                newParentType = "HLE18II";
                 newSubType = "";
                 break;
+            case "HLE21":
+                newParentType += "II";
             case "HLE11":
             case "HLE12":
             case "HLE13":
             case "HLE15":
             case "HLE16":
-            case "HLE19":
             case "HLE20":
-            case "HLE21":
                 if (subType.isEmpty()) {
                     newSubType = "B";
                 }
