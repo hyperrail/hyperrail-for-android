@@ -8,8 +8,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
-def VERSION_CODE = 54
-def VERSION_NAME = '1.3.0'
+def VERSION_CODE = 55
+def VERSION_NAME = '1.3.1'
 
 android {
     compileSdkVersion 31
