@@ -16,8 +16,6 @@ import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.firebase.perf.metrics.AddTrace;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -91,7 +89,6 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
     }
 
     @Override
-    @AddTrace(name = "StationsDb.getStoplocationsOrderedBySize")
     @NonNull
     public StopLocation[] getStoplocationsOrderedBySize() {
         // Synchronized method to make better use of the cache
@@ -126,7 +123,6 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
 
     @NonNull
     @Override
-    @AddTrace(name = "StationsDb.getStoplocationsOrderedByLocation")
     public StopLocation[] getStoplocationsOrderedByLocation(Location location) {
         return this.getStoplocationsByNameOrderByLocation("", location);
     }
@@ -135,7 +131,6 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "StationsDb.getStoplocationsOrderedByLocationAndSize")
     @NonNull
     public StopLocation[] getStoplocationsOrderedByLocationAndSize(Location location, int limit) {
         SQLiteDatabase db = mDbInstance.getReadableDatabase();
@@ -172,7 +167,6 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      */
     @NonNull
     @Override
-    @AddTrace(name = "StationsDb.getStoplocationsNames")
     public String[] getStoplocationsNames(@NonNull StopLocation[] stopLocations) {
         if (stopLocations.length == 0) {
             log.warning("Tried to load station names on empty station list!");
@@ -240,7 +234,6 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "StationsDb.getStoplocationByExactName")
     @Nullable
     public StopLocation getStoplocationByExactName(@NonNull String name) {
         if (mStationNameCache.containsKey(name)) {
@@ -260,7 +253,6 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      * @inheritDoc
      */
     @Override
-    @AddTrace(name = "StationsDb.getStoplocationsByNameOrderBySize")
     @NonNull
     public StopLocation[] getStoplocationsByNameOrderBySize(@NonNull String name) {
         return getStationsByNameOrderBySize(name, false);
@@ -319,7 +311,6 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      */
     @NonNull
     @Override
-    @AddTrace(name = "StationsDb.getStoplocationsByNameOrderByLocation")
     public StopLocation[] getStoplocationsByNameOrderByLocation(String name, Location location) {
         SQLiteDatabase db = mDbInstance.getReadableDatabase();
 
