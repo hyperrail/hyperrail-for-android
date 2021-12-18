@@ -106,11 +106,6 @@ class IrailApiParser {
         JSONObject departure = routeObject.getJSONObject("departure");
         JSONObject arrival = routeObject.getJSONObject("arrival");
 
-        IrailVehicleInfo firstTrain = new IrailVehicleInfo(
-                departure.getJSONObject("vehicleinfo"),
-                departure.getJSONObject("direction").getString("name")
-        );
-
         TransportOccupancyLevel departureOccupancyLevel = parseOccupancyLevel(departure);
 
         boolean hasLastTrainArrived = isNumericBooleanTrue(arrival, "arrived");
@@ -133,6 +128,13 @@ class IrailApiParser {
             viaCount = routeObject.getJSONObject("vias").getInt("number");
         }
 
+        IrailVehicleInfo firstTrain = null;
+        if (!departure.getString("vehicle").equals("WALK")) {
+            firstTrain = new IrailVehicleInfo(
+                    departure.getJSONObject("vehicleinfo"),
+                    departure.getJSONObject("direction").getString("name")
+            );
+        }
 
         // A two-dimensional array of all intermediate stops for all legs. First index is the leg, second index the intermediate stop.
         VehicleStop[] intermediateStopsForFirstLeg;
@@ -216,7 +218,11 @@ class IrailApiParser {
             }
         } else {
             legs = new RouteLeg[1];
-            legs[0] = new RouteLegImpl(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd, intermediateStopsForFirstLeg);
+            if (firstTrain != null) {
+                legs[0] = new RouteLegImpl(RouteLegType.TRAIN, firstTrain, departureEnd, arrivalEnd, intermediateStopsForFirstLeg);
+            } else {
+                legs[0] = new RouteLegImpl(RouteLegType.WALK, null, departureEnd, arrivalEnd, intermediateStopsForFirstLeg);
+            }
         }
 
         Message[][] trainalerts = parseRouteAlertsPerLeg(routeObject, departure, legs);
@@ -447,7 +453,7 @@ class IrailApiParser {
                 isNumericBooleanTrue(item, "left"),
                 item.getString("departureConnection"),
                 occupancyLevel
-        );
+                                                        );
     }
 
     @NonNull

@@ -18,17 +18,18 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -43,6 +44,7 @@ import be.hyperrail.android.util.DurationFormatter;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.Route;
+import be.hyperrail.opentransportdata.common.models.RouteLegType;
 import be.hyperrail.opentransportdata.common.models.RoutesList;
 import be.hyperrail.opentransportdata.common.models.Transfer;
 import be.hyperrail.opentransportdata.common.models.VehicleJourneyStub;
@@ -118,7 +120,12 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
 
         bindTimeAndDelay(context, route, hhmm);
 
-        vDirection.setText(route.getLegs()[0].getVehicleInformation().getHeadsign());
+        if (route.getLegs()[0].getType() == RouteLegType.WALK) {
+            vDirection.setText(R.string.walk_heading);
+        } else {
+            vDirection.setText(route.getLegs()[0].getVehicleInformation().getHeadsign());
+        }
+
         vDuration.setText(DurationFormatter.formatDuration(route.getDurationIncludingDelays().toPeriod()));
         vTrainCount.setText(String.valueOf(route.getLegs().length));
 
@@ -134,10 +141,10 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
             Intent i = null;
             if (object instanceof Bundle) {
                 i = VehicleActivity.createIntent(context,
-                                                 new VehicleRequest(
-                                                         ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
-                                                         (DateTime) ((Bundle) object).getSerializable("date")
-                                                 ));
+                        new VehicleRequest(
+                                ((VehicleJourneyStub) ((Bundle) object).getSerializable("train")).getId(),
+                                (DateTime) ((Bundle) object).getSerializable("date")
+                        ));
 
             } else if (object instanceof Transfer) {
                 i = LiveboardActivity.createIntent(context, new LiveboardRequest(
@@ -159,12 +166,9 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
             }
         });
 
-        vHeaderContainer.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                // still handle this in the parent
-                return false;
-            }
+        vHeaderContainer.setOnLongClickListener(v -> {
+            // still handle this in the parent
+            return false;
         });
     }
 
