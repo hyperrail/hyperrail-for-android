@@ -24,7 +24,7 @@
             android:background="@color/colorPrimary"
             android:elevation="4dp"
             app:tabSelectedTextColor="@color/colorOnPrimary"
-            app:tabTextColor="@color/colorPrimaryDark" />
+            app:tabTextColor="@color/colorMuted" />
 
     </androidx.viewpager.widget.ViewPager>
 

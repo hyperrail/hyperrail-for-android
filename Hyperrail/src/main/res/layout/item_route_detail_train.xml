@@ -130,7 +130,7 @@
                 android:maxLines="3"
                 android:scrollHorizontally="false"
                 android:text="Tijdens de weekends van 4-5,18-19,25-26 november werken wij aan het spoor in de regio van Gent."
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@color/colorDelay" />
 
         </LinearLayout>
     </LinearLayout>
