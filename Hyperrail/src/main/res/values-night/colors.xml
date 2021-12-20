@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#8e0000</color><!-- Material red 800 -->
+    <color name="colorPrimary">#c62828</color><!-- Material red 800 -->
     <color name="colorOnPrimary">#fffafafa</color>
     <color name="ic_launcher_background">#c62828</color><!-- Material red 800 -->
     <color name="colorPrimaryDark">#8e0000</color>
@@ -10,6 +10,7 @@
     <color name="colorWhite">#000</color>
     <color name="backgroundMaterialDark">#fffafafa</color>
     <color name="backgroundMaterialLight">#ff212121</color>
+    <color name="colorTranslucentBackground">#a0212121</color>
     <color name="colorTextDark">#fffafafa</color>
     <color name="colorTextLight">#333</color>
     <color name="colorTextAlwaysLight">#fffafafa</color>

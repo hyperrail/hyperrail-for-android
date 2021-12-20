@@ -37,15 +37,15 @@
         android:background="#006ab3"
         android:gravity="center"
         android:text="@string/warning_composition_unconfirmed"
-        android:textColor="@color/colorTextLight" />
+        android:textColor="@color/colorTextAlwaysLight" />
 
     <TextView
         android:id="@+id/text_status_unavailable"
         android:layout_width="match_parent"
         android:layout_height="@dimen/listitem_content_height_double"
         android:animateLayoutChanges="true"
-        android:background="@color/backgroundMaterialDark"
+        android:background="@color/colorBackgroundAlwaysDark"
         android:gravity="center"
         android:text="@string/warning_composition_unavailable"
-        android:textColor="@color/colorTextLight" />
+        android:textColor="@color/colorTextAlwaysLight" />
 </LinearLayout>

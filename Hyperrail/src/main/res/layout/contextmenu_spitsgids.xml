@@ -58,7 +58,8 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/ic_action_share"/>
+                android:src="@drawable/ic_action_share"
+                android:tint="@color/colorTextDark"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -84,7 +85,8 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/ic_action_share"/>
+                android:src="@drawable/ic_action_share"
+                android:tint="@color/colorTextDark"/>
 
             <TextView
                 android:layout_width="wrap_content"

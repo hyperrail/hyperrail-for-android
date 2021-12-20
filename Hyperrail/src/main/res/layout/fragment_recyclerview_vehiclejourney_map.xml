@@ -26,7 +26,7 @@
         android:id="@+id/fragment_vehicle_composition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#a0fafafa"
+        android:background="@color/colorTranslucentBackground"
         app:layout_constraintBottom_toBottomOf="@id/fragment_map" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

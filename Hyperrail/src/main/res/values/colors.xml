@@ -8,7 +8,10 @@
     <color name="colorAccent">#FFF</color>
 
     <color name="colorWhite">#FFF</color>
+    <color name="colorTranslucentBackground">#a0fafafa</color>
+    <color name="colorTranslucentWhite">#a0fafafa</color>
     <color name="backgroundMaterialDark">#ff212121</color>
+    <color name="colorBackgroundAlwaysDark">#ff212121</color>
     <color name="backgroundMaterialLight">#fffafafa</color>
     <color name="colorTextDark">#333</color>
     <color name="colorTextLight">#fffafafa</color>
