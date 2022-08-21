@@ -51,7 +51,7 @@ dependencies {
 
 
     implementation 'com.android.volley:volley:1.2.1@aar'
-    implementation 'joda-time:joda-time:2.10.3'
+    implementation 'joda-time:joda-time:2.11.0'
     implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -62,17 +62,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:18.2.12'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.json:json:20200518'
-    testImplementation "org.mockito:mockito-core:2.18.3"
+    testImplementation 'org.json:json:20220320'
+    testImplementation 'org.mockito:mockito-core:4.7.0'
     // org.json is included with Android, but Android.jar can not be used from unit tests
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0', {
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
 
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.2.0', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
