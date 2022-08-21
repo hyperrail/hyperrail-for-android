@@ -174,9 +174,11 @@ public class FirstLaunchGuide extends AppCompatActivity {
 
             TextView titleView = rootView.findViewById(R.id.text_title);
             titleView.setText(getArguments().getString(ARG_TITLE));
+            titleView.setTextColor(getResources().getColor(R.color.colorTextAlwaysLight)); // TODO: this hard-coded light color should be cleaned up
 
             TextView descriptionView = rootView.findViewById(R.id.text_description);
             descriptionView.setText(getArguments().getString(ARG_DESCRIPTION));
+            descriptionView.setTextColor(getResources().getColor(R.color.colorTextAlwaysLight)); // TODO: this hard-coded light color should be cleaned up
 
             return rootView;
         }
