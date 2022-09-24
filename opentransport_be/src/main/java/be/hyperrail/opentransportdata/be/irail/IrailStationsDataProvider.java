@@ -18,8 +18,10 @@ import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
@@ -167,17 +169,20 @@ public class IrailStationsDataProvider implements TransportStopsDataSource {
      */
     @NonNull
     @Override
-    public String[] getStoplocationsNames(@NonNull StopLocation[] stopLocations) {
+    public String[] getStoplocationsNames(@NonNull StopLocation[] stopLocations, boolean includeTranslations) {
         if (stopLocations.length == 0) {
             log.warning("Tried to load station names on empty station list!");
             return new String[0];
         }
 
-        String[] results = new String[stopLocations.length];
-        for (int i = 0; i < stopLocations.length; i++) {
-            results[i] = stopLocations[i].getLocalizedName();
+        Set<String> results = new HashSet<>();
+        for (StopLocation stopLocation : stopLocations) {
+            results.add(stopLocation.getName());
+            if (includeTranslations) {
+                results.addAll(stopLocation.getTranslations().values());
+            }
         }
-        return results;
+        return results.toArray(new String[0]);
     }
 
     @Nullable
