@@ -1,7 +1,11 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
     <PreferenceCategory
         android:key="pref_cat_general"
-        android:title="@string/pref_header_general">
+        android:title="@string/pref_header_general"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:defaultValue="10"
@@ -11,7 +15,8 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/pref_startup_screen"/>
+            android:title="@string/pref_startup_screen"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/pref_list_languages"
@@ -20,18 +25,21 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/pref_stations_language"/>
+            android:title="@string/pref_stations_language"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="use_card_layout"
             android:summary="@string/pref_description_cards"
-            android:title="@string/pref_title_cards"/>
+            android:title="@string/pref_title_cards"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_cat_stations"
-        android:title="@string/pref_header_stations">
+        android:title="@string/pref_header_stations"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:defaultValue="3"
@@ -41,12 +49,14 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/number_recent_searches"/>
+            android:title="@string/number_recent_searches"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="stations_enable_nearby"
-            android:title="@string/show_nearby_stations"/>
+            android:title="@string/show_nearby_stations"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:defaultValue="3"
@@ -57,7 +67,8 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/number_nearby_stations"/>
+            android:title="@string/number_nearby_stations"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:defaultValue="0"
@@ -67,13 +78,15 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/order_of_stations"/>
+            android:title="@string/order_of_stations"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_cat_routes"
-        android:title="@string/pref_header_routes">
+        android:title="@string/pref_header_routes"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:defaultValue="3"
@@ -83,7 +96,8 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/number_recent_searches"/>
+            android:title="@string/number_recent_searches"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:defaultValue="0"
@@ -93,19 +107,22 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/order_of_routes"/>
+            android:title="@string/order_of_routes"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="routes_always_new_activity"
             android:summary="@string/pref_short_tap_route_detail_summary"
-            android:title="@string/pref_short_tap_route_detail"/>
+            android:title="@string/pref_short_tap_route_detail"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_cat_vehicles"
-        android:title="@string/pref_header_trains">
+        android:title="@string/pref_header_trains"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:defaultValue="3"
@@ -115,7 +132,8 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/number_recent_searches"/>
+            android:title="@string/number_recent_searches"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:defaultValue="0"
@@ -125,48 +143,56 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:summary="%s"
-            android:title="@string/order_of_trains"/>
+            android:title="@string/order_of_trains"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="trains_map"
             android:summary="@string/pref_display_vehicle_on_map_summary"
-            android:title="@string/pref_display_vehicle_on_map"/>
+            android:title="@string/pref_display_vehicle_on_map"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="vehicle_composition"
             android:summary="@string/pref_display_vehicle_composition_summary"
-            android:title="@string/pref_display_vehicle_composition"/>
+            android:title="@string/pref_display_vehicle_composition"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="vehicle_composition_show_type"
             android:summary="@string/pref_vehicle_composition_display_type_summary"
-            android:title="@string/pref_vehicle_composition_display_type"/>
+            android:title="@string/pref_vehicle_composition_display_type"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="vehicle_composition_show_number"
             android:summary="@string/pref_vehicle_composition_display_number_summary"
-            android:title="@string/pref_vehicle_composition_display_number"/>
+            android:title="@string/pref_vehicle_composition_display_number"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_links"
-        android:title="@string/pref_header_links">
+        android:title="@string/pref_header_links"
+        app:iconSpaceReserved="false">
 
         <Preference android:title="@string/pref_github">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://www.github.com/hyperrail/hyperrail-for-android/"/>
+                android:data="https://www.github.com/hyperrail/hyperrail-for-android/"
+            app:iconSpaceReserved="false"/>
         </Preference>
 
         <Preference android:title="@string/pref_mlgtraffic">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.mlgtraffic.net/"/>
+                android:data="http://www.mlgtraffic.net/"
+            app:iconSpaceReserved="false"/>
         </Preference>
     </PreferenceCategory>
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

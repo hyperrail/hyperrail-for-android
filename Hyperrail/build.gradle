@@ -49,17 +49,23 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-
     implementation 'com.android.volley:volley:1.2.1@aar'
     implementation 'joda-time:joda-time:2.11.0'
-    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    def lifecycle_version = "2.5.1"
+    // Force the same lifecycle-viewmodel for kotlin and java.
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.preference:preference:1.2.0'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.google.firebase:firebase-crashlytics:18.2.12'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.13'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.json:json:20220320'
