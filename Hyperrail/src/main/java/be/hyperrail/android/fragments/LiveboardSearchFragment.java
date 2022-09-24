@@ -144,11 +144,9 @@ public class LiveboardSearchFragment extends Fragment implements OnRecyclerItemC
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
-        //noinspection ConstantConditions
-        mNumberOfNearbyStations = Integer.valueOf(preferences.getString(PREF_STATIONS_NEARBY_COUNT, "3"));
+        mNumberOfNearbyStations = Integer.parseInt(preferences.getString(PREF_STATIONS_NEARBY_COUNT, "3"));
 
-        //noinspection ConstantConditions
-        int order = Integer.valueOf(preferences.getString(PREF_STATIONS_ORDER, "0"));
+        int order = Integer.parseInt(preferences.getString(PREF_STATIONS_ORDER, "0"));
         // 0 || 1: suggestions before nearby
         // 2 || 3: nearby before suggestions
         mNearbyOnTop = (order == 2 || order == 3);
