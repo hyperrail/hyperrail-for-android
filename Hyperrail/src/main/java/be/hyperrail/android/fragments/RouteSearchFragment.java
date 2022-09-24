@@ -386,7 +386,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         DateTime now = new DateTime();
 
-        DateTimeFormatter df = DateTimeFormat.forPattern("dd MMMM yyyy");
+        DateTimeFormatter df = DateTimeFormat.forPattern("dd MMMM");
         DateTimeFormatter tf = DateTimeFormat.forPattern("HH:mm");
 
         String day = df.print(searchDateTime);
@@ -396,10 +396,11 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         if (now.get(DateTimeFieldType.year()) == searchDateTime.get(DateTimeFieldType.year())) {
             if (now.get(DateTimeFieldType.dayOfYear()) == searchDateTime.get(DateTimeFieldType.dayOfYear())) {
                 day = getActivity().getResources().getString(R.string.time_today);
-            } else  //noinspection RedundantCast
-                if (now.get(DateTimeFieldType.dayOfYear()) + 1 == (int) searchDateTime.get(DateTimeFieldType.dayOfYear())) {
-                    day = getActivity().getResources().getString(R.string.time_tomorrow);
-                }
+            } else if (now.get(DateTimeFieldType.dayOfYear()) + 1 == (int) searchDateTime.get(DateTimeFieldType.dayOfYear())) {
+                day = getActivity().getResources().getString(R.string.time_tomorrow);
+            } else if (now.get(DateTimeFieldType.dayOfYear()) - 1 == (int) searchDateTime.get(DateTimeFieldType.dayOfYear())) {
+                day = getActivity().getResources().getString(R.string.time_yesterday);
+            }
         }
         vDatetime.setText(day + " " + at + " " + time);
     }
