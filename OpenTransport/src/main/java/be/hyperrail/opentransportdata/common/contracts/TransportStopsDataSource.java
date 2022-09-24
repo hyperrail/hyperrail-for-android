@@ -13,6 +13,7 @@
 package be.hyperrail.opentransportdata.common.contracts;
 
 import android.location.Location;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,11 +29,13 @@ public interface TransportStopsDataSource {
     /**
      * Get all station names, localized.
      *
-     * @param stopLocations The list of stations for which a name should be retrieved.
+     * @param stopLocations       The list of stations for which a name should be retrieved.
+     * @param includeTranslations Whether translations should be included in the name list.
+     *                            If this is set to false, only localized names are used.
      * @return An array of localized station names.
      */
     @NonNull
-    String[] getStoplocationsNames(@NonNull StopLocation[] stopLocations);
+    String[] getStoplocationsNames(@NonNull StopLocation[] stopLocations, boolean includeTranslations);
 
 
     /**

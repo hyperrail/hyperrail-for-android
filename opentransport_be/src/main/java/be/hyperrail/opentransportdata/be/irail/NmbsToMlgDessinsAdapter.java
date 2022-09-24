@@ -65,11 +65,10 @@ public class NmbsToMlgDessinsAdapter {
                         break;
                     case "BYU":
                         // BU + Y
+                        newSubType = "B"; // With a little conductor room?
                         break;
                     case "BUH":
                         // BU + H
-                    case "BDUH":
-                        // BUH + D
                     case "BAU":
                         // Mixed 1st/2nd class
                     case "BU":
@@ -82,6 +81,7 @@ public class NmbsToMlgDessinsAdapter {
                         break;
                     case "BDYU":
                     case "BDU":
+                    case "BDUH":
                         // 102/145 2nd class w/ luggage and bike storage
                         newSubType = "BD";
                         break;

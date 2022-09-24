@@ -105,9 +105,7 @@ public class PersistentQueryProvider implements Serializable {
      */
     public List<Suggestion<RoutePlanningRequest>> getAllRoutes() {
 
-        //noinspection ConstantConditions
         int recentLimit = Integer.valueOf(sharedPreferences.getString(PREF_ROUTES_HISTORY_COUNT, "3"));
-        //noinspection ConstantConditions
         int order = Integer.valueOf(sharedPreferences.getString(PREF_ROUTES_ORDER, "0"));
         // 0: recents before favorites
         // 1: favorites before recents
@@ -143,11 +141,9 @@ public class PersistentQueryProvider implements Serializable {
      * @return Sorted array with favorite and recent liveboard requests
      */
     public List<Suggestion<LiveboardRequest>> getAllStations() {
-        //noinspection ConstantConditions
-        int recentLimit = Integer.valueOf(
+        int recentLimit = Integer.parseInt(
                 sharedPreferences.getString(PREF_STOPLOCATIONS_HISTORY_COUNT, "3"));
-        //noinspection ConstantConditions
-        int order = Integer.valueOf(sharedPreferences.getString(PREF_STATIONS_ORDER, "0"));
+        int order = Integer.parseInt(sharedPreferences.getString(PREF_STATIONS_ORDER, "0"));
         // 0 || 2: recents before favorites
         // 1 || 3: favorites before recents
 
@@ -182,9 +178,7 @@ public class PersistentQueryProvider implements Serializable {
      * @return Sorted array with favorite and recent vehicle requests
      */
     public List<Suggestion<VehicleRequest>> getAllTrains() {
-        //noinspection ConstantConditions
         int recentLimit = Integer.valueOf(sharedPreferences.getString("trains_history_count", "3"));
-        //noinspection ConstantConditions
         int order = Integer.valueOf(sharedPreferences.getString("trains_order", "0"));
         // 0: recents before favorites
         // 1: favorites before recents
