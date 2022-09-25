@@ -31,14 +31,14 @@ import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
 class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.RemoteViewsFactory {
-    private final Context mContext;
-    private final Intent mIntent;
-    private Liveboard mLiveboard;
-    private boolean mError;
+    private final Context context;
+    private final Intent creationIntent;
+    private Liveboard liveboard;
+    private boolean errorDuringUpdate = false;
 
     public NextDeparturesRemoteViewsDataProvider(Context applicationContext, Intent intent) {
-        mContext = applicationContext;
-        mIntent = intent;
+        context = applicationContext;
+        creationIntent = intent;
     }
 
     @Override
@@ -47,10 +47,10 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
     }
 
     private void initLiveboard() {
-        String id = mContext.getSharedPreferences("widgets", 0).getString(
-                "NextDepartures:" + mIntent.getIntExtra(EXTRA_APPWIDGET_ID, 0), null);
+        String id = context.getSharedPreferences("widgets", 0).getString(
+                "NextDepartures:" + creationIntent.getIntExtra(EXTRA_APPWIDGET_ID, 0), null);
         if (id == null) {
-            this.mError = true;
+            this.errorDuringUpdate = true;
             return;
         }
 
@@ -63,12 +63,12 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
                     null
             );
         } catch (StopLocationNotResolvedException e) {
-            this.mError = true;
+            this.errorDuringUpdate = true;
             return;
         }
         request.setCallback((data, tag) -> {
             Log.w("widgets", "Received iRail data...");
-            NextDeparturesRemoteViewsDataProvider.this.mLiveboard = data;
+            NextDeparturesRemoteViewsDataProvider.this.liveboard = data;
         }, null, null);
         Log.w("widgets", "Requesting iRail data...");
         OpenTransportApi.getDataProviderInstance().getLiveboard(request);
@@ -92,23 +92,23 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
 
     @Override
     public int getCount() {
-        if (mLiveboard == null) {
+        if (liveboard == null) {
             return 0;
         }
-        return mLiveboard.getStops().length;
+        return liveboard.getStops().length;
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
 
-        if (mError) {
-            return new RemoteViews(mContext.getPackageName(), R.layout.widget_nextdepartures_error);
+        if (errorDuringUpdate) {
+            return new RemoteViews(context.getPackageName(), R.layout.widget_nextdepartures_error);
         }
 
         // Construct a remote views item based on the app widget item XML file,
         // and set the text based on the position.
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.listview_liveboard_widget);
-        VehicleStop stop = mLiveboard.getStops()[position];
+        RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.listview_liveboard_widget);
+        VehicleStop stop = liveboard.getStops()[position];
 
         bindTimeAndDelays(rv, stop);
 
@@ -122,7 +122,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             rv.setTextViewText(R.id.text_platform, "X");
 
             rv.setTextViewText(R.id.text_train_status,
-                               mContext.getString(R.string.status_cancelled));
+                               context.getString(R.string.status_cancelled));
             rv.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
             rv.setViewVisibility(R.id.container_occupancy, View.GONE);
         } else {
@@ -131,7 +131,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         }
 
         rv.setBitmap(R.id.container_occupancy, "setImageDrawable",
-                     ((BitmapDrawable) ContextCompat.getDrawable(mContext,
+                     ((BitmapDrawable) ContextCompat.getDrawable(context,
                                                                  OccupancyHelper.getOccupancyDrawable(
                                                                          stop.getOccupancyLevel())
                      )).getBitmap()
@@ -148,7 +148,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             rv.setTextViewText(R.id.text_time1, df.print(stop.getDepartureTime()));
             if (stop.getDepartureDelay().getStandardSeconds() > 0) {
                 rv.setTextViewText(R.id.text_delay1,
-                                   mContext.getString(R.string.delay,
+                                   context.getString(R.string.delay,
                                                       stop.getDepartureDelay().getStandardMinutes()));
                 rv.setTextViewText(R.id.text_delay_time, df.print(stop.getDelayedDepartureTime()));
             } else {
@@ -160,7 +160,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             rv.setTextViewText(R.id.text_time1, df.print(stop.getArrivalTime()));
             if (stop.getArrivalDelay().getStandardSeconds() > 0) {
                 rv.setTextViewText(R.id.text_delay1,
-                                   mContext.getString(R.string.delay,
+                                   context.getString(R.string.delay,
                                                       stop.getArrivalDelay().getStandardMinutes()));
                 rv.setTextViewText(R.id.text_delay_time, df.print(stop.getDelayedArrivalTime()));
             } else {
@@ -189,7 +189,5 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
     public boolean hasStableIds() {
         return true;
     }
-
-//... include adapter-like methods here. See the StackView Widget sample.
 
 }
