@@ -181,18 +181,17 @@
         android:title="@string/pref_header_links"
         app:iconSpaceReserved="false">
 
-        <Preference android:title="@string/pref_github">
+        <Preference android:title="@string/pref_github"   app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://www.github.com/hyperrail/hyperrail-for-android/"
-            app:iconSpaceReserved="false"/>
+                android:data="https://www.github.com/hyperrail/hyperrail-for-android/"/>
         </Preference>
 
-        <Preference android:title="@string/pref_mlgtraffic">
+        <Preference android:title="@string/pref_mlgtraffic"   app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="http://www.mlgtraffic.net/"
-            app:iconSpaceReserved="false"/>
+          />
         </Preference>
     </PreferenceCategory>
 </androidx.preference.PreferenceScreen>
