@@ -306,13 +306,13 @@ class IrailApiParser {
 
     private Message parseMessage(JSONObject json) {
         try {
-            String header = json.getString("header");
+            String lead = json.getString("lead");
             String description = json.getString("description");
             String link = "";
             if (json.has("link")) {
                 link = json.getString("link");
             }
-            return new MessageImpl(header, description, link);
+            return new MessageImpl(lead, description, link);
         } catch (JSONException e) {
             log.severe("Failed to parse json message");
         }
