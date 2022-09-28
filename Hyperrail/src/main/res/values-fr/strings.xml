@@ -149,4 +149,10 @@
     </plurals>
     <string name="status_departure_cancelled">Départ annulé</string>
     <string name="time_yesterday">hier</string>
+    <string name="pref_description_crashlytics">Lorsque l\'application plante ou rencontre des problèmes, un rapport anonyme est créé via Crashlytics</string>
+    <string name="pref_title_crashlytics">Activer le rapport d\'incident</string>
+    <string name="crashlytics_dialog_message">Afin de résoudre les problèmes potentiels avec l\'application, des rapports de plantage anonymes peuvent être téléchargés. Cela permet des corrections plus rapides en cas de problème. Voulez-vous activer cette fonctionnalité ?</string>
+    <string name="crashlytics_dialog_title">Activer le rapport d\'incident</string>
+    <string name="crashlytics_dialog_button_enable">Activer</string>
+    <string name="crashlytics_dialog_button_disable">Maintenir désactivé</string>
 </resources>

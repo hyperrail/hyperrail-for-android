@@ -18,7 +18,7 @@
     <string name="pref_short_tap_route_detail_summary">Kort op route tikken voor nieuw venster, lang tikken om uit te klappen</string>
     <string name="pref_github">Bekijk op github</string>
     <string name="pref_header_links">Links</string>
-    <string name="pref_stations_language">Voorkeurstaal van stationsnamen</string>
+    <string name="pref_stations_language">Voorkeurstaal stationsnamen</string>
 
     <string-array name="pref_list_station_order_values">
         <item>Recenten / Favorieten / Kortbij</item>

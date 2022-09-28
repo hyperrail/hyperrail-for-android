@@ -166,4 +166,10 @@
     <string name="pref_mlgtraffic">Tekeningen treincomposities door MLGTraffic</string>
     <string name="status_departure_cancelled">Vertrek afgeschaft</string>
     <string name="time_yesterday">gisteren</string>
+    <string name="pref_title_crashlytics">Foutrapportering inschakelen</string>
+    <string name="pref_description_crashlytics">Wanneer de app crasht of problemen ondervind wordt een anoniem rapport gemaakt via Crashlytics</string>
+    <string name="crashlytics_dialog_title">Foutrapportering inschakelen</string>
+    <string name="crashlytics_dialog_message">Om mogelijke problemen met de app op te lossen, kunnen anonieme crashrapporten worden geüpload. Dit zorgt voor snellere oplossingen voor het geval er iets misgaat. Wil je deze functie inschakelen?</string>
+    <string name="crashlytics_dialog_button_enable">Inschakelen</string>
+    <string name="crashlytics_dialog_button_disable">Uitgeschakeld laten</string>
 </resources>

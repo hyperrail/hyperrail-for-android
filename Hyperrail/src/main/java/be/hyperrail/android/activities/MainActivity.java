@@ -60,7 +60,8 @@ import be.hyperrail.android.fragments.LiveboardSearchFragment;
 import be.hyperrail.android.fragments.RouteSearchFragment;
 import be.hyperrail.android.fragments.VehicleSearchFragment;
 import be.hyperrail.android.fragments.searchresult.DisturbanceListFragment;
-import be.hyperrail.android.util.ReviewDialogProvider;
+import be.hyperrail.android.util.CrashlyticsOptInDialog;
+import be.hyperrail.android.util.ReviewDialog;
 import be.hyperrail.android.util.ShortcutHelper;
 
 /**
@@ -180,7 +181,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent i = new Intent(this, FirstLaunchGuide.class);
             startActivity(i);
         } else {
-            ReviewDialogProvider.showDialogIf(this, 7, 3);
+            // Don't overwhelm the user, keep crashlytics off until the second launch, then ask the user
+            CrashlyticsOptInDialog.showDialogOnce(this);
+            ReviewDialog.showDialogIf(this, 7, 3);
         }
     }
 
@@ -377,8 +380,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-                            Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
-                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 }
 
                 try {
