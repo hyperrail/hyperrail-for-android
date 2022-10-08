@@ -6,10 +6,13 @@
 
 package be.hyperrail.android.widget;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+
 import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -19,6 +22,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.activities.searchresult.LiveboardActivity;
+import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
@@ -31,6 +36,7 @@ import be.hyperrail.opentransportdata.util.OccupancyHelper;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
 class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.RemoteViewsFactory {
+    private static final HyperRailLog log = HyperRailLog.getLogger(NextDeparturesWidgetProvider.class);
     private final Context context;
     private final Intent creationIntent;
     private Liveboard liveboard;
@@ -67,10 +73,10 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             return;
         }
         request.setCallback((data, tag) -> {
-            Log.w("widgets", "Received iRail data...");
+            log.info("Received iRail data...");
             NextDeparturesRemoteViewsDataProvider.this.liveboard = data;
         }, null, null);
-        Log.w("widgets", "Requesting iRail data...");
+        log.info("Requesting iRail data...");
         OpenTransportApi.getDataProviderInstance().getLiveboard(request);
 
         try {
@@ -95,12 +101,11 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         if (liveboard == null) {
             return 0;
         }
-        return liveboard.getStops().length;
+        return Math.min(liveboard.getStops().length, 20);
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
-
         if (errorDuringUpdate) {
             return new RemoteViews(context.getPackageName(), R.layout.widget_nextdepartures_error);
         }
@@ -109,9 +114,21 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         // and set the text based on the position.
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.listview_liveboard_widget);
         VehicleStop stop = liveboard.getStops()[position];
+        Intent onClickIntent = LiveboardActivity.createIntent(context,
+                new LiveboardRequest(stop.getStopLocation(),
+                        QueryTimeDefinition.EQUAL_OR_LATER,
+                        LiveboardType.DEPARTURES,
+                        null));
 
+        int flags;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+        } else {
+            flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, flags);
         bindTimeAndDelays(rv, stop);
-
+        rv.setOnClickPendingIntent(R.id.binder, pendingIntent);
         rv.setTextViewText(R.id.text_destination, stop.getHeadsign());
 
         rv.setTextViewText(R.id.text_train_number, stop.getVehicle().getNumber());
@@ -122,7 +139,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             rv.setTextViewText(R.id.text_platform, "X");
 
             rv.setTextViewText(R.id.text_train_status,
-                               context.getString(R.string.status_cancelled));
+                    context.getString(R.string.status_cancelled));
             rv.setViewVisibility(R.id.layout_train_status_container, View.VISIBLE);
             rv.setViewVisibility(R.id.container_occupancy, View.GONE);
         } else {
@@ -131,10 +148,10 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
         }
 
         rv.setBitmap(R.id.container_occupancy, "setImageDrawable",
-                     ((BitmapDrawable) ContextCompat.getDrawable(context,
-                                                                 OccupancyHelper.getOccupancyDrawable(
-                                                                         stop.getOccupancyLevel())
-                     )).getBitmap()
+                ((BitmapDrawable) ContextCompat.getDrawable(context,
+                        OccupancyHelper.getOccupancyDrawable(
+                                stop.getOccupancyLevel())
+                )).getBitmap()
         );
 
         // Return the remote views object.
@@ -148,8 +165,8 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             rv.setTextViewText(R.id.text_time1, df.print(stop.getDepartureTime()));
             if (stop.getDepartureDelay().getStandardSeconds() > 0) {
                 rv.setTextViewText(R.id.text_delay1,
-                                   context.getString(R.string.delay,
-                                                      stop.getDepartureDelay().getStandardMinutes()));
+                        context.getString(R.string.delay,
+                                stop.getDepartureDelay().getStandardMinutes()));
                 rv.setTextViewText(R.id.text_delay_time, df.print(stop.getDelayedDepartureTime()));
             } else {
                 rv.setTextViewText(R.id.text_delay1, "");
@@ -160,8 +177,8 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
             rv.setTextViewText(R.id.text_time1, df.print(stop.getArrivalTime()));
             if (stop.getArrivalDelay().getStandardSeconds() > 0) {
                 rv.setTextViewText(R.id.text_delay1,
-                                   context.getString(R.string.delay,
-                                                      stop.getArrivalDelay().getStandardMinutes()));
+                        context.getString(R.string.delay,
+                                stop.getArrivalDelay().getStandardMinutes()));
                 rv.setTextViewText(R.id.text_delay_time, df.print(stop.getDelayedArrivalTime()));
             } else {
                 rv.setTextViewText(R.id.text_delay1, "");

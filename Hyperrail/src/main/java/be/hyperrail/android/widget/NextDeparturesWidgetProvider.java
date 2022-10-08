@@ -20,17 +20,16 @@ import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.LiveboardActivity;
 import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.opentransportdata.OpenTransportApi;
-import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.exceptions.StopLocationNotResolvedException;
-import be.hyperrail.opentransportdata.common.models.LiveboardType;
 import be.hyperrail.opentransportdata.common.models.StopLocation;
-import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
 public class NextDeparturesWidgetProvider extends AppWidgetProvider {
-    SharedPreferences prefs;
-    HyperRailLog log = HyperRailLog.getLogger(NextDeparturesWidgetProvider.class);
+    private static final HyperRailLog log = HyperRailLog.getLogger(NextDeparturesWidgetProvider.class);
+    private static final String INTENT_EXTRA_STATION_ID = "stationId";
+    private static final String INTENT_ACTION_LAUNCH_LIVEBOARD_VIEW = "launchLiveboardView";
+    private SharedPreferences prefs;
 
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // Perform this loop procedure for each App Widget that belongs to this provider
@@ -81,20 +80,6 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
 
     private void updateAppWidgetData(Context context, AppWidgetManager appWidgetManager,
                                      int appWidgetId, StopLocation station) {
-        // Create an Intent to launch LiveboardActivity
-        Intent onClickIntent = LiveboardActivity.createIntent(context,
-                new LiveboardRequest(station,
-                        QueryTimeDefinition.EQUAL_OR_LATER,
-                        LiveboardType.DEPARTURES,
-                        null));
-
-        int flags;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-        } else {
-            flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, flags);
         // Get the layout for the App Widget and attach an on-click listener
         // to the button
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
@@ -110,11 +95,25 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
         // This adapter connects to a RemoteViewsService  through the specified intent.
         remoteViews.setRemoteAdapter(android.R.id.list, serviceIntent);
         remoteViews.setEmptyView(android.R.id.list, R.id.placeholder_no_data);
-        remoteViews.setOnClickPendingIntent(R.id.binder, pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.binder, createOnClickIntent(context, station));
 
         // Tell the AppWidgetManager to perform an update on the current app widget
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, android.R.id.list);
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+    }
+
+    private PendingIntent createOnClickIntent(Context context, StopLocation station) {
+        Intent onClickIntent = new Intent(context, NextDeparturesWidgetProvider.class);
+        onClickIntent.setAction(INTENT_ACTION_LAUNCH_LIVEBOARD_VIEW);
+        onClickIntent.putExtra(INTENT_EXTRA_STATION_ID, station);
+        int flags;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+        } else {
+            flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, flags);
+        return pendingIntent;
     }
 
     private void setErrorLayout(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
@@ -140,4 +139,14 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        if (intent.getAction().equals(INTENT_ACTION_LAUNCH_LIVEBOARD_VIEW)) {
+            String stationId = intent.getStringExtra(INTENT_EXTRA_STATION_ID);
+            Intent liveboardLaunchIntent = LiveboardActivity.createShortcutIntent(context, stationId);
+            liveboardLaunchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(liveboardLaunchIntent);
+        }
+    }
 }

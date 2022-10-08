@@ -29,7 +29,6 @@
         android:background="@color/backgroundMaterialLight"
         />
 
-
     <TextView
         android:id="@+id/placeholder_no_data"
         android:layout_width="match_parent"
@@ -37,7 +36,7 @@
         android:gravity="center"
         android:background="@color/backgroundMaterialLight"
         android:textColor="@color/colorTextDark"
-        android:text="Still loading data..."
+        android:text="Loading data..."
         android:textSize="@dimen/listitem_content_primary_textsize" />
 
 </LinearLayout>

@@ -59,12 +59,15 @@ public class LiveboardActivity extends ResultActivity {
         i.putExtra("request", request);
         return i;
     }
+    public static Intent createShortcutIntent(Context context, String semanticStationId) {
+        Intent i = new Intent(context, LiveboardActivity.class);
+        i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
+        i.putExtra("station", semanticStationId); // shortcut intents should not contain application specific classes - only pass the station ID
+        return i;
+    }
 
     private Intent createShortcutIntent() {
-        Intent i = new Intent(this, LiveboardActivity.class);
-        i.putExtra("shortcut", true); // this variable allows to detect launches from shortcuts
-        i.putExtra("station", mRequest.getStation().getSemanticId()); // shortcut intents should not contain application specific classes - only pass the station ID
-        return i;
+        return createShortcutIntent(this, mRequest.getStation().getSemanticId());
     }
 
     @Override
