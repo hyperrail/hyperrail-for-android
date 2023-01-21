@@ -42,6 +42,7 @@ android {
     lint {
         abortOnError false
     }
+    namespace 'be.hyperrail.android'
 }
 
 dependencies {
