@@ -37,7 +37,7 @@ class VehicleCompositionParser {
         boolean confirmed = !longestSegment.getJSONObject("composition").getString("source").equalsIgnoreCase("planning");
         VehicleCompositionUnit[] vehicleCompositionUnits = new VehicleCompositionUnit[units.length()];
         for (int i = 0; i < units.length(); i++) {
-            vehicleCompositionUnits[i] = parseVehicleCompositionUnit(appContext, units.getJSONObject(i));
+            vehicleCompositionUnits[i] = parseVehicleCompositionUnit(appContext, units.getJSONObject(i), i);
         }
         return new VehicleCompositionImpl(vehicleCompositionUnits, confirmed);
     }
@@ -58,7 +58,7 @@ class VehicleCompositionParser {
         return longestSegment;
     }
 
-    private VehicleCompositionUnit parseVehicleCompositionUnit(Context appContext, JSONObject jsonObject) throws JSONException {
+    private VehicleCompositionUnit parseVehicleCompositionUnit(Context appContext, JSONObject jsonObject, int position) throws JSONException {
         String parentType = jsonObject.getJSONObject("materialType").getString("parent_type").toUpperCase();
         String subType = jsonObject.getJSONObject("materialType").getString("sub_type").toUpperCase();
         String orientation = jsonObject.getJSONObject("materialType").getString("orientation").substring(0, 1).toUpperCase();
@@ -70,7 +70,7 @@ class VehicleCompositionParser {
         int numberOfFirstClassSeats = jsonObject.getInt("seatsFirstClass");
         int numberOfSecondClassSeats = jsonObject.getInt("seatsSecondClass");
 
-        NmbsTrainType trainType = NmbsToMlgDessinsAdapter.convert(parentType, subType, orientation, numberOfFirstClassSeats);
+        NmbsTrainType trainType = NmbsToMlgDessinsAdapter.convert(parentType, subType, orientation, numberOfFirstClassSeats, position);
         int resourceId = getResourceIdForTrain(appContext, trainType);
         return new VehicleCompositionUnitImpl(resourceId, publicFacingNumber, trainType.parentType, hasToilet, hasAirco, canPassToNextUnit, numberOfFirstClassSeats, numberOfSecondClassSeats);
     }
