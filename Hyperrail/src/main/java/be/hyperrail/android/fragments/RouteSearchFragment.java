@@ -52,6 +52,7 @@ import java.util.List;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.activities.searchresult.RouteActivity;
+import be.hyperrail.android.adapter.MultilangAutocompleteAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.adapter.RouteSuggestionsCardAdapter;
@@ -76,8 +77,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
     private AutoCompleteTextView vToText;
     private TextView vDatetime;
     private Spinner vArriveDepart;
-    private LinearLayout vArriveDepartContainer;
-
     private DateTime searchDateTime = null;
 
     private PersistentQueryProvider persistentQueryProvider;
@@ -122,8 +121,6 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
 
         createKeyListeners();
         createClickListeners(view);
-
-        vArriveDepartContainer = view.findViewById(R.id.container_arrivedepart);
 
         if (this.getArguments() != null && (this.getArguments().containsKey("from") || this.getArguments().containsKey("to"))) {
             prefillFieldsFromArguments();
@@ -433,7 +430,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
     }
 
-    private static class LoadAutoCompleteTask extends AsyncTask<TransportStopsDataSource, Void, String[]> {
+    private static class LoadAutoCompleteTask extends AsyncTask<TransportStopsDataSource, Void, StopLocation[]> {
 
         private WeakReference<RouteSearchFragment> fragmentReference;
 
@@ -443,15 +440,14 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         }
 
         @Override
-        protected String[] doInBackground(TransportStopsDataSource... provider) {
+        protected StopLocation[] doInBackground(TransportStopsDataSource... provider) {
             Thread.currentThread().setName("LoadAutoCompleteTask");
-            // TODO: "make use of translations" a setting
-            return provider[0].getStoplocationsNames(provider[0].getStoplocationsOrderedBySize(), false);
+            return provider[0].getStoplocationsOrderedBySize();
 
         }
 
         @Override
-        protected void onPostExecute(String[] stations) {
+        protected void onPostExecute(StopLocation[] stations) {
             super.onPostExecute(stations);
 
             // get a reference to the activity if it is still there
@@ -461,7 +457,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
             }
 
             // Initialize autocomplete
-            ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(fragment.getActivity(),
+            MultilangAutocompleteAdapter autocompleteAdapter = new MultilangAutocompleteAdapter(fragment.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, stations);
 
             fragment.vFromText.setAdapter(autocompleteAdapter);
