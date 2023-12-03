@@ -151,6 +151,11 @@
     <string name="rate_dialog_button_later">Later</string>
     <string name="rate_dialog_button_no_thanks">No, thanks</string>
 
+    <string name="crashlytics_dialog_title">Enable crash reporting</string>
+    <string name="crashlytics_dialog_message">In order to fix potential issues with the app, anonymous crash reports can be uploaded. This allows for quicker fixes in case something goes wrong. Do you want to enable this feature?</string>
+    <string name="crashlytics_dialog_button_enable">Enable</string>
+    <string name="crashlytics_dialog_button_disable">Keep disabled</string>
+
     <string name="warning_composition_unavailable">This train composition is not available at this time</string>
     <string name="warning_composition_unconfirmed">This train composition is unconfirmed and is subject to change</string>
     <string name="pref_display_vehicle_composition">Show train compositions</string>

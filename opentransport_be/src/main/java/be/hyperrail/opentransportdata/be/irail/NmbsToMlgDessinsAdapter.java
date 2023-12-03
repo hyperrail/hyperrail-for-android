@@ -12,33 +12,42 @@ public class NmbsToMlgDessinsAdapter {
 
     }
 
-    static NmbsTrainType convert(String parentType, String subType, String orientation, int firstClassSeats) {
+    static NmbsTrainType convert(String parentType, String subType, String orientation, int firstClassSeats, int position) {
+        subType = subType.toUpperCase();
         if (parentType.startsWith("HLE")) {
             return convertHle(parentType, subType, orientation);
-        } else if (parentType.startsWith("AM") || parentType.startsWith("MR") || parentType.startsWith("AR")) {
+        } else if (parentType.startsWith("AM") || parentType.startsWith("MR") || parentType.startsWith("AR") || parentType.startsWith("M08")) {
             return convertAm(parentType, subType, orientation, firstClassSeats);
         } else if (parentType.startsWith("I") || parentType.startsWith("M")) {
-            return convertCarriage(parentType, subType, orientation, firstClassSeats);
+            return convertCarriage(parentType, subType, orientation, firstClassSeats, position);
         } else {
             return new NmbsTrainType(parentType, subType, orientation);
         }
     }
 
-    private static NmbsTrainType convertCarriage(String parentType, String subType, String orientation, int firstClassSeats) {
+    private static NmbsTrainType convertCarriage(String parentType, String subType, String orientation, int firstClassSeats, int position) {
         String newParentType = parentType;
         String newSubType = subType;
+        String newOrientation = orientation;
         switch (parentType) {
             case "M4":
                 switch (subType) {
                     case "A":
                     case "AU":
+                    case "AYU":
                         newSubType = "B_A";
                         break;
                     case "AD":
                     case "AUD":
                         newSubType = "B_AD";
                         break;
+                    case "ADU":
                     case "ADX":
+                        if (position <= 2) {
+                            newOrientation = "R";
+                        } else {
+                            newOrientation = "L";
+                        }
                         newSubType = "B_ADX";
                         break;
                     case "B":
@@ -109,18 +118,20 @@ public class NmbsToMlgDessinsAdapter {
                 }
                 break;
         }
-        return new NmbsTrainType(newParentType, newSubType, orientation);
+        return new NmbsTrainType(newParentType, newSubType, newOrientation);
     }
 
     private static NmbsTrainType convertAm(String parentType, String subType, String orientation, int firstClassSeats) {
         String newParentType = parentType;
         String newSubType = subType;
-
         switch (parentType) {
             case "AM08":
             case "AM08M":
+                newParentType = "AM08";
                 switch (subType) {
                     case "A":
+                        newSubType = "A";
+                        break;
                     case "C":
                         newSubType = "0_C";
                         break;
@@ -128,12 +139,13 @@ public class NmbsToMlgDessinsAdapter {
                         newSubType = "0_B";
                         break;
                 }
-                newParentType = "AM08";
                 break;
             case "AM08P":
                 newParentType = "AM08";
                 switch (subType) {
                     case "A":
+                        newSubType = "A";
+                        break;
                     case "C":
                         newSubType = "5_C";
                         break;

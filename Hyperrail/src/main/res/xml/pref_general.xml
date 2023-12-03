@@ -30,6 +30,13 @@
 
         <SwitchPreference
             android:defaultValue="false"
+            android:key="pref_crashlytics_enabled"
+            android:summary="@string/pref_description_crashlytics"
+            android:title="@string/pref_title_crashlytics"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="use_card_layout"
             android:summary="@string/pref_description_cards"
             android:title="@string/pref_title_cards"
@@ -181,18 +188,17 @@
         android:title="@string/pref_header_links"
         app:iconSpaceReserved="false">
 
-        <Preference android:title="@string/pref_github">
+        <Preference android:title="@string/pref_github"   app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://www.github.com/hyperrail/hyperrail-for-android/"
-            app:iconSpaceReserved="false"/>
+                android:data="https://www.github.com/hyperrail/hyperrail-for-android/"/>
         </Preference>
 
-        <Preference android:title="@string/pref_mlgtraffic">
+        <Preference android:title="@string/pref_mlgtraffic"   app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="http://www.mlgtraffic.net/"
-            app:iconSpaceReserved="false"/>
+          />
         </Preference>
     </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

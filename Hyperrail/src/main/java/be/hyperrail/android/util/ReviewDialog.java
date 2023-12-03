@@ -17,21 +17,22 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import be.hyperrail.android.R;
+import be.hyperrail.android.activities.MainActivity;
 import be.hyperrail.android.logging.HyperRailLog;
 
-public class ReviewDialogProvider {
+public class ReviewDialog {
 
     private static final String PREFERENCES_KEY_DONT_SHOW_AGAIN = "rvd_dont_show_again";
     private static final String PREFERENCES_KEY_FIRST_LAUNCH = "rvd_app_firstlaunch";
     private static final String PREFERENCES_KEY_LAUNCH_COUNT = "rvd_app_launches";
 
-    private static final HyperRailLog log = HyperRailLog.getLogger(ReviewDialogProvider.class);
+    private static final HyperRailLog log = HyperRailLog.getLogger(ReviewDialog.class);
 
     private static SharedPreferences sharedPreferences;
     private static int launches;
     private static long firstLaunch;
 
-    private ReviewDialogProvider() {
+    private ReviewDialog() {
         // No public constructor
     }
 

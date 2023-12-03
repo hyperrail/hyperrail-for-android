@@ -27,6 +27,7 @@ android {
     lint {
         abortOnError false
     }
+    namespace 'be.hyperrail.opentransportdata.be.experimental'
 
 }
 

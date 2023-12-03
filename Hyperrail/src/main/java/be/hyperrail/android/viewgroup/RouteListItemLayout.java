@@ -82,11 +82,6 @@ public class RouteListItemLayout extends LinearLayout implements RecyclerViewIte
         super(context, attrs, defStyleAttr);
     }
 
-    // TODO: use when API > 21
-    /*public RouteListItemLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }*/
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
