@@ -62,9 +62,29 @@ public class NmbsToMlgDessinsAdapter {
                 }
                 break;
             case "M7":
-                // Fallback on M6 icons
-                newParentType = "M6";
-                // Continue into M6 subtype handling
+                switch (subType) {
+                    // Just handle all known M6 variants
+                    case "BYU":
+                        // BU + Y // With a little conductor room?
+                    case "BU":
+                        // 140/133 2nd class
+                        newSubType = "B";
+                        break;
+                    case "BUH":
+                        // BU + H
+                    case "BAU":
+                        // Mixed 1st/2nd class
+                    case "AU":
+                    case "ABUH":
+                        // 124/133 1st class
+                        newSubType = "AB";
+                        break;
+                    case "BDXH":
+                    case "BMX":
+                        newSubType = "BDX";
+                        break;
+                }
+                break;
             case "M6":
                 switch (subType) {
                     case "BXAA":
