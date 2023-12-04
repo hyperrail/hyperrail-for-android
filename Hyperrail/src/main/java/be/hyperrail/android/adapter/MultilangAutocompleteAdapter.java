@@ -1,6 +1,7 @@
 package be.hyperrail.android.adapter;
 
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +53,7 @@ public class MultilangAutocompleteAdapter implements Filterable, ListAdapter {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 List<StopLocation> list = new ArrayList<>();
-                if (constraint == null){ // no filtering
+                if (constraint == null) { // no filtering
                     constraint = ""; // allows using the same sorter a little later
                     list.addAll(Arrays.asList(stations));
                 } else {
@@ -84,11 +85,19 @@ public class MultilangAutocompleteAdapter implements Filterable, ListAdapter {
                 //noinspection unchecked
                 updateVisibleStops((List<StopLocation>) results.values);
             }
+
+            @Override
+            public CharSequence convertResultToString(Object resultValue) {
+                if (resultValue instanceof StopLocation) {
+                    return ((StopLocation) resultValue).getLocalizedName();
+                }
+                return resultValue == null ? "" : resultValue.toString();
+            }
         };
     }
 
     private void updateVisibleStops(List<StopLocation> stops) {
-        if (stops == null){
+        if (stops == null) {
             FirebaseCrashlytics.getInstance().recordException(new IllegalArgumentException("Tried to set null in MultilangAutocompleteAdapter!"));
             stops = new ArrayList<>(); // Never allow setting null, even when there are issues with the autocomplete
         }
