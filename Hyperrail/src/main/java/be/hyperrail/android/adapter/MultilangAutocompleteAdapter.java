@@ -12,7 +12,10 @@ import android.widget.TextView;
 import androidx.collection.ArraySet;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,11 +51,16 @@ public class MultilangAutocompleteAdapter implements Filterable, ListAdapter {
 
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                constraint = constraint.toString().toLowerCase();
                 List<StopLocation> list = new ArrayList<>();
-                for (StopLocation s : stations) {
-                    if (stationNameContains(constraint, s)) {
-                        list.add(s);
+                if (constraint == null){ // no filtering
+                    constraint = ""; // allows using the same sorter a little later
+                    list.addAll(Arrays.asList(stations));
+                } else {
+                    constraint = constraint.toString().toLowerCase();
+                    for (StopLocation s : stations) {
+                        if (stationNameContains(constraint, s)) {
+                            list.add(s);
+                        }
                     }
                 }
                 Collections.sort(list, new AutocompleteSortComparator(constraint));
@@ -80,6 +88,10 @@ public class MultilangAutocompleteAdapter implements Filterable, ListAdapter {
     }
 
     private void updateVisibleStops(List<StopLocation> stops) {
+        if (stops == null){
+            FirebaseCrashlytics.getInstance().recordException(new IllegalArgumentException("Tried to set null in MultilangAutocompleteAdapter!"));
+            stops = new ArrayList<>(); // Never allow setting null, even when there are issues with the autocomplete
+        }
         this.visibleStops = stops;
         for (DataSetObserver observer : observers) {
             observer.onChanged();
