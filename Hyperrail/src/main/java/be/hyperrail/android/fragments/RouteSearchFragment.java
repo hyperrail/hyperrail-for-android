@@ -177,7 +177,7 @@ public class RouteSearchFragment extends Fragment implements OnRecyclerItemClick
         vFromText.setOnKeyListener((v, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
                 if (vFromText.isPopupShowing()) {
-                    vFromText.setText((String) vFromText.getAdapter().getItem(0));
+                    vFromText.setText(((MultilangAutocompleteAdapter) vFromText.getAdapter()).getItem(0).getLocalizedName());
                 }
                 moveFocusOrSearch(vFromText, vToText);
 
