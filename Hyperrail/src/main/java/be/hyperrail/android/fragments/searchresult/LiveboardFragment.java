@@ -8,10 +8,12 @@ package be.hyperrail.android.fragments.searchresult;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import be.hyperrail.android.adapter.LiveboardCardAdapter;
 import be.hyperrail.android.adapter.OnRecyclerItemClickListener;
 import be.hyperrail.android.adapter.OnRecyclerItemLongClickListener;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
+import be.hyperrail.android.logging.HyperRailLog;
 import be.hyperrail.opentransportdata.OpenTransportApi;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
 import be.hyperrail.opentransportdata.common.models.Liveboard;
@@ -35,13 +38,14 @@ import be.hyperrail.opentransportdata.common.requests.ExtendLiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.LiveboardRequest;
 import be.hyperrail.opentransportdata.common.requests.ResultExtensionType;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 /**
  * A fragment for showing liveboard results
  */
 public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implements InfiniteScrollingDataSource,
         ResultFragment<LiveboardRequest>, OnRecyclerItemClickListener<VehicleStop>, OnRecyclerItemLongClickListener<VehicleStop> {
-
+    private static final HyperRailLog log = HyperRailLog.getLogger(LiveboardFragment.class);
     public static final String INSTANCESTATE_KEY_LIVEBOARD = "result";
     public static final String INSTANCESTATE_KEY_REQUEST = "request";
     private Liveboard mCurrentLiveboard;
@@ -158,10 +162,26 @@ public class LiveboardFragment extends RecyclerViewFragment<Liveboard> implement
             mLiveboardCardAdapter.setNextLoaded();
             return;
         }
-
+        log.info("Retrieving next stops for " + mCurrentLiveboard.getName()
+                 + " with " + mCurrentLiveboard.getStops().length
+                 + " stops already loaded at time " + mCurrentLiveboard.getSearchTime().toString()
+                 + " for time search type " + mCurrentLiveboard.getTimeDefinition()
+        );
         ExtendLiveboardRequest request = new ExtendLiveboardRequest(mCurrentLiveboard, ResultExtensionType.APPEND);
         request.setCallback((data, tag) -> {
             resetErrorState();
+            if (data == null) {
+                log.logException(new IllegalArgumentException("loadNextRecyclerviewItems received null value for data in a success response, " + mCurrentLiveboard.getName()));
+                showError(new FileNotFoundException("No results"));
+                mLiveboardCardAdapter.disableInfiniteNext();
+                return; // We can't continue this method
+            }
+            if (mCurrentLiveboard == null) {
+                log.logException(new IllegalArgumentException("loadNextRecyclerviewItems received null value for mCurrentLiveboard in a success response, " + data.getName()));
+                showError(new FileNotFoundException("No results"));
+                mLiveboardCardAdapter.disableInfiniteNext();
+                return; // We can't continue this method
+            }
             // Compare the new one with the old one to check if stops have been added
             if (data.getStops().length == mCurrentLiveboard.getStops().length) {
                 showError(new FileNotFoundException("No results"));
