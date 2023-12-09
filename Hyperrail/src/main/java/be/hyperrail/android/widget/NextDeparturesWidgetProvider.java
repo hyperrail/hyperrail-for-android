@@ -25,6 +25,8 @@ import be.hyperrail.opentransportdata.common.models.StopLocation;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
+import java.util.Objects;
+
 public class NextDeparturesWidgetProvider extends AppWidgetProvider {
     private static final HyperRailLog log = HyperRailLog.getLogger(NextDeparturesWidgetProvider.class);
     private static final String INTENT_EXTRA_STATION_ID = "stationId";
@@ -106,14 +108,7 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
         Intent onClickIntent = new Intent(context, NextDeparturesWidgetProvider.class);
         onClickIntent.setAction(INTENT_ACTION_LAUNCH_LIVEBOARD_VIEW);
         onClickIntent.putExtra(INTENT_EXTRA_STATION_ID, station);
-        int flags;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-        } else {
-            flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, flags);
-        return pendingIntent;
+        return PendingIntent.getActivity(context, 0, onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private void setErrorLayout(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
@@ -142,7 +137,7 @@ public class NextDeparturesWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (intent.getAction().equals(INTENT_ACTION_LAUNCH_LIVEBOARD_VIEW)) {
+        if (Objects.equals(intent.getAction(), INTENT_ACTION_LAUNCH_LIVEBOARD_VIEW)) {
             String stationId = intent.getStringExtra(INTENT_EXTRA_STATION_ID);
             Intent liveboardLaunchIntent = LiveboardActivity.createShortcutIntent(context, stationId);
             liveboardLaunchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

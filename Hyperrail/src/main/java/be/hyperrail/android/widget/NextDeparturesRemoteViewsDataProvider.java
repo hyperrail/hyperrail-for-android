@@ -119,14 +119,7 @@ class NextDeparturesRemoteViewsDataProvider implements RemoteViewsService.Remote
                         QueryTimeDefinition.EQUAL_OR_LATER,
                         LiveboardType.DEPARTURES,
                         null));
-
-        int flags;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-        } else {
-            flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, flags);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         bindTimeAndDelays(rv, stop);
         rv.setOnClickPendingIntent(R.id.binder, pendingIntent);
         rv.setTextViewText(R.id.text_destination, stop.getHeadsign());

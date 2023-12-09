@@ -15,11 +15,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationCompat.DecoratedCustomViewStyle;
 import androidx.core.content.ContextCompat;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
@@ -165,7 +169,7 @@ public class VehiclePopupContextMenu {
 
         vDialog.setTitle(
                 mLeg.getVehicleInformation().getName() + " " +
-                        mLeg.getDeparture().getStation().getLocalizedName() + "-" + mLeg.getArrival().getStation().getLocalizedName());
+                mLeg.getDeparture().getStation().getLocalizedName() + "-" + mLeg.getArrival().getStation().getLocalizedName());
 
         // Occupancy + departure ETA
         if (mLeg.getType() != RouteLegType.WALK) {
@@ -265,7 +269,7 @@ public class VehiclePopupContextMenu {
                 mVehicleSemanticId, mDateTime);
 
         vDialog.setTitle(mVehicleStop.getVehicle().getName() + " " +
-                mVehicleStop.getStopLocation().getLocalizedName());
+                         mVehicleStop.getStopLocation().getLocalizedName());
 
         String mDepartureEtaText = String.format(mContext.getString(string.ETA_stop_departure),
                 DATETIMEFORMAT_HHMM.print(
@@ -398,7 +402,7 @@ public class VehiclePopupContextMenu {
                                 mContext,
                                 0,
                                 resultIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT
+                                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
                         );
                 mBuilder.setContentIntent(resultPendingIntent);
 
