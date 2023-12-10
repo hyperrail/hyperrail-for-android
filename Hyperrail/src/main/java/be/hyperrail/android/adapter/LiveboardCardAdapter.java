@@ -15,7 +15,9 @@ package be.hyperrail.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,43 +66,42 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
             style = STYLE_LIST;
         }
 
-        ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
-
         if (liveboard == null || liveboard.getStops() == null || liveboard.getStops().length == 0) {
             displayList = null;
             return;
         }
 
+        ArrayList<Integer> daySeparatorPositions = new ArrayList<>();
         detectNumberOfDayChanges(liveBoard, daySeparatorPositions);
 
-        this.displayList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
-
-        weaveDataWithDayHeaders(liveBoard, daySeparatorPositions);
-
+        this.displayList = weaveDataWithDayHeaders(liveBoard, daySeparatorPositions);
+        mRecyclerView.post(() -> mRecyclerView.getRecycledViewPool().clear());
         mRecyclerView.post(this::notifyDataSetChanged);
     }
 
-    private void weaveDataWithDayHeaders(Liveboard liveBoard, ArrayList<Integer> daySeparatorPositions) {
+    private Object[] weaveDataWithDayHeaders(Liveboard liveBoard, ArrayList<Integer> daySeparatorPositions) {
+        Object[] rowList = new Object[daySeparatorPositions.size() + liveBoard.getStops().length];
         // Convert to array + take previous separators into account for position of next separator
         int dayPosition = 0;
         int stopPosition = 0;
-        int resultPosition = 0;
-        while (resultPosition < daySeparatorPositions.size() + liveBoard.getStops().length) {
+        int resultPos = 0;
+        while (resultPos < daySeparatorPositions.size() + liveBoard.getStops().length) {
             // Keep in mind that position shifts with the number of already placed date separators
-            if (dayPosition < daySeparatorPositions.size() && resultPosition == daySeparatorPositions.get(dayPosition) + dayPosition) {
+            if (dayPosition < daySeparatorPositions.size() && resultPos == daySeparatorPositions.get(dayPosition) + dayPosition) {
                 if (liveboard.getLiveboardType() == DEPARTURES) {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getDepartureTime();
+                    rowList[resultPos] = liveBoard.getStops()[stopPosition].getDepartureTime();
                 } else {
-                    this.displayList[resultPosition] = liveBoard.getStops()[stopPosition].getArrivalTime();
+                    rowList[resultPos] = liveBoard.getStops()[stopPosition].getArrivalTime();
                 }
                 dayPosition++;
             } else {
-                this.displayList[resultPosition] = liveboard.getStops()[stopPosition];
+                rowList[resultPos] = liveboard.getStops()[stopPosition];
                 stopPosition++;
             }
 
-            resultPosition++;
+            resultPos++;
         }
+        return rowList;
     }
 
     private void detectNumberOfDayChanges(Liveboard liveBoard, ArrayList<Integer> daySeparatorPositions) {
@@ -167,23 +168,17 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
         LiveboardStopViewHolder holder = (LiveboardStopViewHolder) genericHolder;
         holder.liveboardStopView.bind(context, stop, liveboard, position);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnClickListener != null) {
-                    mOnClickListener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (mOnClickListener != null) {
+                mOnClickListener.onRecyclerItemClick(LiveboardCardAdapter.this, stop);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (mOnLongClickListener != null) {
-                    mOnLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this, stop);
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(view -> {
+            if (mOnLongClickListener != null) {
+                mOnLongClickListener.onRecyclerItemLongClick(LiveboardCardAdapter.this, stop);
             }
+            return false;
         });
     }
 
@@ -195,7 +190,7 @@ public class LiveboardCardAdapter extends InfiniteScrollingAdapter<VehicleStop> 
         return displayList.length;
     }
 
-    private class LiveboardStopViewHolder extends RecyclerView.ViewHolder {
+    private static class LiveboardStopViewHolder extends RecyclerView.ViewHolder {
 
         LiveboardStopLayout liveboardStopView;
 
