@@ -50,6 +50,7 @@ public class VehicleActivity extends ResultActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut")) {
             mRequest = new VehicleRequest(getIntent().getStringExtra("id"), null);
@@ -58,7 +59,6 @@ public class VehicleActivity extends ResultActivity {
         }
         log.setDebugVariable("vehicleId", mRequest.getVehicleId());
 
-        super.onCreate(savedInstanceState);
 
         fragment = VehicleFragment.createInstance(mRequest);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();

@@ -33,8 +33,8 @@ public class RouteDetailActivity extends ResultActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Route route = (Route) getIntent().getSerializableExtra("route");
         super.onCreate(savedInstanceState);
+        Route route = (Route) getIntent().getSerializableExtra("route");
 
         setTitle(route.getDepartureStation().getLocalizedName() + " - " + route.getArrivalStation().getLocalizedName());
 

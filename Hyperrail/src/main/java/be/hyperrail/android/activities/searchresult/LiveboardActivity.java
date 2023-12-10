@@ -72,6 +72,7 @@ public class LiveboardActivity extends ResultActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         // Validate the intent used to create this activity
         if (getIntent().hasExtra("shortcut") && getIntent().hasExtra("station")) {
@@ -96,8 +97,6 @@ public class LiveboardActivity extends ResultActivity {
             return;
         }
 
-        super.onCreate(savedInstanceState);
-
         // Title and subtitle belong to the activity, and are therefore a responsibility of this class
         setTitle(mRequest.getStation().getLocalizedName());
         setSubTitle(
@@ -111,7 +110,7 @@ public class LiveboardActivity extends ResultActivity {
         viewPager.setAdapter(departuresArrivalsAdapter);
 
 
-        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP && getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setElevation(0);
         }
     }
