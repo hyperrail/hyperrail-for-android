@@ -41,8 +41,12 @@ dependencies {
     // Advanced DateTime library
     implementation 'joda-time:joda-time:2.11.0'
 
-    // Networking
-    implementation 'com.android.volley:volley:1.2.1@aar'
+    // define a BOM and its version
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+
+    // define any required OkHttp artifacts without version
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 
     implementation project(path: ':OpenTransport')
     implementation 'androidx.annotation:annotation:1.4.0'

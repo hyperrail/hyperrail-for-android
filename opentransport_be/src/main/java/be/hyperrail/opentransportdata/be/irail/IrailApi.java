@@ -9,16 +9,10 @@ package be.hyperrail.opentransportdata.be.irail;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import androidx.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -27,11 +21,12 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import be.hyperrail.opentransportdata.be.irail.util.AsyncJsonPostRequest;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
@@ -58,6 +53,15 @@ import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
+import kotlin.Function;
+import okhttp3.CacheControl;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Synchronous API for api.irail.be
@@ -69,32 +73,23 @@ public class IrailApi implements TransportDataSource {
     private static final String BASE_URL = "https://api.irail.be";
     private static final String USER_AGENT = "OpenTransportData for Android";
     private static final OpenTransportLog log = OpenTransportLog.getLogger(IrailApi.class);
-    private final RequestQueue requestQueue;
-    private final RetryPolicy requestPolicy;
-
+    private final OkHttpClient client;
     private final Context context;
     private final IrailApiParser parser;
     private final VehicleCompositionParser vehicleCompositionParser = new VehicleCompositionParser();
-    private final ConnectivityManager connectivityManager;
 
     public IrailApi(Context context, TransportStopsDataSource stationProviderInstance) {
         this.context = context;
         this.parser = new IrailApiParser(stationProviderInstance);
-        this.requestQueue = Volley.newRequestQueue(context);
-        this.requestPolicy = new DefaultRetryPolicy(
-                750,
-                3,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-        );
-        connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.retryOnConnectionFailure(true)
+                .addInterceptor(new ForceCacheInterceptor((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)))
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .callTimeout(20, TimeUnit.SECONDS)
+                .followRedirects(true);
+        this.client = new OkHttpClient(builder);
     }
 
-    private boolean isInternetAvailable() {
-        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-    }
 
     @Override
     public void getRoute(RouteRefreshRequest... requests) {
@@ -144,17 +139,17 @@ public class IrailApi implements TransportDataSource {
 
         String locale = PreferenceManager.getDefaultSharedPreferences(context).getString(
                 "pref_stations_language", "");
-        if (locale == null || locale.isEmpty()) {
+        if (locale.isEmpty()) {
             // Only get locale when needed
             locale = Locale.getDefault().getISO3Language();
         }
 
         String url = BASE_URL + "/connections/?format=json"
-                + "&to=" + request.getDestination().getHafasId()
-                + "&from=" + request.getOrigin().getHafasId()
-                + "&date=" + dateformat.print(request.getSearchTime())
-                + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
-                + "&lang=" + locale.substring(0, 2);
+                     + "&to=" + request.getDestination().getHafasId()
+                     + "&from=" + request.getOrigin().getHafasId()
+                     + "&date=" + dateformat.print(request.getSearchTime())
+                     + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
+                     + "&lang=" + locale.substring(0, 2);
 
         if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
             url += "&timeSel=depart";
@@ -162,29 +157,32 @@ public class IrailApi implements TransportDataSource {
             url += "&timeSel=arrive";
         }
         log.debug("Fetching connections from " + url);
-        Response.Listener<JSONObject> successListener = response -> {
-            RoutesListImpl routeResult;
-            try {
-                routeResult = parser.parseRouteResult(
-                        response, request.getOrigin(), request.getDestination(),
-                        request.getSearchTime(), request.getTimeDefinition()
-                );
-            } catch (JSONException e) {
-                log.warning("Failed to parse routes: " + e.getMessage(), e);
-                request.notifyErrorListeners(e);
-                return;
+
+
+        Callback callback = new MainthreadCallback() {
+            public void onResponse(Call call, Response response) throws IOException {
+                RoutesListImpl routeResult;
+                try {
+                    String body = response.body().string();
+                    JSONObject json = new JSONObject(body);
+                    routeResult = parser.parseRouteResult(
+                            json, request.getOrigin(), request.getDestination(),
+                            request.getSearchTime(), request.getTimeDefinition()
+                    );
+                } catch (JSONException e) {
+                    log.warning("Failed to parse routes: " + e.getMessage(), e);
+                    onUiThread(context, () -> request.notifyErrorListeners(e));
+                    return;
+                }
+                onUiThread(context, () -> request.notifySuccessListeners(routeResult));
             }
-            request.notifySuccessListeners(routeResult);
+
+            public void onFailure(Call call, IOException e) {
+                log.warning("Failed to get routes: " + e.getMessage());
+                onUiThread(context, () -> request.notifyErrorListeners(e));
+            }
         };
-
-        Response.ErrorListener errorListener = e -> {
-            log.warning("Failed to get routes: " + e.getMessage());
-            request.notifyErrorListeners(e);
-        };
-
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
-
-        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+        tryOnlineOrServerCache(url, callback, request.getRequestTypeTag());
     }
 
     @Override
@@ -241,32 +239,36 @@ public class IrailApi implements TransportDataSource {
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
         String url = BASE_URL + "/liveboard/?format=json"
-                + "&id=" + request.getStation().getHafasId()
-                + "&date=" + dateformat.print(request.getSearchTime())
-                + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
-                + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
+                     + "&id=" + request.getStation().getHafasId()
+                     + "&date=" + dateformat.print(request.getSearchTime())
+                     + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
+                     + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
         log.info("Fetching liveboard from " + url);
-        Response.Listener<JSONObject> successListener = response -> {
-            LiveboardImpl result;
-            try {
-                result = parser.parseLiveboard(response, request.getSearchTime(), request.getType(), request.getTimeDefinition());
-            } catch (JSONException | StopLocationNotResolvedException e) {
-                log.warning("Failed to parse liveboard: " + e.getMessage(), e);
-                request.notifyErrorListeners(e);
-                return;
+
+
+        Callback callback = new MainthreadCallback() {
+            public void onResponse(Call call, Response response) throws IOException {
+                LiveboardImpl result;
+                try {
+                    String body = response.body().string();
+                    JSONObject json = new JSONObject(body);
+                    result = parser.parseLiveboard(json, request.getSearchTime(), request.getType(), request.getTimeDefinition());
+                } catch (JSONException | StopLocationNotResolvedException e) {
+                    log.warning("Failed to parse liveboard: " + e.getMessage(), e);
+                    onUiThread(context, () -> request.notifyErrorListeners(e));
+                    return;
+                }
+
+                onUiThread(context, () -> request.notifySuccessListeners(result));
             }
 
-            request.notifySuccessListeners(result);
+            public void onFailure(Call call, IOException e) {
+                log.warning("Tried loading liveboard from " + url + " failed with error " + e, e);
+                onUiThread(context, () -> request.notifyErrorListeners(e));
+            }
         };
 
-        Response.ErrorListener errorListener = e -> {
-            log.warning("Tried loading liveboard from " + url + " failed with error " + e, e);
-            request.notifyErrorListeners(e);
-        };
-
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
-
-        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+        tryOnlineOrServerCache(url, callback, request.getRequestTypeTag());
     }
 
     @Override
@@ -281,28 +283,32 @@ public class IrailApi implements TransportDataSource {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = BASE_URL + "/vehicle/?format=json"
-                + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
+                     + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
                 request.getSearchTime());
         log.info("Fetching vehicle route from " + url);
-        Response.Listener<JSONObject> successListener = response -> {
-            IrailVehicleJourney result;
-            try {
-                result = parser.parseVehicleJourney(response);
-            } catch (JSONException | StopLocationNotResolvedException e) {
-                log.warning("Failed to parse vehicle: " + e.getMessage(), e);
-                request.notifyErrorListeners(e);
-                return;
+
+        Callback callback = new MainthreadCallback() {
+            public void onResponse(Call call, Response response) throws IOException {
+                IrailVehicleJourney result;
+                try {
+                    String body = response.body().string();
+                    JSONObject json = new JSONObject(body);
+                    result = parser.parseVehicleJourney(json);
+                } catch (JSONException | StopLocationNotResolvedException e) {
+                    log.warning("Failed to parse vehicle: " + e.getMessage(), e);
+                    onUiThread(context, () -> request.notifyErrorListeners(e));
+                    return;
+                }
+                onUiThread(context, () -> request.notifySuccessListeners(result));
             }
-            request.notifySuccessListeners(result);
+
+            public void onFailure(Call call, IOException e) {
+                log.warning("Failed to get vehicle:" + e.getMessage());
+                onUiThread(context, () -> request.notifyErrorListeners(e));
+            }
         };
 
-        Response.ErrorListener errorListener = e -> {
-            log.warning("Failed to get vehicle:" + e.getMessage());
-            request.notifyErrorListeners(e);
-        };
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
-
-        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+        tryOnlineOrServerCache(url, callback, request.getRequestTypeTag());
     }
 
     @Override
@@ -343,32 +349,36 @@ public class IrailApi implements TransportDataSource {
 
         String locale = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_stations_language", "");
 
-        if (locale == null || locale.isEmpty()) {
+        if (locale.isEmpty()) {
             // Only get locale when needed
             locale = Locale.getDefault().getISO3Language();
         }
 
         String url = BASE_URL + "/disturbances/?format=json&lineBreakCharacter=<br>&lang=" + locale.substring(0, 2);
         log.info("Fetching disturbances from " + url);
-        Response.Listener<JSONObject> successListener = response -> {
-            Disturbance[] result;
-            try {
-                result = parser.parseDisturbances(response);
-            } catch (JSONException e) {
-                log.warning("Failed to parse disturbances: " + e.getMessage(), e);
-                request.notifyErrorListeners(e);
-                return;
+
+        Callback callback = new MainthreadCallback() {
+            public void onResponse(Call call, Response response) throws IOException {
+                Disturbance[] result;
+                try {
+                    String body = response.body().string();
+                    JSONObject json = new JSONObject(body);
+                    result = parser.parseDisturbances(json);
+                } catch (JSONException e) {
+                    log.warning("Failed to parse disturbances: " + e.getMessage(), e);
+                    onUiThread(context, () -> request.notifyErrorListeners(e));
+                    return;
+                }
+                onUiThread(context, () -> request.notifySuccessListeners(result));
             }
-            request.notifySuccessListeners(result);
+
+            public void onFailure(Call call, IOException e) {
+                log.warning("Failed to get disturbances: " + e.getMessage());
+                onUiThread(context, () -> request.notifyErrorListeners(e));
+            }
         };
 
-        Response.ErrorListener errorListener = e -> {
-            log.warning("Failed to get disturbances: " + e.getMessage());
-            request.notifyErrorListeners(e);
-        };
-
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
-        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
+        tryOnlineOrServerCache(url, callback, request.getRequestTypeTag());
     }
 
 
@@ -382,74 +392,45 @@ public class IrailApi implements TransportDataSource {
 
     public void getVehicleComposition(VehicleCompositionRequest request) {
         String url = BASE_URL + "/composition/?format=json"
-                + "&id=" + request.getVehicleId();
+                     + "&id=" + request.getVehicleId();
         log.info("Fetching vehicle composition from " + url);
-        Response.Listener<JSONObject> successListener = response -> {
-            VehicleCompositionImpl result;
-            try {
-                result = vehicleCompositionParser.parseVehicleComposition(context, response, request.getVehicleId());
-            } catch (JSONException e) {
-                log.warning("Failed to parse vehicle composition: " + e.getMessage(), e);
-                request.notifyErrorListeners(e);
-                return;
-            }
 
-            request.notifySuccessListeners(result);
-        };
-
-        Response.ErrorListener errorListener = e -> {
-            log.warning("Tried loading vehicle composition from " + url + " failed with error " + e, e);
-            request.notifyErrorListeners(e);
-        };
-
-        JsonObjectRequest jsObjRequest = getRequestObject(url, successListener, errorListener, request.getRequestTypeTag());
-
-        tryOnlineOrServerCache(jsObjRequest, successListener, errorListener);
-    }
-
-    private JsonObjectRequest getRequestObject(String url, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener, int tag) {
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, successListener, errorListener) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", USER_AGENT);
-                return headers;
-            }
-        };
-
-        jsObjRequest.setRetryPolicy(requestPolicy);
-        jsObjRequest.setTag(tag);
-        return jsObjRequest;
-    }
-
-    /**
-     * If internet is available, make a request. Otherwise, check the cache
-     *
-     * @param jsObjRequest    The request which should be made to the server
-     * @param successListener The listener for successful responses, which will be used by the cache
-     * @param errorListener   The listener for unsuccessful responses
-     */
-    private void tryOnlineOrServerCache(JsonObjectRequest jsObjRequest, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
-        log.debug("Making request to iRail API at " + jsObjRequest.getUrl());
-        if (isInternetAvailable()) {
-            requestQueue.add(jsObjRequest);
-        } else {
-            log.debug("Offline, using cache for " + jsObjRequest.getUrl());
-            if (requestQueue.getCache().get(jsObjRequest.getCacheKey()) != null) {
+        Callback callback = new MainthreadCallback() {
+            public void onResponse(Call call, Response response) {
+                VehicleCompositionImpl result;
                 try {
-                    JSONObject cache = new JSONObject(new String(requestQueue.getCache().get(jsObjRequest.getCacheKey()).data));
-                    successListener.onResponse(cache);
-                } catch (JSONException e) {
-                    log.warning("Failed to get result from cache: " + e.getMessage());
-                    errorListener.onErrorResponse(new NoConnectionError());
+                    String body = response.body().string();
+                    JSONObject json = new JSONObject(body);
+                    result = vehicleCompositionParser.parseVehicleComposition(context, json, request.getVehicleId());
+                } catch (JSONException | IOException e) {
+                    log.warning("Failed to parse vehicle composition: " + e.getMessage(), e);
+                    onUiThread(context, () -> request.notifyErrorListeners(e));
+                    return;
                 }
 
-            } else {
-                log.debug("No cache for " + jsObjRequest.getUrl());
-                errorListener.onErrorResponse(new NoConnectionError());
+                onUiThread(context, () -> request.notifySuccessListeners(result));
             }
-        }
+
+            public void onFailure(Call call, IOException e) {
+                log.warning("Tried loading vehicle composition from " + url + " failed with error " + e, e);
+                onUiThread(context, () -> request.notifyErrorListeners(e));
+            }
+        };
+
+        tryOnlineOrServerCache(url, callback, request.getRequestTypeTag());
+    }
+
+    private void tryOnlineOrServerCache(String url, Callback callback, int tag) {
+        log.debug("Making request to iRail API at " + url);
+        Request httpRequest = new Request.Builder()
+                .url(url)
+                .tag(tag)
+                .headers(Headers.of("User-agent", USER_AGENT))
+                .build();
+
+
+        Call call = client.newCall(httpRequest);
+        call.enqueue(callback);
     }
 
     @Override
@@ -486,7 +467,53 @@ public class IrailApi implements TransportDataSource {
     @Override
     public void abortQueries(RequestType type) {
         log.info("Aborting all queries for type " + type);
-        this.requestQueue.cancelAll(type.getRequestTypeTag());
+        for (Call call : this.client.dispatcher().queuedCalls()) {
+            if (call.request().tag() == type) {
+                call.cancel();
+            }
+        }
+        for (Call call : this.client.dispatcher().runningCalls()) {
+            if (call.request().tag() == type) {
+                call.cancel();
+            }
+        }
     }
 
+    private static class ForceCacheInterceptor implements Interceptor {
+        private final ConnectivityManager connectivityManager;
+
+        public ForceCacheInterceptor(ConnectivityManager connectivityManager) {
+            this.connectivityManager = connectivityManager;
+        }
+
+        private boolean isInternetAvailable() {
+            NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            return activeNetwork != null &&
+                   activeNetwork.isConnectedOrConnecting();
+        }
+
+        public Response intercept(Interceptor.Chain chain) throws IOException {
+            Request.Builder builder = chain.request().newBuilder();
+            if (!isInternetAvailable()) {
+                builder.cacheControl(CacheControl.FORCE_CACHE);
+            }
+            return chain.proceed(builder.build());
+        }
+    }
+
+    private abstract static class MainthreadCallback implements Callback {
+
+        @Override
+        public abstract void onFailure(@NonNull Call call, @NonNull IOException e);
+
+        @Override
+        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+        }
+
+        public void onUiThread(Context context, Runnable mtRunnable) {
+            Handler mainHandler = new Handler(context.getMainLooper());
+            mainHandler.post(mtRunnable);
+        }
+    }
 }
