@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import be.hyperrail.opentransportdata.be.irail.util.AsyncJsonPostRequest;
+import be.hyperrail.opentransportdata.be.irail.util.IrailHttpException;
 import be.hyperrail.opentransportdata.common.contracts.QueryTimeDefinition;
 import be.hyperrail.opentransportdata.common.contracts.TransportDataSource;
 import be.hyperrail.opentransportdata.common.contracts.TransportStopsDataSource;
@@ -53,7 +53,6 @@ import be.hyperrail.opentransportdata.common.requests.VehicleCompositionRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleRequest;
 import be.hyperrail.opentransportdata.common.requests.VehicleStopRequest;
 import be.hyperrail.opentransportdata.logging.OpenTransportLog;
-import kotlin.Function;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -145,18 +144,18 @@ public class IrailApi implements TransportDataSource {
         }
 
         String url = BASE_URL + "/connections/?format=json"
-                     + "&to=" + request.getDestination().getHafasId()
-                     + "&from=" + request.getOrigin().getHafasId()
-                     + "&date=" + dateformat.print(request.getSearchTime())
-                     + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
-                     + "&lang=" + locale.substring(0, 2);
+                + "&to=" + request.getDestination().getHafasId()
+                + "&from=" + request.getOrigin().getHafasId()
+                + "&date=" + dateformat.print(request.getSearchTime())
+                + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
+                + "&lang=" + locale.substring(0, 2);
 
         if (request.getTimeDefinition() == QueryTimeDefinition.EQUAL_OR_LATER) {
             url += "&timeSel=depart";
         } else {
             url += "&timeSel=arrive";
         }
-        log.debug("Fetching connections from " + url);
+        log.info("Fetching connections from " + url);
 
 
         Callback callback = new MainthreadCallback() {
@@ -165,6 +164,11 @@ public class IrailApi implements TransportDataSource {
                 try {
                     String body = response.body().string();
                     JSONObject json = new JSONObject(body);
+                    if (response.networkResponse().code() >= 400) {
+                        IrailHttpException irailHttpException = new IrailHttpException(response.networkResponse().code(), json);
+                        onUiThread(context, () -> request.notifyErrorListeners(irailHttpException));
+                        return;
+                    }
                     routeResult = parser.parseRouteResult(
                             json, request.getOrigin(), request.getDestination(),
                             request.getSearchTime(), request.getTimeDefinition()
@@ -239,10 +243,10 @@ public class IrailApi implements TransportDataSource {
         DateTimeFormatter timeformat = DateTimeFormat.forPattern("HHmm");
 
         String url = BASE_URL + "/liveboard/?format=json"
-                     + "&id=" + request.getStation().getHafasId()
-                     + "&date=" + dateformat.print(request.getSearchTime())
-                     + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
-                     + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
+                + "&id=" + request.getStation().getHafasId()
+                + "&date=" + dateformat.print(request.getSearchTime())
+                + "&time=" + timeformat.print(request.getSearchTime().withZone(DateTimeZone.forID("Europe/Brussels")))
+                + "&arrdep=" + ((request.getType() == LiveboardType.DEPARTURES) ? "dep" : "arr");
         log.info("Fetching liveboard from " + url);
 
 
@@ -252,6 +256,11 @@ public class IrailApi implements TransportDataSource {
                 try {
                     String body = response.body().string();
                     JSONObject json = new JSONObject(body);
+                    if (response.networkResponse().code() >= 400) {
+                        IrailHttpException irailHttpException = new IrailHttpException(response.networkResponse().code(), json);
+                        onUiThread(context, () -> request.notifyErrorListeners(irailHttpException));
+                        return;
+                    }
                     result = parser.parseLiveboard(json, request.getSearchTime(), request.getType(), request.getTimeDefinition());
                 } catch (JSONException | StopLocationNotResolvedException e) {
                     log.warning("Failed to parse liveboard: " + e.getMessage(), e);
@@ -283,7 +292,7 @@ public class IrailApi implements TransportDataSource {
         DateTimeFormatter dateTimeformat = DateTimeFormat.forPattern("ddMMyy");
 
         String url = BASE_URL + "/vehicle/?format=json"
-                     + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
+                + "&id=" + request.getVehicleId() + "&date=" + dateTimeformat.print(
                 request.getSearchTime());
         log.info("Fetching vehicle route from " + url);
 
@@ -293,6 +302,11 @@ public class IrailApi implements TransportDataSource {
                 try {
                     String body = response.body().string();
                     JSONObject json = new JSONObject(body);
+                    if (response.networkResponse().code() >= 400) {
+                        IrailHttpException irailHttpException = new IrailHttpException(response.networkResponse().code(), json);
+                        onUiThread(context, () -> request.notifyErrorListeners(irailHttpException));
+                        return;
+                    }
                     result = parser.parseVehicleJourney(json);
                 } catch (JSONException | StopLocationNotResolvedException e) {
                     log.warning("Failed to parse vehicle: " + e.getMessage(), e);
@@ -363,6 +377,11 @@ public class IrailApi implements TransportDataSource {
                 try {
                     String body = response.body().string();
                     JSONObject json = new JSONObject(body);
+                    if (response.networkResponse().code() >= 400) {
+                        IrailHttpException irailHttpException = new IrailHttpException(response.networkResponse().code(), json);
+                        onUiThread(context, () -> request.notifyErrorListeners(irailHttpException));
+                        return;
+                    }
                     result = parser.parseDisturbances(json);
                 } catch (JSONException e) {
                     log.warning("Failed to parse disturbances: " + e.getMessage(), e);
@@ -392,7 +411,7 @@ public class IrailApi implements TransportDataSource {
 
     public void getVehicleComposition(VehicleCompositionRequest request) {
         String url = BASE_URL + "/composition/?format=json"
-                     + "&id=" + request.getVehicleId();
+                + "&id=" + request.getVehicleId();
         log.info("Fetching vehicle composition from " + url);
 
         Callback callback = new MainthreadCallback() {
@@ -401,6 +420,11 @@ public class IrailApi implements TransportDataSource {
                 try {
                     String body = response.body().string();
                     JSONObject json = new JSONObject(body);
+                    if (response.networkResponse().code() >= 400) {
+                        IrailHttpException irailHttpException = new IrailHttpException(response.networkResponse().code(), json);
+                        onUiThread(context, () -> request.notifyErrorListeners(irailHttpException));
+                        return;
+                    }
                     result = vehicleCompositionParser.parseVehicleComposition(context, json, request.getVehicleId());
                 } catch (JSONException | IOException e) {
                     log.warning("Failed to parse vehicle composition: " + e.getMessage(), e);
@@ -421,7 +445,7 @@ public class IrailApi implements TransportDataSource {
     }
 
     private void tryOnlineOrServerCache(String url, Callback callback, int tag) {
-        log.debug("Making request to iRail API at " + url);
+        log.info("Making request to iRail API at " + url);
         Request httpRequest = new Request.Builder()
                 .url(url)
                 .tag(tag)
@@ -489,7 +513,7 @@ public class IrailApi implements TransportDataSource {
         private boolean isInternetAvailable() {
             NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
             return activeNetwork != null &&
-                   activeNetwork.isConnectedOrConnecting();
+                    activeNetwork.isConnectedOrConnecting();
         }
 
         public Response intercept(Interceptor.Chain chain) throws IOException {

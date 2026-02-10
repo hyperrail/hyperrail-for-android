@@ -12,10 +12,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import be.hyperrail.opentransportdata.common.contracts.TransportDataRequest;
+import be.hyperrail.opentransportdata.logging.OpenTransportLog;
 
 public class AsyncJsonPostRequest {
+
+    private static final OpenTransportLog log = OpenTransportLog.getLogger(AsyncJsonPostRequest.class);
 
     /**
      * Make a synchronous POST request with a JSON body.
@@ -30,6 +34,7 @@ public class AsyncJsonPostRequest {
     }
 
     private static String postJsonRequest(String uri, String json) {
+        log.info("Posting occupancy to " + uri);
         HttpURLConnection urlConnection;
         String result;
         try {
@@ -44,14 +49,14 @@ public class AsyncJsonPostRequest {
             //Write
             OutputStream outputStream = urlConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(outputStream, "UTF-8"));
+                    new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
             writer.write(json);
             writer.close();
             outputStream.close();
 
             //Read
             BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+                    new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
 
             String line;
             StringBuilder sb = new StringBuilder();

@@ -7,19 +7,23 @@
 package be.hyperrail.android.util.health;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import androidx.annotation.NonNull;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import be.hyperrail.android.BuildConfig;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 /**
@@ -29,31 +33,45 @@ import be.hyperrail.android.BuildConfig;
 public class HealthStateChecker {
 
     private final HealthStateCheckerListener connectionReceiverListener;
-    private final RequestQueue requestQueue;
     private static final String USER_AGENT = "HyperRail for Android - " + BuildConfig.VERSION_NAME;
+    private final OkHttpClient client;
 
     public HealthStateChecker(Context context, HealthStateCheckerListener listener) {
         connectionReceiverListener = listener;
-        this.requestQueue = Volley.newRequestQueue(context);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.retryOnConnectionFailure(true)
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .callTimeout(20, TimeUnit.SECONDS)
+                .followRedirects(true);
+        client = builder.build();
         checkHealth();
     }
 
     private void checkHealth() {
-        Response.Listener<JSONObject> successListener = response -> {
-            connectionReceiverListener.onSystemHealthChanged(new HealthState(response));
-        };
+        Request httpRequest = new Request.Builder()
+                .url("https://hyperrail.be/status.json")
+                .headers(Headers.of("User-agent", USER_AGENT))
+                .build();
 
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, "https://hyperrail.be/status.json", null, successListener, null) {
+        Call call = client.newCall(httpRequest);
+        call.enqueue(new Callback() {
             @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("User-agent", USER_AGENT);
-                return headers;
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
             }
-        };
-        requestQueue.add(jsObjRequest);
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                try {
+                    String body = response.body().string();
+                    JSONObject json = new JSONObject(body);
+                    connectionReceiverListener.onSystemHealthChanged(new HealthState(json));
+                } catch (JSONException e) {
+                    Log.e("HealthStateChecker", "onResponse: " + e.getMessage(), e);
+                }
+            }
+        });
     }
 
 

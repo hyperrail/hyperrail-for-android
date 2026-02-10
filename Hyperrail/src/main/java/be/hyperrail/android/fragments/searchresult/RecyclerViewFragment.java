@@ -15,27 +15,22 @@ package be.hyperrail.android.fragments.searchresult;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
-import android.widget.TextView;
-
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
-
-import javax.net.ssl.SSLHandshakeException;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import be.hyperrail.android.R;
 import be.hyperrail.android.infiniteScrolling.InfiniteScrollingDataSource;
+import be.hyperrail.opentransportdata.be.irail.util.IrailHttpException;
 
 /**
  * A base class for recyclerviews with results, supporting pull-to-refresh, infinite loading, and more.
@@ -147,28 +142,13 @@ public abstract class RecyclerViewFragment<T> extends Fragment implements Infini
     protected abstract void showData(T data);
 
     protected final void showError(Exception exception) {
-        if (exception instanceof ServerError) {
-            if (((ServerError) exception).networkResponse != null) {
-                if (((ServerError) exception).networkResponse.statusCode == 404) {
-                    showError(R.string.error_no_results_found);
-                } else if (((ServerError) exception).networkResponse.statusCode == 500) {
-                    showError(R.string.error_servererror_invalid_response);
-                } else {
-                    showError(R.string.error_servererror_invalid_response);
-                }
+        if (exception instanceof IrailHttpException) {
+            IrailHttpException irailException = (IrailHttpException) exception;
+            if (irailException.getCode() == 404) {
+                showError(R.string.error_no_results_found);
             } else {
-                showError(R.string.error_general);
+                showError(R.string.error_servererror_invalid_response);
             }
-        } else if (exception instanceof NoConnectionError) {
-            if (exception.getCause() instanceof SSLHandshakeException) {
-                showError(R.string.error_network_unsafe);
-            } else {
-                showError(R.string.error_network_unavailable);
-            }
-        } else if (exception instanceof NetworkError) {
-            showError(R.string.error_network_connected_unavailable);
-        } else if (exception instanceof TimeoutError) {
-            showError(R.string.error_network_connected_unavailable);
         } else {
             showError(R.string.error_general);
         }
